@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+// C dependencies: "vmlinux.h" and <bpf/bpf_helpers.h>
+
+#[unsafe(link_section = "license")]
+#[unsafe(no_mangle)]
+pub static mut _license: [::core::ffi::c_char; 4] = [
+    b'G' as ::core::ffi::c_char,
+    b'P' as ::core::ffi::c_char,
+    b'L' as ::core::ffi::c_char,
+    0,
+];
+
+#[unsafe(link_section = "xdp")]
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn xdp_prog1(xdp: *mut xdp_md) -> ::core::ffi::c_int {
+    XDP_DROP
+}

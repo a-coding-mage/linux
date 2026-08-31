@@ -1,0 +1,19 @@
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
+pub const PERF_REG_ARM_R0: u32 = 0;
+pub const PERF_REG_ARM_R1: u32 = 1;
+pub const PERF_REG_ARM_R2: u32 = 2;
+pub const PERF_REG_ARM_R3: u32 = 3;
+pub const PERF_REG_ARM_R4: u32 = 4;
+pub const PERF_REG_ARM_R5: u32 = 5;
+pub const PERF_REG_ARM_R6: u32 = 6;
+pub const PERF_REG_ARM_R7: u32 = 7;
+pub const PERF_REG_ARM_R8: u32 = 8;
+pub const PERF_REG_ARM_R9: u32 = 9;
+pub const PERF_REG_ARM_R10: u32 = 10;
+pub const PERF_REG_ARM_FP: u32 = 11;
+pub const PERF_REG_ARM_IP: u32 = 12;
+pub const PERF_REG_ARM_SP: u32 = 13;
+pub const PERF_REG_ARM_LR: u32 = 14;
+pub const PERF_REG_ARM_PC: u32 = 15;
+pub const PERF_REG_ARM_MAX: u32 = 16;

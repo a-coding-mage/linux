@@ -1,0 +1,12 @@
+pub const sa_sz: usize = 32;
+pub const sa_flags: usize = 8;
+pub const sa_handler: usize = 0;
+pub const sa_mask_sz: usize = 8;
+pub const SIGUSR1: usize = 10;
+pub const SIGUSR2: usize = 12;
+pub const SIGTERM: usize = 15;
+pub const SIGINT: usize = 2;
+pub const SIGABRT: usize = 6;
+pub const SA_NODEFER: usize = 1073741824;
+pub const SA_SIGINFO: usize = 4;
+pub const ucontext_regs: usize = 184;

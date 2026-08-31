@@ -1,0 +1,369 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2012 ARM Ltd.
+ */
+
+pub const INVALID_HWID: usize = usize::MAX;
+
+pub const MPIDR_UP_BITMASK: u64 = 0x1 << 30;
+pub const MPIDR_MT_BITMASK: u64 = 0x1 << 24;
+pub const MPIDR_HWID_BITMASK: u64 = 0xff00ffffff;
+
+pub const MPIDR_LEVEL_BITS_SHIFT: u32 = 3;
+pub const MPIDR_LEVEL_BITS: u32 = 1 << MPIDR_LEVEL_BITS_SHIFT;
+pub const MPIDR_LEVEL_MASK: u64 = (1 << MPIDR_LEVEL_BITS) - 1;
+
+pub const fn MPIDR_LEVEL_SHIFT(level: u32) -> u32 {
+    (((1 << level) >> 1) << MPIDR_LEVEL_BITS_SHIFT)
+}
+
+pub const fn MPIDR_AFFINITY_LEVEL(mpidr: u64, level: u32) -> u64 {
+    (mpidr >> MPIDR_LEVEL_SHIFT(level)) & MPIDR_LEVEL_MASK
+}
+
+pub const MIDR_REVISION_MASK: u32 = 0xf;
+pub const fn MIDR_REVISION(midr: u32) -> u32 {
+    midr & MIDR_REVISION_MASK
+}
+pub const MIDR_PARTNUM_SHIFT: u32 = 4;
+pub const MIDR_PARTNUM_MASK: u32 = 0xfff << MIDR_PARTNUM_SHIFT;
+pub const fn MIDR_PARTNUM(midr: u32) -> u32 {
+    (midr & MIDR_PARTNUM_MASK) >> MIDR_PARTNUM_SHIFT
+}
+pub const MIDR_ARCHITECTURE_SHIFT: u32 = 16;
+pub const MIDR_ARCHITECTURE_MASK: u32 = 0xf << MIDR_ARCHITECTURE_SHIFT;
+pub const fn MIDR_ARCHITECTURE(midr: u32) -> u32 {
+    (midr & MIDR_ARCHITECTURE_MASK) >> MIDR_ARCHITECTURE_SHIFT
+}
+pub const MIDR_VARIANT_SHIFT: u32 = 20;
+pub const MIDR_VARIANT_MASK: u32 = 0xf << MIDR_VARIANT_SHIFT;
+pub const fn MIDR_VARIANT(midr: u32) -> u32 {
+    (midr & MIDR_VARIANT_MASK) >> MIDR_VARIANT_SHIFT
+}
+pub const MIDR_IMPLEMENTOR_SHIFT: u32 = 24;
+pub const MIDR_IMPLEMENTOR_MASK: u32 = 0xffu32 << MIDR_IMPLEMENTOR_SHIFT;
+pub const fn MIDR_IMPLEMENTOR(midr: u32) -> u32 {
+    (midr & MIDR_IMPLEMENTOR_MASK) >> MIDR_IMPLEMENTOR_SHIFT
+}
+
+pub const fn MIDR_CPU_MODEL(imp: u32, partnum: u32) -> u32 {
+    (imp << MIDR_IMPLEMENTOR_SHIFT)
+        | (0xf << MIDR_ARCHITECTURE_SHIFT)
+        | (partnum << MIDR_PARTNUM_SHIFT)
+}
+
+pub const fn MIDR_CPU_VAR_REV(var: u32, rev: u32) -> u32 {
+    (var << MIDR_VARIANT_SHIFT) | rev
+}
+
+pub const MIDR_CPU_MODEL_MASK: u32 =
+    MIDR_IMPLEMENTOR_MASK | MIDR_PARTNUM_MASK | MIDR_ARCHITECTURE_MASK;
+
+pub const ARM_CPU_IMP_ARM: u32 = 0x41;
+pub const ARM_CPU_IMP_APM: u32 = 0x50;
+pub const ARM_CPU_IMP_CAVIUM: u32 = 0x43;
+pub const ARM_CPU_IMP_BRCM: u32 = 0x42;
+pub const ARM_CPU_IMP_QCOM: u32 = 0x51;
+pub const ARM_CPU_IMP_NVIDIA: u32 = 0x4E;
+pub const ARM_CPU_IMP_FUJITSU: u32 = 0x46;
+pub const ARM_CPU_IMP_HISI: u32 = 0x48;
+pub const ARM_CPU_IMP_APPLE: u32 = 0x61;
+pub const ARM_CPU_IMP_AMPERE: u32 = 0xC0;
+pub const ARM_CPU_IMP_MICROSOFT: u32 = 0x6D;
+
+pub const ARM_CPU_PART_AEM_V8: u32 = 0xD0F;
+pub const ARM_CPU_PART_FOUNDATION: u32 = 0xD00;
+pub const ARM_CPU_PART_CORTEX_A57: u32 = 0xD07;
+pub const ARM_CPU_PART_CORTEX_A72: u32 = 0xD08;
+pub const ARM_CPU_PART_CORTEX_A53: u32 = 0xD03;
+pub const ARM_CPU_PART_CORTEX_A73: u32 = 0xD09;
+pub const ARM_CPU_PART_CORTEX_A75: u32 = 0xD0A;
+pub const ARM_CPU_PART_CORTEX_A35: u32 = 0xD04;
+pub const ARM_CPU_PART_CORTEX_A55: u32 = 0xD05;
+pub const ARM_CPU_PART_CORTEX_A76: u32 = 0xD0B;
+pub const ARM_CPU_PART_NEOVERSE_N1: u32 = 0xD0C;
+pub const ARM_CPU_PART_CORTEX_A77: u32 = 0xD0D;
+pub const ARM_CPU_PART_CORTEX_A76AE: u32 = 0xD0E;
+pub const ARM_CPU_PART_NEOVERSE_V1: u32 = 0xD40;
+pub const ARM_CPU_PART_CORTEX_A78: u32 = 0xD41;
+pub const ARM_CPU_PART_CORTEX_A78AE: u32 = 0xD42;
+pub const ARM_CPU_PART_CORTEX_X1: u32 = 0xD44;
+pub const ARM_CPU_PART_CORTEX_A510: u32 = 0xD46;
+pub const ARM_CPU_PART_CORTEX_A520: u32 = 0xD80;
+pub const ARM_CPU_PART_CORTEX_A710: u32 = 0xD47;
+pub const ARM_CPU_PART_CORTEX_A715: u32 = 0xD4D;
+pub const ARM_CPU_PART_CORTEX_X2: u32 = 0xD48;
+pub const ARM_CPU_PART_NEOVERSE_N2: u32 = 0xD49;
+pub const ARM_CPU_PART_CORTEX_A78C: u32 = 0xD4B;
+pub const ARM_CPU_PART_CORTEX_X1C: u32 = 0xD4C;
+pub const ARM_CPU_PART_CORTEX_X3: u32 = 0xD4E;
+pub const ARM_CPU_PART_NEOVERSE_V2: u32 = 0xD4F;
+pub const ARM_CPU_PART_CORTEX_A720: u32 = 0xD81;
+pub const ARM_CPU_PART_CORTEX_X4: u32 = 0xD82;
+pub const ARM_CPU_PART_NEOVERSE_V3AE: u32 = 0xD83;
+pub const ARM_CPU_PART_NEOVERSE_V3: u32 = 0xD84;
+pub const ARM_CPU_PART_CORTEX_X925: u32 = 0xD85;
+pub const ARM_CPU_PART_CORTEX_A725: u32 = 0xD87;
+pub const ARM_CPU_PART_CORTEX_A720AE: u32 = 0xD89;
+pub const ARM_CPU_PART_NEOVERSE_N3: u32 = 0xD8E;
+
+pub const APM_CPU_PART_XGENE: u32 = 0x000;
+pub const APM_CPU_VAR_POTENZA: u32 = 0x00;
+
+pub const CAVIUM_CPU_PART_THUNDERX: u32 = 0x0A1;
+pub const CAVIUM_CPU_PART_THUNDERX_81XX: u32 = 0x0A2;
+pub const CAVIUM_CPU_PART_THUNDERX_83XX: u32 = 0x0A3;
+pub const CAVIUM_CPU_PART_THUNDERX2: u32 = 0x0AF;
+/* OcteonTx2 series */
+pub const CAVIUM_CPU_PART_OCTX2_98XX: u32 = 0x0B1;
+pub const CAVIUM_CPU_PART_OCTX2_96XX: u32 = 0x0B2;
+pub const CAVIUM_CPU_PART_OCTX2_95XX: u32 = 0x0B3;
+pub const CAVIUM_CPU_PART_OCTX2_95XXN: u32 = 0x0B4;
+pub const CAVIUM_CPU_PART_OCTX2_95XXMM: u32 = 0x0B5;
+pub const CAVIUM_CPU_PART_OCTX2_95XXO: u32 = 0x0B6;
+
+pub const BRCM_CPU_PART_BRAHMA_B53: u32 = 0x100;
+pub const BRCM_CPU_PART_VULCAN: u32 = 0x516;
+
+pub const QCOM_CPU_PART_FALKOR_V1: u32 = 0x800;
+pub const QCOM_CPU_PART_FALKOR: u32 = 0xC00;
+pub const QCOM_CPU_PART_KRYO: u32 = 0x200;
+pub const QCOM_CPU_PART_KRYO_2XX_GOLD: u32 = 0x800;
+pub const QCOM_CPU_PART_KRYO_2XX_SILVER: u32 = 0x801;
+pub const QCOM_CPU_PART_KRYO_3XX_GOLD: u32 = 0x802;
+pub const QCOM_CPU_PART_KRYO_3XX_SILVER: u32 = 0x803;
+pub const QCOM_CPU_PART_KRYO_4XX_GOLD: u32 = 0x804;
+pub const QCOM_CPU_PART_KRYO_4XX_SILVER: u32 = 0x805;
+pub const QCOM_CPU_PART_ORYON_X1: u32 = 0x001;
+
+pub const NVIDIA_CPU_PART_DENVER: u32 = 0x003;
+pub const NVIDIA_CPU_PART_CARMEL: u32 = 0x004;
+pub const NVIDIA_CPU_PART_OLYMPUS: u32 = 0x010;
+
+pub const FUJITSU_CPU_PART_A64FX: u32 = 0x001;
+
+pub const HISI_CPU_PART_TSV110: u32 = 0xD01;
+pub const HISI_CPU_PART_HIP09: u32 = 0xD02;
+pub const HISI_CPU_PART_HIP12: u32 = 0xD06;
+
+pub const APPLE_CPU_PART_M1_ICESTORM: u32 = 0x022;
+pub const APPLE_CPU_PART_M1_FIRESTORM: u32 = 0x023;
+pub const APPLE_CPU_PART_M1_ICESTORM_PRO: u32 = 0x024;
+pub const APPLE_CPU_PART_M1_FIRESTORM_PRO: u32 = 0x025;
+pub const APPLE_CPU_PART_M1_ICESTORM_MAX: u32 = 0x028;
+pub const APPLE_CPU_PART_M1_FIRESTORM_MAX: u32 = 0x029;
+pub const APPLE_CPU_PART_M2_BLIZZARD: u32 = 0x032;
+pub const APPLE_CPU_PART_M2_AVALANCHE: u32 = 0x033;
+pub const APPLE_CPU_PART_M2_BLIZZARD_PRO: u32 = 0x034;
+pub const APPLE_CPU_PART_M2_AVALANCHE_PRO: u32 = 0x035;
+pub const APPLE_CPU_PART_M2_BLIZZARD_MAX: u32 = 0x038;
+pub const APPLE_CPU_PART_M2_AVALANCHE_MAX: u32 = 0x039;
+
+pub const AMPERE_CPU_PART_AMPERE1: u32 = 0xAC3;
+pub const AMPERE_CPU_PART_AMPERE1A: u32 = 0xAC4;
+
+pub const MICROSOFT_CPU_PART_AZURE_COBALT_100: u32 = 0xD49; /* Based on r0p0 of ARM Neoverse N2 */
+
+pub const MIDR_CORTEX_A53: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A53);
+pub const MIDR_CORTEX_A57: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A57);
+pub const MIDR_CORTEX_A72: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A72);
+pub const MIDR_CORTEX_A73: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A73);
+pub const MIDR_CORTEX_A75: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A75);
+pub const MIDR_CORTEX_A35: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A35);
+pub const MIDR_CORTEX_A55: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A55);
+pub const MIDR_CORTEX_A76: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76);
+pub const MIDR_NEOVERSE_N1: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N1);
+pub const MIDR_CORTEX_A77: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A77);
+pub const MIDR_CORTEX_A76AE: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A76AE);
+pub const MIDR_NEOVERSE_V1: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V1);
+pub const MIDR_CORTEX_A78: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78);
+pub const MIDR_CORTEX_A78AE: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78AE);
+pub const MIDR_CORTEX_X1: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1);
+pub const MIDR_CORTEX_A510: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A510);
+pub const MIDR_CORTEX_A520: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A520);
+pub const MIDR_CORTEX_A710: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A710);
+pub const MIDR_CORTEX_A715: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A715);
+pub const MIDR_CORTEX_X2: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X2);
+pub const MIDR_NEOVERSE_N2: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N2);
+pub const MIDR_CORTEX_A78C: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A78C);
+pub const MIDR_CORTEX_X1C: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X1C);
+pub const MIDR_CORTEX_X3: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X3);
+pub const MIDR_NEOVERSE_V2: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V2);
+pub const MIDR_CORTEX_A720: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A720);
+pub const MIDR_CORTEX_X4: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X4);
+pub const MIDR_NEOVERSE_V3AE: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V3AE);
+pub const MIDR_NEOVERSE_V3: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_V3);
+pub const MIDR_CORTEX_X925: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_X925);
+pub const MIDR_CORTEX_A725: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A725);
+pub const MIDR_CORTEX_A720AE: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_CORTEX_A720AE);
+pub const MIDR_NEOVERSE_N3: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_ARM, ARM_CPU_PART_NEOVERSE_N3);
+pub const MIDR_THUNDERX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX);
+pub const MIDR_THUNDERX_81XX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_81XX);
+pub const MIDR_THUNDERX_83XX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX_83XX);
+pub const MIDR_OCTX2_98XX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_98XX);
+pub const MIDR_OCTX2_96XX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_96XX);
+pub const MIDR_OCTX2_95XX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_95XX);
+pub const MIDR_OCTX2_95XXN: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_95XXN);
+pub const MIDR_OCTX2_95XXMM: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_95XXMM);
+pub const MIDR_OCTX2_95XXO: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_OCTX2_95XXO);
+pub const MIDR_CAVIUM_THUNDERX2: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_CAVIUM, CAVIUM_CPU_PART_THUNDERX2);
+pub const MIDR_BRAHMA_B53: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_BRCM, BRCM_CPU_PART_BRAHMA_B53);
+pub const MIDR_BRCM_VULCAN: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_BRCM, BRCM_CPU_PART_VULCAN);
+pub const MIDR_QCOM_FALKOR_V1: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_FALKOR_V1);
+pub const MIDR_QCOM_FALKOR: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_FALKOR);
+pub const MIDR_QCOM_KRYO: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_KRYO);
+pub const MIDR_QCOM_KRYO_2XX_GOLD: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_KRYO_2XX_GOLD);
+pub const MIDR_QCOM_KRYO_2XX_SILVER: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_KRYO_2XX_SILVER);
+pub const MIDR_QCOM_KRYO_3XX_GOLD: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_KRYO_3XX_GOLD);
+pub const MIDR_QCOM_KRYO_3XX_SILVER: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_KRYO_3XX_SILVER);
+pub const MIDR_QCOM_KRYO_4XX_GOLD: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_KRYO_4XX_GOLD);
+pub const MIDR_QCOM_KRYO_4XX_SILVER: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_KRYO_4XX_SILVER);
+pub const MIDR_QCOM_ORYON_X1: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_QCOM, QCOM_CPU_PART_ORYON_X1);
+
+/*
+ * NOTES:
+ * - Qualcomm Kryo 5XX Prime / Gold ID themselves as MIDR_CORTEX_A77
+ * - Qualcomm Kryo 5XX Silver IDs itself as MIDR_QCOM_KRYO_4XX_SILVER
+ * - Qualcomm Kryo 6XX Prime IDs itself as MIDR_CORTEX_X1
+ * - Qualcomm Kryo 6XX Gold IDs itself as ARM_CPU_PART_CORTEX_A78
+ * - Qualcomm Kryo 6XX Silver IDs itself as MIDR_CORTEX_A55
+ */
+
+pub const MIDR_NVIDIA_DENVER: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_NVIDIA, NVIDIA_CPU_PART_DENVER);
+pub const MIDR_NVIDIA_CARMEL: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_NVIDIA, NVIDIA_CPU_PART_CARMEL);
+pub const MIDR_NVIDIA_OLYMPUS: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_NVIDIA, NVIDIA_CPU_PART_OLYMPUS);
+pub const MIDR_FUJITSU_A64FX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_FUJITSU, FUJITSU_CPU_PART_A64FX);
+pub const MIDR_HISI_TSV110: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_HISI, HISI_CPU_PART_TSV110);
+pub const MIDR_HISI_HIP09: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_HISI, HISI_CPU_PART_HIP09);
+pub const MIDR_HISI_HIP12: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_HISI, HISI_CPU_PART_HIP12);
+pub const MIDR_APPLE_M1_ICESTORM: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_ICESTORM);
+pub const MIDR_APPLE_M1_FIRESTORM: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_FIRESTORM);
+pub const MIDR_APPLE_M1_ICESTORM_PRO: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_ICESTORM_PRO);
+pub const MIDR_APPLE_M1_FIRESTORM_PRO: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_FIRESTORM_PRO);
+pub const MIDR_APPLE_M1_ICESTORM_MAX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_ICESTORM_MAX);
+pub const MIDR_APPLE_M1_FIRESTORM_MAX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M1_FIRESTORM_MAX);
+pub const MIDR_APPLE_M2_BLIZZARD: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M2_BLIZZARD);
+pub const MIDR_APPLE_M2_AVALANCHE: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M2_AVALANCHE);
+pub const MIDR_APPLE_M2_BLIZZARD_PRO: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M2_BLIZZARD_PRO);
+pub const MIDR_APPLE_M2_AVALANCHE_PRO: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M2_AVALANCHE_PRO);
+pub const MIDR_APPLE_M2_BLIZZARD_MAX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M2_BLIZZARD_MAX);
+pub const MIDR_APPLE_M2_AVALANCHE_MAX: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_APPLE, APPLE_CPU_PART_M2_AVALANCHE_MAX);
+pub const MIDR_AMPERE1: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_AMPERE, AMPERE_CPU_PART_AMPERE1);
+pub const MIDR_AMPERE1A: u32 = MIDR_CPU_MODEL(ARM_CPU_IMP_AMPERE, AMPERE_CPU_PART_AMPERE1A);
+pub const MIDR_MICROSOFT_AZURE_COBALT_100: u32 =
+    MIDR_CPU_MODEL(ARM_CPU_IMP_MICROSOFT, MICROSOFT_CPU_PART_AZURE_COBALT_100);
+
+/* Fujitsu Erratum 010001 affects A64FX 1.0 and 1.1, (v0r0 and v1r0) */
+pub const MIDR_FUJITSU_ERRATUM_010001: u32 = MIDR_FUJITSU_A64FX;
+pub const MIDR_FUJITSU_ERRATUM_010001_MASK: u32 = !MIDR_CPU_VAR_REV(1, 0);
+pub const TCR_CLEAR_FUJITSU_ERRATUM_010001: u64 = TCR_EL1_NFD1 | TCR_EL1_NFD0;
+
+/* Non-assembler declarations from <asm/sysreg.h> are expected dependencies. */
+extern "C" {
+    pub static TCR_EL1_NFD1: u64;
+    pub static TCR_EL1_NFD0: u64;
+
+    pub static SYS_MIDR_EL1: u64;
+    pub static SYS_MPIDR_EL1: u64;
+    pub static SYS_CTR_EL0: u64;
+
+    pub fn read_sysreg_s(reg: u64) -> u64;
+}
+
+pub unsafe fn read_cpuid(reg: u64) -> u64 {
+    read_sysreg_s(reg)
+}
+
+/*
+ * Represent a range of MIDR values for a given CPU model and a
+ * range of variant/revision values.
+ *
+ * @model	- CPU model as defined by MIDR_CPU_MODEL
+ * @rv_min	- Minimum value for the revision/variant as defined by
+ *		  MIDR_CPU_VAR_REV
+ * @rv_max	- Maximum value for the variant/revision for the range.
+ */
+#[repr(C)]
+pub struct midr_range {
+    pub model: u32,
+    pub rv_min: u32,
+    pub rv_max: u32,
+}
+
+pub const fn MIDR_RANGE(m: u32, v_min: u32, r_min: u32, v_max: u32, r_max: u32) -> midr_range {
+    midr_range {
+        model: m,
+        rv_min: MIDR_CPU_VAR_REV(v_min, r_min),
+        rv_max: MIDR_CPU_VAR_REV(v_max, r_max),
+    }
+}
+
+pub const fn MIDR_REV_RANGE(m: u32, v: u32, r_min: u32, r_max: u32) -> midr_range {
+    MIDR_RANGE(m, v, r_min, v, r_max)
+}
+
+pub const fn MIDR_REV(m: u32, v: u32, r: u32) -> midr_range {
+    MIDR_RANGE(m, v, r, v, r)
+}
+
+pub const fn MIDR_ALL_VERSIONS(m: u32) -> midr_range {
+    MIDR_RANGE(m, 0, 0, 0xf, 0xf)
+}
+
+pub fn midr_is_cpu_model_range(midr: u32, model: u32, rv_min: u32, rv_max: u32) -> bool {
+    let _model: u32 = midr & MIDR_CPU_MODEL_MASK;
+    let rv: u32 = midr & (MIDR_REVISION_MASK | MIDR_VARIANT_MASK);
+
+    _model == model && rv >= rv_min && rv <= rv_max
+}
+
+pub unsafe fn is_midr_in_range(midr: u32, range: *const midr_range) -> bool {
+    midr_is_cpu_model_range(midr, (*range).model, (*range).rv_min, (*range).rv_max)
+}
+
+pub unsafe fn is_midr_in_range_list(midr: u32, mut ranges: *const midr_range) -> bool {
+    while (*ranges).model != 0 {
+        let current = ranges;
+        ranges = ranges.add(1);
+        if is_midr_in_range(midr, current) {
+            return true;
+        }
+    }
+    false
+}
+
+/*
+ * The CPU ID never changes at run time, so we might as well tell the
+ * compiler that it's constant.  Use this function to read the CPU ID
+ * rather than directly reading processor_id or read_cpuid() directly.
+ */
+pub unsafe fn read_cpuid_id() -> u32 {
+    read_cpuid(SYS_MIDR_EL1) as u32
+}
+
+#[repr(C)]
+pub struct target_impl_cpu {
+    pub midr: u64,
+    pub revidr: u64,
+    pub aidr: u64,
+}
+
+extern "C" {
+    pub fn cpu_errata_set_target_impl(num: u64, impl_cpus: *mut core::ffi::c_void) -> bool;
+}
+
+pub unsafe fn read_cpuid_mpidr() -> u64 {
+    read_cpuid(SYS_MPIDR_EL1)
+}
+
+pub unsafe fn read_cpuid_implementor() -> u32 {
+    MIDR_IMPLEMENTOR(read_cpuid_id())
+}
+
+pub unsafe fn read_cpuid_part_number() -> u32 {
+    MIDR_PARTNUM(read_cpuid_id())
+}
+
+pub unsafe fn read_cpuid_cachetype() -> u32 {
+    read_cpuid(SYS_CTR_EL0) as u32
+}
