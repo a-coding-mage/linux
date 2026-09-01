@@ -367,3 +367,5 @@ pub unsafe extern "C" fn cmd_buildid_list(mut argc: c_int, argv: *mut *const c_c
 
     unsafe { perf_session__list_build_ids(force, with_hits) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

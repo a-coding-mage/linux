@@ -167,3 +167,5 @@ extern "C" {
     static BPF_SK_STORAGE_GET_F_CREATE: __u64;
     static BPF_SOCK_OPS_TCP_CONNECT_CB: __u32;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

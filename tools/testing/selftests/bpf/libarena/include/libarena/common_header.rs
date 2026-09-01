@@ -120,3 +120,5 @@ pub struct arena_alloc_reserve_args {
 
 /* Reasonable default number of pages reserved by arena_alloc_reserve. */
 pub const ARENA_RESERVE_PAGES_DFL: ::std::os::raw::c_int = 8;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

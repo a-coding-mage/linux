@@ -569,3 +569,5 @@ pub unsafe extern "C" fn serial_test_bpf_obj_id() {
 fn size_of_val<T>(val: &T) -> usize {
 	size_of::<T>()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

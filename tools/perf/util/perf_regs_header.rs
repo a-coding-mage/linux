@@ -97,3 +97,5 @@ extern "C" {
 pub unsafe fn DWARF_MINIMAL_REGS(e_machine: u16) -> u64 {
     (1u64 << perf_arch_reg_ip(e_machine)) | (1u64 << perf_arch_reg_sp(e_machine))
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

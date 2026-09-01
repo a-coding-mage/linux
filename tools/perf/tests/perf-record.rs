@@ -725,3 +725,5 @@ pub static mut suite__PERF_RECORD: test_suite_PERF_RECORD = test_suite_PERF_RECO
     desc: c"PERF_RECORD_* events & perf_sample fields".as_ptr(),
     test_cases: unsafe { tests__PERF_RECORD.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -461,3 +461,5 @@ pub const fn esr_iss_is_eretab(esr: u64) -> bool {
 extern "C" {
     pub fn esr_get_class_string(esr: u64) -> *const core::ffi::c_char;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

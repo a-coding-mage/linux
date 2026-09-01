@@ -430,3 +430,5 @@ pub static mut cmt_test: resctrl_test = resctrl_test {
     run_test: Some(cmt_run_test),
     cleanup: Some(cmt_test_cleanup),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

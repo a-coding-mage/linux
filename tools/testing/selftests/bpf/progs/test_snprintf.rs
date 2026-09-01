@@ -152,3 +152,5 @@ pub unsafe extern "C" fn handler(ctx: *const c_void) -> i32 {
 #[no_mangle]
 #[link_section = "license"]
 pub static mut _license: [c_char; 4] = [b'G' as c_char, b'P' as c_char, b'L' as c_char, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -139,3 +139,5 @@ pub unsafe fn is_futex_waitv_supported() -> bool {
 
     !(res < 0 && unsafe { errno } == ENOSYS)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

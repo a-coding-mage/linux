@@ -946,3 +946,5 @@ pub unsafe extern "C" fn delegate_tool__init(tool: *mut delegate_tool, delegate:
     (*tool).tool.schedstat_cpu = delegate_schedstat_cpu;
     (*tool).tool.schedstat_domain = delegate_schedstat_domain;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

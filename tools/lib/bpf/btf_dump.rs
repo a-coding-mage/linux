@@ -926,3 +926,5 @@ pub unsafe extern "C" fn btf_dump__dump_type_data(
     (*d).typed_dump = ptr::null_mut();
     libbpf_err(ret)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -136,3 +136,5 @@ unsafe extern "C" fn test__demangle_rust(
 // C source registers this with:
 // DEFINE_SUITE("Demangle Rust", demangle_rust);
 // The Rust-side equivalent depends on the surrounding test harness macro support.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

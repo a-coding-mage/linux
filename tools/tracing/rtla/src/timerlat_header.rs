@@ -55,3 +55,5 @@ unsafe extern "C" {
     pub fn timerlat_analyze(tool: *mut osnoise_tool, stopped: bool);
     pub fn timerlat_free(tool: *mut osnoise_tool);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -823,3 +823,5 @@ pub unsafe extern "C" fn bench_inject_build_id(argc: c_int, argv: *mut *const c_
 
     do_inject_loops(&mut data)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -62,3 +62,5 @@ pub static mut optional_map: bpf_testmod_ops___v1 = bpf_testmod_ops___v1 {
 pub static mut optional_map2: bpf_testmod_ops___v1 = bpf_testmod_ops___v1 {
     test_1: Some(test_1),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

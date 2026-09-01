@@ -850,3 +850,5 @@ unsafe fn evsel__parse_sample_timestamp(_evsel: *mut evsel, _event: *mut perf_ev
 unsafe fn evlist__nr_groups(_evlist: *mut evlist) -> c_int { translate_external!("evlist__nr_groups") }
 unsafe fn evsel__uniquify_counter(_evsel: *mut evsel) {}
 unsafe fn evsel__is_bpf_output(_evsel: *mut evsel) -> bool { translate_external!("evsel__is_bpf_output") }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

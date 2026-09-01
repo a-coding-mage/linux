@@ -50,3 +50,5 @@ __SYSCALL!(__NR_arc_usr_cmpxchg, sys_arc_usr_cmpxchg);
 __SYSCALL!(__NR_sysfs, sys_sysfs);
 
 /* #undef __SYSCALL */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

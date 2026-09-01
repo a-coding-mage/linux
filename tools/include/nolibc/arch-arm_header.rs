@@ -414,3 +414,5 @@ static __nolibc_sys_ftruncate64_marker: () = ();
 pub unsafe fn _sys_ftruncate64(fd: i32, length0: u32, length1: u32) -> i32 {
     __nolibc_syscall4!(__NR_ftruncate64, fd, 0, length0, length1) as i32
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

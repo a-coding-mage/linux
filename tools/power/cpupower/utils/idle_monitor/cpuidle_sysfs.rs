@@ -355,3 +355,5 @@ pub static mut cpuidle_sysfs_monitor: cpuidle_monitor = cpuidle_monitor {
     name_len: 0,
     hw_states_num: 0,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

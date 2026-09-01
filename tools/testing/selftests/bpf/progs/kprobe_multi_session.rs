@@ -111,3 +111,5 @@ pub unsafe extern "C" fn test_kprobe(ctx: *mut pt_regs) -> i32 {
 pub unsafe extern "C" fn test_kprobe_syms(ctx: *mut pt_regs) -> i32 {
     return session_check(ctx as *mut core::ffi::c_void);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

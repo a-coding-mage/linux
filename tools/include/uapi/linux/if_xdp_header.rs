@@ -206,3 +206,5 @@ pub const XDP_PKT_CONTD: u32 = 1 << 0;
 
 /* TX packet carries valid metadata. */
 pub const XDP_TX_METADATA: u32 = 1 << 1;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

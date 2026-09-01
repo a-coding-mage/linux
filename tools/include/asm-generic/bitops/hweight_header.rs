@@ -5,3 +5,5 @@
 
 // Depends on: <asm-generic/bitops/arch_hweight.h>
 // Depends on: <asm-generic/bitops/const_hweight.h>
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

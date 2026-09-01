@@ -173,3 +173,5 @@ pub unsafe fn tcheck_suspended() -> bool {
 pub unsafe fn tcheck_transactional() -> bool {
     unsafe { (tcheck() & 6) != 0 }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

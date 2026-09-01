@@ -138,3 +138,5 @@ pub unsafe fn test_global_func_dead_code() {
     verifier_global_subprogs__destroy(tgt_skel);
     freplace_dead_global_func__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

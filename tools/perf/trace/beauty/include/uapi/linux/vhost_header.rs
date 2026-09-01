@@ -255,3 +255,5 @@ pub const VHOST_SET_FORK_FROM_OWNER: u64 = _IOW!(VHOST_VIRTIO, 0x84, __u8);
  * @return: An 8-bit value indicating the current thread mode.
  */
 pub const VHOST_GET_FORK_FROM_OWNER: u64 = _IOR!(VHOST_VIRTIO, 0x85, __u8);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

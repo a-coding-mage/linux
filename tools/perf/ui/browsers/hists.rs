@@ -1781,3 +1781,5 @@ pub unsafe extern "C" fn block_hists_tui_browse(bh: *mut block_hist, evsel: *mut
     free(br_cntr_text as *mut c_void);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

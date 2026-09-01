@@ -36,3 +36,5 @@ pub unsafe fn test_raw_tp_null() {
 unsafe fn goto_end(skel: *mut raw_tp_null) {
     raw_tp_null__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

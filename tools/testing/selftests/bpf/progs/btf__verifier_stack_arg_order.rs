@@ -104,3 +104,5 @@ pub extern "C" fn subprog_pruning_call_before_load_6args() -> ::core::ffi::c_int
 )))]
 #[no_mangle]
 pub extern "C" fn subprog_bad_ptr_7args() {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

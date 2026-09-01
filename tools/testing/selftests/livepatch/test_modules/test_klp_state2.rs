@@ -296,3 +296,5 @@ unsafe fn test_klp_callbacks_demo_exit() {}
 // MODULE_INFO(livepatch, "Y");
 // MODULE_AUTHOR("Petr Mladek <pmladek@suse.com>");
 // MODULE_DESCRIPTION("Livepatch test: system state modification");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

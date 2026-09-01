@@ -641,3 +641,5 @@ pub unsafe fn scx_bpf_dsq_reenq(dsq_id: u64, reenq_flags: u64) {
  *   SEC(".struct_ops.link")
  *   struct sched_ext_ops_cid __name = { __VA_ARGS__, };
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -368,3 +368,5 @@ pub unsafe extern "C" fn global_func_deep_stack_fail(
     let _ = skb;
     f32(123)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

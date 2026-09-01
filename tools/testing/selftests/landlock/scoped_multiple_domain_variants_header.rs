@@ -135,3 +135,5 @@ pub const deny_with_self_and_grandparent_domain: scoped_vs_unscoped = scoped_vs_
 	domain_child: sandbox_type::NO_SANDBOX as i32,
 	domain_grand_child: sandbox_type::SCOPE_SANDBOX as i32,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -51,3 +51,5 @@ unsafe extern "C" {
     pub fn powercap_zone_get_enabled(zone: *mut powercap_zone, mode: *mut c_int) -> c_int;
     pub fn powercap_zone_set_enabled(zone: *mut powercap_zone, mode: c_int) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

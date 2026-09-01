@@ -412,3 +412,5 @@ pub static mut suite__maps: test_suite = test_suite {
 	desc: c_str!("Maps - per process mmaps abstraction"),
 	test_cases: unsafe { tests__maps.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

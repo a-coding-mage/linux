@@ -43,3 +43,5 @@ unsafe extern "C" {
     pub fn sw_sync_fence_is_valid(fd: c_int) -> c_int;
     pub fn sw_sync_fence_destroy(fd: c_int);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

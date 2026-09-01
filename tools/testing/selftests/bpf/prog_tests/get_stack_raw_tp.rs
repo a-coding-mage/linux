@@ -365,3 +365,5 @@ unsafe fn goto_close_prog(link: *mut bpf_link, pb: *mut perf_buffer, obj: *mut b
     perf_buffer__free(pb);
     bpf_object__close(obj);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

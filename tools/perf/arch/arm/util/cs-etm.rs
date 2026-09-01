@@ -969,3 +969,5 @@ pub unsafe extern "C" fn cs_etm_record_init(err: *mut c_int) -> *mut auxtrace_re
 pub unsafe extern "C" fn cs_etm_get_default_config(_pmu: *const perf_pmu, attr: *mut perf_event_attr) {
     (*attr).sample_period = 1;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

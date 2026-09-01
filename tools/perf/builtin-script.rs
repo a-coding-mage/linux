@@ -773,3 +773,5 @@ unsafe extern "C" fn sig_handler(_sig: c_int) {
 // The global declarations, constants, data layout mirrors, and translated
 // helper bodies above preserve the source file's local state and C ABI surface
 // without inventing definitions for dependencies that belong to other files.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

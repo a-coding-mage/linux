@@ -176,3 +176,5 @@ unsafe extern "C" fn unregister_da_pertask_desc() {
 // MODULE_LICENSE("GPL");
 // MODULE_AUTHOR("rvgen: auto-generated");
 // MODULE_DESCRIPTION("da_pertask_desc: Custom description for testing");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

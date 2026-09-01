@@ -23,3 +23,5 @@ pub unsafe fn rseq_thread_pointer() -> *mut core::ffi::c_void {
 
     __result
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

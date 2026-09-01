@@ -1,0 +1,266 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Copyright (c) 2017 Maxim Integrated */
+
+pub const MAX98373_R2000_SW_RESET: u32 = 0x2000;
+pub const MAX98373_R2001_INT_RAW1: u32 = 0x2001;
+pub const MAX98373_R2002_INT_RAW2: u32 = 0x2002;
+pub const MAX98373_R2003_INT_RAW3: u32 = 0x2003;
+pub const MAX98373_R2004_INT_STATE1: u32 = 0x2004;
+pub const MAX98373_R2005_INT_STATE2: u32 = 0x2005;
+pub const MAX98373_R2006_INT_STATE3: u32 = 0x2006;
+pub const MAX98373_R2007_INT_FLAG1: u32 = 0x2007;
+pub const MAX98373_R2008_INT_FLAG2: u32 = 0x2008;
+pub const MAX98373_R2009_INT_FLAG3: u32 = 0x2009;
+pub const MAX98373_R200A_INT_EN1: u32 = 0x200A;
+pub const MAX98373_R200B_INT_EN2: u32 = 0x200B;
+pub const MAX98373_R200C_INT_EN3: u32 = 0x200C;
+pub const MAX98373_R200D_INT_FLAG_CLR1: u32 = 0x200D;
+pub const MAX98373_R200E_INT_FLAG_CLR2: u32 = 0x200E;
+pub const MAX98373_R200F_INT_FLAG_CLR3: u32 = 0x200F;
+pub const MAX98373_R2010_IRQ_CTRL: u32 = 0x2010;
+pub const MAX98373_R2014_THERM_WARN_THRESH: u32 = 0x2014;
+pub const MAX98373_R2015_THERM_SHDN_THRESH: u32 = 0x2015;
+pub const MAX98373_R2016_THERM_HYSTERESIS: u32 = 0x2016;
+pub const MAX98373_R2017_THERM_FOLDBACK_SET: u32 = 0x2017;
+pub const MAX98373_R2018_THERM_FOLDBACK_EN: u32 = 0x2018;
+pub const MAX98373_R201E_PIN_DRIVE_STRENGTH: u32 = 0x201E;
+pub const MAX98373_R2020_PCM_TX_HIZ_EN_1: u32 = 0x2020;
+pub const MAX98373_R2021_PCM_TX_HIZ_EN_2: u32 = 0x2021;
+pub const MAX98373_R2022_PCM_TX_SRC_1: u32 = 0x2022;
+pub const MAX98373_R2023_PCM_TX_SRC_2: u32 = 0x2023;
+pub const MAX98373_R2024_PCM_DATA_FMT_CFG: u32 = 0x2024;
+pub const MAX98373_R2025_AUDIO_IF_MODE: u32 = 0x2025;
+pub const MAX98373_R2026_PCM_CLOCK_RATIO: u32 = 0x2026;
+pub const MAX98373_R2027_PCM_SR_SETUP_1: u32 = 0x2027;
+pub const MAX98373_R2028_PCM_SR_SETUP_2: u32 = 0x2028;
+pub const MAX98373_R2029_PCM_TO_SPK_MONO_MIX_1: u32 = 0x2029;
+pub const MAX98373_R202A_PCM_TO_SPK_MONO_MIX_2: u32 = 0x202A;
+pub const MAX98373_R202B_PCM_RX_EN: u32 = 0x202B;
+pub const MAX98373_R202C_PCM_TX_EN: u32 = 0x202C;
+pub const MAX98373_R202E_ICC_RX_CH_EN_1: u32 = 0x202E;
+pub const MAX98373_R202F_ICC_RX_CH_EN_2: u32 = 0x202F;
+pub const MAX98373_R2030_ICC_TX_HIZ_EN_1: u32 = 0x2030;
+pub const MAX98373_R2031_ICC_TX_HIZ_EN_2: u32 = 0x2031;
+pub const MAX98373_R2032_ICC_LINK_EN_CFG: u32 = 0x2032;
+pub const MAX98373_R2034_ICC_TX_CNTL: u32 = 0x2034;
+pub const MAX98373_R2035_ICC_TX_EN: u32 = 0x2035;
+pub const MAX98373_R2036_SOUNDWIRE_CTRL: u32 = 0x2036;
+pub const MAX98373_R203D_AMP_DIG_VOL_CTRL: u32 = 0x203D;
+pub const MAX98373_R203E_AMP_PATH_GAIN: u32 = 0x203E;
+pub const MAX98373_R203F_AMP_DSP_CFG: u32 = 0x203F;
+pub const MAX98373_R2040_TONE_GEN_CFG: u32 = 0x2040;
+pub const MAX98373_R2041_AMP_CFG: u32 = 0x2041;
+pub const MAX98373_R2042_AMP_EDGE_RATE_CFG: u32 = 0x2042;
+pub const MAX98373_R2043_AMP_EN: u32 = 0x2043;
+pub const MAX98373_R2046_IV_SENSE_ADC_DSP_CFG: u32 = 0x2046;
+pub const MAX98373_R2047_IV_SENSE_ADC_EN: u32 = 0x2047;
+pub const MAX98373_R2051_MEAS_ADC_SAMPLING_RATE: u32 = 0x2051;
+pub const MAX98373_R2052_MEAS_ADC_PVDD_FLT_CFG: u32 = 0x2052;
+pub const MAX98373_R2053_MEAS_ADC_THERM_FLT_CFG: u32 = 0x2053;
+pub const MAX98373_R2054_MEAS_ADC_PVDD_CH_READBACK: u32 = 0x2054;
+pub const MAX98373_R2055_MEAS_ADC_THERM_CH_READBACK: u32 = 0x2055;
+pub const MAX98373_R2056_MEAS_ADC_PVDD_CH_EN: u32 = 0x2056;
+pub const MAX98373_R2090_BDE_LVL_HOLD: u32 = 0x2090;
+pub const MAX98373_R2091_BDE_GAIN_ATK_REL_RATE: u32 = 0x2091;
+pub const MAX98373_R2092_BDE_CLIPPER_MODE: u32 = 0x2092;
+pub const MAX98373_R2097_BDE_L1_THRESH: u32 = 0x2097;
+pub const MAX98373_R2098_BDE_L2_THRESH: u32 = 0x2098;
+pub const MAX98373_R2099_BDE_L3_THRESH: u32 = 0x2099;
+pub const MAX98373_R209A_BDE_L4_THRESH: u32 = 0x209A;
+pub const MAX98373_R209B_BDE_THRESH_HYST: u32 = 0x209B;
+pub const MAX98373_R20A8_BDE_L1_CFG_1: u32 = 0x20A8;
+pub const MAX98373_R20A9_BDE_L1_CFG_2: u32 = 0x20A9;
+pub const MAX98373_R20AA_BDE_L1_CFG_3: u32 = 0x20AA;
+pub const MAX98373_R20AB_BDE_L2_CFG_1: u32 = 0x20AB;
+pub const MAX98373_R20AC_BDE_L2_CFG_2: u32 = 0x20AC;
+pub const MAX98373_R20AD_BDE_L2_CFG_3: u32 = 0x20AD;
+pub const MAX98373_R20AE_BDE_L3_CFG_1: u32 = 0x20AE;
+pub const MAX98373_R20AF_BDE_L3_CFG_2: u32 = 0x20AF;
+pub const MAX98373_R20B0_BDE_L3_CFG_3: u32 = 0x20B0;
+pub const MAX98373_R20B1_BDE_L4_CFG_1: u32 = 0x20B1;
+pub const MAX98373_R20B2_BDE_L4_CFG_2: u32 = 0x20B2;
+pub const MAX98373_R20B3_BDE_L4_CFG_3: u32 = 0x20B3;
+pub const MAX98373_R20B4_BDE_INFINITE_HOLD_RELEASE: u32 = 0x20B4;
+pub const MAX98373_R20B5_BDE_EN: u32 = 0x20B5;
+pub const MAX98373_R20B6_BDE_CUR_STATE_READBACK: u32 = 0x20B6;
+pub const MAX98373_R20D1_DHT_CFG: u32 = 0x20D1;
+pub const MAX98373_R20D2_DHT_ATTACK_CFG: u32 = 0x20D2;
+pub const MAX98373_R20D3_DHT_RELEASE_CFG: u32 = 0x20D3;
+pub const MAX98373_R20D4_DHT_EN: u32 = 0x20D4;
+pub const MAX98373_R20E0_LIMITER_THRESH_CFG: u32 = 0x20E0;
+pub const MAX98373_R20E1_LIMITER_ATK_REL_RATES: u32 = 0x20E1;
+pub const MAX98373_R20E2_LIMITER_EN: u32 = 0x20E2;
+pub const MAX98373_R20FE_DEVICE_AUTO_RESTART_CFG: u32 = 0x20FE;
+pub const MAX98373_R20FF_GLOBAL_SHDN: u32 = 0x20FF;
+pub const MAX98373_R21FF_REV_ID: u32 = 0x21FF;
+
+/* MAX98373_R2022_PCM_TX_SRC_1 */
+pub const MAX98373_PCM_TX_CH_SRC_A_V_SHIFT: u32 = 0;
+pub const MAX98373_PCM_TX_CH_SRC_A_I_SHIFT: u32 = 4;
+
+/* MAX98373_R2024_PCM_DATA_FMT_CFG */
+pub const MAX98373_PCM_MODE_CFG_FORMAT_MASK: u32 = 0x7 << 3;
+pub const MAX98373_PCM_MODE_CFG_FORMAT_SHIFT: u32 = 3;
+pub const MAX98373_PCM_TX_CH_INTERLEAVE_MASK: u32 = 0x1 << 2;
+pub const MAX98373_PCM_FORMAT_I2S: u32 = 0x0 << 0;
+pub const MAX98373_PCM_FORMAT_LJ: u32 = 0x1 << 0;
+pub const MAX98373_PCM_FORMAT_TDM_MODE0: u32 = 0x3 << 0;
+pub const MAX98373_PCM_FORMAT_TDM_MODE1: u32 = 0x4 << 0;
+pub const MAX98373_PCM_FORMAT_TDM_MODE2: u32 = 0x5 << 0;
+pub const MAX98373_PCM_MODE_CFG_CHANSZ_MASK: u32 = 0x3 << 6;
+pub const MAX98373_PCM_MODE_CFG_CHANSZ_16: u32 = 0x1 << 6;
+pub const MAX98373_PCM_MODE_CFG_CHANSZ_24: u32 = 0x2 << 6;
+pub const MAX98373_PCM_MODE_CFG_CHANSZ_32: u32 = 0x3 << 6;
+
+/* MAX98373_R2026_PCM_CLOCK_RATIO */
+pub const MAX98373_PCM_MODE_CFG_PCM_BCLKEDGE: u32 = 0x1 << 4;
+pub const MAX98373_PCM_CLK_SETUP_BSEL_MASK: u32 = 0xF << 0;
+
+/* MAX98373_R2027_PCM_SR_SETUP_1 */
+pub const MAX98373_PCM_SR_SET1_SR_MASK: u32 = 0xF << 0;
+pub const MAX98373_PCM_SR_SET1_SR_8000: u32 = 0x0 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_11025: u32 = 0x1 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_12000: u32 = 0x2 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_16000: u32 = 0x3 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_22050: u32 = 0x4 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_24000: u32 = 0x5 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_32000: u32 = 0x6 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_44100: u32 = 0x7 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_48000: u32 = 0x8 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_88200: u32 = 0x9 << 0;
+pub const MAX98373_PCM_SR_SET1_SR_96000: u32 = 0xA << 0;
+
+/* MAX98373_R2028_PCM_SR_SETUP_2 */
+pub const MAX98373_PCM_SR_SET2_SR_MASK: u32 = 0xF << 4;
+pub const MAX98373_PCM_SR_SET2_SR_SHIFT: u32 = 4;
+pub const MAX98373_PCM_SR_SET2_IVADC_SR_MASK: u32 = 0xF << 0;
+
+/* MAX98373_R2029_PCM_TO_SPK_MONO_MIX_1 */
+pub const MAX98373_PCM_TO_SPK_MONOMIX_CFG_MASK: u32 = 0x3 << 6;
+pub const MAX98373_PCM_TO_SPK_MONOMIX_CFG_SHIFT: u32 = 6;
+pub const MAX98373_PCM_TO_SPK_CH0_SRC_MASK: u32 = 0xF << 0;
+
+/* MAX98373_R203E_AMP_PATH_GAIN */
+pub const MAX98373_SPK_DIGI_GAIN_MASK: u32 = 0xF << 4;
+pub const MAX98373_SPK_DIGI_GAIN_SHIFT: u32 = 4;
+pub const MAX98373_FS_GAIN_MAX_MASK: u32 = 0xF << 0;
+pub const MAX98373_FS_GAIN_MAX_SHIFT: u32 = 0;
+
+/* MAX98373_R203F_AMP_DSP_CFG */
+pub const MAX98373_AMP_DSP_CFG_DCBLK_SHIFT: u32 = 0;
+pub const MAX98373_AMP_DSP_CFG_DITH_SHIFT: u32 = 1;
+pub const MAX98373_AMP_DSP_CFG_RMP_UP_SHIFT: u32 = 2;
+pub const MAX98373_AMP_DSP_CFG_RMP_DN_SHIFT: u32 = 3;
+pub const MAX98373_AMP_DSP_CFG_DAC_INV_SHIFT: u32 = 5;
+pub const MAX98373_AMP_VOL_SEL_SHIFT: u32 = 7;
+
+/* MAX98373_R2043_AMP_EN */
+pub const MAX98373_SPKFB_EN_MASK: u32 = 0x1 << 1;
+pub const MAX98373_SPK_EN_MASK: u32 = 0x1 << 0;
+pub const MAX98373_SPKFB_EN_SHIFT: u32 = 1;
+
+/*MAX98373_R2052_MEAS_ADC_PVDD_FLT_CFG */
+pub const MAX98373_FLT_EN_SHIFT: u32 = 4;
+
+/* MAX98373_R20B2_BDE_L4_CFG_2 */
+pub const MAX98373_LVL4_MUTE_EN_SHIFT: u32 = 7;
+pub const MAX98373_LVL4_HOLD_EN_SHIFT: u32 = 6;
+
+/* MAX98373_R20B5_BDE_EN */
+pub const MAX98373_BDE_EN_SHIFT: u32 = 0;
+
+/* MAX98373_R20D1_DHT_CFG */
+pub const MAX98373_DHT_SPK_GAIN_MIN_SHIFT: u32 = 4;
+pub const MAX98373_DHT_ROT_PNT_SHIFT: u32 = 0;
+
+/* MAX98373_R20D2_DHT_ATTACK_CFG */
+pub const MAX98373_DHT_ATTACK_STEP_SHIFT: u32 = 3;
+pub const MAX98373_DHT_ATTACK_RATE_SHIFT: u32 = 0;
+
+/* MAX98373_R20D3_DHT_RELEASE_CFG */
+pub const MAX98373_DHT_RELEASE_STEP_SHIFT: u32 = 3;
+pub const MAX98373_DHT_RELEASE_RATE_SHIFT: u32 = 0;
+
+/* MAX98373_R20D4_DHT_EN */
+pub const MAX98373_DHT_EN_SHIFT: u32 = 0;
+
+/* MAX98373_R20E0_LIMITER_THRESH_CFG */
+pub const MAX98373_LIMITER_THRESH_SHIFT: u32 = 2;
+pub const MAX98373_LIMITER_THRESH_SRC_SHIFT: u32 = 0;
+
+/* MAX98373_R20E2_LIMITER_EN */
+pub const MAX98373_LIMITER_EN_SHIFT: u32 = 0;
+
+/* MAX98373_R20FE_DEVICE_AUTO_RESTART_CFG */
+pub const MAX98373_OVC_AUTORESTART_SHIFT: u32 = 3;
+pub const MAX98373_THERM_AUTORESTART_SHIFT: u32 = 2;
+pub const MAX98373_CMON_AUTORESTART_SHIFT: u32 = 1;
+pub const MAX98373_CLOCK_MON_SHIFT: u32 = 0;
+
+/* MAX98373_R20FF_GLOBAL_SHDN */
+pub const MAX98373_GLOBAL_EN_MASK: u32 = 0x1 << 0;
+
+/* MAX98373_R2000_SW_RESET */
+pub const MAX98373_SOFT_RESET: u32 = 0x1 << 0;
+
+#[repr(C)]
+pub struct regmap {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct gpio_desc {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct sdw_slave {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct device {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct snd_soc_component_driver {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct max98373_cache {
+    pub reg: u32,
+    pub val: u32,
+}
+
+#[repr(C)]
+pub struct max98373_priv {
+    pub regmap: *mut regmap,
+    pub reset: *mut gpio_desc,
+    pub v_slot: u32,
+    pub i_slot: u32,
+    pub spkfb_slot: u32,
+    pub interleave_mode: bool,
+    pub ch_size: u32,
+    pub tdm_mode: bool,
+    /* cache for reading a valid fake feedback value */
+    pub cache: *mut max98373_cache,
+    pub cache_num: i32,
+    /* variables to support soundwire */
+    pub slave: *mut sdw_slave,
+    pub hw_init: bool,
+    pub first_hw_init: bool,
+    pub slot: i32,
+    pub rx_mask: u32,
+}
+
+unsafe extern "C" {
+    pub static soc_codec_dev_max98373: snd_soc_component_driver;
+    pub static soc_codec_dev_max98373_sdw: snd_soc_component_driver;
+
+    pub fn max98373_reset(max98373: *mut max98373_priv, dev: *mut device);
+    pub fn max98373_slot_config(dev: *mut device, max98373: *mut max98373_priv);
+}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

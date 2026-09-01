@@ -249,3 +249,5 @@ pub static mut rapl_monitor: cpuidle_monitor = cpuidle_monitor {
     flags: cpuidle_monitor_flags { needs_root: 0 },
     overflow_s: 60 * 60 * 24 * 100, /* To be implemented */
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

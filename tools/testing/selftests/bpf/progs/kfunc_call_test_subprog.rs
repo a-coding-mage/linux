@@ -92,3 +92,5 @@ pub unsafe extern "C" fn kfunc_call_test1(skb: *mut __sk_buff) -> ::core::ffi::c
 #[unsafe(link_section = "license")]
 #[unsafe(no_mangle)]
 pub static mut _license: [::core::ffi::c_char; 4] = [b'G' as _, b'P' as _, b'L' as _, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

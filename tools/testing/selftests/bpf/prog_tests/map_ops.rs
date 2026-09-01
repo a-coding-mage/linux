@@ -201,3 +201,5 @@ pub unsafe extern "C" fn test_map_ops() {
         map_ops_for_each_subtest();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -409,3 +409,5 @@ pub unsafe extern "C" fn trace_print_location(tb: *mut trace_buffer) {
         printf(c"Trace buffer 0x%llx bytes @ %p\n".as_ptr(), (*tb).size, tb);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

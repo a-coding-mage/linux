@@ -149,3 +149,5 @@ pub unsafe extern "C" fn trace_virtqueue_add_sgs(
     result = length2.wrapping_sub(length1) as i32;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

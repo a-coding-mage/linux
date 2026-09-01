@@ -304,3 +304,5 @@ pub unsafe extern "C" fn test_test_global_funcs() {
         subtest_ctx_arg_rewrite();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -10,3 +10,5 @@
 /* Rust translation note: C source used _NOLIBC_SYS_ELF_H as a header guard. */
 
 /* Rust translation note: C source included <linux/elf.h> here. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

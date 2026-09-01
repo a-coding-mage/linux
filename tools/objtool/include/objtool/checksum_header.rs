@@ -72,3 +72,5 @@ pub unsafe fn create_sym_checksum_section(file: *mut objtool_file) -> c_int {
     let _ = file;
     -(EINVAL as c_int)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

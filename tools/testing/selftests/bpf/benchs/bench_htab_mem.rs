@@ -615,3 +615,5 @@ pub static bench_rhtab_mem: bench = bench {
     report_progress: Some(htab_mem_report_progress),
     report_final: Some(htab_mem_report_final),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -30,3 +30,5 @@ pub unsafe fn __arch_hweight8(w: ::std::os::raw::c_uint) -> ::std::os::raw::c_ui
 pub unsafe fn __arch_hweight64(w: __u64) -> ::std::os::raw::c_ulong {
     unsafe { __sw_hweight64(w) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -8,3 +8,5 @@ pub const STROBE_MAX_MAP_ENTRIES: i32 = 20;
 
 /* full unroll by llvm #undef NO_UNROLL */
 /* Depends on declarations and definitions from "strobemeta.h". */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

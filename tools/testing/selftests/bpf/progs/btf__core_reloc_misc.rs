@@ -11,3 +11,5 @@ pub unsafe fn f2(x: core_reloc_misc___b) {
 pub unsafe fn f3(x: core_reloc_misc_extensible) {
     let _ = x;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

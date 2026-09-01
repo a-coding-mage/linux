@@ -681,3 +681,5 @@ pub unsafe fn audit_init_with_exe_filter(filter: *mut audit_filter) -> c_int {
 
     fd
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

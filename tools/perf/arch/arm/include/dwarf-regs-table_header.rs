@@ -21,3 +21,5 @@ pub static arm_regstr_tbl: [*const ::std::os::raw::c_char; 16] = [
     b"%lr\0".as_ptr() as *const ::std::os::raw::c_char,
     b"%pc\0".as_ptr() as *const ::std::os::raw::c_char,
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -270,3 +270,5 @@ pub static mut INTEL_HSW_EXT_MONITOR: cpuidle_monitor = cpuidle_monitor {
     overflow_s: 922000000, /* 922337203 seconds TSC overflow
                             * at 20GHz */
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

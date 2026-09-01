@@ -287,3 +287,5 @@ unsafe fn goto_cleanup_cgroup(skel: *mut test_cgroup1_hierarchy) {
 unsafe fn goto_destroy(skel: *mut test_cgroup1_hierarchy) {
 	test_cgroup1_hierarchy__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

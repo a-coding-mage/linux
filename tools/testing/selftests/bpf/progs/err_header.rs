@@ -40,3 +40,5 @@ pub unsafe fn IS_ERR_OR_NULL(ptr: *const core::ffi::c_void) -> i32 {
 pub unsafe fn PTR_ERR(ptr: *const core::ffi::c_void) -> isize {
     ptr as isize
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

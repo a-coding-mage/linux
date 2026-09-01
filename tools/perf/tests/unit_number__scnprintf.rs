@@ -82,3 +82,5 @@ unsafe extern "C" fn test__unit_number__scnprint(
 
 // C suite registration macro:
 // DEFINE_SUITE("unit_number__scnprintf", unit_number__scnprint);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

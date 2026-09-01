@@ -348,3 +348,5 @@ pub const INADDR_ALLSNOOPERS_GROUP: u32 = 0xe000006a; /* 224.0.0.106 */
 pub const INADDR_MAX_LOCAL_GROUP: u32 = 0xe00000ff; /* 224.0.0.255 */
 
 /* asm/byteorder.h contains the htonl type stuff. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

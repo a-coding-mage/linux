@@ -141,3 +141,5 @@
 
 /* Used by programs to avoid std includes */
 pub const NOLIBC: bool = true;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

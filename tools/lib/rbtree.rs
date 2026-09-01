@@ -738,3 +738,5 @@ pub unsafe extern "C" fn rb_first_postorder(root: *const rb_root) -> *mut rb_nod
 
     rb_left_deepest_node((*root).rb_node)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

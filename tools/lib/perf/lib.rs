@@ -103,3 +103,5 @@ pub unsafe extern "C" fn writen(fd: i32, buf: *const c_void, n: size_t) -> ssize
     /* ion does not modify buf. */
     unsafe { ion(false, fd, buf as *mut c_void, n) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

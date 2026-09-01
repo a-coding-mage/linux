@@ -168,3 +168,5 @@ pub unsafe fn ynl_dump_empty(dump: *mut c_void) -> bool {
 pub unsafe fn ynl_has_ntf(ys: *mut ynl_sock) -> bool {
     unsafe { (*ys).ntf_last_next != &raw mut (*ys).ntf_first }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

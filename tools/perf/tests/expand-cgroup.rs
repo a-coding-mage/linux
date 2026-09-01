@@ -367,3 +367,5 @@ unsafe fn test__expand_cgroup_events(
 }
 
 DEFINE_SUITE!(b"Event expansion for cgroups\0".as_ptr() as *const c_char, expand_cgroup_events);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

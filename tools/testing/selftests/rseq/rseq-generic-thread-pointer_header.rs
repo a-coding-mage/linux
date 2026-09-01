@@ -14,3 +14,5 @@ unsafe extern "C" {
 pub unsafe fn rseq_thread_pointer() -> *mut core::ffi::c_void {
     unsafe { __builtin_thread_pointer() }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -335,3 +335,5 @@ unsafe fn test__uncore_event_sorting(_test: *mut test_suite, _subtest: c_int) ->
 // DEFINE_SUITE("Uncore event sorting", uncore_event_sorting);
 // The original C macro publishes the test suite using repository test
 // infrastructure supplied outside this isolated file.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

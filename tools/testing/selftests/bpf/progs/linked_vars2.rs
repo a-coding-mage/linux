@@ -79,3 +79,5 @@ pub unsafe extern "C" fn handler2() -> i32 {
 // SEC("license")
 #[unsafe(no_mangle)]
 pub static mut LICENSE: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

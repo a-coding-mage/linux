@@ -473,3 +473,5 @@ pub unsafe extern "C" fn cmd_klp_checksum(argc: c_int, argv: *mut *const c_char)
 
     elf_close((*file).elf)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

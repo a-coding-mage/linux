@@ -1357,3 +1357,5 @@ static mut mbox_ops: isst_platform_ops = isst_platform_ops {
 pub unsafe extern "C" fn mbox_get_platform_ops() -> *mut isst_platform_ops {
     &mut mbox_ops
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

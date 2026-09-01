@@ -55,3 +55,5 @@ pub unsafe fn kvm_gmem_unbind(slot: *mut kvm_memory_slot) {
         WARN_ON_ONCE(1);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

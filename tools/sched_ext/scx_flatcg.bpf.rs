@@ -1022,3 +1022,5 @@ pub static mut flatcg_ops: scx_ops = scx_ops {
     flags: SCX_OPS_ENQ_EXITING,
     name: *b"flatcg\0",
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

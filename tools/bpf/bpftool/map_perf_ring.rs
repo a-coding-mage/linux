@@ -358,3 +358,5 @@ pub unsafe extern "C" fn do_event_pipe(mut argc: c_int, mut argv: *mut *mut c_ch
 unsafe fn goto_err_close_map(map_fd: c_int) {
     close(map_fd);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

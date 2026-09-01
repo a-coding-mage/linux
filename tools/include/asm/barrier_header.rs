@@ -75,3 +75,5 @@ pub unsafe fn smp_load_acquire<T>(p: *const T) -> T {
         ___p1
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

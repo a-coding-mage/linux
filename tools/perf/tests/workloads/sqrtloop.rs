@@ -59,3 +59,5 @@ unsafe fn sqrtloop(argc: i32, argv: *const *const i8) -> i32 {
 }
 
 // DEFINE_WORKLOAD(sqrtloop);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

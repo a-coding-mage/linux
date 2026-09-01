@@ -396,3 +396,5 @@ pub unsafe extern "C" fn test_xdp_vlan_remove() {
 
     test_xdp_vlan__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

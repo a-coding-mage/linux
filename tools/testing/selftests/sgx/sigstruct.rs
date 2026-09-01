@@ -615,3 +615,5 @@ pub unsafe extern "C" fn encl_measure(encl: *mut encl) -> bool {
     RSA_free(key);
     true
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

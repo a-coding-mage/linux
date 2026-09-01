@@ -162,3 +162,5 @@ unsafe fn goto_cleanup(skel: *mut test_map_lookup_percpu_elem, buf: *mut __u64) 
 unsafe fn goto_exit(buf: *mut __u64) {
     free(buf as *mut c_void);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

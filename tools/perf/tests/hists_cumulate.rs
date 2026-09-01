@@ -851,3 +851,5 @@ unsafe extern "C" {
     fn list_next_entry_callchain_list(pos: *mut callchain_list) -> *mut callchain_list;
     fn RB_EMPTY_ROOT(root: *mut rb_root) -> bool;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

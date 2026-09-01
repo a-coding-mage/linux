@@ -274,3 +274,5 @@ pub unsafe extern "C" fn fdarray__fprintf(fda: *mut fdarray, fp: *mut FILE) -> c
         printed + fprintf(fp, c" ]".as_ptr())
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

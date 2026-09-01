@@ -406,3 +406,5 @@ pub unsafe extern "C" fn kvm_dirty_ring_free(ring: *mut kvm_dirty_ring) {
     vfree((*ring).dirty_gfns as *mut c_void);
     (*ring).dirty_gfns = core::ptr::null_mut();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -30,3 +30,5 @@ pub unsafe extern "C" fn global_func8(skb: *mut __sk_buff) -> i32 {
 
     1
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

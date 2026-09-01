@@ -196,3 +196,5 @@ pub unsafe extern "C" fn test_preempted_bpf_ma_op() {
 unsafe fn goto_out(skel: *mut preempted_bpf_ma_op) {
     preempted_bpf_ma_op__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -9,3 +9,5 @@ pub const R_DATA32: u32 = R_X86_64_PC32;
 pub const R_DATA64: u32 = R_X86_64_PC32;
 pub const R_TEXT32: u32 = R_X86_64_PC32;
 pub const R_TEXT64: u32 = R_X86_64_PC32;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

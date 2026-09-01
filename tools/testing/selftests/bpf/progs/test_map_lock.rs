@@ -138,3 +138,5 @@ pub unsafe extern "C" fn bpf_map_lock_test(skb: *mut __sk_buff) -> i32 {
 #[unsafe(link_section = "license")]
 #[unsafe(no_mangle)]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

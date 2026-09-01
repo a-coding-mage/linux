@@ -235,3 +235,5 @@ unsafe extern "C" fn livepatch_exit() {
 /* MODULE_AUTHOR("Nicolai Stange <nstange@suse.de>"); */
 /* MODULE_AUTHOR("Marcos Paulo de Souza <mpdesouza@suse.com>"); */
 /* MODULE_DESCRIPTION("Livepatch test: syscall transition"); */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -455,3 +455,5 @@ pub unsafe extern "C" fn test_ns_current_pid_tgid_cgrp() {
 pub unsafe extern "C" fn test_ns_current_pid_tgid_sk_msg() {
     test_ns_current_pid_tgid_new_ns(test_current_pid_tgid_sk_msg, ptr::null_mut());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -21,3 +21,5 @@ macro_rules! MEMCPY_FN {
 
 // Original C dependency under HAVE_ARCH_X86_64_SUPPORT:
 // #include "mem-memcpy-x86-64-asm-def.h"
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

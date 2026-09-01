@@ -550,3 +550,5 @@ pub unsafe extern "C" fn test_xdp_index_redirect() {
         xdp_redirect_ping(XDP_FLAGS_SKB_MODE);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

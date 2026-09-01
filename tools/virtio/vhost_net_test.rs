@@ -951,3 +951,5 @@ const VHOST_SET_VRING_BASE: c_ulong = 0x4008af12;
 const VHOST_SET_VRING_ADDR: c_ulong = 0x4028af11;
 const VHOST_SET_VRING_KICK: c_ulong = 0x4008af20;
 const VHOST_NET_SET_BACKEND: c_ulong = 0x4008af30;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

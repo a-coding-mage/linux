@@ -17,3 +17,5 @@ pub unsafe extern "C" fn main() -> c_int {
     let s: *mut Suite = unsafe { suite_create(b"test\0".as_ptr() as *const c_char) };
     (s == std::ptr::null_mut()) as c_int
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

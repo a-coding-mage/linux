@@ -296,3 +296,5 @@ pub struct nla_bitfield32 {
     pub value: __u32,
     pub selector: __u32,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -131,3 +131,5 @@ pub unsafe extern "C" fn syscall_arg__scnprintf_faccessat2_flags(
 
     unsafe { faccessat2__scnprintf_flags(flags as c_ulong, bf, size, show_prefix) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

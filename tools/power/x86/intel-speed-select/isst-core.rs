@@ -797,3 +797,5 @@ pub unsafe extern "C" fn isst_clos_associate(id: *mut isst_id, clos_id: c_int) -
     check_cb((*isst_ops).clos_associate.is_some());
     ((*isst_ops).clos_associate.unwrap())(id, clos_id)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1680,3 +1680,5 @@ pub unsafe extern "C" fn aslr_tool__restore_evlist(tool: *const perf_tool, evlis
         }
     });
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

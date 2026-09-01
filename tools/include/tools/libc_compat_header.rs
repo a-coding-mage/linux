@@ -21,3 +21,5 @@ pub unsafe fn reallocarray(ptr: *mut c_void, nmemb: usize, size: usize) -> *mut 
     }
     unsafe { realloc(ptr, bytes) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

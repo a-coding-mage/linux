@@ -581,3 +581,5 @@ pub struct Elf64_Verdaux {
     pub vda_name: Elf64_Word,
     pub vda_next: Elf64_Word,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

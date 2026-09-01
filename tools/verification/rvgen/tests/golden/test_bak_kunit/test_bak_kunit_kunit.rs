@@ -64,3 +64,5 @@ unsafe extern "C" fn rv_test_test_bak_kunit(test: *mut kunit) {
 // #endif
 #[cfg(not(CONFIG_RV_MON_TEST_BAK_KUNIT))]
 pub use rv_test_stub as rv_test_test_bak_kunit;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

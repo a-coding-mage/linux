@@ -141,3 +141,5 @@ pub unsafe extern "C" fn ebb_on_child() -> c_int {
 pub extern "C" fn main() -> c_int {
     unsafe { test_harness(ebb_on_child, b"ebb_on_child\0".as_ptr() as *const c_char) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

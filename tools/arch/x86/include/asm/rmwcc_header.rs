@@ -49,3 +49,5 @@ macro_rules! GEN_BINARY_RMWcc {
         $crate::__GEN_RMWcc!(concat!($op, " %1, ", $arg0), $var, $cc, $vcon($val))
     };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

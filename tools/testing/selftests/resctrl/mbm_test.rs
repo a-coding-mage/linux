@@ -348,3 +348,5 @@ pub static mut mbm_test: resctrl_test = resctrl_test {
     run_test: Some(mbm_run_test),
     cleanup: Some(mbm_test_cleanup),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

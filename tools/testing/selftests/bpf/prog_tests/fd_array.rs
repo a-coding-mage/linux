@@ -630,3 +630,5 @@ pub unsafe fn test_fd_array_cnt() {
         check_fd_array_cnt__fd_array_too_big();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

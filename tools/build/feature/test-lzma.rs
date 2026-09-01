@@ -32,3 +32,5 @@ pub unsafe extern "C" fn main() -> c_int {
     ret = lzma_stream_decoder(&mut strm, UINT64_MAX, LZMA_CONCATENATED);
     if ret != 0 { -1 } else { 0 }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

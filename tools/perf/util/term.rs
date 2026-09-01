@@ -51,3 +51,5 @@ pub unsafe extern "C" fn set_term_quiet_input(old: *mut termios) {
     tc.c_cc[VTIME] = 0;
     tcsetattr(0, TCSANOW, &tc);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

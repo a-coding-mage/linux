@@ -142,3 +142,5 @@ pub fn _tolower(c: i8) -> i8 {
 pub fn isodigit(c: i8) -> i32 {
     (c >= b'0' as i8 && c <= b'7' as i8) as i32
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

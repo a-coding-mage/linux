@@ -1707,3 +1707,5 @@ pub unsafe extern "C" fn cmd_ftrace(mut argc: c_int, mut argv: *mut *const c_cha
     delete_filter_func(&mut ftrace.event_pair);
     ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

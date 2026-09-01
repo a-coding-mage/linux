@@ -195,3 +195,5 @@ pub const fn hashtab_elem_hash_node_offset() -> usize {
     let base = uninit.as_ptr();
     unsafe { (ptr::addr_of!((*base).hash_node) as usize).wrapping_sub(base as usize) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

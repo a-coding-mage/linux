@@ -9,3 +9,5 @@
 pub const __BITS_PER_LONG: usize = core::mem::size_of::<*const core::ffi::c_void>() * 8;
 
 /* Depends on definitions from <asm-generic/bitsperlong.h>. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

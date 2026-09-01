@@ -151,3 +151,5 @@ pub unsafe fn probe_cache__new(
 #[cfg(not(HAVE_LIBELF_SUPPORT))]
 #[allow(non_snake_case)]
 pub unsafe fn probe_cache__delete(_pcache: *mut probe_cache) {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

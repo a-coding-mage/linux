@@ -1017,3 +1017,5 @@ pub unsafe extern "C" fn sdt_exit(ei: *mut scx_exit_info) {
 //                .init                = (void *)sdt_init,
 //                .exit                = (void *)sdt_exit,
 //                .name                = "sdt");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

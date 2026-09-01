@@ -459,3 +459,5 @@ pub unsafe extern "C" fn rte_vmbus_chan_recv_raw(
     /* Return the number of bytes read */
     dlen.wrapping_add(size_of::<u64>() as u32) as c_int
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

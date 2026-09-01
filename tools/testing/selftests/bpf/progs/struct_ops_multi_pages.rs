@@ -178,3 +178,5 @@ pub static mut multi_pages: bpf_testmod_ops = bpf_testmod_ops {
     tramp_39: tramp_39 as *mut c_void,
     tramp_40: tramp_40 as *mut c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

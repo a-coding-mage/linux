@@ -49,3 +49,5 @@ pub unsafe fn __put_unaligned_t<T: Copy>(val: T, ptr: *mut T) {
         );
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -910,3 +910,5 @@ pub unsafe extern "C" fn bench_mem_mmap(argc: c_int, argv: *const *const c_char)
 
     bench_mem_common(argc, argv, &mut info)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

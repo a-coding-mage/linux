@@ -144,3 +144,5 @@ pub use ELF32_ST_VISIBILITY as ELF_ST_VIS;
 /* The .text section is directly after the ELF header */
 pub const GEN_ELF_TEXT_OFFSET: usize =
     round_up(core::mem::size_of::<Elf_Ehdr>() + core::mem::size_of::<Elf_Phdr>(), 16);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

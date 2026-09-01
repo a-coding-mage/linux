@@ -1585,3 +1585,5 @@ pub(crate) use HIST_OPT_NO_IRQ;
 pub(crate) use HIST_OPT_NO_SUMMARY;
 pub(crate) use HIST_OPT_NO_THREAD;
 pub(crate) use HIST_OPT_WITH_ZEROS;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

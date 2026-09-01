@@ -9,3 +9,5 @@ pub const STROBE_MAX_MAP_ENTRIES: u32 = 20;
 // C source defines NO_UNROLL before including "strobemeta.h"; the shared
 // strobemeta implementation/declarations are external to this isolated file.
 pub const NO_UNROLL: bool = true;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

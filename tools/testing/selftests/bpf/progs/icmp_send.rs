@@ -149,3 +149,5 @@ pub unsafe extern "C" fn recursion(skb: *mut __sk_buff) -> i32 {
 #[no_mangle]
 #[link_section = "license"]
 pub static LICENSE: [u8; 13] = *b"Dual BSD/GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

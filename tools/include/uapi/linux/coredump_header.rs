@@ -94,3 +94,5 @@ pub enum coredump_mark {
     COREDUMP_MARK_CONFLICTING = 4u32,
     __COREDUMP_MARK_MAX = 1u32 << 31,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

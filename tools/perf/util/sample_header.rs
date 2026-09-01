@@ -334,3 +334,5 @@ unsafe extern "C" {
 pub unsafe fn perf_sample__synth_ptr(sample: *mut perf_sample) -> *mut c_void {
     ((*sample).raw_data as *mut u8).sub(4) as *mut c_void
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

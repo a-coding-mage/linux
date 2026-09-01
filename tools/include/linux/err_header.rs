@@ -76,3 +76,5 @@ pub fn ERR_CAST(ptr: *const c_void) -> *mut c_void {
     /* cast away the const */
     ptr as *mut c_void
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

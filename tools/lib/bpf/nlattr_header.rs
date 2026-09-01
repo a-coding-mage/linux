@@ -199,3 +199,5 @@ pub unsafe fn nlattr_begin_nested(
 pub unsafe fn nlattr_end_nested(req: *mut libbpf_nla_req, tail: *mut nlattr) {
     (*tail).nla_len = (req_tail(req) as *mut u8).offset_from(tail as *mut u8) as _;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

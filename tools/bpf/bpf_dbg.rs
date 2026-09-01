@@ -976,3 +976,5 @@ pub unsafe extern "C" fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
     if argc >= 3 { fout = fopen(*argv.add(2), c!("w")); }
     run_shell_loop(if !fin.is_null() { fin } else { stdin }, if !fout.is_null() { fout } else { stdout })
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

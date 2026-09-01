@@ -1425,3 +1425,5 @@ pub static mut suite__parse_events: test_suite_parse_events = test_suite_parse_e
     desc: cstr!("Parse event definition strings"),
     test_cases: unsafe { tests__parse_events.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -313,3 +313,5 @@ unsafe fn test__sw_clock_freq(test: *mut test_suite, subtest: c_int) -> c_int {
 }
 
 // DEFINE_SUITE("Software clock events period values", sw_clock_freq);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

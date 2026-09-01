@@ -503,3 +503,5 @@ pub unsafe extern "C" fn __perf_reg_ip_powerpc() -> uint64_t {
 pub unsafe extern "C" fn __perf_reg_sp_powerpc() -> uint64_t {
     PERF_REG_POWERPC_R1 as uint64_t
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

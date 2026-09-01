@@ -85,3 +85,5 @@ pub unsafe fn augmented_syscalls__unaugmented() -> *mut bpf_program {
 #[cfg(not(feature = "HAVE_BPF_SKEL"))]
 #[inline]
 pub unsafe fn augmented_syscalls__cleanup() {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

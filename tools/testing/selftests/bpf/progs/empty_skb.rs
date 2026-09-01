@@ -59,3 +59,5 @@ pub unsafe extern "C" fn tc_adjust_room(skb: *mut __sk_buff) -> i32 {
     ret = bpf_skb_adjust_room(skb, 4, BPF_ADJ_ROOM_NET, 0) as i32;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

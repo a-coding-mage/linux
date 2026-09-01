@@ -46,3 +46,5 @@ pub static mut program_invocation_short_name: *mut i8 =
  * because they all correspond to the highest addressable memory page.
  */
 pub const MAX_ERRNO: i32 = 4095;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

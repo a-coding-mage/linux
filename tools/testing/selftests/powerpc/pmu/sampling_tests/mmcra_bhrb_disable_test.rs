@@ -60,3 +60,5 @@ unsafe fn mmcra_bhrb_disable_test() -> i32 {
 pub unsafe extern "C" fn main() -> i32 {
     unsafe { test_harness(Some(mmcra_bhrb_disable_test), c"mmcra_bhrb_disable_test".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

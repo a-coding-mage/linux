@@ -399,3 +399,5 @@ pub unsafe extern "C" fn arch_find_switch_table(
 pub unsafe extern "C" fn arch_cpu_feature_name(_feature_number: c_int) -> *const c_char {
     ptr::null()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

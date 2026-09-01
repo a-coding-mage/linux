@@ -86,3 +86,5 @@ pub const automaton_test_ha_kunit: automaton_test_ha_kunit = automaton_test_ha_k
     initial_state: S0_test_ha_kunit,
     final_states: [true, false, false, false],
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

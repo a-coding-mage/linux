@@ -224,3 +224,5 @@ pub const I915_GEM_CREATE_EXT_FLAG_NEEDS_CPU_ACCESS: u32 = 1 << 0; pub const I91
 #[repr(C)] pub struct drm_i915_gem_create_ext_protected_content { pub base: i915_user_extension, pub flags: u32 }
 #[repr(C)] pub struct drm_i915_gem_create_ext_set_pat { pub base: i915_user_extension, pub pat_index: u32, pub rsvd: u32 }
 pub const I915_PROTECTED_CONTENT_DEFAULT_SESSION: u32 = 0xf;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -645,3 +645,5 @@ pub unsafe extern "C" fn klp_find_sympos(elf: *mut elf, sym: *mut symbol) -> c_u
 
     if has_dup { sympos } else { 0 }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

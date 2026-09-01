@@ -1053,3 +1053,5 @@ unsafe fn goto_fail_redirect(xdp_attached: bool, veth2_idx: c_int, nstoken: *mut
 unsafe fn size_of_val<T: ?Sized>(_: &T) -> usize {
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

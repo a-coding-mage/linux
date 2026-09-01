@@ -682,3 +682,5 @@ unsafe fn beneath_non_rootfs_locked_containment(_self: &mut move_mount) {
 }
 
 fn main() {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

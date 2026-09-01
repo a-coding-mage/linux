@@ -140,3 +140,5 @@ pub unsafe extern "C" fn get_cpuid(buffer: *mut c_char, sz: size_t, _cpu: perf_c
 pub unsafe extern "C" fn get_cpuid_str(_cpu: perf_cpu) -> *mut c_char {
     _get_cpuid()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

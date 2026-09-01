@@ -13,3 +13,5 @@ fn main() {
         std::process::exit(libc::pthread_barrier_destroy(barrier.as_mut_ptr()));
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

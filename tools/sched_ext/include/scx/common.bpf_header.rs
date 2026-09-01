@@ -818,3 +818,5 @@ macro_rules! flex_array_size {
  * offsetof/typeof helpers for flexible arrays. Use the Rust dependency layer's
  * offset calculation for concrete translated structs.
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

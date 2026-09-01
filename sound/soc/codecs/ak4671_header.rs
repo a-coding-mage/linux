@@ -1,0 +1,143 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * ak4671.h  --  audio driver for AK4671
+ *
+ * Copyright (C) 2009 Samsung Electronics Co.Ltd
+ * Author: Joonyoung Shim <jy0922.shim@samsung.com>
+ */
+
+pub const AK4671_AD_DA_POWER_MANAGEMENT: u32 = 0x00;
+pub const AK4671_PLL_MODE_SELECT0: u32 = 0x01;
+pub const AK4671_PLL_MODE_SELECT1: u32 = 0x02;
+pub const AK4671_FORMAT_SELECT: u32 = 0x03;
+pub const AK4671_MIC_SIGNAL_SELECT: u32 = 0x04;
+pub const AK4671_MIC_AMP_GAIN: u32 = 0x05;
+pub const AK4671_MIXING_POWER_MANAGEMENT0: u32 = 0x06;
+pub const AK4671_MIXING_POWER_MANAGEMENT1: u32 = 0x07;
+pub const AK4671_OUTPUT_VOLUME_CONTROL: u32 = 0x08;
+pub const AK4671_LOUT1_SIGNAL_SELECT: u32 = 0x09;
+pub const AK4671_ROUT1_SIGNAL_SELECT: u32 = 0x0a;
+pub const AK4671_LOUT2_SIGNAL_SELECT: u32 = 0x0b;
+pub const AK4671_ROUT2_SIGNAL_SELECT: u32 = 0x0c;
+pub const AK4671_LOUT3_SIGNAL_SELECT: u32 = 0x0d;
+pub const AK4671_ROUT3_SIGNAL_SELECT: u32 = 0x0e;
+pub const AK4671_LOUT1_POWER_MANAGERMENT: u32 = 0x0f;
+pub const AK4671_LOUT2_POWER_MANAGERMENT: u32 = 0x10;
+pub const AK4671_LOUT3_POWER_MANAGERMENT: u32 = 0x11;
+pub const AK4671_LCH_INPUT_VOLUME_CONTROL: u32 = 0x12;
+pub const AK4671_RCH_INPUT_VOLUME_CONTROL: u32 = 0x13;
+pub const AK4671_ALC_REFERENCE_SELECT: u32 = 0x14;
+pub const AK4671_DIGITAL_MIXING_CONTROL: u32 = 0x15;
+pub const AK4671_ALC_TIMER_SELECT: u32 = 0x16;
+pub const AK4671_ALC_MODE_CONTROL: u32 = 0x17;
+pub const AK4671_MODE_CONTROL1: u32 = 0x18;
+pub const AK4671_MODE_CONTROL2: u32 = 0x19;
+pub const AK4671_LCH_OUTPUT_VOLUME_CONTROL: u32 = 0x1a;
+pub const AK4671_RCH_OUTPUT_VOLUME_CONTROL: u32 = 0x1b;
+pub const AK4671_SIDETONE_A_CONTROL: u32 = 0x1c;
+pub const AK4671_DIGITAL_FILTER_SELECT: u32 = 0x1d;
+pub const AK4671_FIL3_COEFFICIENT0: u32 = 0x1e;
+pub const AK4671_FIL3_COEFFICIENT1: u32 = 0x1f;
+pub const AK4671_FIL3_COEFFICIENT2: u32 = 0x20;
+pub const AK4671_FIL3_COEFFICIENT3: u32 = 0x21;
+pub const AK4671_EQ_COEFFICIENT0: u32 = 0x22;
+pub const AK4671_EQ_COEFFICIENT1: u32 = 0x23;
+pub const AK4671_EQ_COEFFICIENT2: u32 = 0x24;
+pub const AK4671_EQ_COEFFICIENT3: u32 = 0x25;
+pub const AK4671_EQ_COEFFICIENT4: u32 = 0x26;
+pub const AK4671_EQ_COEFFICIENT5: u32 = 0x27;
+pub const AK4671_FIL1_COEFFICIENT0: u32 = 0x28;
+pub const AK4671_FIL1_COEFFICIENT1: u32 = 0x29;
+pub const AK4671_FIL1_COEFFICIENT2: u32 = 0x2a;
+pub const AK4671_FIL1_COEFFICIENT3: u32 = 0x2b;
+pub const AK4671_FIL2_COEFFICIENT0: u32 = 0x2c;
+pub const AK4671_FIL2_COEFFICIENT1: u32 = 0x2d;
+pub const AK4671_FIL2_COEFFICIENT2: u32 = 0x2e;
+pub const AK4671_FIL2_COEFFICIENT3: u32 = 0x2f;
+pub const AK4671_DIGITAL_FILTER_SELECT2: u32 = 0x30;
+pub const AK4671_E1_COEFFICIENT0: u32 = 0x32;
+pub const AK4671_E1_COEFFICIENT1: u32 = 0x33;
+pub const AK4671_E1_COEFFICIENT2: u32 = 0x34;
+pub const AK4671_E1_COEFFICIENT3: u32 = 0x35;
+pub const AK4671_E1_COEFFICIENT4: u32 = 0x36;
+pub const AK4671_E1_COEFFICIENT5: u32 = 0x37;
+pub const AK4671_E2_COEFFICIENT0: u32 = 0x38;
+pub const AK4671_E2_COEFFICIENT1: u32 = 0x39;
+pub const AK4671_E2_COEFFICIENT2: u32 = 0x3a;
+pub const AK4671_E2_COEFFICIENT3: u32 = 0x3b;
+pub const AK4671_E2_COEFFICIENT4: u32 = 0x3c;
+pub const AK4671_E2_COEFFICIENT5: u32 = 0x3d;
+pub const AK4671_E3_COEFFICIENT0: u32 = 0x3e;
+pub const AK4671_E3_COEFFICIENT1: u32 = 0x3f;
+pub const AK4671_E3_COEFFICIENT2: u32 = 0x40;
+pub const AK4671_E3_COEFFICIENT3: u32 = 0x41;
+pub const AK4671_E3_COEFFICIENT4: u32 = 0x42;
+pub const AK4671_E3_COEFFICIENT5: u32 = 0x43;
+pub const AK4671_E4_COEFFICIENT0: u32 = 0x44;
+pub const AK4671_E4_COEFFICIENT1: u32 = 0x45;
+pub const AK4671_E4_COEFFICIENT2: u32 = 0x46;
+pub const AK4671_E4_COEFFICIENT3: u32 = 0x47;
+pub const AK4671_E4_COEFFICIENT4: u32 = 0x48;
+pub const AK4671_E4_COEFFICIENT5: u32 = 0x49;
+pub const AK4671_E5_COEFFICIENT0: u32 = 0x4a;
+pub const AK4671_E5_COEFFICIENT1: u32 = 0x4b;
+pub const AK4671_E5_COEFFICIENT2: u32 = 0x4c;
+pub const AK4671_E5_COEFFICIENT3: u32 = 0x4d;
+pub const AK4671_E5_COEFFICIENT4: u32 = 0x4e;
+pub const AK4671_E5_COEFFICIENT5: u32 = 0x4f;
+pub const AK4671_EQ_CONTROL_250HZ_100HZ: u32 = 0x50;
+pub const AK4671_EQ_CONTROL_3500HZ_1KHZ: u32 = 0x51;
+pub const AK4671_EQ_CONTRO_10KHZ: u32 = 0x52;
+pub const AK4671_PCM_IF_CONTROL0: u32 = 0x53;
+pub const AK4671_PCM_IF_CONTROL1: u32 = 0x54;
+pub const AK4671_PCM_IF_CONTROL2: u32 = 0x55;
+pub const AK4671_DIGITAL_VOLUME_B_CONTROL: u32 = 0x56;
+pub const AK4671_DIGITAL_VOLUME_C_CONTROL: u32 = 0x57;
+pub const AK4671_SIDETONE_VOLUME_CONTROL: u32 = 0x58;
+pub const AK4671_DIGITAL_MIXING_CONTROL2: u32 = 0x59;
+pub const AK4671_SAR_ADC_CONTROL: u32 = 0x5a;
+
+/* Bitfield Definitions */
+
+/* AK4671_AD_DA_POWER_MANAGEMENT (0x00) Fields */
+pub const AK4671_PMVCM: u32 = 0x01;
+
+/* AK4671_PLL_MODE_SELECT0 (0x01) Fields */
+pub const AK4671_PLL: u32 = 0x0f;
+pub const AK4671_PLL_11_2896MHZ: u32 = 4 << 0;
+pub const AK4671_PLL_12_288MHZ: u32 = 5 << 0;
+pub const AK4671_PLL_12MHZ: u32 = 6 << 0;
+pub const AK4671_PLL_24MHZ: u32 = 7 << 0;
+pub const AK4671_PLL_19_2MHZ: u32 = 8 << 0;
+pub const AK4671_PLL_13_5MHZ: u32 = 12 << 0;
+pub const AK4671_PLL_27MHZ: u32 = 13 << 0;
+pub const AK4671_PLL_13MHZ: u32 = 14 << 0;
+pub const AK4671_PLL_26MHZ: u32 = 15 << 0;
+pub const AK4671_FS: u32 = 0xf0;
+pub const AK4671_FS_8KHZ: u32 = 0 << 4;
+pub const AK4671_FS_12KHZ: u32 = 1 << 4;
+pub const AK4671_FS_16KHZ: u32 = 2 << 4;
+pub const AK4671_FS_24KHZ: u32 = 3 << 4;
+pub const AK4671_FS_11_025KHZ: u32 = 5 << 4;
+pub const AK4671_FS_22_05KHZ: u32 = 7 << 4;
+pub const AK4671_FS_32KHZ: u32 = 10 << 4;
+pub const AK4671_FS_48KHZ: u32 = 11 << 4;
+pub const AK4671_FS_44_1KHZ: u32 = 15 << 4;
+
+/* AK4671_PLL_MODE_SELECT1 (0x02) Fields */
+pub const AK4671_PMPLL: u32 = 0x01;
+pub const AK4671_M_S: u32 = 0x02;
+
+/* AK4671_FORMAT_SELECT (0x03) Fields */
+pub const AK4671_DIF: u32 = 0x03;
+pub const AK4671_DIF_DSP_MODE: u32 = 0 << 0;
+pub const AK4671_DIF_MSB_MODE: u32 = 2 << 0;
+pub const AK4671_DIF_I2S_MODE: u32 = 3 << 0;
+pub const AK4671_BCKP: u32 = 0x04;
+pub const AK4671_MSBS: u32 = 0x08;
+pub const AK4671_SDOD: u32 = 0x10;
+
+/* AK4671_LOUT2_POWER_MANAGEMENT (0x10) Fields */
+pub const AK4671_MUTEN: u32 = 0x04;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

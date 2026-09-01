@@ -308,3 +308,5 @@ pub static mut keep_tracking: test_suite = test_suite {
     desc: c"Use a dummy software event to keep tracking".as_ptr(),
     func: Some(test__keep_tracking),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

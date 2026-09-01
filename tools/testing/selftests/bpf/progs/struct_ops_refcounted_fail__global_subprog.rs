@@ -65,3 +65,5 @@ pub unsafe extern "C" fn refcounted_fail__global_subprog(ctx: *mut ::core::ffi::
 pub static mut testmod_ref_acquire: bpf_testmod_ops = bpf_testmod_ops {
     test_refcounted: refcounted_fail__global_subprog as *mut core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

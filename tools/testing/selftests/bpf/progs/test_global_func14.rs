@@ -35,3 +35,5 @@ pub unsafe extern "C" fn global_func14(skb: *mut __sk_buff) -> i32 {
 
     unsafe { foo(core::ptr::null()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

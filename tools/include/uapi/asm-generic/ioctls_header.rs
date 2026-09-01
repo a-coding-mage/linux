@@ -113,3 +113,5 @@ pub const TIOCPKT_DOSTOP: u32 = 32;
 pub const TIOCPKT_IOCTL: u32 = 64;
 
 pub const TIOCSER_TEMT: u32 = 0x01; /* Transmitter physically empty */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

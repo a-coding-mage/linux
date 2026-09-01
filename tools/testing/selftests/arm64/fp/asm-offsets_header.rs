@@ -10,3 +10,5 @@ pub const SIGABRT: usize = 6;
 pub const SA_NODEFER: usize = 1073741824;
 pub const SA_SIGINFO: usize = 4;
 pub const ucontext_regs: usize = 184;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

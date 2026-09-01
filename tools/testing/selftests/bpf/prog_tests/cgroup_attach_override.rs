@@ -292,3 +292,5 @@ pub unsafe extern "C" fn serial_test_cgroup_attach_override() {
     close(allow_prog);
     close(drop_prog);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

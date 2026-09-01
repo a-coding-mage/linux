@@ -221,3 +221,5 @@ unsafe fn test__kmod_path__parse(_t: *mut test_suite, _subtest: c_int) -> c_int 
 }
 
 DEFINE_SUITE!(b"kmod_path__parse\0".as_ptr() as *const c_char, kmod_path__parse);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

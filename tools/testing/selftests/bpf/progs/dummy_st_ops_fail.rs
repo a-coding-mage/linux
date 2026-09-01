@@ -56,3 +56,5 @@ pub static mut dummy_1: bpf_dummy_ops = bpf_dummy_ops {
     test_2: test_unsupported_field_sleepable as *mut c_void,
     test_sleepable: core::ptr::null_mut(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

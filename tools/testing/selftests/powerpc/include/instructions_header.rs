@@ -240,3 +240,5 @@ macro_rules! PSTXSSP { ($vrs:expr, $a:expr, $r:expr, $d:expr) => { PREFIX_8LS!(0
 macro_rules! PSTXV0 { ($s:expr, $a:expr, $r:expr, $d:expr) => { PREFIX_8LS!(0xd8000000, $s, $a, $r, $d) }; }
 #[macro_export]
 macro_rules! PSTXV1 { ($s:expr, $a:expr, $r:expr, $d:expr) => { PREFIX_8LS!(0xdc000000, $s, $a, $r, $d) }; }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

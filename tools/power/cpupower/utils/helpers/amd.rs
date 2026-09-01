@@ -382,3 +382,5 @@ pub unsafe extern "C" fn amd_pstate_show_perf_and_freq(cpu: c_uint, no_rounding:
 
 /* AMD P-State Helper Functions ************************************/
 // #endif /* defined(__i386__) || defined(__x86_64__) */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

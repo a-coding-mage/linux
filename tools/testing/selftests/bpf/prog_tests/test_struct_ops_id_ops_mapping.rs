@@ -212,3 +212,5 @@ pub unsafe extern "C" fn test_struct_ops_id_ops_mapping() {
         test_st_ops_id_ops_mapping();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

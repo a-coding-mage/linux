@@ -130,3 +130,5 @@ pub unsafe extern "C" fn kfunc_gen1() {
 /* char LICENSE[] SEC("license") = "GPL"; */
 #[no_mangle]
 pub static LICENSE: [core::ffi::c_char; 4] = [b'G' as core::ffi::c_char, b'P' as core::ffi::c_char, b'L' as core::ffi::c_char, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

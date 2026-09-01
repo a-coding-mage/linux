@@ -18,3 +18,5 @@ pub type va_list = core::ffi::VaListImpl<'static>;
 // Rust does not expose stable file-local equivalents for these C variadic
 // builtins. Code using this translated header should use Rust's variadic
 // argument support or target-provided bindings for the corresponding builtins.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

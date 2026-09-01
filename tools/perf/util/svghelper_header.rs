@@ -38,3 +38,5 @@ unsafe extern "C" {
     pub static mut svg_highlight: u64;
     pub static mut svg_highlight_name: *const ::std::os::raw::c_char;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

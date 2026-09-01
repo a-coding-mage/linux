@@ -942,3 +942,5 @@ pub unsafe extern "C" fn open_classid() -> c_int {
     format_classid_path(cgroup_workdir.as_mut_ptr(), cgroup_workdir.len());
     open(cgroup_workdir.as_ptr(), O_RDONLY)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

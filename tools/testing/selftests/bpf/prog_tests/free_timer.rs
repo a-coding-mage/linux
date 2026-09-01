@@ -282,3 +282,5 @@ pub unsafe extern "C" fn test_free_timer() {
 unsafe fn goto_out(skel: *mut free_timer) {
     free_timer__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

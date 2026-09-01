@@ -603,3 +603,5 @@ pub unsafe extern "C" fn sighandler_dump_stack(sig: c_int) {
     signal(sig, SIG_DFL);
     raise(sig);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -960,3 +960,5 @@ pub unsafe extern "C" fn test_attach_probe() {
     test_attach_probe__destroy(skel);
     ASSERT_EQ(core::ptr::read_volatile(core::ptr::addr_of!(uprobe_ref_ctr)) as c_long, 0, c"uprobe_ref_ctr_cleanup".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

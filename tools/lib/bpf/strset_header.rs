@@ -25,3 +25,5 @@ unsafe extern "C" {
     pub fn strset__find_str(set: *mut strset, s: *const c_char) -> c_int;
     pub fn strset__add_str(set: *mut strset, s: *const c_char) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

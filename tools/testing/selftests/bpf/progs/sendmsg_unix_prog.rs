@@ -90,3 +90,5 @@ pub unsafe extern "C" fn sendmsg_unix_deny_prog(_ctx: *mut bpf_sock_addr) -> c_i
 #[no_mangle]
 #[link_section = "license"]
 pub static mut _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

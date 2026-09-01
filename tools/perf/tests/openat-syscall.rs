@@ -193,3 +193,5 @@ pub static mut suite__openat_syscall_event: test_suite = test_suite {
     desc: b"Detect openat syscall event\0".as_ptr() as *const c_char,
     test_cases: unsafe { tests__openat_syscall_event.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

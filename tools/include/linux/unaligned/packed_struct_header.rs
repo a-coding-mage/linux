@@ -52,3 +52,5 @@ pub unsafe fn __put_unaligned_cpu64(val: u64, p: *mut core::ffi::c_void) {
     let ptr: *mut __una_u64 = p as *mut __una_u64;
     unsafe { core::ptr::addr_of_mut!((*ptr).x).write_unaligned(val) };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

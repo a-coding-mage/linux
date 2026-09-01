@@ -17,3 +17,5 @@ pub const KASAN_TAG_MIN: u32 = 0xF0; /* minimum value for random tags */
 
 #[cfg(not(CONFIG_KASAN_HW_TAGS))]
 pub const KASAN_TAG_MIN: u32 = 0x00; /* minimum value for random tags */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

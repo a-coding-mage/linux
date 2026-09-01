@@ -461,3 +461,5 @@ unsafe fn bind_wildcard_reuseport(
 fn main() {
     let _ = ptr::null::<__test_metadata>();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

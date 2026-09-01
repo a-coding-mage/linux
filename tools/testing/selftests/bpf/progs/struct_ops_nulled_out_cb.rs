@@ -33,3 +33,5 @@ unsafe impl Sync for bpf_testmod_ops {}
 pub static ops: bpf_testmod_ops = bpf_testmod_ops {
     test_1: test_1_turn_off as *mut core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

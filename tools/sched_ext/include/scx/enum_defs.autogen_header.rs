@@ -200,3 +200,5 @@ pub const HAVE_SCX_TG_SUB_INIT: bool = true;
 pub const HAVE_SCX_WAKE_FORK: bool = true;
 pub const HAVE_SCX_WAKE_TTWU: bool = true;
 pub const HAVE_SCX_WAKE_SYNC: bool = true;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

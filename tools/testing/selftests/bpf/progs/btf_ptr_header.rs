@@ -16,3 +16,5 @@ pub const BTF_F_COMPACT: u64 = 1u64 << 0;
 pub const BTF_F_NONAME: u64 = 1u64 << 1;
 pub const BTF_F_PTR_RAW: u64 = 1u64 << 2;
 pub const BTF_F_ZERO: u64 = 1u64 << 3;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

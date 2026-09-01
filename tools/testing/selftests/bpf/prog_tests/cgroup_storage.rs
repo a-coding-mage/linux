@@ -310,3 +310,5 @@ unsafe fn goto_cleanup_skel(skel: *mut cgroup_storage, cgroup_fd: c_int) {
 	cgroup_storage__destroy(skel);
 	goto_cleanup_cgroup(cgroup_fd);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

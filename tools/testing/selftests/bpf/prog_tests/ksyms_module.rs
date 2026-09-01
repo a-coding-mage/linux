@@ -197,3 +197,5 @@ pub unsafe extern "C" fn test_ksyms_module() {
         test_ksyms_module_libbpf();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

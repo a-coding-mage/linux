@@ -804,3 +804,5 @@ pub unsafe extern "C" fn rcu_untrusted_union_ld(sk: *mut sock) -> i32 {
     rcu_untrusted_wq_flags = (*wq).flags;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

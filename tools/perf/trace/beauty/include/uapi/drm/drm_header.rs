@@ -1102,3 +1102,5 @@ pub type drm_agp_binding_t = drm_agp_binding;
 pub type drm_agp_info_t = drm_agp_info;
 pub type drm_scatter_gather_t = drm_scatter_gather;
 pub type drm_set_version_t = drm_set_version;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

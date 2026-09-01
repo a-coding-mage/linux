@@ -89,3 +89,5 @@ pub unsafe extern "C" fn cm_get_file_size(file: ACPI_FILE) -> u32 {
 
     file_size as u32
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

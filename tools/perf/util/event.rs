@@ -914,3 +914,5 @@ pub unsafe extern "C" fn thread__resolve(thread: *mut thread, al: *mut addr_loca
         (*al).sym = map__find_symbol((*al).map, (*al).addr);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

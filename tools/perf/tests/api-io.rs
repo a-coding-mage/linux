@@ -380,3 +380,5 @@ unsafe fn test__api_io(_test: *mut test_suite, _subtest: c_int) -> c_int {
 // C macro preserved in intent: DEFINE_SUITE("Test api io", api_io);
 #[unsafe(no_mangle)]
 pub static mut api_io: test_suite = test_suite { _private: [] };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

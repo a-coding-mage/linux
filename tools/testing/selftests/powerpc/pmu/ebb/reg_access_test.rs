@@ -49,3 +49,5 @@ fn main() {
         std::process::exit(test_harness(reg_access, b"reg_access\0".as_ptr() as *const i8));
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

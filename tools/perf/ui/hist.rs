@@ -1022,3 +1022,5 @@ pub unsafe extern "C" fn perf_hpp__alloc_mem_stats(list: *mut perf_hpp_list, _ev
     let _ = ENOMEM;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

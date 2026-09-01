@@ -144,3 +144,5 @@ unsafe fn futex_wait_uninitialized_heap(_metadata: *mut __test_metadata) {
 
 // TEST(futex_wait_uninitialized_heap)
 // TEST_HARNESS_MAIN
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

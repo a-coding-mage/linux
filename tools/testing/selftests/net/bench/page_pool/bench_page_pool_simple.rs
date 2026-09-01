@@ -409,3 +409,5 @@ unsafe extern "C" fn bench_page_pool_simple_module_exit() {
 // MODULE_DESCRIPTION("Benchmark of page_pool simple cases");
 // MODULE_AUTHOR("Jesper Dangaard Brouer <netoptimizer@brouer.com>");
 // MODULE_LICENSE("GPL");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

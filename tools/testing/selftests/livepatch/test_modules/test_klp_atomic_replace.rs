@@ -109,3 +109,5 @@ unsafe extern "C" fn test_klp_atomic_replace_exit() {}
 // MODULE_INFO(livepatch, "Y");
 // MODULE_AUTHOR("Joe Lawrence <joe.lawrence@redhat.com>");
 // MODULE_DESCRIPTION("Livepatch test: atomic replace");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

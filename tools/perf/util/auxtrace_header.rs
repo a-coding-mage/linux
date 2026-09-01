@@ -814,3 +814,5 @@ pub unsafe fn itrace_synth_opts__clear_time_range(opts: *mut itrace_synth_opts) 
         (*opts).range_num = 0;
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

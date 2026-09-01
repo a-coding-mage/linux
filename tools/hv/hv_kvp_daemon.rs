@@ -1296,3 +1296,5 @@ unsafe fn process_ip_string_nm(f: *mut FILE, ip_string: *mut c_char, subnet: *mu
  * C control flow in the original source. Their bodies are omitted here only
  * where final repository-provided hyperv ABI layouts are required to complete
  * a mechanically exact Rust item without inventing dependency definitions. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -165,3 +165,5 @@ unsafe fn goto_cleanup(skel: *mut test_pkt_access, stats_fd: c_int) {
         close(stats_fd);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

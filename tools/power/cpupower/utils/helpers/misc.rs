@@ -511,3 +511,5 @@ pub unsafe extern "C" fn cpupower_set_generic_turbo_boost(turbo_boost: c_int) ->
 
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

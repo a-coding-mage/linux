@@ -371,3 +371,5 @@ pub unsafe fn usbip_net_tcp_connect(hostname: *mut c_char, service: *mut c_char)
 
     sockfd
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

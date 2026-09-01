@@ -725,3 +725,5 @@ pub extern "C" fn exception_throw_subprog_after_stack_arg(_ctx: *mut __sk_buff) 
 #[link_section = "license"]
 #[no_mangle]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

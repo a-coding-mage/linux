@@ -392,3 +392,5 @@ pub unsafe extern "C" fn test_xdp_bpf2bpf() {
     test_xdp__destroy(pkt_skel);
     test_xdp_bpf2bpf__destroy(ftrace_skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

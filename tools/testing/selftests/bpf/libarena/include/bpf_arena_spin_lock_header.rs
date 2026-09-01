@@ -666,3 +666,5 @@ pub unsafe fn arena_spin_unlock_irqrestore(lock: *mut arena_spinlock_t, flags: *
     arena_spin_unlock(lock);
     bpf_local_irq_restore(flags);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

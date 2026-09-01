@@ -231,3 +231,5 @@ pub unsafe extern "C" fn pager_get_columns() -> c_int {
         (if pager_columns != 0 { pager_columns } else { 80 }) - 2
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

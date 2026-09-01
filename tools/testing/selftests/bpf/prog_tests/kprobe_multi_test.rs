@@ -1113,3 +1113,5 @@ pub unsafe extern "C" fn test_kprobe_multi_test() {
     }
     RUN_TESTS_kprobe_multi_verifier();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

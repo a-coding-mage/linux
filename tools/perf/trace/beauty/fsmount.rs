@@ -123,3 +123,5 @@ pub unsafe extern "C" fn syscall_arg__scnprintf_fsmount_attr_flags(
 
     unsafe { fsmount__scnprintf_attr_flags(flags, bf, size, (*arg).show_string_prefix) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

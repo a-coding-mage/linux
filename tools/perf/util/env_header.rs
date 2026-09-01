@@ -309,3 +309,5 @@ unsafe extern "C" {
     pub fn x86__is_intel_cpu() -> bool;
     pub fn perf_env__is_x86_intel_cpu(env: *mut perf_env) -> bool;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

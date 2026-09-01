@@ -80,3 +80,5 @@ macro_rules! kvm_riscv_trap_class {
 
 pub(crate) use kvm_riscv_trap_class;
 pub(crate) use TRAP;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

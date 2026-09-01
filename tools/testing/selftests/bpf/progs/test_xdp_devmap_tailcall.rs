@@ -64,3 +64,5 @@ pub unsafe extern "C" fn xdp_entry(ctx: *mut xdp_md) -> i32 {
     bpf_tail_call(ctx, core::ptr::addr_of_mut!(xdp_map), 0);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

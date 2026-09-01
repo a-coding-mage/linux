@@ -162,3 +162,5 @@ pub unsafe extern "C" fn mainloop_exit() {
 pub unsafe extern "C" fn mainloop_fini() {
     close(epfd);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

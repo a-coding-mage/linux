@@ -36,3 +36,5 @@ extern "C" {
 pub unsafe fn perf_cpu_map__refcnt(map: *mut perf_cpu_map) -> *mut refcount_t {
     &mut (*RC_CHK_ACCESS(map)).refcnt
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -101,3 +101,5 @@ unsafe extern "C" fn test_klp_mod_patch_exit() {}
 // MODULE_INFO(livepatch, "Y");
 // MODULE_AUTHOR("Pablo Hugen <phugen@redhat.com>");
 // MODULE_DESCRIPTION("Livepatch test: patch for module-provided function");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

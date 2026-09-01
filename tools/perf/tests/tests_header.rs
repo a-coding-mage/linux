@@ -308,3 +308,5 @@ unsafe extern "C" {
     pub static mut dso_to_test: *const c_char;
     pub static mut test_objdump_path: *const c_char;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

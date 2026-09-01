@@ -1818,3 +1818,5 @@ unsafe fn main_out() -> c_int {
     if env.succ_cnt + env.fail_cnt + env.skip_cnt == 0 { return EXIT_NO_TEST; }
     if env.fail_cnt != 0 { EXIT_FAILURE } else { EXIT_SUCCESS }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

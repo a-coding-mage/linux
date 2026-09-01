@@ -26,3 +26,5 @@ pub static mut perf_mem_events_arm: [perf_mem_event; PERF_MEM_EVENTS__MAX as usi
         aux_event: 0,
     },
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1182,3 +1182,5 @@ test_f!(NCI, deinit, |self_: *mut NCI| unsafe {
 });
 
 test_harness_main!();
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

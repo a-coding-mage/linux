@@ -531,3 +531,5 @@ pub unsafe extern "C" fn __wrap_walk_hmem_resources(host: *mut device, fn_: walk
 // MODULE_DESCRIPTION("cxl_test: emulation module");
 // MODULE_IMPORT_NS("ACPI");
 // MODULE_IMPORT_NS("CXL");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

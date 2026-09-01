@@ -990,3 +990,5 @@ unsafe fn goto_out(
     SYS_NOFAIL(c"ip netns del xdp_metadata_rx".as_ptr());
     SYS_NOFAIL(c"ip netns del xdp_metadata_tx".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

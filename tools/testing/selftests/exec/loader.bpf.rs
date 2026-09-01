@@ -67,3 +67,5 @@ pub static mut loader: binfmt_misc_ops = binfmt_misc_ops {
     load: loader_load as *mut core::ffi::c_void,
     name: b"loader\0".as_ptr(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

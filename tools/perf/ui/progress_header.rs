@@ -48,3 +48,5 @@ pub struct ui_progress_ops {
 unsafe extern "C" {
     pub static mut ui_progress__ops: *mut ui_progress_ops;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

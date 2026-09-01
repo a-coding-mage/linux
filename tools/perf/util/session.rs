@@ -2054,3 +2054,5 @@ pub unsafe extern "C" fn perf_session__e_machine(
     }
     perf_env__e_machine_nocache(env, e_flags)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

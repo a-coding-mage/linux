@@ -488,3 +488,5 @@ pub extern "C" fn main(_argc: c_int, _argv: *mut *mut c_char) -> c_int {
         test_harness(tm_signal_pagefault, c_str!("tm_signal_pagefault"))
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

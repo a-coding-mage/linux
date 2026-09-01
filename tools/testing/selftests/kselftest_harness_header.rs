@@ -883,3 +883,5 @@ pub unsafe fn __constructor_order_first() {
         __constructor_order_forward = true;
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

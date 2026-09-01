@@ -35,3 +35,5 @@ pub static mut trie_free_map: trie_free_map_def = trie_free_map_def {
     map_flags: core::ptr::null_mut(),
     max_entries: core::ptr::null_mut(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

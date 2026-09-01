@@ -68,3 +68,5 @@ pub unsafe extern "C" fn kptr_xchg_inline() -> i32 {
 pub unsafe extern "C" fn __btf_root() {
     bpf_obj_drop(ptr::null_mut());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

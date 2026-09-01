@@ -33,3 +33,5 @@ pub struct bpf_testmod_ops {
 pub static mut testmod: bpf_testmod_ops = bpf_testmod_ops {
     unsupported_ops: unsupported_ops as *mut c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

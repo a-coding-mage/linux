@@ -82,3 +82,5 @@ unsafe extern "C" {
     pub fn trace_event_add_trigger(event: *mut trace_events, trigger: *mut c_char);
     pub fn trace_set_buffer_size(trace: *mut trace_instance, size: c_int) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

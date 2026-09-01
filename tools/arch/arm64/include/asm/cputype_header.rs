@@ -367,3 +367,5 @@ pub unsafe fn read_cpuid_part_number() -> u32 {
 pub unsafe fn read_cpuid_cachetype() -> u32 {
     read_cpuid(SYS_CTR_EL0) as u32
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

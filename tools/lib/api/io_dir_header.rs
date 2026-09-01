@@ -143,3 +143,5 @@ pub unsafe fn io_dir__is_dir(iod: *const io_dir, dent: *mut io_dirent64) -> bool
 pub const fn s_isdir(mode: mode_t) -> bool {
     (mode & libc::S_IFMT) == libc::S_IFDIR
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

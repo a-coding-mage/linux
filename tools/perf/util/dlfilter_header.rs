@@ -166,3 +166,5 @@ pub unsafe fn dlfilter__filter_event_early(
     }
     unsafe { dlfilter__do_filter_event(d, event, sample, evsel, machine, al, addr_al, true) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

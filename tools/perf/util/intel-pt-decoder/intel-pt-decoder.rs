@@ -2903,3 +2903,5 @@ pub unsafe extern "C" fn intel_pt_fast_forward(decoder: *mut intel_pt_decoder, t
     }
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

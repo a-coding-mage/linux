@@ -46,3 +46,5 @@ pub unsafe fn _sys_uname(buf: *mut utsname) -> core::ffi::c_int {
 pub unsafe fn uname(buf: *mut utsname) -> core::ffi::c_int {
     unsafe { __sysret(_sys_uname(buf) as core::ffi::c_long) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

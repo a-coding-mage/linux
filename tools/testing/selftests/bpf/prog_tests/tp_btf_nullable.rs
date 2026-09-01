@@ -29,3 +29,5 @@ pub unsafe extern "C" fn test_tp_btf_nullable() {
 
     RUN_TESTS_test_tp_btf_nullable();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

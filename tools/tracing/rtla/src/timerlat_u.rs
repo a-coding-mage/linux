@@ -333,3 +333,5 @@ pub unsafe extern "C" fn timerlat_u_dispatcher(data: *mut c_void) -> *mut c_void
         pthread_exit((&mut retval as *mut c_int).cast::<c_void>());
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

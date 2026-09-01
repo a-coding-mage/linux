@@ -594,3 +594,5 @@ pub unsafe extern "C" fn cmd_trace(_argc: c_int, _argv: *mut *const c_char) -> c
 unsafe extern "C" {
     fn thread__priv(thread: *mut thread) -> *mut c_void;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

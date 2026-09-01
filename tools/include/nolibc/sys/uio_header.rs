@@ -40,3 +40,5 @@ pub unsafe fn _sys_writev(fd: core::ffi::c_int, iovec: *const iovec, count: core
 pub unsafe fn writev(fd: core::ffi::c_int, iovec: *const iovec, count: core::ffi::c_int) -> ssize_t {
     unsafe { __sysret(_sys_writev(fd, iovec, count)) as ssize_t }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

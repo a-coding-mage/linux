@@ -543,3 +543,5 @@ pub unsafe fn test_htab_map_batch_ops() {
     htab_map_batch_ops();
     htab_percpu_map_batch_ops();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

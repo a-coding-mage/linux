@@ -18,3 +18,5 @@ pub fn kvm_vfio_ops_init() -> ::std::os::raw::c_int {
 #[cfg(not(CONFIG_KVM_VFIO))]
 #[inline]
 pub fn kvm_vfio_ops_exit() {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

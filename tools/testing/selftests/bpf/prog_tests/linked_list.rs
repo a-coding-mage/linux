@@ -880,3 +880,5 @@ pub unsafe extern "C" fn test_linked_list() {
 pub unsafe extern "C" fn test_linked_list_peek() {
 	RUN_TESTS_linked_list_peek();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

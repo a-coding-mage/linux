@@ -307,3 +307,5 @@ unsafe fn test__fdarray__add(
 // C DEFINE_SUITE registrations:
 // DEFINE_SUITE("Filter fds with revents mask in a fdarray", fdarray__filter);
 // DEFINE_SUITE("Add fd to a fdarray, making it autogrow", fdarray__add);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

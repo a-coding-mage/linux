@@ -54,3 +54,5 @@ NORETURN!(x86_64_start_kernel);
 NORETURN!(x86_64_start_reservations);
 NORETURN!(xen_cpu_bringup_again);
 NORETURN!(xen_start_kernel);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

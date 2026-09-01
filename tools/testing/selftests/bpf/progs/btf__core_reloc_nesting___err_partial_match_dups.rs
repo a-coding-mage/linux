@@ -5,3 +5,5 @@ pub unsafe extern "C" fn f1(x: core_reloc_nesting___err_partial_match_dups__a) {
 
 #[no_mangle]
 pub unsafe extern "C" fn f2(x: core_reloc_nesting___err_partial_match_dups__b) {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

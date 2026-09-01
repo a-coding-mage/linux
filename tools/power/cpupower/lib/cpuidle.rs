@@ -497,3 +497,5 @@ pub unsafe extern "C" fn cpuidle_get_driver() -> *mut c_char {
     sysfs_cpuidle_get_one_string(cpuidle_string::CPUIDLE_DRIVER)
 }
 /* CPUidle idlestate specific /sys/devices/system/cpu/cpuX/cpuidle/ access */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

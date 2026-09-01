@@ -65,3 +65,5 @@ pub const ANNOTYPE_REACHABLE: u32 = 8;
 pub const ANNOTYPE_NOCFI: u32 = 9;
 
 pub const ANNOTYPE_DATA_SPECIAL: u32 = 1;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

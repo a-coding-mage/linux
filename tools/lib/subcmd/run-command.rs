@@ -482,3 +482,5 @@ pub unsafe extern "C" fn run_command_v_opt(argv: *const *const c_char, opt: c_in
     prepare_run_command_v_opt(&mut cmd, argv, opt);
     run_command(&mut cmd)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -78,3 +78,5 @@ pub unsafe extern "C" fn test_static_linked() {
 
     unsafe { test_static_linked__destroy(skel) };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

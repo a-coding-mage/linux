@@ -18,3 +18,5 @@ pub unsafe extern "C" fn next_online_pgdat(pgdat: *mut pglist_data) -> *mut pgli
 
 #[no_mangle]
 pub unsafe extern "C" fn atomic_long_set(v: *mut atomic_long_t, i: core::ffi::c_long) {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

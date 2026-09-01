@@ -406,3 +406,5 @@ unsafe fn size_of_val_raw<T: ?Sized>(_val: *const T) -> usize {
     // File-local stand-in for sizeof(pkt_v4), whose complete type is provided by C headers.
     size_of::<*const c_void>()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

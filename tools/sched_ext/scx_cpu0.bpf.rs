@@ -184,3 +184,5 @@ pub static mut cpu0_ops: ScxOps = ScxOps {
     exit: cpu0_exit as *mut ::core::ffi::c_void,
     name: c"cpu0".as_ptr(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -434,3 +434,5 @@ pub unsafe extern "C" fn perf_ftrace__latency_cleanup_bpf(_ftrace: *mut perf_ftr
     func_latency_bpf__destroy(skel);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -172,3 +172,5 @@ pub unsafe fn asan_shadow_set(_addr: *mut c_void) -> bool {
 pub unsafe extern "C" fn asan_ready() -> bool {
     true
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -98,3 +98,5 @@ pub const PERF_REG_PMU_MASK_31: u64 = PERF_REG_PMU_MASK_300
     | (1u64 << perf_event_powerpc_regs::PERF_REG_POWERPC_MMCR3 as u64)
     | (1u64 << perf_event_powerpc_regs::PERF_REG_POWERPC_SIER2 as u64)
     | (1u64 << perf_event_powerpc_regs::PERF_REG_POWERPC_SIER3 as u64);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

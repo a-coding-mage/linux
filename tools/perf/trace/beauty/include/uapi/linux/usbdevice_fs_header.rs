@@ -245,3 +245,5 @@ pub const fn USBDEVFS_CONNINFO_EX(len: core::ffi::c_uint) -> core::ffi::c_ulong 
 pub const USBDEVFS_FORBID_SUSPEND: core::ffi::c_ulong = _IO(b'U', 33);
 pub const USBDEVFS_ALLOW_SUSPEND: core::ffi::c_ulong = _IO(b'U', 34);
 pub const USBDEVFS_WAIT_FOR_RESUME: core::ffi::c_ulong = _IO(b'U', 35);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

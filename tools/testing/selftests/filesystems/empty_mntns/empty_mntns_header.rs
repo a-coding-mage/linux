@@ -27,3 +27,5 @@ pub unsafe fn count_mounts() -> isize {
 
     unsafe { listmount(LSMT_ROOT, 0, 0, list.as_mut_ptr(), list.len(), 0) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

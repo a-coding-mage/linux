@@ -675,3 +675,5 @@ unsafe extern "C" {
 
     pub fn map_symbol__get_arch(ms: *mut map_symbol, parch: *mut *const arch) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

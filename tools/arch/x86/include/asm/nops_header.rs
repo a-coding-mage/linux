@@ -135,3 +135,5 @@ pub const ASM_NOP8: &str = ".byte 0x0f,0x1f,0x84,0x00,0x00,0x00,0x00,0x00";
 unsafe extern "C" {
     pub static x86_nops: *const *const ::core::ffi::c_uchar;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

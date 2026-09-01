@@ -12,3 +12,5 @@ fn main() {
 }
 
 // C source ended with: #undef _GNU_SOURCE
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

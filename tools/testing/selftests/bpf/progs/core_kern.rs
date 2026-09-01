@@ -249,3 +249,5 @@ pub unsafe extern "C" fn core_relo_proto(ctx: *mut ::core::ffi::c_void) -> ::cor
 #[link_section = "license"]
 #[no_mangle]
 pub static LICENSE: [::core::ffi::c_char; 4] = [b'G' as ::core::ffi::c_char, b'P' as ::core::ffi::c_char, b'L' as ::core::ffi::c_char, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

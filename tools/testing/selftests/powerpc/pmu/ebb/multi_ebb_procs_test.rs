@@ -190,3 +190,5 @@ pub unsafe extern "C" fn multi_ebb_procs() -> c_int {
 fn main() -> c_int {
     unsafe { test_harness(multi_ebb_procs, c"multi_ebb_procs".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -34,3 +34,5 @@ pub const EMLINK: i32 = 31; /* Too many links */
 pub const EPIPE: i32 = 32; /* Broken pipe */
 pub const EDOM: i32 = 33; /* Math argument out of domain of func */
 pub const ERANGE: i32 = 34; /* Math result not representable */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

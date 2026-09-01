@@ -203,3 +203,5 @@ macro_rules! RC_CHK_EQUAL {
                 && unsafe { (*$object1).orig == (*$object2).orig })
     };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

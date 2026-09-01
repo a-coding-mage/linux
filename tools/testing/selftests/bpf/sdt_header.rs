@@ -509,3 +509,5 @@ macro_rules! DTRACE_PROBE12 {
         $crate::STAP_PROBE12!($provider, $probe, $parm1, $parm2, $parm3, $parm4, $parm5, $parm6, $parm7, $parm8, $parm9, $parm10, $parm11, $parm12)
     };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

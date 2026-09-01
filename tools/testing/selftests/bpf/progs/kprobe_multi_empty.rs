@@ -19,3 +19,5 @@ pub static mut _license: [::core::ffi::c_char; 4] = [
 pub unsafe extern "C" fn test_kprobe_empty(ctx: *mut pt_regs) -> ::core::ffi::c_int {
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

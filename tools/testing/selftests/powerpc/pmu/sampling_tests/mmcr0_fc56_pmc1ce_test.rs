@@ -97,3 +97,5 @@ unsafe extern "C" fn mmcr0_fc56_pmc1ce() -> c_int {
 pub unsafe fn main() -> c_int {
     test_harness(mmcr0_fc56_pmc1ce, c"mmcr0_fc56_pmc1ce".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -328,3 +328,5 @@ pub static mut suite__task_exit: test_suite = test_suite {
     desc: c"Number of exit events of a simple workload".as_ptr(),
     test_cases: unsafe { tests__task_exit.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -240,3 +240,5 @@ pub static mut fifo: Qdisc_ops = Qdisc_ops {
     destroy: bpf_fifo_destroy as *mut c_void,
     id: c"bpf_fifo".as_ptr(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

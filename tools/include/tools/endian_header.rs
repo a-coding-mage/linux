@@ -75,3 +75,5 @@ pub const fn le32toh(x: u32) -> u32 {
 pub const fn le64toh(x: u64) -> u64 {
     x.swap_bytes()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

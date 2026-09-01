@@ -137,3 +137,5 @@ unsafe fn goto_out(insn: *mut bpf_insn, skel: *mut kptr_xchg_inline) {
     free(insn as *mut c_void);
     kptr_xchg_inline__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

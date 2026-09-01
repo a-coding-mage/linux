@@ -103,3 +103,5 @@ pub unsafe extern "C" fn read_sock_xattr(sock: *mut socket) -> core::ffi::c_int 
         bpf_sock_read_xattr(sock, b"user.bpf_test\0".as_ptr() as *const core::ffi::c_char, &mut value_ptr);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -919,3 +919,5 @@ bpf_asm_prog!(to_leak_released_ptr_reg, "socket", "reference tracking: try to le
 #[unsafe(no_mangle)]
 #[unsafe(link_section = "license")]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

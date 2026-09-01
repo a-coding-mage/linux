@@ -74,3 +74,5 @@ unsafe extern "C" {
     pub fn cmd_klp_diff(argc: core::ffi::c_int, argv: *mut *const core::ffi::c_char) -> core::ffi::c_int;
     pub fn cmd_klp_post_link(argc: core::ffi::c_int, argv: *mut *const core::ffi::c_char) -> core::ffi::c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

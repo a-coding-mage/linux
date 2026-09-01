@@ -108,3 +108,5 @@ pub unsafe extern "C" fn test_nested_offset(task: *mut task_struct, clone_flags:
     bpf_cpumask_first_zero(&(*task).cpus_mask as *const cpumask);
     return 0;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

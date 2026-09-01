@@ -243,3 +243,5 @@ pub unsafe extern "C" fn hisi_ptt_pkt_desc(
 
     hisi_ptt_4dw_pkt_desc(buf, pos)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

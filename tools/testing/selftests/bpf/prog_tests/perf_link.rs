@@ -130,3 +130,5 @@ unsafe fn goto_cleanup(link_fd: &mut i32, pfd: &mut i32, skel: *mut test_perf_li
     }
     test_perf_link__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

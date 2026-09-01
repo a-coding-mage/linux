@@ -703,3 +703,5 @@ pub unsafe extern "C" fn test_map_percpu_stats() {
     map_percpu_stats_hash_of_maps();
     map_percpu_stats_map_value_size();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

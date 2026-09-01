@@ -98,3 +98,5 @@ pub unsafe fn __stack_chk_init() {
 
 #[cfg(all(not(NOLIBC_NO_RUNTIME), not(_NOLIBC_STACKPROTECTOR)))]
 pub fn __stack_chk_init() {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

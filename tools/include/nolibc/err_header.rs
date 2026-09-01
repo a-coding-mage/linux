@@ -75,3 +75,5 @@ pub unsafe extern "C" fn errx(eval: c_int, fmt: *const c_char, mut args: ...) ->
         verrx(eval, fmt, args.as_va_list());
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

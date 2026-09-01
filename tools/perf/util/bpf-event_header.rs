@@ -128,3 +128,5 @@ pub unsafe fn __bpf_event__print_bpf_prog_info(
 pub unsafe fn bpf_metadata_free(metadata: *mut bpf_metadata) {
     let _ = metadata;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

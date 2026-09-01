@@ -393,3 +393,5 @@ pub unsafe fn test_btf_kind() {
         test_btf_kind_decoding();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

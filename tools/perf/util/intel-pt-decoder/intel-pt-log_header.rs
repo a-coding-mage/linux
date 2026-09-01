@@ -125,3 +125,5 @@ macro_rules! intel_pt_log_x64 {
         $crate::intel_pt_log_var!($var, "%#lx")
     };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

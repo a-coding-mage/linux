@@ -340,3 +340,5 @@ pub static mut intel_snb_monitor: cpuidle_monitor = cpuidle_monitor {
                             * at 20GHz */
     name_len: 0,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

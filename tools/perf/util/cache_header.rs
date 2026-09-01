@@ -32,3 +32,5 @@ unsafe extern "C" {
     /* Original declaration is annotated with __printf(3, 4). */
     pub unsafe fn mkpath(path_buf: *mut c_char, sz: usize, fmt: *const c_char, ...) -> *mut c_char;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

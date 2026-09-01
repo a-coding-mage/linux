@@ -778,3 +778,5 @@ pub unsafe extern "C" fn test_signed_loader() {
     if test__start_subtest(c(b"signed_map_by_fd_rejected\0")) { signed_map_by_fd_rejected(); }
     if test__start_subtest(c(b"signed_sparse_fd_array_rejected\0")) { signed_sparse_fd_array_rejected(); }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

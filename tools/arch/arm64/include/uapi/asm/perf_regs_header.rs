@@ -44,3 +44,5 @@ pub enum perf_event_arm_regs {
 }
 
 pub const PERF_REG_EXTENDED_MASK: u64 = 1u64 << perf_event_arm_regs::PERF_REG_ARM64_VG as u64;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

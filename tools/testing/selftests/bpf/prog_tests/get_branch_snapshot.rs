@@ -227,3 +227,5 @@ pub unsafe extern "C" fn serial_test_get_branch_snapshot() {
     get_branch_snapshot__destroy(skel);
     close_perf_events();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -88,3 +88,5 @@ unsafe extern "C" fn test_klp_mod_target_exit() {
 // MODULE_LICENSE("GPL");
 // MODULE_AUTHOR("Pablo Hugen <phugen@redhat.com>");
 // MODULE_DESCRIPTION("Livepatch test: target module with proc entry");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -3,3 +3,5 @@
 pub const MAP_32BIT: u32 = 0x40;
 
 /* Dependency intent from C source: #include <uapi/asm-generic/mman.h> */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

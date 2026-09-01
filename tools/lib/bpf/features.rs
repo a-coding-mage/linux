@@ -936,3 +936,5 @@ pub unsafe extern "C" fn feat_supported(mut cache: *mut kern_feature_cache, feat
 fn size_of_val<T>(val: &T) -> usize {
     core::mem::size_of_val(val)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

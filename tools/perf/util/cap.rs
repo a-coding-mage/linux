@@ -97,3 +97,5 @@ pub unsafe extern "C" fn perf_cap__capable(cap: c_int) -> bool {
     }
     (cap_val & (1_u32 << (cap & 0x1f))) != 0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

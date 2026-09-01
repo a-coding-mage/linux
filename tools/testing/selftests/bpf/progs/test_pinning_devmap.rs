@@ -47,3 +47,5 @@ pub static pinmap2: pinmap2 = pinmap2 {
     value: 0,
     pinning: unsafe { LIBBPF_PIN_BY_NAME },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

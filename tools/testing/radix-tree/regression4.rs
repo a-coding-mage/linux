@@ -150,3 +150,5 @@ pub unsafe extern "C" fn regression4_test() {
 
     printv(1, b"regression test 4 passed\n\0".as_ptr().cast::<c_char>());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

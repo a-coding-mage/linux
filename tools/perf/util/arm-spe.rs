@@ -1413,3 +1413,5 @@ pub unsafe extern "C" fn arm_spe_process_auxtrace_info(event: *mut perf_event, s
     if (*spe).queues.populated { (*spe).data_queued = 1; }
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

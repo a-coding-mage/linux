@@ -42,3 +42,5 @@ pub struct bpf_testmod_ops {
 pub static mut testmod_1: bpf_testmod_ops = bpf_testmod_ops {
     test_1: Some(bar),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

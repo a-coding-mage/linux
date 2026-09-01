@@ -631,3 +631,5 @@ unsafe fn goto_out(evlist: *mut evlist, machines: *mut machines) {
 
 // C source ended with: DEFINE_SUITE("Match and link multiple hists", hists_link);
 // The DEFINE_SUITE registration macro is supplied by external test headers.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

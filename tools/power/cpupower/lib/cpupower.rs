@@ -369,3 +369,5 @@ pub unsafe extern "C" fn get_cpu_topology(cpu_top: *mut cpupower_topology) -> c_
 pub unsafe extern "C" fn cpu_topology_release(cpu_top: cpupower_topology) {
     free(cpu_top.core_info as *mut c_void);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

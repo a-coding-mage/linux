@@ -87,3 +87,5 @@ unsafe extern "C" {
      */
     pub fn strfilter__string(filter: *mut strfilter) -> *mut c_char;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

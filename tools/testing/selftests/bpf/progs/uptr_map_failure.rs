@@ -59,3 +59,5 @@ pub static kstruct_uptr_map: kstruct_uptr_map_def = kstruct_uptr_map_def {
     key: ::core::marker::PhantomData,
     value: ::core::marker::PhantomData,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

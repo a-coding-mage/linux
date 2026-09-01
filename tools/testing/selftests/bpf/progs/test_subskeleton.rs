@@ -36,3 +36,5 @@ pub unsafe extern "C" fn handler1(ctx: *const core::ffi::c_void) -> core::ffi::c
 #[unsafe(link_section = "license")]
 #[no_mangle]
 pub static mut LICENSE: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

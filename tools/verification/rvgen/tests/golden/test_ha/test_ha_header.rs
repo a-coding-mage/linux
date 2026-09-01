@@ -97,3 +97,5 @@ pub const automaton_test_ha: automaton_test_ha = automaton_test_ha {
     initial_state: states_test_ha::S0_test_ha as u8,
     final_states: [true, false, false, false],
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

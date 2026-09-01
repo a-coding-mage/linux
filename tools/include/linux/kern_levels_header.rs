@@ -20,3 +20,5 @@ pub const KERN_DEFAULT: &str = ""; /* the default kernel loglevel */
  * during early bootup (a continued line is not SMP-safe otherwise).
  */
 pub const KERN_CONT: &str = "";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

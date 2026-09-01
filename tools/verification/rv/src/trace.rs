@@ -201,3 +201,5 @@ pub unsafe extern "C" fn trace_instance_init(
 pub unsafe extern "C" fn trace_instance_start(trace: *mut trace_instance) -> c_int {
     unsafe { tracefs_trace_on((*trace).inst) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

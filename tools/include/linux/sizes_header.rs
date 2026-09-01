@@ -42,3 +42,5 @@ pub const SZ_1G: u32 = 0x40000000;
 pub const SZ_2G: u32 = 0x80000000;
 
 pub const SZ_4G: u64 = 0x100000000u64;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

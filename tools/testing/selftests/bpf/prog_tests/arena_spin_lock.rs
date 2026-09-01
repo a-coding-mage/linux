@@ -265,3 +265,5 @@ pub unsafe extern "C" fn serial_test_arena_spin_lock() {
         test_arena_spin_lock_size(50000);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

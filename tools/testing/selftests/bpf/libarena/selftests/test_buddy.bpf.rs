@@ -291,3 +291,5 @@ pub unsafe extern "C" fn test_buddy_alignment() -> i32 {
 /* __weak char _license[] SEC("license") = "GPL"; */
 #[no_mangle]
 pub static mut _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

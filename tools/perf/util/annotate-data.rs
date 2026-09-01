@@ -1047,3 +1047,5 @@ pub unsafe extern "C" fn hist_entry__annotate_data_tty(he: *mut hist_entry, evse
     printf(c!("\n"));
     '>' as c_int
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

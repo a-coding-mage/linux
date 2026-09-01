@@ -71,3 +71,5 @@ pub const automaton_ha_percpu: automaton_ha_percpu = automaton_ha_percpu {
     initial_state: S0_ha_percpu as ::core::ffi::c_uchar,
     final_states: [true, false, false, false],
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

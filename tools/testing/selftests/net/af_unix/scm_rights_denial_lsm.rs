@@ -545,3 +545,5 @@ unsafe fn scm_rights_denial_bpf_denied_without_notrunc(self_: *mut scm_rights_de
 }
 
 // TEST_HARNESS_MAIN
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

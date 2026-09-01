@@ -27,3 +27,5 @@ pub const ALT_NEW_OFFSET: usize = 4;
 pub const ALT_FEATURE_OFFSET: usize = 8;
 pub const ALT_ORIG_LEN_OFFSET: usize = 10;
 pub const ALT_NEW_LEN_OFFSET: usize = 11;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

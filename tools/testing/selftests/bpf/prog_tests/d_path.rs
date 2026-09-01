@@ -433,3 +433,5 @@ pub unsafe extern "C" fn test_d_path() {
         test_d_path_mem_access();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

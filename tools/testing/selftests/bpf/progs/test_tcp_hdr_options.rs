@@ -733,3 +733,5 @@ pub unsafe extern "C" fn estab(skops: *mut bpf_sock_ops) -> i32 {
 #[no_mangle]
 #[link_section = "license"]
 static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

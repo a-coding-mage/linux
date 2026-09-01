@@ -8,3 +8,5 @@
 pub extern "C" fn test_compute_live_registers() {
     RUN_TESTS!(compute_live_registers);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

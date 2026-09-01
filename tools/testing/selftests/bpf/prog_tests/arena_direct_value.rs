@@ -185,3 +185,5 @@ pub unsafe extern "C" fn serial_test_arena_direct_value() {
         test_arena_direct_value_one_past_end();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

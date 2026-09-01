@@ -13,3 +13,5 @@ pub const __BITS_PER_LONG: usize = 32;
 pub const SHIFT_PER_LONG: usize = 5;
 
 // Depends on declarations/constants from <asm-generic/bitsperlong.h>.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

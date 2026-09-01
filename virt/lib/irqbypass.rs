@@ -327,3 +327,5 @@ pub unsafe extern "C" fn irq_bypass_unregister_consumer(
     mutex_unlock(core::ptr::addr_of_mut!(lock));
 }
 // EXPORT_SYMBOL_GPL(irq_bypass_unregister_consumer);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

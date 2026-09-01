@@ -69,3 +69,5 @@ pub unsafe fn str_ends_with(str: *const c_char, substr: *const c_char) -> bool {
 
     unsafe { strcmp(str.add(len - sublen), substr) == 0 }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

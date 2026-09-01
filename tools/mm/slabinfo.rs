@@ -1098,3 +1098,5 @@ unsafe fn real_main(argc: c_int, argv: *mut *mut c_char) -> c_int {
 pub unsafe fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
 	real_main(argc, argv)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

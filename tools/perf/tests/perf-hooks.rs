@@ -83,3 +83,5 @@ unsafe extern "C" fn test__perf_hooks(_test: *mut test_suite, _subtest: c_int) -
 
 // C test harness registration:
 // DEFINE_SUITE("perf hooks", perf_hooks);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

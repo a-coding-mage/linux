@@ -504,3 +504,5 @@ unsafe fn dev_cmd_skb_priority(self_: *mut proc_net_pktgen) { expect_write_eq_si
 fn main() {
     // TEST_HARNESS_MAIN
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

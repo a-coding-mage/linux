@@ -249,3 +249,5 @@ unsafe extern "C" fn tm_signal_context_chk() -> c_int {
 fn main() -> c_int {
     unsafe { test_harness(tm_signal_context_chk, c"tm_signal_context_chk_vmx".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

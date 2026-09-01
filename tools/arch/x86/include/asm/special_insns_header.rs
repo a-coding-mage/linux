@@ -34,3 +34,5 @@ pub unsafe fn movdir64b(dst: *mut core::ffi::c_void, src: *const core::ffi::c_vo
         options(nostack, preserves_flags),
     );
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

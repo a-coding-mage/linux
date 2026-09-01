@@ -1071,3 +1071,5 @@ unsafe fn size_of_val<T>(_: &T) -> usize {
 pub unsafe extern "C" fn main(_argc: c_int, _argv: *mut *mut c_char, _envp: *mut *mut c_char) -> c_int {
     test_harness(perf_hwbreak, c"perf_hwbreak".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

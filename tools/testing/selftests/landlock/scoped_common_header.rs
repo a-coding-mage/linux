@@ -30,3 +30,5 @@ unsafe fn create_scoped_domain(_metadata: *mut __test_metadata, scope: __u16) {
 	unsafe { enforce_ruleset(_metadata, ruleset_fd) };
 	EXPECT_EQ!(0, unsafe { close(ruleset_fd) });
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

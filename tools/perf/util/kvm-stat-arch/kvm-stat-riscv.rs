@@ -153,3 +153,5 @@ pub unsafe extern "C" fn __kvm_reg_events_ops_riscv() -> *const kvm_reg_events_o
 pub unsafe extern "C" fn __kvm_skip_events_riscv() -> *const *const c_char {
     __kvm_skip_events.as_ptr()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

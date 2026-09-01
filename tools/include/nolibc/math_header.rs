@@ -21,3 +21,5 @@ pub fn fabsf(x: f32) -> f32 {
 pub fn fabsl(x: f64) -> f64 {
     if x >= 0.0 { x } else { -x }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

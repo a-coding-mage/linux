@@ -1165,3 +1165,5 @@ pub unsafe extern "C" fn arch__new_x86(
     (*arch).update_insn_state = Some(update_insn_state_x86);
     arch
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

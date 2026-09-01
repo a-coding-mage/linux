@@ -843,3 +843,5 @@ pub struct btf_decl_tag {
 pub unsafe fn btf_decl_tag(t: *const btf_type) -> *mut btf_decl_tag {
     unsafe { t.add(1) as *mut btf_decl_tag }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

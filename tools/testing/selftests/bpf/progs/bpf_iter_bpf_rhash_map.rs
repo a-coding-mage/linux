@@ -58,3 +58,5 @@ pub unsafe extern "C" fn dump_bpf_rhash_map(ctx: *mut bpf_iter__bpf_map_elem) ->
     elem_count = elem_count.wrapping_add(1);
     return 0;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

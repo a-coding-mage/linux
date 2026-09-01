@@ -404,3 +404,5 @@ pub unsafe fn map__set_mapping_type(map: *mut map, type_: mapping_type) {
 pub unsafe fn map__mapping_type(map: *mut map) -> mapping_type {
     rc_chk_access_const(map).mapping_type
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

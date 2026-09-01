@@ -57,3 +57,5 @@ unsafe extern "C" fn rv_test_test_ha_kunit(test: *mut kunit) {
 #[cfg(not(CONFIG_RV_MON_TEST_HA_KUNIT))]
 pub(crate) use rv_test_stub as rv_test_test_ha_kunit;
 // #endif
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

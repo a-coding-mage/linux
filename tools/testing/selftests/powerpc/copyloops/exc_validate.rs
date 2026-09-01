@@ -197,3 +197,5 @@ pub unsafe extern "C" fn test_copy_exception() -> c_int {
 pub unsafe extern "C" fn main() -> c_int {
     unsafe { test_harness(test_copy_exception, CStr::from_bytes_with_nul_unchecked(b"COPY_LOOP\0").as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

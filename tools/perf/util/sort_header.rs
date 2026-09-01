@@ -216,3 +216,5 @@ unsafe extern "C" {
     pub fn hist_entry__srcline(he: *mut hist_entry) -> *mut c_char;
     pub fn sort__comm_nodigit_len(entry: *mut hist_entry) -> size_t;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

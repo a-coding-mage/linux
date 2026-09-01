@@ -16,3 +16,5 @@ pub unsafe fn __is_module_percpu_address(
     let _ = can_addr;
     false
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

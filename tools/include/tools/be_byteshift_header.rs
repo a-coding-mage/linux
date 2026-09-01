@@ -69,3 +69,5 @@ pub unsafe fn put_unaligned_be64(val: u64, p: *mut c_void) {
         __put_unaligned_be64(val, p as *mut u8);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

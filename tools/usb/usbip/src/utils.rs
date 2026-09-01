@@ -70,3 +70,5 @@ pub unsafe extern "C" fn modify_match_busid(busid: *mut c_char, add: c_int) -> c
 
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

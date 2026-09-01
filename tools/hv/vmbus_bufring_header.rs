@@ -197,3 +197,5 @@ pub unsafe fn vmbus_br_availread(br: *const vmbus_br) -> u32 {
         .read_unaligned()
         .wrapping_sub(vmbus_br_availwrite(br, windex))
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

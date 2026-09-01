@@ -371,3 +371,5 @@ unsafe fn ptrace_pkey() -> libc::c_int {
 fn main() -> libc::c_int {
     unsafe { test_harness(ptrace_pkey, b"ptrace_pkey\0".as_ptr() as *const libc::c_char) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

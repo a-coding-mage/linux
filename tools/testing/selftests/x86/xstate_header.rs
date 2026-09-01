@@ -284,3 +284,5 @@ pub unsafe fn set_rand_data(xstate: *mut xstate_info, xbuf: *mut xsave_buffer) {
 }
 
 /* Testing kernel's context switching and ABI support for the xstate. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

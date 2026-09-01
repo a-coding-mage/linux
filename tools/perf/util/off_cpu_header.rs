@@ -68,3 +68,5 @@ pub unsafe fn off_cpu_prepare(
 pub unsafe fn off_cpu_write(_session: *mut perf_session) -> ::std::os::raw::c_int {
     -1
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

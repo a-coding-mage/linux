@@ -32,3 +32,5 @@ pub unsafe extern "C" fn cpu__get_max_freq(freq: *mut c_ulonglong) -> c_int {
 
     unsafe { sysfs__read_ull(entry.as_ptr(), freq) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -250,3 +250,5 @@ pub const fn rounddown_pow_of_two_const(n: c_ulong) -> c_ulong {
 pub unsafe fn rounddown_pow_of_two(n: c_ulong) -> c_ulong {
     __rounddown_pow_of_two(n)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

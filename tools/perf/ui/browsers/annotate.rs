@@ -1688,3 +1688,5 @@ extern "C" {
     fn ui_browser__list_head_seek(browser: *mut ui_browser, offset: off_t, whence: c_int);
     fn dso__annotate_warned(dso: *mut dso) -> bool_t;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

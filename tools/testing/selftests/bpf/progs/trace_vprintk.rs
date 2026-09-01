@@ -67,3 +67,5 @@ pub unsafe extern "C" fn sys_enter(ctx: *mut ::core::ffi::c_void) -> ::core::ffi
         bpf_trace_vprintk(f.as_ptr(), ::core::mem::size_of_val(&f) as _, ::core::ptr::null(), 0);
     return 0;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

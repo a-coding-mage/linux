@@ -566,3 +566,5 @@ pub unsafe extern "C" fn test_kmem_cache_bulk() {
     kmem_cache_free_bulk(test_cache2, 10, list.as_mut_ptr());
     assert!((*test_cache2).nr_objs == 0);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

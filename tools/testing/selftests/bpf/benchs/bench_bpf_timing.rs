@@ -444,3 +444,5 @@ pub unsafe extern "C" fn bpf_bench_calibrate(
 	*(*t).batch_iters_bss = (*t).batch_iters;
 	reset_timing(t);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

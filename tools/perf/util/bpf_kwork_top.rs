@@ -526,3 +526,5 @@ pub unsafe extern "C" fn perf_kwork__top_read_bpf(kwork: *mut perf_kwork) -> c_i
 pub unsafe extern "C" fn perf_kwork__top_cleanup_bpf() {
     kwork_top_bpf__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

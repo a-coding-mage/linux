@@ -418,3 +418,5 @@ pub unsafe extern "C" fn test_right_spinlock_false(ctx: *mut core::ffi::c_void) 
 #[unsafe(link_section = "license")]
 #[unsafe(no_mangle)]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -62,3 +62,5 @@ pub struct htab_lock_consistency_map_def {}
 #[link_section = ".maps"]
 pub static mut htab_lock_consistency: htab_lock_consistency_map_def =
     htab_lock_consistency_map_def {};
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

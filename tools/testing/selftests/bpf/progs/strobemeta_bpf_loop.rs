@@ -10,3 +10,5 @@ pub const STROBE_MAX_MAP_ENTRIES: i32 = 20;
 pub const USE_BPF_LOOP: bool = true;
 
 // Depends on declarations and definitions from "strobemeta.h".
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

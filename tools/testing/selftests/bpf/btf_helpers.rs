@@ -553,3 +553,5 @@ unsafe fn goto_err_out(d: *mut btf_dump, buf_file: *mut FILE) {
 	btf_dump__free(d);
 	fclose(buf_file);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

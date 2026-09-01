@@ -580,3 +580,5 @@ pub unsafe fn sysfs_get_sched(_smt_mc: *const c_char) -> c_int {
 pub unsafe fn sysfs_set_sched(_smt_mc: *const c_char, _val: c_int) -> c_int {
     -ENODEV
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

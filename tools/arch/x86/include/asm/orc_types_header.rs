@@ -122,3 +122,5 @@ pub const ORC_ENTRY_UNUSED_SHIFT: u32 = 4;
 pub const ORC_ENTRY_SIGNAL_SHIFT: u32 = 3;
 #[cfg(target_endian = "big")]
 pub const ORC_ENTRY_TYPE_SHIFT: u32 = 0;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

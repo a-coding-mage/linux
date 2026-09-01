@@ -165,3 +165,5 @@ pub unsafe extern "C" fn fexit_update(
 unsafe fn __sync_fetch_and_add(ptr: *mut libc::c_int, val: libc::c_int) -> libc::c_int {
     core::sync::atomic::AtomicI32::from_ptr(ptr).fetch_add(val, core::sync::atomic::Ordering::SeqCst)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

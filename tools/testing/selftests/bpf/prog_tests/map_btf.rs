@@ -220,3 +220,5 @@ pub unsafe extern "C" fn test_map_btf() {
         do_test_map_in_map_btf();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

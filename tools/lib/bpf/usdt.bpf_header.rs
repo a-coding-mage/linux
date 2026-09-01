@@ -533,3 +533,5 @@ macro_rules! ___bpf_usdt_args12 {
  * Rust cannot concatenate identifiers in macro_rules without external support,
  * so this file preserves the macro intent rather than inventing a dependency.
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

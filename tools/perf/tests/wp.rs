@@ -340,3 +340,5 @@ pub static mut suite__wp: test_suite = test_suite {
     desc: c"Watchpoint".as_ptr(),
     test_cases: &raw mut wp_tests as *mut test_case,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

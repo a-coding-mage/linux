@@ -189,3 +189,5 @@ pub unsafe extern "C" fn is_directory_at(dir_fd: c_int, path: *const c_char) -> 
 
     S_ISDIR(st.st_mode)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

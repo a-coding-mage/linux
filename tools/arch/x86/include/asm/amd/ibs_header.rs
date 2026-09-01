@@ -471,3 +471,5 @@ pub struct perf_ibs_data {
     pub __bindgen_anon_1: perf_ibs_data_anon,
     pub regs: [u64; MSR_AMD64_IBS_REG_COUNT_MAX],
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

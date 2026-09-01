@@ -337,3 +337,5 @@ unsafe extern "C" fn test__event_update(
 }
 
 // DEFINE_SUITE("Synthesize attr update", event_update);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

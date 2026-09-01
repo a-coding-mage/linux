@@ -108,3 +108,5 @@ pub unsafe extern "C" fn syscall_arg__strtoul_x86_MSR(
 ) -> bool {
     unsafe { strarrays__strtoul(&raw const strarrays__x86_MSRs_tables, bf, size, ret) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

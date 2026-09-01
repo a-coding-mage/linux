@@ -97,3 +97,5 @@ unsafe extern "C" {
 pub unsafe fn record_opts__no_switch_events(opts: *const record_opts) -> bool {
     unsafe { (*opts).record_switch_events_set && !(*opts).record_switch_events }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

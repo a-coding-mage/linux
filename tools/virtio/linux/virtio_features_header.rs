@@ -85,3 +85,5 @@ pub unsafe fn virtio_features_andnot(to: *mut u64, f1: *const u64, f2: *const u6
         i += 1;
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -43,3 +43,5 @@ pub const PVCLOCK_TSC_STABLE_BIT: u32 = 1 << 0;
 pub const PVCLOCK_GUEST_STOPPED: u32 = 1 << 1;
 /* PVCLOCK_COUNTS_FROM_ZERO broke ABI and can't be used anymore. */
 pub const PVCLOCK_COUNTS_FROM_ZERO: u32 = 1 << 2;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

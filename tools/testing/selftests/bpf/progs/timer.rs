@@ -823,3 +823,5 @@ pub unsafe extern "C" fn nmi_cancel(ctx: *mut core::ffi::c_void) -> i32 {
     core::intrinsics::atomic_xadd_relaxed(&mut test_hits, 1);
     test_common(test_mode::TEST_CANCEL)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

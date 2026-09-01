@@ -387,3 +387,5 @@ pub unsafe extern "C" fn test_stacktrace_build_id_nmi() {
 unsafe fn size_of_val<T: ?Sized>(val: &T) -> usize {
     core::mem::size_of_val(val)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

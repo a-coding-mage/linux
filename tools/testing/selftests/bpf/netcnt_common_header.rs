@@ -50,3 +50,5 @@ pub union net_cnt {
     pub __bindgen_anon_1: net_cnt__bindgen_ty_1,
     pub data: [__u8; BPF_LOCAL_STORAGE_MAX_VALUE_SIZE],
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

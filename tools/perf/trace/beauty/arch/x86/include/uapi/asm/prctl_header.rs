@@ -37,3 +37,5 @@ pub const ARCH_SHSTK_STATUS: u32 = 0x5005;
 /* ARCH_SHSTK_ features bits */
 pub const ARCH_SHSTK_SHSTK: u64 = 1u64 << 0;
 pub const ARCH_SHSTK_WRSS: u64 = 1u64 << 1;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

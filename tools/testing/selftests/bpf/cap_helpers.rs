@@ -76,3 +76,5 @@ pub unsafe extern "C" fn cap_disable_effective(caps: __u64, old_caps: *mut __u64
 
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

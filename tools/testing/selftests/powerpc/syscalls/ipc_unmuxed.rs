@@ -105,3 +105,5 @@ unsafe extern "C" fn ipc_unmuxed() -> i32 {
 pub unsafe fn main() -> i32 {
     unsafe { test_harness(ipc_unmuxed, b"ipc_unmuxed\0".as_ptr() as *const i8) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

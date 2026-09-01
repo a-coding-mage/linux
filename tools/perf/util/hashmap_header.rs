@@ -325,3 +325,5 @@ pub unsafe fn hashmap__find(map: *const hashmap, key: c_long, value: *mut c_long
  * stores cur->next in tmp before each body execution and filters entries with
  * equal_fn(cur->key, _key, ctx).
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

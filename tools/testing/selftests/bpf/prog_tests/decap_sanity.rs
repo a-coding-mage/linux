@@ -224,3 +224,5 @@ unsafe fn goto_fail(skel: *mut decap_sanity, nstoken: *mut nstoken, qdisc_hook: 
     SYS_NOFAIL(b"ip netns del decap_sanity_ns\0".as_ptr());
     decap_sanity__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

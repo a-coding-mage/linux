@@ -676,3 +676,5 @@ pub unsafe extern "C" fn addattr_nest_end(n: *mut nlmsghdr, nest: *mut rtattr) -
         .offset_from((nest as *mut c_void).cast::<c_char>()) as u16;
     (*n).nlmsg_len as c_int
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -82,3 +82,5 @@ pub unsafe extern "C" fn cppc_show_perf_and_freq(cpu: c_uint, no_rounding: c_int
         printf(b".\n\0".as_ptr() as *const c_char);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

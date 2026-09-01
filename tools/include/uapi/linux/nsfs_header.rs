@@ -132,3 +132,5 @@ pub const LISTNS_CURRENT_USER: __u64 = 0xffffffffffffffff; /* Caller's userns */
 
 /* List of all ns_id_req versions. */
 pub const NS_ID_REQ_SIZE_VER0: usize = 32; /* sizeof first published struct */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

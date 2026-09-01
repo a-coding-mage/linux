@@ -84,3 +84,5 @@ fn hw_cache_event_type_test() -> i32 {
 fn main() -> i32 {
     return test_harness(hw_cache_event_type_test, "hw_cache_event_type_test");
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

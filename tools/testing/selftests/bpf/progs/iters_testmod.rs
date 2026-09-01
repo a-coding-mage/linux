@@ -254,3 +254,5 @@ pub unsafe extern "C" fn iter_ret_rcu_test_type_nostruct(ctx: *const c_void) -> 
     let _ = ctx;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

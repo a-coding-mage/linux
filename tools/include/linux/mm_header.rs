@@ -64,3 +64,5 @@ pub fn totalram_pages_add(_count: isize) {}
 pub fn early_pfn_to_nid(_pfn: c_ulong) -> i32 {
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

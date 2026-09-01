@@ -51,3 +51,5 @@ pub unsafe fn __perf_reg_ip_mips() -> u64 {
 pub unsafe fn __perf_reg_sp_mips() -> u64 {
     PERF_REG_MIPS_R29 as u64
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -44,3 +44,5 @@ pub unsafe fn __ffs(mut word: core::ffi::c_ulong) -> u32 {
     }
     num
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

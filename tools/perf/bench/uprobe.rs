@@ -276,3 +276,5 @@ pub unsafe extern "C" fn bench_uprobe_trace_printk_ret(
 ) -> c_int {
     bench_uprobe(argc, argv, bench_uprobe::BENCH_UPROBE__TRACE_PRINTK_RET)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

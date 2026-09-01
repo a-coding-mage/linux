@@ -80,3 +80,5 @@ pub unsafe extern "C" fn addr_map_symbol__copy(
         (*dst).data_page_size = (*src).data_page_size;
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

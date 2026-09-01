@@ -336,3 +336,5 @@ pub unsafe extern "C" fn test_task_work() {
 
     task_work_fail__run_tests();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1103,3 +1103,5 @@ pub unsafe extern "C" fn set_option_nobuild(opts: *mut option, shortopt: c_int,
     (*opt).flags |= if can_skip { PARSE_OPT_CANSKIP } else { 0 };
     (*opt).build_opt = build_opt;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

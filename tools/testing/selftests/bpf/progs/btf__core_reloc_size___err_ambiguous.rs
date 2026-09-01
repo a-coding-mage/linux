@@ -6,3 +6,5 @@ pub extern "C" fn f(
     y: core_reloc_size___err_ambiguous2,
 ) {
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

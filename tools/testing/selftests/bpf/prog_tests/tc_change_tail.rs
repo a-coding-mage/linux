@@ -135,3 +135,5 @@ pub unsafe extern "C" fn test_tc_change_tail() {
 unsafe fn goto_destroy(skel: *mut test_tc_change_tail) {
     test_tc_change_tail__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

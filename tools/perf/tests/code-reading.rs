@@ -1241,3 +1241,5 @@ unsafe fn test__code_reading(_test: *mut test_suite, _subtest: c_int) -> c_int {
 }
 
 /* DEFINE_SUITE("Object code reading", code_reading); */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

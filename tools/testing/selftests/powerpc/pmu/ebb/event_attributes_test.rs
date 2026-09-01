@@ -116,3 +116,5 @@ pub unsafe extern "C" fn event_attributes() -> i32 {
 pub unsafe extern "C" fn main() -> i32 {
     test_harness(event_attributes, "event_attributes\0".as_ptr() as *const i8)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

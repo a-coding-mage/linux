@@ -16,3 +16,5 @@ const WEIGHT_STRUCT: u64 = 0;
 pub unsafe extern "C" fn arch_evsel__set_sample_weight(evsel: *mut evsel) {
     evsel__set_sample_bit(evsel, WEIGHT_STRUCT);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

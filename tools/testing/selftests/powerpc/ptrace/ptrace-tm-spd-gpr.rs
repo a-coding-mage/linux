@@ -313,3 +313,5 @@ pub unsafe fn main(argc: ::core::ffi::c_int, argv: *mut *mut ::core::ffi::c_char
     let _ = argv;
     test_harness(ptrace_tm_spd_gpr, c"ptrace_tm_spd_gpr".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

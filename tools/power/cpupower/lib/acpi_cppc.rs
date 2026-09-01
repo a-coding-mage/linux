@@ -118,3 +118,5 @@ pub unsafe extern "C" fn acpi_cppc_get_data(cpu: c_uint, which: acpi_cppc_value)
 
     value as c_ulong
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

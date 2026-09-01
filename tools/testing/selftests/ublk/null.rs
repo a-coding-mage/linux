@@ -177,3 +177,5 @@ pub static null_tgt_ops: ublk_tgt_ops = ublk_tgt_ops {
     tgt_io_done: Some(ublk_null_io_done),
     buf_index: Some(ublk_null_buf_index),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

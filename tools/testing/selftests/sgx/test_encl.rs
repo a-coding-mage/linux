@@ -240,3 +240,5 @@ pub unsafe extern "C" fn encl_body(rdi: *mut c_void, _rsi: *mut c_void) {
 
     op(header as *mut c_void);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

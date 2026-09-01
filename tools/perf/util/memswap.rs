@@ -27,3 +27,5 @@ pub unsafe extern "C" fn mem_bswap_64(src: *mut c_void, mut byte_size: core::ffi
         m = m.add(1);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

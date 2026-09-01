@@ -2397,3 +2397,5 @@ unsafe fn goto_out(_status: *mut c_int) {
      * before reaching it in the original C.
      */
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

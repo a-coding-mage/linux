@@ -247,3 +247,5 @@ pub static fault_inject_tgt_ops: ublk_tgt_ops = ublk_tgt_ops {
     parse_cmd_line: Some(ublk_fault_inject_cmd_line),
     usage: Some(ublk_fault_inject_usage),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

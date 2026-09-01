@@ -534,3 +534,5 @@ pub static bench_local_storage_cache_hashmap_control: bench = bench {
     report_progress: Some(local_storage_report_progress),
     report_final: Some(local_storage_report_final),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

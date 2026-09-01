@@ -206,3 +206,5 @@ pub unsafe extern "C" fn perf_event__synthesize_extra_kmaps(
     free(args.event as *mut c_void);
     rc
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

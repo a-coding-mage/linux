@@ -77,3 +77,5 @@ unsafe extern "C" fn l3_bank_test() -> i32 {
 pub unsafe fn main() -> i32 {
     test_harness(l3_bank_test, c"l3_bank_test".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

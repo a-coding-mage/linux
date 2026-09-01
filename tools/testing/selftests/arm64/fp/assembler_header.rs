@@ -110,3 +110,5 @@ pub const PR_SHADOW_STACK_ENABLE: u64 = 1u64 << 0;
 //
 // Rust equivalent depends on the external __NR_prctl syscall number and the
 // ability to emit AArch64 system-call assembly at the macro expansion site.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

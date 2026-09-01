@@ -12,3 +12,5 @@ pub unsafe fn rseq_thread_pointer() -> *mut c_void {
     }
     __thread_register
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

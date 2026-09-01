@@ -175,3 +175,5 @@ pub const SECCOMP_IOCTL_NOTIF_ID_VALID: usize = SECCOMP_IOW!(2, __u64);
 pub const SECCOMP_IOCTL_NOTIF_ADDFD: usize = SECCOMP_IOW!(3, seccomp_notif_addfd);
 
 pub const SECCOMP_IOCTL_NOTIF_SET_FLAGS: usize = SECCOMP_IOW!(4, __u64);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -153,3 +153,5 @@ pub unsafe extern "C" fn task_event_pinned_vs_ebb() -> c_int {
 fn main() -> c_int {
     unsafe { test_harness(task_event_pinned_vs_ebb, c"task_event_pinned_vs_ebb".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

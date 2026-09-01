@@ -90,3 +90,5 @@ pub unsafe fn __bswap_if_needed<T: __BswapIfNeeded>(ehdr: *mut GElf_Ehdr, val: T
     let __need_bswap: bool = need_bswap(ehdr);
     val.__bswap_if_needed(__need_bswap)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

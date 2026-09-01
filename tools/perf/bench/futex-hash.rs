@@ -522,3 +522,5 @@ pub unsafe extern "C" fn bench_futex_hash(mut argc: c_int, argv: *mut *const c_c
 unsafe fn errmem() -> ! {
     err(EXIT_FAILURE, c"calloc".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

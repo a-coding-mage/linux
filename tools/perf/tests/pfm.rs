@@ -270,3 +270,5 @@ pub static mut suite__pfm: test_suite = test_suite {
 	desc: c"Test libpfm4 support",
 	test_cases: unsafe { pfm_tests.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

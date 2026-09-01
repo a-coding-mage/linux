@@ -562,3 +562,5 @@ pub static mut central_ops: scx_ops = scx_ops {
     exit: central_exit as *mut core::ffi::c_void,
     name: c"central".as_ptr() as *const u8,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -178,3 +178,5 @@ pub unsafe extern "C" fn __perf_reg_ip_csky() -> u64 {
 pub unsafe extern "C" fn __perf_reg_sp_csky() -> u64 {
     unsafe { PERF_REG_CSKY_SP as u64 }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1,0 +1,168 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright Openedhand Ltd.
+ *
+ * Author: Richard Purdie <richard@openedhand.com>
+ *         Binbin Zhou <zhoubinbin@loongson.cn>
+ *
+ */
+
+/* ES8323 register space */
+
+/* Chip Control and Power Management */
+pub const ES8323_CONTROL1: u32 = 0x00;
+pub const ES8323_CONTROL2: u32 = 0x01;
+pub const ES8323_CHIPPOWER: u32 = 0x02;
+
+pub const ES8323_CHIPPOWER_DACVREF_OFF: u32 = 0;
+pub const ES8323_CHIPPOWER_ADCVREF_OFF: u32 = 1;
+pub const ES8323_CHIPPOWER_DACDLL_OFF: u32 = 2;
+pub const ES8323_CHIPPOWER_ADCDLL_OFF: u32 = 3;
+pub const ES8323_CHIPPOWER_DACSTM_RESET: u32 = 4;
+pub const ES8323_CHIPPOWER_ADCSTM_RESET: u32 = 5;
+pub const ES8323_CHIPPOWER_DACDIG_OFF: u32 = 6;
+pub const ES8323_CHIPPOWER_ADCDIG_OFF: u32 = 7;
+
+pub const ES8323_ADCPOWER: u32 = 0x03;
+
+pub const ES8323_ADCPOWER_INT1LP: u32 = 1 << 0;
+pub const ES8323_ADCPOWER_FLASHLP: u32 = 1 << 1;
+pub const ES8323_ADCPOWER_PDNADCBIS: u32 = 1 << 2;
+pub const ES8323_ADCPOWER_PDNMICB: u32 = 1 << 3;
+
+pub const ES8323_ADCPOWER_PDNADCBIS_OFF: u32 = 2;
+pub const ES8323_ADCPOWER_PDNMICB_OFF: u32 = 3;
+pub const ES8323_ADCPOWER_PDNADCR_OFF: u32 = 4;
+pub const ES8323_ADCPOWER_PDNADCL_OFF: u32 = 5;
+pub const ES8323_ADCPOWER_PDNAINR_OFF: u32 = 6;
+pub const ES8323_ADCPOWER_PDNAINL_OFF: u32 = 7;
+
+pub const ES8323_DACPOWER: u32 = 0x04;
+
+pub const ES8323_DACPOWER_ROUT2_OFF: u32 = 2;
+pub const ES8323_DACPOWER_LOUT2_OFF: u32 = 3;
+pub const ES8323_DACPOWER_ROUT1_OFF: u32 = 4;
+pub const ES8323_DACPOWER_LOUT1_OFF: u32 = 5;
+pub const ES8323_DACPOWER_PDNDACR_OFF: u32 = 6;
+pub const ES8323_DACPOWER_PDNDACL_OFF: u32 = 7;
+
+pub const ES8323_CHIPLOPOW1: u32 = 0x05;
+pub const ES8323_CHIPLOPOW2: u32 = 0x06;
+pub const ES8323_ANAVOLMANAG: u32 = 0x07;
+pub const ES8323_MASTERMODE: u32 = 0x08;
+
+pub const ES8323_MASTERMODE_BCLKDIV: u32 = 0x1f;
+pub const ES8323_MASTERMODE_BCLKINV: u32 = 1 << 5;
+pub const ES8323_MASTERMODE_MCLKDIV2: u32 = 1 << 6;
+pub const ES8323_MASTERMODE_MSC: u32 = 1 << 7;
+
+/* ADC Control */
+pub const ES8323_ADCCONTROL1: u32 = 0x09;
+
+pub const ES8323_ADCCONTROL1_MICAMPR_OFF: u32 = 0;
+pub const ES8323_ADCCONTROL1_MICAMPL_OFF: u32 = 4;
+
+pub const ES8323_ADCCONTROL2: u32 = 0x0a;
+pub const ES8323_ADCCONTROL3: u32 = 0x0b;
+pub const ES8323_ADCCONTROL4: u32 = 0x0c;
+
+pub const ES8323_ADCCONTROL4_ADCFORMAT: u32 = 0x03;
+pub const ES8323_FMT_I2S: u32 = 0x0;
+pub const ES8323_FMT_LEFT_J: u32 = 0x1;
+pub const ES8323_FMT_RIGHT_J: u32 = 0x2;
+pub const ES8323_FMT_DSP: u32 = 0x3;
+pub const ES8323_ADCCONTROL4_ADCWL: u32 = 0x1c;
+pub const ES8323_S24_LE: u32 = 0x0;
+pub const ES8323_S20_LE: u32 = 0x1;
+pub const ES8323_S18_LE: u32 = 0x2;
+pub const ES8323_S16_LE: u32 = 0x3;
+pub const ES8323_S32_LE: u32 = 0x4;
+pub const ES8323_ADCCONTROL4_ADCLRP: u32 = 1 << 5;
+pub const ES8323_ADCCONTROL4_DATSEL: u32 = 0xc0;
+
+pub const ES8323_ADCCONTROL5: u32 = 0x0d;
+
+pub const ES8323_ADCCONTROL5_ADCFSRATIO: u32 = 0x1f;
+pub const ES8323_ADCCONTROL5_ADCFSMODE: u32 = 1 << 5;
+pub const ES8323_ADCCONTROL5_ADCFS_MASK: u32 =
+    ES8323_ADCCONTROL5_ADCFSRATIO | ES8323_ADCCONTROL5_ADCFSMODE;
+
+pub const ES8323_ADCCONTROL6: u32 = 0x0e;
+pub const ES8323_ADCCONTROL7: u32 = 0x0f;
+
+pub const ES8323_ADCCONTROL7_ADCMUTE_OFF: u32 = 2;
+
+pub const ES8323_LADC_VOL: u32 = 0x10;
+pub const ES8323_RADC_VOL: u32 = 0x11;
+pub const ES8323_ADCCONTROL10: u32 = 0x12;
+pub const ES8323_ADCCONTROL11: u32 = 0x13;
+pub const ES8323_ADCCONTROL12: u32 = 0x14;
+
+pub const ES8323_ADCCONTROL12_ALCATK_OFF: u32 = 0;
+pub const ES8323_ADCCONTROL12_ALCDCY_OFF: u32 = 4;
+
+pub const ES8323_ADCCONTROL13: u32 = 0x15;
+
+pub const ES8323_ADCCONTROL13_TIMEOUT_OFF: u32 = 5;
+pub const ES8323_ADCCONTROL13_ALCZC_OFF: u32 = 6;
+
+pub const ES8323_ADCCONTROL14: u32 = 0x16;
+
+pub const ES8323_ADCCONTROL14_NGAT_OFF: u32 = 0;
+pub const ES8323_ADCCONTROL14_NGG_OFF: u32 = 1;
+pub const ES8323_ADCCONTROL14_NGTH_OFF: u32 = 3;
+
+/* DAC Control */
+pub const ES8323_DACCONTROL1: u32 = 0x17;
+
+pub const ES8323_DACCONTROL1_DACFORMAT: u32 = 0x03;
+pub const ES8323_DACCONTROL1_DACWL: u32 = 0x38;
+pub const ES8323_DACCONTROL1_DACLRP: u32 = 1 << 6;
+pub const ES8323_DACCONTROL1_DACLRSWAP: u32 = 1 << 7;
+
+pub const ES8323_DACCONTROL2: u32 = 0x18;
+
+pub const ES8323_DACCONTROL2_DACFSRATIO: u32 = 0x1f;
+pub const ES8323_DACCONTROL2_DACFSMODE: u32 = 1 << 5;
+pub const ES8323_DACCONTROL2_DACFS_MASK: u32 =
+    ES8323_DACCONTROL2_DACFSRATIO | ES8323_DACCONTROL2_DACFSMODE;
+
+pub const ES8323_DACCONTROL3: u32 = 0x19;
+
+pub const ES8323_DACCONTROL3_DACMUTE: u32 = 1 << 2;
+
+pub const ES8323_LDAC_VOL: u32 = 0x1a;
+pub const ES8323_RDAC_VOL: u32 = 0x1b;
+pub const ES8323_DACCONTROL6: u32 = 0x1c;
+pub const ES8323_DACCONTROL7: u32 = 0x1d;
+pub const ES8323_DACCONTROL8: u32 = 0x1e;
+pub const ES8323_DACCONTROL9: u32 = 0x1f;
+pub const ES8323_DACCONTROL10: u32 = 0x20;
+pub const ES8323_DACCONTROL11: u32 = 0x21;
+pub const ES8323_DACCONTROL12: u32 = 0x22;
+pub const ES8323_DACCONTROL13: u32 = 0x23;
+pub const ES8323_DACCONTROL14: u32 = 0x24;
+pub const ES8323_DACCONTROL15: u32 = 0x25;
+pub const ES8323_DACCONTROL16: u32 = 0x26;
+pub const ES8323_DACCONTROL17: u32 = 0x27;
+
+pub const ES8323_DACCONTROL17_LI2LOVOL_OFF: u32 = 3;
+
+pub const ES8323_DACCONTROL18: u32 = 0x28;
+pub const ES8323_DACCONTROL19: u32 = 0x29;
+pub const ES8323_DACCONTROL20: u32 = 0x2a;
+
+pub const ES8323_DACCONTROL20_RI2ROVOL_OFF: u32 = 3;
+
+pub const ES8323_DACCONTROL21: u32 = 0x2b;
+pub const ES8323_DACCONTROL22: u32 = 0x2c;
+pub const ES8323_DACCONTROL23: u32 = 0x2d;
+pub const ES8323_LOUT1_VOL: u32 = 0x2e;
+pub const ES8323_ROUT1_VOL: u32 = 0x2f;
+pub const ES8323_LOUT2_VOL: u32 = 0x30;
+pub const ES8323_ROUT2_VOL: u32 = 0x31;
+pub const ES8323_DACCONTROL28: u32 = 0x32;
+pub const ES8323_DACCONTROL29: u32 = 0x33;
+pub const ES8323_DACCONTROL30: u32 = 0x34;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -186,3 +186,5 @@ unsafe fn test__parse_no_sample_id_all(
 }
 
 // DEFINE_SUITE("Parse with no sample_id_all bit set", parse_no_sample_id_all);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

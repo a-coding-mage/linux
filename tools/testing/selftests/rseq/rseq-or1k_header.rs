@@ -267,3 +267,5 @@ macro_rules! RSEQ_ASM_OP_R_DEREF_ADDV {
 /* APIs which are not based on cpu ids. */
 
 /* RSEQ_TEMPLATE_CPU_ID_NONE + RSEQ_TEMPLATE_MO_RELAXED included "rseq-or1k-bits.h" here. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

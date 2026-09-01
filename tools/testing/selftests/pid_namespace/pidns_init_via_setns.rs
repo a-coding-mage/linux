@@ -302,3 +302,5 @@ pub unsafe fn pidns_init_via_setns_set_tid(_metadata: *mut __test_metadata) {
 }
 
 // TEST_HARNESS_MAIN
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

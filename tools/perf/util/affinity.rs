@@ -158,3 +158,5 @@ pub unsafe extern "C" fn cpu_map__set_affinity(cpumap: *const perf_cpu_map) {
     sched_setaffinity(0, cpu_set_size as usize, cpuset as *mut cpu_set_t);
     zfree(&mut cpuset);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

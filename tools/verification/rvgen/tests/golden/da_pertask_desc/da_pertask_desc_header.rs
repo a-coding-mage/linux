@@ -62,3 +62,5 @@ pub const automaton_da_pertask_desc: automaton_da_pertask_desc = automaton_da_pe
     initial_state: state_a_da_pertask_desc as u8,
     final_states: [true, false, false],
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

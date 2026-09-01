@@ -18,3 +18,5 @@ pub const CAP_BPF: i32 = 39;
 unsafe extern "C" {
     pub fn perf_cap__capable(cap: ::std::os::raw::c_int) -> bool;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

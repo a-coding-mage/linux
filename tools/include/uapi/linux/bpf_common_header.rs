@@ -62,3 +62,5 @@ pub const BPF_X: u32 = 0x08;
 
 /* Defined by the C header only when BPF_MAXINSNS is not already defined. */
 pub const BPF_MAXINSNS: u32 = 4096;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

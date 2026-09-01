@@ -137,3 +137,5 @@ pub unsafe extern "C" fn fork_cleanup() -> c_int {
 pub unsafe extern "C" fn main() -> c_int {
     test_harness(fork_cleanup, c"fork_cleanup".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

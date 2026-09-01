@@ -273,3 +273,5 @@ pub static mut perf_gtk_eops: perf_error_ops = perf_error_ops {
     error: Some(perf_gtk__error),
     warning: Some(perf_gtk__warning_statusbar),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

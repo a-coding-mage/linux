@@ -808,3 +808,5 @@ pub unsafe extern "C" fn perf_evsel__cpus(evsel: *mut perf_evsel) -> *mut perf_c
 pub unsafe extern "C" fn perf_evsel__threads(evsel: *mut perf_evsel) -> *mut perf_thread_map {
     (*evsel).threads
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

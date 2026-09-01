@@ -156,3 +156,5 @@ pub unsafe extern "C" fn access_map_in_htab(_ctx: *mut core::ffi::c_void) -> i32
 pub unsafe extern "C" fn sleepable_access_map_in_htab(_ctx: *mut core::ffi::c_void) -> i32 {
     unsafe { acc_map_in_map(core::ptr::addr_of_mut!(outer_htab_map).cast::<core::ffi::c_void>()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -298,3 +298,5 @@ pub unsafe extern "C" fn map__browse(map: *mut map) -> c_int {
     ) as u8;
     map_browser__run(ptr::addr_of_mut!(mb))
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

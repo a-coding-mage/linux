@@ -412,3 +412,5 @@ pub extern "C" fn __perf_reg_ip_x86() -> u64 {
 pub extern "C" fn __perf_reg_sp_x86() -> u64 {
     PERF_REG_X86_SP as u64
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

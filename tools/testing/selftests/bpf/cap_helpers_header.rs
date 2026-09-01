@@ -20,3 +20,5 @@ unsafe extern "C" {
     pub fn cap_enable_effective(caps: __u64, old_caps: *mut __u64) -> i32;
     pub fn cap_disable_effective(caps: __u64, old_caps: *mut __u64) -> i32;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

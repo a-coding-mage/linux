@@ -1296,3 +1296,5 @@ unsafe fn BPF_CALL_REL(imm: c_int) -> bpf_insn { BPF_RAW_INSN(BPF_JMP | BPF_CALL
 unsafe fn BPF_EMIT_CALL(func: c_int) -> bpf_insn { BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, func) }
 unsafe fn BPF_LD_MAP_FD(dst: c_int, fd: c_int) -> bpf_insn { BPF_RAW_INSN(BPF_LD | BPF_DW | BPF_IMM, dst, 1, 0, fd) }
 unsafe fn BPF_LD_IMM64(dst: c_int, imm: u64) -> [bpf_insn; 2] { [BPF_RAW_INSN(BPF_LD | BPF_DW | BPF_IMM, dst, 0, 0, imm as i32), BPF_RAW_INSN(0, 0, 0, 0, (imm >> 32) as i32)] }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

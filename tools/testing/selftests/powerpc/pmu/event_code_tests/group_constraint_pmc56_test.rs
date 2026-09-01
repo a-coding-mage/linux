@@ -89,3 +89,5 @@ unsafe extern "C" fn group_constraint_pmc56() -> c_int {
 fn main() -> c_int {
     unsafe { test_harness(group_constraint_pmc56, b"group_constraint_pmc56\0".as_ptr().cast()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -257,3 +257,5 @@ pub static bench_bpf_rhashmap_full_update: bench = bench {
     report_progress: None,
     report_final: Some(hashmap_report_final),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

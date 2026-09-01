@@ -11,3 +11,5 @@ pub const NO_UNROLL: bool = true;
 
 // The original C source includes "strobemeta.h" here, which supplies the
 // implementation parameterized by the constants above.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

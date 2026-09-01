@@ -71,3 +71,5 @@ pub struct card_cfg_data {
 unsafe extern "C" {
     pub static mut conf_cards: *mut card_cfg_data;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -357,3 +357,5 @@ pub unsafe extern "C" fn arch__new_s390(
     (*arch).objdump.comment_char = b'#' as c_char;
     arch
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

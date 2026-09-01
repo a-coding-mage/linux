@@ -53,3 +53,5 @@ pub unsafe extern "C" fn main(_argc: libc::c_int, _argv: *mut *mut libc::c_char)
         b"tm_signal_sigreturn_nt\0".as_ptr() as *const libc::c_char,
     )
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

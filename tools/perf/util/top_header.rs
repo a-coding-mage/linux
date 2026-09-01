@@ -70,3 +70,5 @@ unsafe extern "C" {
     pub fn perf_top__header_snprintf(top: *mut perf_top, bf: *mut c_char, size: usize) -> usize;
     pub fn perf_top__reset_sample_counters(top: *mut perf_top);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

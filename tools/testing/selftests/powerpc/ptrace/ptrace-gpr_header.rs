@@ -112,3 +112,5 @@ pub unsafe extern "C" fn validate_fpr_double(fpr: *mut f64, val: f64) -> c_int {
     }
     TEST_PASS
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

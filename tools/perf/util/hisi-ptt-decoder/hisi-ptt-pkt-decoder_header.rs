@@ -44,3 +44,5 @@ unsafe extern "C" {
         type_: hisi_ptt_pkt_type,
     ) -> ::std::os::raw::c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

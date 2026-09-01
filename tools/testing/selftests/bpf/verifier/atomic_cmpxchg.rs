@@ -233,3 +233,5 @@ BpfTest {
 	errstr_unpriv: "R10 partial copy of pointer",
 	flags: F_NEEDS_EFFICIENT_UNALIGNED_ACCESS,
 },
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

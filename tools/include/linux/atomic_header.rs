@@ -47,3 +47,5 @@ pub unsafe fn atomic_inc_unless_negative(v: *mut atomic_t) -> bool {
 
     true
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

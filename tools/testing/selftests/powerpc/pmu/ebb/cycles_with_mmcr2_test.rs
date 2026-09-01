@@ -176,3 +176,5 @@ pub unsafe extern "C" fn cycles_with_mmcr2() -> core::ffi::c_int {
 pub unsafe extern "C" fn main() -> core::ffi::c_int {
     unsafe { test_harness(cycles_with_mmcr2, c"cycles_with_mmcr2".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

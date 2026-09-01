@@ -85,3 +85,5 @@ unsafe extern "C" {
 
     pub fn blake2s_final(ctx: *mut blake2s_ctx, out: *mut u8);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

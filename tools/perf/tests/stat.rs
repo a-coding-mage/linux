@@ -298,3 +298,5 @@ unsafe extern "C" fn test__synthesize_stat_round(
 // DEFINE_SUITE("Synthesize stat", synthesize_stat);
 // DEFINE_SUITE("Synthesize stat round", synthesize_stat_round);
 
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

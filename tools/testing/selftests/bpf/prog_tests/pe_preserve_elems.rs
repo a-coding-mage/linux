@@ -194,3 +194,5 @@ pub unsafe extern "C" fn test_pe_preserve_elems() {
 
     test_pe_preserve_elems__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

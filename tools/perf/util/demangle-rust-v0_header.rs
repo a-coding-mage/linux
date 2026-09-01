@@ -89,3 +89,5 @@ unsafe extern "C" {
     /// Returns true if `res` refers to a known valid Rust demangling style, false if it's an unknown style.
     pub fn rust_demangle_is_known(res: *mut demangle) -> bool;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -175,3 +175,5 @@ pub unsafe extern "C" fn dscr_sysfs() -> c_int {
 pub unsafe extern "C" fn main(_argc: c_int, _argv: *mut *mut c_char) -> c_int {
     unsafe { test_harness(dscr_sysfs, c"dscr_sysfs_test".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

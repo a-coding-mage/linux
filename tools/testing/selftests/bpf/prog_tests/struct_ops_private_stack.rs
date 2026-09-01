@@ -214,3 +214,5 @@ unsafe fn __test_struct_ops_private_stack() {
 pub unsafe extern "C" fn test_struct_ops_private_stack() {
     __test_struct_ops_private_stack();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

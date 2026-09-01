@@ -138,3 +138,5 @@ pub unsafe extern "C" fn handle_modern(ctx: *mut core::ffi::c_void) -> i32 {
 
     unsafe { core::ptr::read_volatile(core::ptr::addr_of!(res_var)) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

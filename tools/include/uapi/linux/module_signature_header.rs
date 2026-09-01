@@ -38,3 +38,5 @@ pub struct module_signature {
     pub __pad: [u8; 3],
     pub sig_len: u32,      /* Length of signature data, big-endian __be32 */
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

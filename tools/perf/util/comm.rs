@@ -329,3 +329,5 @@ pub unsafe extern "C" fn comm__free(comm: *mut comm) {
 pub unsafe extern "C" fn comm__str(comm: *const comm) -> *const c_char {
     comm_str__str((*comm).comm_str)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

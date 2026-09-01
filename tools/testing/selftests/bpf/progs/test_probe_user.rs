@@ -94,3 +94,5 @@ pub unsafe extern "C" fn handle_sys_socketcall(call: c_int, args: *mut c_ulong) 
 #[no_mangle]
 #[link_section = "license"]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

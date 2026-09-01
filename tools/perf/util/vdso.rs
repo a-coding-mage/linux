@@ -509,3 +509,5 @@ pub unsafe extern "C" fn dso__is_vdso(dso: *mut dso) -> bool {
         || strcmp(dso__short_name(dso), DSO__NAME_VDSO32) == 0
         || strcmp(dso__short_name(dso), DSO__NAME_VDSOX32) == 0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

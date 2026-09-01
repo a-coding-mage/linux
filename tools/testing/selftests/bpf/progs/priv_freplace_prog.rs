@@ -23,3 +23,5 @@ pub struct xdp_md {
 pub unsafe extern "C" fn new_xdp_prog2(xd: *mut xdp_md) -> i32 {
     unsafe { XDP_DROP }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

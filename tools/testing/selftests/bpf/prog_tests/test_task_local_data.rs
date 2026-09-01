@@ -587,3 +587,5 @@ pub unsafe extern "C" fn test_task_local_data() {
         test_task_local_data_dyn_size(0);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

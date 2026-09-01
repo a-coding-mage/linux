@@ -169,3 +169,5 @@ pub unsafe extern "C" fn iteration_test2(test_duration: c_uint) {
         xa_destroy(&mut array);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

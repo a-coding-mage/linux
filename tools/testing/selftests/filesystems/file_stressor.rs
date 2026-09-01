@@ -312,3 +312,5 @@ unsafe fn file_stressor_slab_typesafe_by_rcu(self_: *mut file_stressor) {
 
 // Translated from TEST_HARNESS_MAIN. The concrete kselftest Rust harness entry
 // point is an external build dependency in the original repository context.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

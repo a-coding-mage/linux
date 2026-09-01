@@ -684,3 +684,5 @@ pub unsafe extern "C" fn perf_stat__skip_metric_event(evsel: *mut evsel) -> bool
 
     metricgroup__lookup(evlist__metric_events((*evsel).evlist), evsel, false).is_null()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

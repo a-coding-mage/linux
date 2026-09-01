@@ -121,3 +121,5 @@ unsafe extern "C" fn regs_access_pmccext() -> libc::c_int {
 pub unsafe extern "C" fn main() -> libc::c_int {
     test_harness(regs_access_pmccext, c"regs_access_pmccext".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -49,3 +49,5 @@ pub fn __nolibc_minor(dev: dev_t) -> ::core::ffi::c_uint {
 pub fn minor(dev: dev_t) -> ::core::ffi::c_uint {
     __nolibc_minor(dev)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

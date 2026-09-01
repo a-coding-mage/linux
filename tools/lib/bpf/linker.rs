@@ -3006,3 +3006,5 @@ unsafe fn finalize_btf_ext(linker: *mut bpf_linker) -> c_int {
     free(data);
     err
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

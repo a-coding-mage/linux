@@ -490,3 +490,5 @@ pub static mut AMD_FAM14H_MONITOR: cpuidle_monitor = cpuidle_monitor {
     flags: cpuidle_monitor_flags { needs_root: 1 },
     overflow_s: OVERFLOW_MS / 1000,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

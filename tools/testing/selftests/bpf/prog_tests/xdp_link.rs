@@ -309,3 +309,5 @@ unsafe fn goto_cleanup(skel1: *mut test_xdp_link, skel2: *mut test_xdp_link) {
 	test_xdp_link__destroy(skel1);
 	test_xdp_link__destroy(skel2);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -274,3 +274,5 @@ pub unsafe extern "C" fn memchr_inv(start: *const c_void, c: c_int, bytes: size_
 
     check_bytes8(start, value, (bytes % 8) as c_uint)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

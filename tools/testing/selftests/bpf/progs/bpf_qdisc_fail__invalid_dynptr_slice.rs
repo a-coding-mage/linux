@@ -165,3 +165,5 @@ pub static mut test: Qdisc_ops = Qdisc_ops {
     destroy: bpf_qdisc_test_destroy as *mut core::ffi::c_void,
     id: b"bpf_qdisc_test\0".as_ptr(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

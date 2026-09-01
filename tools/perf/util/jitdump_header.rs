@@ -169,3 +169,5 @@ pub unsafe fn debug_entry_next(ent: *mut debug_entry) -> *mut debug_entry {
 pub unsafe fn debug_entry_file(ent: *mut debug_entry) -> *mut c_char {
     unsafe { ent.add(1) as *mut c_char }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

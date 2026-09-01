@@ -1535,3 +1535,5 @@ unsafe fn goto_out_put_evlist(top: *mut perf_top, host_env: *mut perf_env) {
 unsafe extern "C" {
     fn hists__init() -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

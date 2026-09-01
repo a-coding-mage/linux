@@ -77,3 +77,5 @@ pub unsafe extern "C" fn test_kfunc_implicit_arg_legacy_impl(
     let _ = ctx;
     bpf_kfunc_implicit_arg_legacy_impl(5, 6, core::ptr::null_mut())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

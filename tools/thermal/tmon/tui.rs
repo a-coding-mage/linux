@@ -862,3 +862,5 @@ pub unsafe extern "C" fn show_sensors_w() {
 pub unsafe extern "C" fn disable_tui() {
 	tui_disabled = 1;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

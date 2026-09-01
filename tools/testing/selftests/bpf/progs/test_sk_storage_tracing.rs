@@ -233,3 +233,5 @@ pub unsafe extern "C" fn tcp_bad_csum(skb: *mut sk_buff) -> ::core::ffi::c_int {
 #[no_mangle]
 #[link_section = "license"]
 pub static _license: [::core::ffi::c_char; 4] = [b'G' as _, b'P' as _, b'L' as _, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

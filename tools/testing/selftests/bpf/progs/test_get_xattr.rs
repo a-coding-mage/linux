@@ -184,3 +184,5 @@ pub unsafe extern "C" fn test_inode_getxattr(dentry: *mut dentry, name: *mut u8)
     /* return non-zero to fail getxattr from user space */
     return -EINVAL;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

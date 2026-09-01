@@ -856,3 +856,5 @@ unsafe fn test__switch_tracking(_test: *mut test_suite, _subtest: c_int) -> c_in
 }
 
 /* DEFINE_SUITE_EXCLUSIVE("Track with sched_switch", switch_tracking); */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

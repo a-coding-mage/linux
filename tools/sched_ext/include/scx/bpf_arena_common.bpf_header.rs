@@ -156,3 +156,5 @@ unsafe extern "C" {
     pub fn bpf_preempt_enable();
     pub fn bpf_arena_mapping_nr_pages(p__map: *mut core::ffi::c_void) -> ssize_t;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

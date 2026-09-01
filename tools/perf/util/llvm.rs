@@ -604,3 +604,5 @@ unsafe fn goto_err(disasm: LLVMDisasmContextRef, code_buf: *mut u8, line_storage
     free(code_buf as *mut c_void);
     free(line_storage as *mut c_void);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

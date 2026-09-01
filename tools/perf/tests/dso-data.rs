@@ -643,3 +643,5 @@ pub static mut suite__dso_data: test_suite_with_cases = test_suite_with_cases {
     desc: c"DSO data tests".as_ptr(),
     test_cases: ptr::addr_of_mut!(TESTS__DSO_DATA).cast::<test_case>(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

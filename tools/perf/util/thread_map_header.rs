@@ -48,3 +48,5 @@ unsafe extern "C" {
     pub fn thread_map__has(threads: *mut perf_thread_map, pid: pid_t) -> bool;
     pub fn thread_map__remove(threads: *mut perf_thread_map, idx: c_int) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

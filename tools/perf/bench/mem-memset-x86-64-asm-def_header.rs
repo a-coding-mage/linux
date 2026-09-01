@@ -15,3 +15,5 @@ MEMSET_FN!(
     "x86-64-stosq",
     "movsq-based memset() in arch/x86/lib/memset_64.S"
 );
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1588,3 +1588,5 @@ pub unsafe extern "C" fn test_uprobe_multi_test() {
     if test__start_subtest(c"session_cookie_recursive".as_ptr()) { test_session_recursive_skel_api(); }
     RUN_TESTS_uprobe_multi_verifier();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

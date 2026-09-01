@@ -960,3 +960,5 @@ pub static mut test_infinite_loop_input_report: hid_bpf_ops = hid_bpf_ops {
     hid_id: 0,
     flags: 0,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -609,3 +609,5 @@ pub unsafe extern "C" fn to_packet_test21_wrong_reg() {
 #[link_section = "license"]
 #[no_mangle]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

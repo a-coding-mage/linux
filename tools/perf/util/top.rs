@@ -243,3 +243,5 @@ pub unsafe extern "C" fn perf_top__reset_sample_counters(top: *mut perf_top) {
     (*top).us_samples = (*top).kernel_samples;
     (*top).samples = (*top).us_samples;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

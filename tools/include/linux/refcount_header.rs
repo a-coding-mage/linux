@@ -229,3 +229,5 @@ pub unsafe fn refcount_sub_and_test(i: u32, r: *mut refcount_t) -> bool {
 pub unsafe fn refcount_dec_and_test(r: *mut refcount_t) -> bool {
     unsafe { refcount_sub_and_test(1, r) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

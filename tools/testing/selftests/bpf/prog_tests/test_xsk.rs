@@ -1789,3 +1789,5 @@ pub unsafe extern "C" fn ifobject_delete(ifobj: *mut ifobject) {
     free((*ifobj).xsk_arr as *mut c_void);
     free(ifobj as *mut c_void);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

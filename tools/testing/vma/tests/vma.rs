@@ -680,3 +680,5 @@ unsafe fn run_vma_tests(num_tests: *mut ::core::ffi::c_int, num_fail: *mut ::cor
     TEST!(append_vma_flags);
     TEST!(vma_flags_count);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

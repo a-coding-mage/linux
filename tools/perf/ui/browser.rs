@@ -968,3 +968,5 @@ pub unsafe extern "C" fn ui_browser__init() {
         SLtt_set_color((*c).colorset, (*c).name, (*c).fg, (*c).bg);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

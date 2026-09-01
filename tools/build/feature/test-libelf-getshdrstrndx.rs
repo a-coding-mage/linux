@@ -14,3 +14,5 @@ fn main() -> c_int {
 
     unsafe { elf_getshdrstrndx(core::ptr::null_mut(), &mut dst) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

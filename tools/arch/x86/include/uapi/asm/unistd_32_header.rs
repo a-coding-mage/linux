@@ -32,3 +32,5 @@ pub const __NR_setns: u32 = 346;
 
 // C header guard-style condition: define only if __NR_seccomp is not already defined.
 pub const __NR_seccomp: u32 = 354;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

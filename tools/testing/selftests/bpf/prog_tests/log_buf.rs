@@ -534,3 +534,5 @@ pub unsafe extern "C" fn test_log_buf() {
         bpf_btf_load_log_buf();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

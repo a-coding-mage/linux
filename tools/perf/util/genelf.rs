@@ -701,3 +701,5 @@ unsafe fn goto_error(e: *mut Elf, strsym: *mut c_char, _retval: c_int) {
 unsafe fn void_elf_end(e: *mut Elf) {
     let _ = elf_end(e);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

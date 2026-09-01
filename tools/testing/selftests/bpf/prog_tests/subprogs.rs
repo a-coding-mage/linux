@@ -173,3 +173,5 @@ pub unsafe extern "C" fn test_subprogs() {
         test_subprogs_with_jit_harden_toggling();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

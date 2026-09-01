@@ -1607,3 +1607,5 @@ pub unsafe extern "C" fn bpf_gen__map_freeze(gen: *mut bpf_gen, map_idx: c_int) 
     debug_ret(gen, cstr!("map_freeze"));
     emit_check_err(gen);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

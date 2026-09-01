@@ -18,3 +18,5 @@ pub const BITS_PER_LONG_LONG: usize = 64;
 pub const fn small_const_nbits(nbits: usize) -> bool {
     nbits <= BITS_PER_LONG && nbits > 0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

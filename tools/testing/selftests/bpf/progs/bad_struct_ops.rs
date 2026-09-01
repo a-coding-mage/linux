@@ -55,3 +55,5 @@ pub static mut testmod_1: bpf_testmod_ops_init = bpf_testmod_ops_init {
 pub static mut testmod_2: bpf_testmod_ops2_init = bpf_testmod_ops2_init {
     test_1: test_1 as *mut ::core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

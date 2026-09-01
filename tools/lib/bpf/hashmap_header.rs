@@ -291,3 +291,5 @@ macro_rules! hashmap__find {
  * hashmap__for_each_key_entry_safe is the keyed iteration variant that stores
  * cur->next into tmp before each loop body and applies the same equal_fn guard.
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -901,3 +901,5 @@ fn main() {
     rapid_cred_changes_no_leak();
     setfsuid_preserves_active_refs();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

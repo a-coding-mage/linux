@@ -36,3 +36,5 @@ pub unsafe extern "C" fn test1(ctx: *mut pt_regs) -> i32 {
     test1_result = ((addr as *const c_void) == ((uprobe_trigger_body as *const c_void).add(1))) as __u64;
     return 0;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

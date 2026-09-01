@@ -103,3 +103,5 @@ pub static mut epilogue_subprog: bpf_testmod_st_ops = bpf_testmod_st_ops {
 pub unsafe extern "C" fn syscall_epilogue_tailcall(args: *mut st_ops_args) -> i32 {
     unsafe { bpf_kfunc_st_ops_test_epilogue(args) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

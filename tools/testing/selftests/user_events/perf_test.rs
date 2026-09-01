@@ -372,3 +372,5 @@ fn main() -> c_int {
     argv.push(ptr::null_mut());
     unsafe { test_harness_run(argc, argv.as_mut_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

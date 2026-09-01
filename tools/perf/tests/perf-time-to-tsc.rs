@@ -457,3 +457,5 @@ pub static mut suite__perf_time_to_tsc: test_suite = test_suite {
     desc: c"Convert perf time to TSC".as_ptr(),
     test_cases: unsafe { time_to_tsc_tests.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

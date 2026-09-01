@@ -571,3 +571,5 @@ pub static mut bperf_cgrp_ops: bpf_counter_ops = bpf_counter_ops {
     install_pe: Some(bperf_cgrp__install_pe),
     destroy: Some(bperf_cgrp__destroy),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

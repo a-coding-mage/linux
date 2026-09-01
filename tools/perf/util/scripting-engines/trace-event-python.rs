@@ -1471,3 +1471,5 @@ pub static mut python_scripting_ops: scripting_ops = scripting_ops {
     process_throttle: Some(python_process_throttle),
     generate_script: Some(python_generate_script),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

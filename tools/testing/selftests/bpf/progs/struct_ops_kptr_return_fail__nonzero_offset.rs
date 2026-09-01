@@ -50,3 +50,5 @@ pub unsafe extern "C" fn kptr_return_fail__nonzero_offset(
 pub static mut testmod_kptr_return: bpf_testmod_ops = bpf_testmod_ops {
     test_return_ref_kptr: kptr_return_fail__nonzero_offset as *mut core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

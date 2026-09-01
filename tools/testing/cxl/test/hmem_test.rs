@@ -87,3 +87,5 @@ const _HMEM_TEST_MODULE_PARAM_MODE: c_uint = 0o444;
 // MODULE_PARM_DESC(hmem_test, "Enable/disable the dax_hmem test platform device");
 const _HMEM_TEST_MODULE_PARAM_DESC: &[u8; 55] =
     b"Enable/disable the dax_hmem test platform device\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

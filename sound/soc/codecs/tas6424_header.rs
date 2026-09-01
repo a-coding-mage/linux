@@ -1,0 +1,158 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * ALSA SoC Texas Instruments TAS6424 Quad-Channel Audio Amplifier
+ *
+ * Copyright (C) 2016-2017 Texas Instruments Incorporated - https://www.ti.com/
+ *	Author: Andreas Dannenberg <dannenberg@ti.com>
+ *	Andrew F. Davis <afd@ti.com>
+ */
+
+// C header guard __TAS6424_H__ omitted in Rust.
+// Depends on external SNDRV_PCM_RATE_*, SNDRV_PCM_FMTBIT_*, BIT(), and GENMASK().
+
+pub const TAS6424_RATES: u32 = SNDRV_PCM_RATE_44100 |
+    SNDRV_PCM_RATE_48000 |
+    SNDRV_PCM_RATE_96000;
+
+pub const TAS6424_FORMATS: u32 = SNDRV_PCM_FMTBIT_S16_LE |
+    SNDRV_PCM_FMTBIT_S24_LE;
+
+/* Register Address Map */
+pub const TAS6424_MODE_CTRL: u32 = 0x00;
+pub const TAS6424_MISC_CTRL1: u32 = 0x01;
+pub const TAS6424_MISC_CTRL2: u32 = 0x02;
+pub const TAS6424_SAP_CTRL: u32 = 0x03;
+pub const TAS6424_CH_STATE_CTRL: u32 = 0x04;
+pub const TAS6424_CH1_VOL_CTRL: u32 = 0x05;
+pub const TAS6424_CH2_VOL_CTRL: u32 = 0x06;
+pub const TAS6424_CH3_VOL_CTRL: u32 = 0x07;
+pub const TAS6424_CH4_VOL_CTRL: u32 = 0x08;
+pub const TAS6424_DC_DIAG_CTRL1: u32 = 0x09;
+pub const TAS6424_DC_DIAG_CTRL2: u32 = 0x0a;
+pub const TAS6424_DC_DIAG_CTRL3: u32 = 0x0b;
+pub const TAS6424_DC_LOAD_DIAG_REP12: u32 = 0x0c;
+pub const TAS6424_DC_LOAD_DIAG_REP34: u32 = 0x0d;
+pub const TAS6424_DC_LOAD_DIAG_REPLO: u32 = 0x0e;
+pub const TAS6424_CHANNEL_STATE: u32 = 0x0f;
+pub const TAS6424_CHANNEL_FAULT: u32 = 0x10;
+pub const TAS6424_GLOB_FAULT1: u32 = 0x11;
+pub const TAS6424_GLOB_FAULT2: u32 = 0x12;
+pub const TAS6424_WARN: u32 = 0x13;
+pub const TAS6424_PIN_CTRL: u32 = 0x14;
+pub const TAS6424_AC_DIAG_CTRL1: u32 = 0x15;
+pub const TAS6424_AC_DIAG_CTRL2: u32 = 0x16;
+pub const TAS6424_AC_LOAD_DIAG_REP1: u32 = 0x17;
+pub const TAS6424_AC_LOAD_DIAG_REP2: u32 = 0x18;
+pub const TAS6424_AC_LOAD_DIAG_REP3: u32 = 0x19;
+pub const TAS6424_AC_LOAD_DIAG_REP4: u32 = 0x1a;
+pub const TAS6424_MISC_CTRL3: u32 = 0x21;
+pub const TAS6424_CLIP_CTRL: u32 = 0x22;
+pub const TAS6424_CLIP_WINDOW: u32 = 0x23;
+pub const TAS6424_CLIP_WARN: u32 = 0x24;
+pub const TAS6424_CBC_STAT: u32 = 0x25;
+pub const TAS6424_MISC_CTRL4: u32 = 0x26;
+pub const TAS6424_MAX: u32 = TAS6424_MISC_CTRL4;
+
+/* TAS6424_MODE_CTRL_REG */
+pub const TAS6424_RESET: u32 = BIT(7);
+
+/* TAS6424_SAP_CTRL_REG */
+pub const TAS6424_SAP_RATE_MASK: u32 = GENMASK(7, 6);
+pub const TAS6424_SAP_RATE_44100: u32 = 0x00 << 6;
+pub const TAS6424_SAP_RATE_48000: u32 = 0x01 << 6;
+pub const TAS6424_SAP_RATE_96000: u32 = 0x02 << 6;
+pub const TAS6424_SAP_TDM_SLOT_LAST: u32 = BIT(5);
+pub const TAS6424_SAP_TDM_SLOT_SZ_16: u32 = BIT(4);
+pub const TAS6424_SAP_TDM_SLOT_SWAP: u32 = BIT(3);
+pub const TAS6424_SAP_FMT_MASK: u32 = GENMASK(2, 0);
+pub const TAS6424_SAP_RIGHTJ_24: u32 = 0x00 << 0;
+pub const TAS6424_SAP_RIGHTJ_20: u32 = 0x01 << 0;
+pub const TAS6424_SAP_RIGHTJ_18: u32 = 0x02 << 0;
+pub const TAS6424_SAP_RIGHTJ_16: u32 = 0x03 << 0;
+pub const TAS6424_SAP_I2S: u32 = 0x04 << 0;
+pub const TAS6424_SAP_LEFTJ: u32 = 0x05 << 0;
+pub const TAS6424_SAP_DSP: u32 = 0x06 << 0;
+
+/* TAS6424_CH_STATE_CTRL_REG */
+pub const TAS6424_CH1_STATE_MASK: u32 = GENMASK(7, 6);
+pub const TAS6424_CH1_STATE_PLAY: u32 = 0x00 << 6;
+pub const TAS6424_CH1_STATE_HIZ: u32 = 0x01 << 6;
+pub const TAS6424_CH1_STATE_MUTE: u32 = 0x02 << 6;
+pub const TAS6424_CH1_STATE_DIAG: u32 = 0x03 << 6;
+pub const TAS6424_CH2_STATE_MASK: u32 = GENMASK(5, 4);
+pub const TAS6424_CH2_STATE_PLAY: u32 = 0x00 << 4;
+pub const TAS6424_CH2_STATE_HIZ: u32 = 0x01 << 4;
+pub const TAS6424_CH2_STATE_MUTE: u32 = 0x02 << 4;
+pub const TAS6424_CH2_STATE_DIAG: u32 = 0x03 << 4;
+pub const TAS6424_CH3_STATE_MASK: u32 = GENMASK(3, 2);
+pub const TAS6424_CH3_STATE_PLAY: u32 = 0x00 << 2;
+pub const TAS6424_CH3_STATE_HIZ: u32 = 0x01 << 2;
+pub const TAS6424_CH3_STATE_MUTE: u32 = 0x02 << 2;
+pub const TAS6424_CH3_STATE_DIAG: u32 = 0x03 << 2;
+pub const TAS6424_CH4_STATE_MASK: u32 = GENMASK(1, 0);
+pub const TAS6424_CH4_STATE_PLAY: u32 = 0x00 << 0;
+pub const TAS6424_CH4_STATE_HIZ: u32 = 0x01 << 0;
+pub const TAS6424_CH4_STATE_MUTE: u32 = 0x02 << 0;
+pub const TAS6424_CH4_STATE_DIAG: u32 = 0x03 << 0;
+pub const TAS6424_ALL_STATE_PLAY: u32 = TAS6424_CH1_STATE_PLAY |
+    TAS6424_CH2_STATE_PLAY |
+    TAS6424_CH3_STATE_PLAY |
+    TAS6424_CH4_STATE_PLAY;
+pub const TAS6424_ALL_STATE_HIZ: u32 = TAS6424_CH1_STATE_HIZ |
+    TAS6424_CH2_STATE_HIZ |
+    TAS6424_CH3_STATE_HIZ |
+    TAS6424_CH4_STATE_HIZ;
+pub const TAS6424_ALL_STATE_MUTE: u32 = TAS6424_CH1_STATE_MUTE |
+    TAS6424_CH2_STATE_MUTE |
+    TAS6424_CH3_STATE_MUTE |
+    TAS6424_CH4_STATE_MUTE;
+pub const TAS6424_ALL_STATE_DIAG: u32 = TAS6424_CH1_STATE_DIAG |
+    TAS6424_CH2_STATE_DIAG |
+    TAS6424_CH3_STATE_DIAG |
+    TAS6424_CH4_STATE_DIAG;
+
+/* TAS6424_DC_DIAG_CTRL1 */
+pub const TAS6424_LDGBYPASS_SHIFT: u32 = 0;
+pub const TAS6424_LDGBYPASS_MASK: u32 = BIT(TAS6424_LDGBYPASS_SHIFT);
+
+/* TAS6424_GLOB_FAULT1_REG */
+pub const TAS6424_FAULT_OC_CH1: u32 = BIT(7);
+pub const TAS6424_FAULT_OC_CH2: u32 = BIT(6);
+pub const TAS6424_FAULT_OC_CH3: u32 = BIT(5);
+pub const TAS6424_FAULT_OC_CH4: u32 = BIT(4);
+pub const TAS6424_FAULT_DC_CH1: u32 = BIT(3);
+pub const TAS6424_FAULT_DC_CH2: u32 = BIT(2);
+pub const TAS6424_FAULT_DC_CH3: u32 = BIT(1);
+pub const TAS6424_FAULT_DC_CH4: u32 = BIT(0);
+
+/* TAS6424_GLOB_FAULT1_REG */
+pub const TAS6424_FAULT_CLOCK: u32 = BIT(4);
+pub const TAS6424_FAULT_PVDD_OV: u32 = BIT(3);
+pub const TAS6424_FAULT_VBAT_OV: u32 = BIT(2);
+pub const TAS6424_FAULT_PVDD_UV: u32 = BIT(1);
+pub const TAS6424_FAULT_VBAT_UV: u32 = BIT(0);
+
+/* TAS6424_GLOB_FAULT2_REG */
+pub const TAS6424_FAULT_OTSD: u32 = BIT(4);
+pub const TAS6424_FAULT_OTSD_CH1: u32 = BIT(3);
+pub const TAS6424_FAULT_OTSD_CH2: u32 = BIT(2);
+pub const TAS6424_FAULT_OTSD_CH3: u32 = BIT(1);
+pub const TAS6424_FAULT_OTSD_CH4: u32 = BIT(0);
+
+/* TAS6424_WARN_REG */
+pub const TAS6424_WARN_VDD_UV: u32 = BIT(6);
+pub const TAS6424_WARN_VDD_POR: u32 = BIT(5);
+pub const TAS6424_WARN_VDD_OTW: u32 = BIT(4);
+pub const TAS6424_WARN_VDD_OTW_CH1: u32 = BIT(3);
+pub const TAS6424_WARN_VDD_OTW_CH2: u32 = BIT(2);
+pub const TAS6424_WARN_VDD_OTW_CH3: u32 = BIT(1);
+pub const TAS6424_WARN_VDD_OTW_CH4: u32 = BIT(0);
+
+/* TAS6424_MISC_CTRL3_REG */
+pub const TAS6424_CLEAR_FAULT: u32 = BIT(7);
+pub const TAS6424_PBTL_CH_SEL: u32 = BIT(6);
+pub const TAS6424_MASK_CBC_WARN: u32 = BIT(5);
+pub const TAS6424_MASK_VDD_UV: u32 = BIT(4);
+pub const TAS6424_OTSD_AUTO_RECOVERY: u32 = BIT(3);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

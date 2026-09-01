@@ -509,3 +509,5 @@ unsafe extern "C" fn test_klp_shadow_vars_exit() {}
 // MODULE_LICENSE("GPL");
 // MODULE_AUTHOR("Joe Lawrence <joe.lawrence@redhat.com>");
 // MODULE_DESCRIPTION("Livepatch test: shadow variables");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

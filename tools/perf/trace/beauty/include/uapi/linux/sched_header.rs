@@ -153,3 +153,5 @@ pub const SCHED_FLAG_ALL: u32 = SCHED_FLAG_RESET_ON_FORK
 
 /* Only for sched_getattr() own flag param, if task is SCHED_DEADLINE */
 pub const SCHED_GETATTR_FLAG_DL_DYNAMIC: u32 = 0x01;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

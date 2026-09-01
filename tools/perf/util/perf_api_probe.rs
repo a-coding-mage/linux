@@ -304,3 +304,5 @@ pub unsafe extern "C" fn perf_can_record_build_id() -> bool {
 pub unsafe extern "C" fn perf_can_record_cgroup() -> bool {
     perf_probe_api(perf_probe_cgroup)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

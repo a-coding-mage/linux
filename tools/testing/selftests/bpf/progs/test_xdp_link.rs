@@ -17,3 +17,5 @@ pub unsafe extern "C" fn xdp_handler(xdp: *mut xdp_md) -> ::std::os::raw::c_int 
 pub unsafe extern "C" fn tc_handler(skb: *mut __sk_buff) -> ::std::os::raw::c_int {
     return 0;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

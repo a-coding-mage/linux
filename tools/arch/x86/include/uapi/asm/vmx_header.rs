@@ -170,3 +170,5 @@ pub const VMX_EXIT_REASON_FLAGS: &[(u32, &str)] = &[
 pub const VMX_ABORT_SAVE_GUEST_MSR_FAIL: u32 = 1;
 pub const VMX_ABORT_LOAD_HOST_PDPTE_FAIL: u32 = 2;
 pub const VMX_ABORT_LOAD_HOST_MSR_FAIL: u32 = 4;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -202,3 +202,5 @@ pub unsafe extern "C" fn parse_intr_regs(
 ) -> c_int {
     __parse_regs(opt, str_, unset, true)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

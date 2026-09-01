@@ -347,3 +347,5 @@ pub unsafe fn rb_erase_augmented_cached(
         rb_erase_augmented(node, &mut (*root).rb_root, augment);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

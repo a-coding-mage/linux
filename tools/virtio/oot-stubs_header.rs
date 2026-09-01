@@ -17,3 +17,5 @@ pub const VIRTIO_FEATURES_BITS: usize = 128;
 pub const fn VIRTIO_U64(b: u64) -> u64 {
     b >> 6
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -30,3 +30,5 @@ extern "C" {
 // pub const fn kvm_async_pf_deinit() {}
 // pub const fn kvm_async_pf_vcpu_init<C>(_c: C) {}
 // #endif
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

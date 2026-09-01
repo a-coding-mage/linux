@@ -88,3 +88,5 @@ pub unsafe fn test_clone3_supported() {
 
     ksft_print_msg(b"clone3() syscall supported\n\0".as_ptr() as *const libc::c_char);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

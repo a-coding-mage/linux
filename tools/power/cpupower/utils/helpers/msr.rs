@@ -138,3 +138,5 @@ pub unsafe extern "C" fn msr_intel_get_turbo_ratio(cpu: c_uint) -> c_ulonglong {
     }
     val
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

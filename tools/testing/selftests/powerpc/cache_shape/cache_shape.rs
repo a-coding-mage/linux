@@ -174,3 +174,5 @@ unsafe extern "C" fn test_cache_shape() -> c_int {
 fn main() -> c_int {
     unsafe { test_harness(test_cache_shape, c"cache_shape".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

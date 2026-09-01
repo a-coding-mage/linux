@@ -478,3 +478,5 @@ pub unsafe fn test_mmap() {
 
     goto_cleanup!(bss_mmaped, bss_sz, map_mmaped, map_sz, skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

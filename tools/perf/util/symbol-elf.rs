@@ -1977,3 +1977,5 @@ pub unsafe extern "C" fn sdt_notes__get_count(start: *mut list_head) -> c_int {
 pub unsafe extern "C" fn symbol__elf_init() {
     elf_version(EV_CURRENT);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

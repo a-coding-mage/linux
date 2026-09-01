@@ -283,3 +283,5 @@ pub unsafe fn FAN_EVENT_OK(meta: *const fanotify_event_metadata, len: usize) -> 
             && ((*meta).event_len as isize) <= (len as isize)
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

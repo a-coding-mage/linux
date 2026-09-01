@@ -32,3 +32,5 @@ pub unsafe extern "C" fn kprobe_session_return_1(ctx: *mut pt_regs) -> ::core::f
 pub unsafe extern "C" fn kprobe_session_return_2(ctx: *mut pt_regs) -> ::core::ffi::c_int {
     2
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

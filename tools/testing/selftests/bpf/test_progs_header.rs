@@ -762,3 +762,5 @@ unsafe extern "C" {
     pub fn free_msgs(msgs: *mut expected_msgs);
     pub fn verify_test_stderr(obj: *mut bpf_object, prog: *mut bpf_program);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

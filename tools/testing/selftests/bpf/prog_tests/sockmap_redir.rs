@@ -649,3 +649,5 @@ pub unsafe extern "C" fn serial_test_sockmap_redir() {
     test_map(bpf_map_type::BPF_MAP_TYPE_SOCKMAP);
     test_map(bpf_map_type::BPF_MAP_TYPE_SOCKHASH);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

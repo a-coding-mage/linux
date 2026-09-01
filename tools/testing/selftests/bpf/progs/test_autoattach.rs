@@ -25,3 +25,5 @@ pub unsafe extern "C" fn prog2(ctx: *const core::ffi::c_void) -> i32 {
     prog2_called = true;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

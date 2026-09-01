@@ -20,3 +20,5 @@ pub static xtensa_regstr_tbl: [*const ::std::os::raw::c_char; 16] = [
     b"a14\0".as_ptr() as *const ::std::os::raw::c_char,
     b"a15\0".as_ptr() as *const ::std::os::raw::c_char,
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

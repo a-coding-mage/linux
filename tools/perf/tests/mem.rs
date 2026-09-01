@@ -127,3 +127,5 @@ unsafe fn test__mem(_text: *mut test_suite, _subtest: c_int) -> c_int {
 // Preserved as an externally visible suite descriptor hook for the translated test.
 #[unsafe(no_mangle)]
 pub static mut mem: *const c_char = c"Test data source output".as_ptr();
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

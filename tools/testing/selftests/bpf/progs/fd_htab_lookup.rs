@@ -62,3 +62,5 @@ pub static mut outer_map: outer_map_type = outer_map_type {
     value: core::ptr::null_mut(),
     values: [unsafe { core::ptr::addr_of_mut!(inner_map) }],
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

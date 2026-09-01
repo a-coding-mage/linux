@@ -408,3 +408,5 @@ fn main() {
         std::process::exit(main_impl(0, ptr::null_mut()));
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

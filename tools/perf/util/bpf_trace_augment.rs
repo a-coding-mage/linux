@@ -306,3 +306,5 @@ pub unsafe extern "C" fn augmented_syscalls__find_by_title(
 pub unsafe extern "C" fn augmented_syscalls__cleanup() {
     augmented_raw_syscalls_bpf__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

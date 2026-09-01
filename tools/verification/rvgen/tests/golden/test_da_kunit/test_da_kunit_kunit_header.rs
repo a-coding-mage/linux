@@ -36,3 +36,5 @@ pub struct rv_test_da_kunit_ops {
 unsafe extern "C" {
     pub static rv_test_da_kunit_ops: rv_test_da_kunit_ops;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

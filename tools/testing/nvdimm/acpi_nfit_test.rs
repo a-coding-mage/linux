@@ -19,3 +19,5 @@ pub unsafe extern "C" fn nfit_intel_shutdown_status(nfit_mem: *mut nfit_mem) {
         (*nfit_mem).dirty_shutdown = 42;
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

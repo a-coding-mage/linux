@@ -20,3 +20,5 @@ pub const __DEFINE_ASM_GPR_NUMS: &str =
 \t.endr\n\
 \t.equ\t.L__gpr_num_xzr, 31\n\
 \t.equ\t.L__gpr_num_wzr, 31\n";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

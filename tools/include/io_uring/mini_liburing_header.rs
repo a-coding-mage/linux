@@ -446,3 +446,5 @@ pub unsafe fn io_uring_cqe_seen(ring: *mut io_uring) {
     *cq.khead = (*cq.khead).wrapping_add(1);
     write_barrier();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

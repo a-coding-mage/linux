@@ -205,3 +205,5 @@ pub enum bpf_function_id {
     profiler_bpf_vfs_symlink,
     profiler_bpf_max_function_id,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

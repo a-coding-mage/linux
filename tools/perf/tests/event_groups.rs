@@ -273,3 +273,5 @@ unsafe fn test__event_groups(_text: *mut test_suite, _subtest: c_int) -> c_int {
 }
 
 // DEFINE_SUITE("Event groups", event_groups);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

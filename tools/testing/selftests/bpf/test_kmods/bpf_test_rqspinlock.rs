@@ -642,3 +642,5 @@ unsafe fn bpf_test_rqspinlock_exit() {
 /* MODULE_AUTHOR("Kumar Kartikeya Dwivedi"); */
 /* MODULE_DESCRIPTION("BPF rqspinlock stress test module"); */
 /* MODULE_LICENSE("GPL"); */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

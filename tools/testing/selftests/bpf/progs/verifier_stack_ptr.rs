@@ -573,3 +573,5 @@ pub unsafe extern "C" fn stack_check_size_512_with_may_goto() {
 #[link_section = "license"]
 #[no_mangle]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

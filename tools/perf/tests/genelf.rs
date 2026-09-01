@@ -112,3 +112,5 @@ unsafe extern "C" fn test__jit_write_elf_impl(
 extern "C" {
     static mut jit_write_elf: test_suite;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

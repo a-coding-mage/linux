@@ -15,3 +15,5 @@ pub struct scx_userland_enqueued_task {
     pub sum_exec_runtime: u64,
     pub weight: u64,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

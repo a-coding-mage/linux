@@ -151,3 +151,5 @@ pub unsafe extern "C" fn syscall_arg__scnprintf_socket_level(
 ) -> size_t {
     unsafe { socket__scnprintf_level((*arg).val, bf, size, (*arg).show_string_prefix) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

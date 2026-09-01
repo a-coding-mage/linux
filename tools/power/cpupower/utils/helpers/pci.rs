@@ -103,3 +103,5 @@ pub unsafe fn pci_slot_func_init(
 ) -> *mut pci_dev {
     pci_acc_init(pacc, 0, 0, slot, func, -1, -1)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

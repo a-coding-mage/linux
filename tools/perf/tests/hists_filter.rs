@@ -610,3 +610,5 @@ unsafe fn test__hists_filter(_test: *mut test_suite, _subtest: c_int) -> c_int {
 }
 
 DEFINE_SUITE!("Filter hist entries", hists_filter);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

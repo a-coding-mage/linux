@@ -270,3 +270,5 @@ pub unsafe extern "C" fn _start() -> ! {
  * __nolibc_no_stack_protector come from the included runtime/compiler headers.
  * If the inline branch returned, the C source calls __nolibc_entrypoint_epilogue().
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

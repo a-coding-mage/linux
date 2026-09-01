@@ -1436,3 +1436,5 @@ pub unsafe extern "C" fn test_copy_from_user_task_str_dynptr(_ctx: *mut core::ff
     test_dynptr_probe_str(user_ptr, bpf_copy_data_from_user_task_str);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

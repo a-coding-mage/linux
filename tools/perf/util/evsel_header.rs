@@ -836,3 +836,5 @@ pub unsafe fn evsel__is_dummy_event(evsel: *mut evsel) -> bool {
 pub fn bitfield_swap(src: u64, pos: u64, size: u64) -> u64 {
     (((src >> pos) & ((1u64 << size) - 1)) << (63 - (pos + size - 1)))
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

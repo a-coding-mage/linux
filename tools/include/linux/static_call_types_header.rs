@@ -126,3 +126,5 @@ pub struct static_call_key {
 // Rust translation note: this fallback casts the stored function pointer from
 // the pasted static-call key to a pointer to the pasted trampoline type.
 
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

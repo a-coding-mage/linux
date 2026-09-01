@@ -104,3 +104,5 @@ pub unsafe extern "C" fn disasm_insn(
     double_insn = (*insn).code as c_int == (BPF_LD | BPF_IMM | BPF_DW);
     return insn.offset(if double_insn { 2 } else { 1 });
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

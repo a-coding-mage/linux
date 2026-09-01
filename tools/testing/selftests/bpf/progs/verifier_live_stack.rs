@@ -2354,3 +2354,5 @@ unsafe extern "C" fn imprecise_dst_spill_join_sub() {
     // asm: "*(u64 *)(r1 + 0) = r8;"
     unsafe { core::arch::asm!("/* BPF inline assembly preserved in comments above. */"); }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

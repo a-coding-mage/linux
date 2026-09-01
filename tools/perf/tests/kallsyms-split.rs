@@ -301,3 +301,5 @@ unsafe fn goto_out(map: *mut *mut map, m: *mut machine, _ret: c_int) {
 #[used]
 static kallsyms_split: unsafe extern "C" fn(*mut test_suite, c_int) -> c_int =
     test__kallsyms_split;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

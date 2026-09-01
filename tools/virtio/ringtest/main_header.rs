@@ -310,3 +310,5 @@ pub unsafe fn WRITE_ONCE<T: Copy>(x: *mut T, val: T) -> T {
     }
     tmp
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

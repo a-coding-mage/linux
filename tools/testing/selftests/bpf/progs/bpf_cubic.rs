@@ -681,3 +681,5 @@ pub static mut cubic: tcp_congestion_ops = tcp_congestion_ops {
     pkts_acked: bpf_cubic_acked as *mut core::ffi::c_void,
     name: b"bpf_cubic\0".as_ptr() as *const i8,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

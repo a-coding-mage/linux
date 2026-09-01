@@ -508,3 +508,5 @@ fn main() {
         std::process::exit(if ksft_get_fail_cnt() == 0 { KSFT_PASS } else { KSFT_FAIL });
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -107,3 +107,5 @@ pub unsafe extern "C" fn trigger_implicit_arg(ctx: *mut core::ffi::c_void) -> i3
 
     bpf_kfunc_implicit_arg(5)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

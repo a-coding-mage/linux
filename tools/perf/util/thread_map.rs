@@ -568,3 +568,5 @@ pub unsafe extern "C" fn thread_map__remove(threads: *mut perf_thread_map, idx: 
     (*threads).nr -= 1;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

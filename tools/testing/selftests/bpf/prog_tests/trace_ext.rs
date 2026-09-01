@@ -265,3 +265,5 @@ unsafe fn goto_cleanup(
     test_trace_ext__destroy(skel_ext);
     test_pkt_md_access__destroy(skel_pkt);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

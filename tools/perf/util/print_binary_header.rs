@@ -59,3 +59,5 @@ pub unsafe fn print_binary(
         binary__fprintf(data, len, bytes_per_line, printer, extra, stdout);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

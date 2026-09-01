@@ -430,3 +430,5 @@ fn main() {
         assert!((i as usize) == (std::mem::size_of_val(&tests) / std::mem::size_of::<test>()) - 1);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

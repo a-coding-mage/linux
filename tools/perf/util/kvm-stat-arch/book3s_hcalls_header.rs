@@ -119,3 +119,5 @@ pub const kvm_trace_symbol_hcall: &[(u32, &str)] = &[
     (0x31c, "H_SET_MODE"),
     (0xf000, "H_RTAS"),
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

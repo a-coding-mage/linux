@@ -697,3 +697,5 @@ unsafe fn goto_out(session: *mut perf_session, nsi: *mut nsinfo, ret: c_int) -> 
 
     ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

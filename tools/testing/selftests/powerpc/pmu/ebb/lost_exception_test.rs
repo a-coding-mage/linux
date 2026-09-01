@@ -165,3 +165,5 @@ pub unsafe extern "C" fn main() -> c_int {
     test_harness_set_timeout(300);
     test_harness(lost_exception, c"lost_exception".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

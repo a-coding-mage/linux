@@ -676,3 +676,5 @@ pub unsafe fn futex_requeue_pi(_metadata: *mut __test_metadata, variant: *const 
 // TEST_F(args, futex_requeue_pi) and TEST_HARNESS_MAIN are kselftest harness
 // entry points in C. Their Rust equivalents are expected to be supplied by the
 // surrounding translated harness.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

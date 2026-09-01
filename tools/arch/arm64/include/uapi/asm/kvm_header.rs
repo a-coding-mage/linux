@@ -573,3 +573,5 @@ pub struct reg_mask_range {
     pub range: __u32,      /* Requested range */
     pub reserved: [__u32; 13],
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

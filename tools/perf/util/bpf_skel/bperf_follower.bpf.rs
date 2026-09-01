@@ -311,3 +311,5 @@ pub unsafe extern "C" fn on_exittask(task: *mut task_struct) -> core::ffi::c_int
 // char LICENSE[] SEC("license") = "Dual BSD/GPL";
 #[unsafe(no_mangle)]
 pub static mut LICENSE: [u8; 13] = *b"Dual BSD/GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

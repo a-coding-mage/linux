@@ -67,3 +67,5 @@ pub unsafe fn mem_info__refcnt(mi: *mut mem_info) -> *mut refcount_t {
     /* Original C uses RC_CHK_ACCESS(mi)->refcnt. */
     &mut (*mi).refcnt
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -21,3 +21,5 @@ unsafe extern "C" {
     pub fn affinity__setup(a: *mut affinity) -> c_int;
     pub fn cpu_map__set_affinity(cpumap: *const perf_cpu_map);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

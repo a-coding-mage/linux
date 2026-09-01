@@ -498,3 +498,5 @@ pub unsafe fn build_virtio_net_hdr_v1_hash_tunnel(
         core::mem::size_of::<virtio_net_hdr_v1_hash_tunnel>() as core::ffi::c_int
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

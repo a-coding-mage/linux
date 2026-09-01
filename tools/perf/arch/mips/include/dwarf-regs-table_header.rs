@@ -88,3 +88,5 @@ pub const mips_regstr_tbl: [*const core::ffi::c_char; 66] = [
     b"$hi\0".as_ptr() as *const core::ffi::c_char,
     b"$lo\0".as_ptr() as *const core::ffi::c_char,
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

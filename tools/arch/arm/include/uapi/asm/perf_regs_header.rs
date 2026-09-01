@@ -17,3 +17,5 @@ pub const PERF_REG_ARM_SP: u32 = 13;
 pub const PERF_REG_ARM_LR: u32 = 14;
 pub const PERF_REG_ARM_PC: u32 = 15;
 pub const PERF_REG_ARM_MAX: u32 = 16;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1,0 +1,24 @@
+// SPDX-License-Identifier: GPL-2.0
+
+pub const STAC946X_RESET: u32 = 0x00;
+pub const STAC946X_STATUS: u32 = 0x01;
+pub const STAC946X_MASTER_VOLUME: u32 = 0x02;
+pub const STAC946X_LF_VOLUME: u32 = 0x03;
+pub const STAC946X_RF_VOLUME: u32 = 0x04;
+pub const STAC946X_LR_VOLUME: u32 = 0x05;
+pub const STAC946X_RR_VOLUME: u32 = 0x06;
+pub const STAC946X_CENTER_VOLUME: u32 = 0x07;
+pub const STAC946X_LFE_VOLUME: u32 = 0x08;
+pub const STAC946X_MIC_L_VOLUME: u32 = 0x09;
+pub const STAC946X_MIC_R_VOLUME: u32 = 0x0a;
+pub const STAC946X_DEEMPHASIS: u32 = 0x0c;
+pub const STAC946X_GENERAL_PURPOSE: u32 = 0x0d;
+pub const STAC946X_AUDIO_PORT_CONTROL: u32 = 0x0e;
+pub const STAC946X_MASTER_CLOCKING: u32 = 0x0f;
+pub const STAC946X_POWERDOWN_CTRL1: u32 = 0x10;
+pub const STAC946X_POWERDOWN_CTRL2: u32 = 0x11;
+pub const STAC946X_REVISION_CODE: u32 = 0x12;
+pub const STAC946X_ADDRESS_CONTROL: u32 = 0x13;
+pub const STAC946X_ADDRESS: u32 = 0x14;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

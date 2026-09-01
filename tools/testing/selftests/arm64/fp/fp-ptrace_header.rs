@@ -18,3 +18,5 @@ pub const HAVE_SME: u32 = 1u32 << HAVE_SME_SHIFT;
 pub const HAVE_SME2: u32 = 1u32 << HAVE_SME2_SHIFT;
 pub const HAVE_FA64: u32 = 1u32 << HAVE_FA64_SHIFT;
 pub const HAVE_FPMR: u32 = 1u32 << HAVE_FPMR_SHIFT;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

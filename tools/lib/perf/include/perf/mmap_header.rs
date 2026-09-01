@@ -18,3 +18,5 @@ unsafe extern "C" {
     pub fn perf_mmap__read_done(map: *mut perf_mmap);
     pub fn perf_mmap__read_event(map: *mut perf_mmap) -> *mut perf_event;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

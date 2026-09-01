@@ -283,3 +283,5 @@ pub unsafe extern "C" fn serial_test_struct_ops_arena() {
         test__skip();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

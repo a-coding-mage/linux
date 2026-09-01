@@ -11,3 +11,5 @@ unsafe extern "C" {
     pub fn perf_env__lookup_objdump(env: *mut perf_env, path: *mut *mut ::std::os::raw::c_char) -> ::std::os::raw::c_int;
     pub fn perf_env__single_address_space(env: *mut perf_env) -> bool;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

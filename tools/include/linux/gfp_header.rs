@@ -26,3 +26,5 @@ macro_rules! default_gfp {
 pub unsafe fn gfpflags_allow_blocking(gfp_flags: gfp_t) -> bool {
     (gfp_flags & __GFP_DIRECT_RECLAIM) != 0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

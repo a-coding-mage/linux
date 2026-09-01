@@ -76,3 +76,5 @@ pub fn mul_u64_u64_div64(a: u64, b: u64, c: u64) -> u64 {
 pub fn div_u64(dividend: u64, divisor: u32) -> u64 {
     dividend / (divisor as u64)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -103,3 +103,5 @@ pub unsafe extern "C" fn ui_helpline__printf(fmt: *const c_char, mut ap: ...) {
         ui_helpline__vpush(fmt, ap.as_va_list());
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

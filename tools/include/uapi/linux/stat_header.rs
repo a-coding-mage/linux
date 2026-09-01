@@ -273,3 +273,5 @@ pub const STATX_ATTR_MOUNT_ROOT: u64 = 0x00002000; /* Root of a mount */
 pub const STATX_ATTR_VERITY: u64 = 0x00100000; /* [I] Verity protected file */
 pub const STATX_ATTR_DAX: u64 = 0x00200000; /* File is currently in DAX state */
 pub const STATX_ATTR_WRITE_ATOMIC: u64 = 0x00400000; /* File supports atomic write operations */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

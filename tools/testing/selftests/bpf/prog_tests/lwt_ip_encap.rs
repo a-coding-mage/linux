@@ -870,3 +870,5 @@ pub unsafe extern "C" fn test_lwt_ip_encap_vxlan_ipv4() {
 pub unsafe extern "C" fn test_lwt_ip_encap_vxlan_ipv6() {
     lwt_ip_encap_vxlan(IPV6_ENCAP);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -280,3 +280,5 @@ pub const fn icpt_insn_decoder(insn: u64) -> u32 {
         INSN_DECODE(insn)
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

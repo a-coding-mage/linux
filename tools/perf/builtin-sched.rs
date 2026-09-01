@@ -942,3 +942,5 @@ unsafe fn __cmd_record(argc: c_int, argv: *mut *const c_char) -> c_int {
     free(rec_argv_copy as *mut c_void);
     ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

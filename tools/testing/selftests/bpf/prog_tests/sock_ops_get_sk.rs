@@ -161,3 +161,5 @@ pub unsafe extern "C" fn test_ns_sock_ops_get_sk() {
     sock_ops_get_sk__destroy(skel);
     close(cgroup_fd);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

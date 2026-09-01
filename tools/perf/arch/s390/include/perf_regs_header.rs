@@ -10,3 +10,5 @@ unsafe extern "C" {
 pub const PERF_REGS_MASK: u64 = (1u64 << (PERF_REG_S390_MAX as u32)) - 1;
 pub const PERF_REGS_MAX: u64 = PERF_REG_S390_MAX as u64;
 pub const PERF_SAMPLE_REGS_ABI: u64 = PERF_SAMPLE_REGS_ABI_64 as u64;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

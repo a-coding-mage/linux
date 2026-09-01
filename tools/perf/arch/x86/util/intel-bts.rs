@@ -709,3 +709,5 @@ pub unsafe extern "C" fn intel_bts_recording_init(err: *mut c_int) -> *mut auxtr
     (*btsr).itr.alignment = size_of::<branch>();
     &mut (*btsr).itr
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

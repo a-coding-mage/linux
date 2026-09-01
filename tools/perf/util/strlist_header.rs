@@ -110,3 +110,5 @@ pub unsafe fn strlist__next(sn: *mut str_node) -> *mut str_node {
  *         for (pos = strlist__first(slist), n = strlist__next(pos); pos; \
  *              pos = n, n = strlist__next(n))
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

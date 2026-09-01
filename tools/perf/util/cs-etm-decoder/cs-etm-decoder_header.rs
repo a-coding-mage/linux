@@ -160,3 +160,5 @@ unsafe extern "C" {
 	pub fn cs_etm_decoder__reset(decoder: *mut cs_etm_decoder) -> c_int;
 	pub fn cs_etm_decoder__get_name(decoder: *mut cs_etm_decoder) -> *const c_char;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

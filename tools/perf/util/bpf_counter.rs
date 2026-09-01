@@ -1123,3 +1123,5 @@ pub unsafe extern "C" fn bpf_counter__destroy(evsel: *mut evsel) {
     /* evsel->bpf_counter_ops = NULL; */
     /* evsel->bpf_skel = NULL; */
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

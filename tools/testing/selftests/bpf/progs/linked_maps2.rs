@@ -145,3 +145,5 @@ pub unsafe extern "C" fn handler_exit2() -> core::ffi::c_int {
 #[unsafe(link_section = "license")]
 #[unsafe(no_mangle)]
 pub static LICENSE: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

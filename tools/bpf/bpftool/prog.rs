@@ -2019,3 +2019,5 @@ static cmds: [cmd; 12] = [
 pub unsafe extern "C" fn do_prog(argc: c_int, argv: *mut *mut c_char) -> c_int {
     cmd_select(cmds.as_ptr(), argc, argv, do_help)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

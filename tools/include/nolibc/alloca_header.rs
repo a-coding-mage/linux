@@ -22,3 +22,5 @@ macro_rules! alloca {
         compile_error!("alloca(size) requires the C compiler builtin __builtin_alloca(size), which has no direct Rust equivalent in this isolated translation");
     }};
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

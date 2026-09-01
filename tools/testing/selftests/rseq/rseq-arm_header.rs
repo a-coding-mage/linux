@@ -251,3 +251,5 @@ pub const RSEQ_SIG_STR: &str = "0xe7f5def3";
  * #undef RSEQ_TEMPLATE_MO_RELAXED
  * #undef RSEQ_TEMPLATE_CPU_ID_NONE
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

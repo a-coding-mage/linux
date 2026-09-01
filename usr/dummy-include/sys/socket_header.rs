@@ -7,3 +7,5 @@ pub struct sockaddr {
     pub sa_family: __kernel_sa_family_t, /* address family, AF_xxx */
     pub sa_data: [::std::os::raw::c_char; 14], /* 14 bytes of protocol address */
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

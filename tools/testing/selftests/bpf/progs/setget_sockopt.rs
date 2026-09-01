@@ -716,3 +716,5 @@ pub unsafe extern "C" fn skops_sockopt(skops: *mut bpf_sock_ops) -> i32 {
 /* SEC("license") */
 #[no_mangle]
 pub static _license: [c_char; 4] = [b'G' as c_char, b'P' as c_char, b'L' as c_char, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

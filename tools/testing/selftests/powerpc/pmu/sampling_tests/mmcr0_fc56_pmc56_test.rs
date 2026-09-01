@@ -102,3 +102,5 @@ unsafe extern "C" fn mmcr0_fc56_pmc56() -> i32 {
 pub unsafe fn main() -> i32 {
     return test_harness(mmcr0_fc56_pmc56, b"mmcr0_fc56_pmc56\0".as_ptr() as *const _);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

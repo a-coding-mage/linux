@@ -129,3 +129,5 @@ pub unsafe fn test_enable_stats() {
     test_enable_stats__destroy(skel);
     close(stats_fd);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

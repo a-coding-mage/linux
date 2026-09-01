@@ -1300,3 +1300,5 @@ unsafe fn parse_usdt_arg(_arg_str: *const c_char, _arg_num: c_int, _arg: *mut us
     unsafe { pr_warn(c"usdt: libbpf doesn't support USDTs on current architecture\n".as_ptr()) };
     -ENOTSUP
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -12,3 +12,5 @@ static aarch64_regstr_tbl: [&str; 32] = [
     "%x25", "%x26", "%x27", "%x28", "%x29",
     "%lr", "%sp",
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

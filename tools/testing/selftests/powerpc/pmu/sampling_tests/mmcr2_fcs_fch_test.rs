@@ -188,3 +188,5 @@ unsafe extern "C" fn mmcr2_fcs_fch() -> c_int {
 pub unsafe extern "C" fn main() -> c_int {
     return test_harness(Some(mmcr2_fcs_fch), b"mmcr2_fcs_fch\0".as_ptr() as *const c_char);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

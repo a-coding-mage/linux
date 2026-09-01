@@ -262,3 +262,5 @@ pub const RSEQ_ASM_DEFINE_CMPFAIL_BODY: &str =
 /* #include "rseq-x86-bits.h" */
 /* #undef RSEQ_TEMPLATE_MO_RELAXED */
 /* #undef RSEQ_TEMPLATE_CPU_ID_NONE */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

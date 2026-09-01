@@ -157,3 +157,5 @@ __atomic_fetch_op_test!(BPF_REG_1, BPF_REG_0, 0x010, BPF_XCHG, 0x011, 0x011),
 __atomic_fetch_op_test!(BPF_REG_2, BPF_REG_3, 0x010, BPF_XCHG, 0x011, 0x011),
 __atomic_fetch_op_test!(BPF_REG_4, BPF_REG_5, 0x010, BPF_XCHG, 0x011, 0x011),
 __atomic_fetch_op_test!(BPF_REG_9, BPF_REG_8, 0x010, BPF_XCHG, 0x011, 0x011),
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

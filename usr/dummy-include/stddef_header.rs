@@ -8,3 +8,5 @@ macro_rules! offsetof {
 
 /* In C++ this header defines NULL as 0; otherwise as ((void *)0). */
 pub const NULL: *mut ::core::ffi::c_void = ::core::ptr::null_mut();
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

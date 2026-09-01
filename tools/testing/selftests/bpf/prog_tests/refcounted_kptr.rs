@@ -236,3 +236,5 @@ pub unsafe extern "C" fn test_percpu_hash_refcounted_kptr_refcount_leak() {
         free(values as *mut c_void);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1030,3 +1030,5 @@ fn ptrace_v_valid_values(_self: *mut v_csr_valid, variant: *const v_csr_valid_va
 }
 
 /* TEST_HARNESS_MAIN */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

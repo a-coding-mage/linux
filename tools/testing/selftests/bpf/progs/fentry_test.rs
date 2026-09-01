@@ -144,3 +144,5 @@ pub unsafe extern "C" fn test8(arg: *mut bpf_fentry_test_t) -> ::core::ffi::c_in
     }
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

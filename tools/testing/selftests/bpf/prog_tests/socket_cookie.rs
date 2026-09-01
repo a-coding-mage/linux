@@ -244,3 +244,5 @@ unsafe fn goto_close_cgroup_fd(cgroup_fd: c_int, skel: *mut socket_cookie_prog) 
 unsafe fn goto_out(skel: *mut socket_cookie_prog) {
     socket_cookie_prog__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

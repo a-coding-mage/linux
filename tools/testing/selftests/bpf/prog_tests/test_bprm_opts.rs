@@ -220,3 +220,5 @@ pub unsafe extern "C" fn test_test_bprm_opts() {
 unsafe fn goto_close_prog(skel: *mut bprm_opts) {
 	bprm_opts__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

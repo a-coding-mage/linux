@@ -870,3 +870,5 @@ pub static bench_xdp_lb: bench = bench {
     measure: Some(xdp_lb_measure),
     report_final: Some(xdp_lb_report_final),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

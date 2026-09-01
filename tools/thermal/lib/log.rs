@@ -131,3 +131,5 @@ pub unsafe extern "C" fn log_init(level: c_int, ident: *const c_char, options: c
 pub unsafe extern "C" fn log_exit() {
     unsafe { closelog() };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

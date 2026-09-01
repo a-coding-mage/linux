@@ -342,3 +342,5 @@ pub fn jhash_1word(a: u32, initval: u32) -> u32 {
         initval.wrapping_add(JHASH_INITVAL).wrapping_add(1 << 2),
     )
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

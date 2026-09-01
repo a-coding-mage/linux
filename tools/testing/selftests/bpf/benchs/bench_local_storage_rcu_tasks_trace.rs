@@ -481,3 +481,5 @@ pub static bench_local_storage_tasks_trace: bench = bench {
     report_progress: Some(report_progress),
     report_final: Some(report_final),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

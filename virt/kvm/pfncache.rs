@@ -696,3 +696,5 @@ pub unsafe extern "C" fn kvm_gpc_deactivate(gpc: *mut gfn_to_pfn_cache) {
 
     mutex_unlock(&mut (*gpc).refresh_lock);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

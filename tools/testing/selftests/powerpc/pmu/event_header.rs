@@ -50,3 +50,5 @@ unsafe extern "C" {
     pub fn event_report_justified(e: *mut event, name_width: c_int, result_width: c_int);
     pub fn event_report(e: *mut event);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

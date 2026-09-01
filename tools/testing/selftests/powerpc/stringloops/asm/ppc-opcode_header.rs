@@ -53,3 +53,5 @@ pub const fn VCMPEQUD_RC(vrt: u32, vra: u32, vrb: u32) -> u32 {
 pub const fn VCMPEQUB_RC(vrt: u32, vra: u32, vrb: u32) -> u32 {
     PPC_INST_VCMPEQUB_RC | ___PPC_RT(vrt) | ___PPC_RA(vra) | ___PPC_RB(vrb) | __PPC_RC21
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -2435,3 +2435,5 @@ pub unsafe extern "C" fn dso__demangle_sym(dso: *mut dso, kmodule: c_int, elf_na
         java_demangle_sym(elf_name, JAVA_DEMANGLE_NORET)
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

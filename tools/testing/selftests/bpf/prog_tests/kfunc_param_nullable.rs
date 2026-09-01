@@ -17,3 +17,5 @@ pub unsafe extern "C" fn test_kfunc_param_nullable() {
         RUN_TESTS(&test_kfunc_param_nullable as *const ::core::ffi::c_void);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

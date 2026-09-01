@@ -12,3 +12,5 @@ unsafe extern "C" {
     pub fn timeout_end();
     pub fn timeout_usleep(usec: crate::useconds_t) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

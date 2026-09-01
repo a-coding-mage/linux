@@ -139,3 +139,5 @@ unsafe fn goto_cleanup(sockfd: c_int, skel: *mut test_skc_to_unix_sock) {
     }
     test_skc_to_unix_sock__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

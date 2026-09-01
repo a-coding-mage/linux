@@ -130,3 +130,5 @@ pub unsafe fn main() -> c_int {
     FAIL_IF!(test_harness(mmcra_thresh_cmp, b"mmcra_thresh_cmp\0".as_ptr() as *const c_char));
     return 0;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

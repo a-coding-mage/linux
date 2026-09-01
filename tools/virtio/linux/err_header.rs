@@ -27,3 +27,5 @@ pub unsafe fn IS_ERR(ptr: *const c_void) -> c_long {
 pub unsafe fn IS_ERR_OR_NULL(ptr: *const c_void) -> c_long {
     (ptr.is_null() || unsafe { IS_ERR_VALUE(ptr as c_ulong) }) as c_long
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

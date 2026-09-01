@@ -441,3 +441,5 @@ unsafe fn goto_free_path(path: *mut c_char, ret: c_int) -> c_int {
 // DEFINE_SUITE("Session topology", session_topology);
 #[no_mangle]
 pub static mut session_topology: test_suite = test_suite { _private: [] };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -148,3 +148,5 @@ pub unsafe fn main() {
     // Original C used TEST_HARNESS_MAIN from kselftest_harness.h.
     rename_process();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -204,3 +204,5 @@ unsafe fn test_pidfd_bind_mount_bind_mount_reopen(self_: *mut pidfd_bind_mount) 
 fn main() {
     let _ = MaybeUninit::<pidfd_bind_mount>::uninit();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

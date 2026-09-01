@@ -631,3 +631,5 @@ pub unsafe extern "C" fn test_vrf_socket_lookup() {
     vrf_socket_lookup__destroy(skel);
     cleanup();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

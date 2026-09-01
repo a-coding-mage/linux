@@ -431,3 +431,5 @@ unsafe extern "C" fn test__mmap_thread_lookup(
 
 // C source ends with: DEFINE_SUITE("Lookup mmap thread", mmap_thread_lookup);
 // The surrounding Rust perf test harness should provide the direct equivalent.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

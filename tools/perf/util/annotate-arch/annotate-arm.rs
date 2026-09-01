@@ -155,3 +155,5 @@ unsafe fn goto_out_free_arm(arm: *mut arch_arm) {
 	free(arm as *mut c_void);
 	errno = SYMBOL_ANNOTATE_ERRNO__ARCH_INIT_REGEXP;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

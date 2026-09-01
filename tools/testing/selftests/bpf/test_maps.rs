@@ -214,3 +214,5 @@ unsafe fn run_all_tests(){test_hashmap(0,null_mut());test_hashmap_percpu(0,null_
 unsafe extern "C" { /* Translated declaration-only expansion point from <map_tests/tests.h>: DEFINE_TEST(name) extern void test_##name(void); */ }
 
 fn main(){unsafe{srand(time(null_mut()) as c_uint); libbpf_set_strict_mode(LIBBPF_STRICT_ALL); map_opts.map_flags=0; run_all_tests(); map_opts.map_flags=BPF_F_NO_PREALLOC; run_all_tests(); /* Translated expansion point from <map_tests/tests.h>: DEFINE_TEST(name) test_##name(); */ printf(c!("test_maps: OK, %d SKIPPED\n"),skips);}}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

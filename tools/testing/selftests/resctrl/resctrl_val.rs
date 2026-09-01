@@ -1082,3 +1082,5 @@ pub unsafe extern "C" fn resctrl_val(
     taskset_restore(ppid, &mut old_affinity);
     ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

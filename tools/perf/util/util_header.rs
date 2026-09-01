@@ -128,3 +128,5 @@ macro_rules! realloc_array_as_needed {
 pub fn host_is_bigendian() -> bool {
     cfg!(target_endian = "big")
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -419,3 +419,5 @@ pub unsafe fn u64p_replace_bits(p: *mut u64, val: u64, field: u64) {
 pub unsafe fn u64_get_bits(v: u64, field: u64) -> u64 {
     (v & field) / unsafe { field_multiplier(field) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

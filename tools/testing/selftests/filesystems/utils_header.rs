@@ -40,3 +40,5 @@ extern "C" {
     pub fn write_file(path: *const c_char, val: *const c_char) -> c_int;
     pub fn get_unique_mnt_id(path: *const c_char) -> u64;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

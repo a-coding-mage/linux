@@ -36,3 +36,5 @@ pub const UBLK_U_IO_UNREGISTER_IO_BUF: u64 = _iowr::<ublksrv_io_cmd>(b'u' as u32
 pub const UBLK_F_USER_RECOVERY_FAIL_IO: u64 = 1_u64 << 9;
 
 pub const UBLK_F_ZONED: u64 = 1_u64 << 8;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

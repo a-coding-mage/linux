@@ -14,3 +14,5 @@ fn main() -> i32 {
     let c: *mut debuginfod_client = unsafe { debuginfod_begin() };
     (!c.is_null()) as i32
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

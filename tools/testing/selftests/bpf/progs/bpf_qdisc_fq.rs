@@ -795,3 +795,5 @@ pub static fq: Qdisc_ops = Qdisc_ops {
     destroy: bpf_fq_destroy as *const core::ffi::c_void,
     id: b"bpf_fq\0".as_ptr() as *const i8,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

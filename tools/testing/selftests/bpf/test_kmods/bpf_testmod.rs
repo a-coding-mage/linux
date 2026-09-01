@@ -547,3 +547,5 @@ unsafe extern "C" fn bpf_testmod_exit() { unsafe { while refcount_read(&prog_tes
 // MODULE_AUTHOR("Andrii Nakryiko");
 // MODULE_DESCRIPTION("BPF selftests module");
 // MODULE_LICENSE("Dual BSD/GPL");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

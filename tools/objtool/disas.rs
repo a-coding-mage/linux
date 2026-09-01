@@ -1430,3 +1430,5 @@ pub unsafe extern "C" fn disas_funcs(dctx: *mut disas_context) {
         sec = next_section((*(*dctx).file).elf, sec);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

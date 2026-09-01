@@ -37,3 +37,5 @@ pub unsafe fn load_word<T>(src: *const T, w: usize, s: usize) -> u64 {
 
 #[cfg(not(any(target_endian = "little", target_endian = "big")))]
 compile_error!("Fix your compiler's __BYTE_ORDER__?!");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

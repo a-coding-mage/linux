@@ -199,3 +199,5 @@ pub const SMCCC_RET_SUCCESS: i32 = 0;
 pub const SMCCC_RET_NOT_SUPPORTED: i32 = -1;
 pub const SMCCC_RET_NOT_REQUIRED: i32 = -2;
 pub const SMCCC_RET_INVALID_PARAMETER: i32 = -3;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

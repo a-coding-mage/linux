@@ -102,3 +102,5 @@ pub struct hws_trailer_entry {
     pub reserved2: u64,         /* */
     pub progusage: hws_trailer_entry_progusage, /* 48 - reserved for programming use */
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

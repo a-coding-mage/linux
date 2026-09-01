@@ -56,3 +56,5 @@ unsafe extern "C" fn rv_test_test_da_kunit(test: *mut kunit) {
 
 // Original C fallback when !IS_REACHABLE(CONFIG_RV_MON_TEST_DA_KUNIT):
 // #define rv_test_test_da_kunit rv_test_stub
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

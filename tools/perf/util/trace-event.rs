@@ -217,3 +217,5 @@ pub unsafe extern "C" fn trace_event__tp_format_id(id: c_int) -> *mut tep_event 
 
     tep_find_event(tevent.pevent, id)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

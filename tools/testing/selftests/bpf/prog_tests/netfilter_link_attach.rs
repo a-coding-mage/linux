@@ -221,3 +221,5 @@ pub unsafe extern "C" fn test_netfilter_link_attach() {
 unsafe fn goto_out(skel: *mut test_netfilter_link_attach) {
     test_netfilter_link_attach__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -184,3 +184,5 @@ pub static mut linkcheck: smc_hs_ctrl___local = smc_hs_ctrl___local {
     syn_option: Some(bpf_smc_set_tcp_option),
     synack_option: Some(bpf_smc_set_tcp_option_cond),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

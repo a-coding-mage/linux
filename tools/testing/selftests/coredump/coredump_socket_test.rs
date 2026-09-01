@@ -830,3 +830,5 @@ unsafe fn coredump_socket_invalid_paths(_self: *mut coredump, _metadata: *mut c_
 }
 
 fn main() {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

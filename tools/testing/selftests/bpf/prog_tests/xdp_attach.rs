@@ -421,3 +421,5 @@ pub unsafe extern "C" fn serial_test_xdp_attach() {
         test_xdp_attach_fail(c"./xdp_dummy.bpf.o".as_ptr());
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

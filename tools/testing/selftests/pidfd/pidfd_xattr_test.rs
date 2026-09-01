@@ -299,3 +299,5 @@ unsafe fn pidfs_xattr_set_get_list_xattr_persistent(self_: *mut pidfs_xattr) {
 }
 
 TEST_HARNESS_MAIN!();
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

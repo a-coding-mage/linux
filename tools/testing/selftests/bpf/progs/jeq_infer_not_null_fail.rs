@@ -93,3 +93,5 @@ pub unsafe extern "C" fn jeq_infer_not_null_ptr_to_btfid(ctx: *mut c_void) -> i3
 
     ret as i32
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

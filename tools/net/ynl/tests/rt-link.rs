@@ -441,3 +441,5 @@ unsafe fn rt_link_netkit_err_msg(_metadata: *mut __test_metadata, self_: *mut rt
 }
 
 // TEST_HARNESS_MAIN
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

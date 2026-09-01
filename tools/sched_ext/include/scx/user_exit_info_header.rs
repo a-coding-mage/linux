@@ -96,3 +96,5 @@ pub const fn UEI_ECODE_SYS_ACT(__ecode: u64) -> u64 {
 pub const fn UEI_ECODE_RESTART(__ecode: u64) -> bool {
     UEI_ECODE_SYS_ACT(__ecode) == SCX_ECODE_ACT_RESTART
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

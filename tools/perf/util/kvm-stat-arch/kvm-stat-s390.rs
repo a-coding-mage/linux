@@ -197,3 +197,5 @@ pub extern "C" fn __kvm_reg_events_ops_s390() -> *const kvm_reg_events_ops {
 pub extern "C" fn __kvm_skip_events_s390() -> *const *const c_char {
     __kvm_skip_events.as_ptr()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

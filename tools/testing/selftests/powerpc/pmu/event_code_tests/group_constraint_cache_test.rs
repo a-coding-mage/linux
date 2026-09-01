@@ -57,3 +57,5 @@ unsafe fn group_constraint_cache() -> i32 {
 fn main() -> i32 {
     unsafe { test_harness(group_constraint_cache, "group_constraint_cache") }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

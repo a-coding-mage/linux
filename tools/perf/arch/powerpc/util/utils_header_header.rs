@@ -33,3 +33,5 @@ pub const fn PVR_VER(pvr: u32) -> u32 {
 pub const fn PVR_REV(pvr: u32) -> u32 {
     (pvr >> 0) & 0xFFFF
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

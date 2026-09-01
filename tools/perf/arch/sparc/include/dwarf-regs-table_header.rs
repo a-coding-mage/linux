@@ -100,3 +100,5 @@ const sparc_regstr_tbl: [*const ::core::ffi::c_char; 96] = [
     b"%f62\0".as_ptr() as *const ::core::ffi::c_char,
     b"%f63\0".as_ptr() as *const ::core::ffi::c_char,
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

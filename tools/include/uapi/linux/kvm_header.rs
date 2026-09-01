@@ -1493,3 +1493,5 @@ pub struct kvm_pre_fault_memory {
     pub flags: __u64,
     pub padding: [__u64; 5],
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1862,3 +1862,5 @@ pub unsafe extern "C" fn test_loader__run_subtests(
     /* see comment in run_subtest() for why we do this function nesting */
     process_subtest(tester, skel_name, elf_bytes_factory);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

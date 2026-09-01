@@ -80,3 +80,5 @@ pub unsafe extern "C" fn inspect_prog_load(
     sig_verdict = (*(*prog).aux).sig.verdict;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

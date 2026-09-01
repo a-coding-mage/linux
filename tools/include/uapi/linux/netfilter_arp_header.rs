@@ -16,3 +16,5 @@ pub const NF_ARP_FORWARD: i32 = 2;
 
 /* Original C condition: #ifndef __KERNEL__ */
 pub const NF_ARP_NUMHOOKS: i32 = 3;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

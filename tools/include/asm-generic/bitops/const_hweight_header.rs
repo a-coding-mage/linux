@@ -82,3 +82,5 @@ pub const fn HWEIGHT64(w: u64) -> core::ffi::c_uint {
 pub const fn HWEIGHT(w: u64) -> core::ffi::c_uint {
     HWEIGHT64(w as u64)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

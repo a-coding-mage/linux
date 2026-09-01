@@ -215,3 +215,5 @@ pub unsafe fn __get_unaligned_be48(p: *const u8) -> u64 {
 pub unsafe fn get_unaligned_be48(p: *const core::ffi::c_void) -> u64 {
     unsafe { __get_unaligned_be48(p as *const u8) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

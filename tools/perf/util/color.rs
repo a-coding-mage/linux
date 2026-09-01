@@ -233,3 +233,5 @@ pub unsafe extern "C" fn percent_color_len_snprintf(
     color = get_percent_color(percent);
     color_snprintf(bf, size, color, fmt, len, percent)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

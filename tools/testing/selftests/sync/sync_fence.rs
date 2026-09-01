@@ -184,3 +184,5 @@ pub unsafe extern "C" fn test_fence_one_timeline_merge() -> c_int {
     sw_sync_timeline_destroy(timeline);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

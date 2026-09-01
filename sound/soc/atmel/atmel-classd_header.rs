@@ -1,0 +1,119 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+pub const CLASSD_CR: u32 = 0x00000000;
+pub const CLASSD_CR_RESET: u32 = 0x1;
+
+pub const CLASSD_MR: u32 = 0x00000004;
+
+pub const CLASSD_MR_LEN_DIS: u32 = 0x0;
+pub const CLASSD_MR_LEN_EN: u32 = 0x1;
+pub const CLASSD_MR_LEN_MASK: u32 = 0x1 << 0;
+pub const CLASSD_MR_LEN_SHIFT: u32 = 0;
+
+pub const CLASSD_MR_LMUTE_DIS: u32 = 0x0;
+pub const CLASSD_MR_LMUTE_EN: u32 = 0x1;
+pub const CLASSD_MR_LMUTE_SHIFT: u32 = 0x1;
+pub const CLASSD_MR_LMUTE_MASK: u32 = 0x1 << 1;
+
+pub const CLASSD_MR_REN_DIS: u32 = 0x0;
+pub const CLASSD_MR_REN_EN: u32 = 0x1;
+pub const CLASSD_MR_REN_MASK: u32 = 0x1 << 4;
+pub const CLASSD_MR_REN_SHIFT: u32 = 4;
+
+pub const CLASSD_MR_RMUTE_DIS: u32 = 0x0;
+pub const CLASSD_MR_RMUTE_EN: u32 = 0x1;
+pub const CLASSD_MR_RMUTE_SHIFT: u32 = 0x5;
+pub const CLASSD_MR_RMUTE_MASK: u32 = 0x1 << 5;
+
+pub const CLASSD_MR_PWMTYP_SINGLE: u32 = 0x0;
+pub const CLASSD_MR_PWMTYP_DIFF: u32 = 0x1;
+pub const CLASSD_MR_PWMTYP_MASK: u32 = 0x1 << 8;
+pub const CLASSD_MR_PWMTYP_SHIFT: u32 = 8;
+
+pub const CLASSD_MR_NON_OVERLAP_DIS: u32 = 0x0;
+pub const CLASSD_MR_NON_OVERLAP_EN: u32 = 0x1;
+pub const CLASSD_MR_NON_OVERLAP_MASK: u32 = 0x1 << 16;
+pub const CLASSD_MR_NON_OVERLAP_SHIFT: u32 = 16;
+
+pub const CLASSD_MR_NOVR_VAL_5NS: u32 = 0x0;
+pub const CLASSD_MR_NOVR_VAL_10NS: u32 = 0x1;
+pub const CLASSD_MR_NOVR_VAL_15NS: u32 = 0x2;
+pub const CLASSD_MR_NOVR_VAL_20NS: u32 = 0x3;
+pub const CLASSD_MR_NOVR_VAL_MASK: u32 = 0x3 << 20;
+pub const CLASSD_MR_NOVR_VAL_SHIFT: u32 = 20;
+
+pub const CLASSD_INTPMR: u32 = 0x00000008;
+
+pub const CLASSD_INTPMR_ATTL_MASK: u32 = 0x3f << 0;
+pub const CLASSD_INTPMR_ATTL_SHIFT: u32 = 0;
+pub const CLASSD_INTPMR_ATTR_MASK: u32 = 0x3f << 8;
+pub const CLASSD_INTPMR_ATTR_SHIFT: u32 = 8;
+
+pub const CLASSD_INTPMR_DSP_CLK_FREQ_12M288: u32 = 0x0;
+pub const CLASSD_INTPMR_DSP_CLK_FREQ_11M2896: u32 = 0x1;
+pub const CLASSD_INTPMR_DSP_CLK_FREQ_MASK: u32 = 0x1 << 16;
+pub const CLASSD_INTPMR_DSP_CLK_FREQ_SHIFT: u32 = 16;
+
+pub const CLASSD_INTPMR_DEEMP_DIS: u32 = 0x0;
+pub const CLASSD_INTPMR_DEEMP_EN: u32 = 0x1;
+pub const CLASSD_INTPMR_DEEMP_MASK: u32 = 0x1 << 18;
+pub const CLASSD_INTPMR_DEEMP_SHIFT: u32 = 18;
+
+pub const CLASSD_INTPMR_SWAP_LEFT_ON_LSB: u32 = 0x0;
+pub const CLASSD_INTPMR_SWAP_RIGHT_ON_LSB: u32 = 0x1;
+pub const CLASSD_INTPMR_SWAP_MASK: u32 = 0x1 << 19;
+pub const CLASSD_INTPMR_SWAP_SHIFT: u32 = 19;
+
+pub const CLASSD_INTPMR_FRAME_8K: u32 = 0x0;
+pub const CLASSD_INTPMR_FRAME_16K: u32 = 0x1;
+pub const CLASSD_INTPMR_FRAME_32K: u32 = 0x2;
+pub const CLASSD_INTPMR_FRAME_48K: u32 = 0x3;
+pub const CLASSD_INTPMR_FRAME_96K: u32 = 0x4;
+pub const CLASSD_INTPMR_FRAME_22K: u32 = 0x5;
+pub const CLASSD_INTPMR_FRAME_44K: u32 = 0x6;
+pub const CLASSD_INTPMR_FRAME_88K: u32 = 0x7;
+pub const CLASSD_INTPMR_FRAME_MASK: u32 = 0x7 << 20;
+pub const CLASSD_INTPMR_FRAME_SHIFT: u32 = 20;
+
+pub const CLASSD_INTPMR_EQCFG_FLAT: u32 = 0x0;
+pub const CLASSD_INTPMR_EQCFG_B_BOOST_12: u32 = 0x1;
+pub const CLASSD_INTPMR_EQCFG_B_BOOST_6: u32 = 0x2;
+pub const CLASSD_INTPMR_EQCFG_B_CUT_12: u32 = 0x3;
+pub const CLASSD_INTPMR_EQCFG_B_CUT_6: u32 = 0x4;
+pub const CLASSD_INTPMR_EQCFG_M_BOOST_3: u32 = 0x5;
+pub const CLASSD_INTPMR_EQCFG_M_BOOST_8: u32 = 0x6;
+pub const CLASSD_INTPMR_EQCFG_M_CUT_3: u32 = 0x7;
+pub const CLASSD_INTPMR_EQCFG_M_CUT_8: u32 = 0x8;
+pub const CLASSD_INTPMR_EQCFG_T_BOOST_12: u32 = 0x9;
+pub const CLASSD_INTPMR_EQCFG_T_BOOST_6: u32 = 0xa;
+pub const CLASSD_INTPMR_EQCFG_T_CUT_12: u32 = 0xb;
+pub const CLASSD_INTPMR_EQCFG_T_CUT_6: u32 = 0xc;
+pub const CLASSD_INTPMR_EQCFG_SHIFT: u32 = 24;
+
+pub const CLASSD_INTPMR_MONO_DIS: u32 = 0x0;
+pub const CLASSD_INTPMR_MONO_EN: u32 = 0x1;
+pub const CLASSD_INTPMR_MONO_MASK: u32 = 0x1 << 28;
+pub const CLASSD_INTPMR_MONO_SHIFT: u32 = 28;
+
+pub const CLASSD_INTPMR_MONO_MODE_MIX: u32 = 0x0;
+pub const CLASSD_INTPMR_MONO_MODE_SAT: u32 = 0x1;
+pub const CLASSD_INTPMR_MONO_MODE_LEFT: u32 = 0x2;
+pub const CLASSD_INTPMR_MONO_MODE_RIGHT: u32 = 0x3;
+pub const CLASSD_INTPMR_MONO_MODE_MASK: u32 = 0x3 << 29;
+pub const CLASSD_INTPMR_MONO_MODE_SHIFT: u32 = 29;
+
+pub const CLASSD_INTSR: u32 = 0x0000000c;
+
+pub const CLASSD_THR: u32 = 0x00000010;
+
+pub const CLASSD_IER: u32 = 0x00000014;
+
+pub const CLASSD_IDR: u32 = 0x00000018;
+
+pub const CLASSD_IMR: u32 = 0x0000001c;
+
+pub const CLASSD_ISR: u32 = 0x00000020;
+
+pub const CLASSD_WPMR: u32 = 0x000000e4;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

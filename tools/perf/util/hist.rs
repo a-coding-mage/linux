@@ -1924,3 +1924,5 @@ pub unsafe extern "C" fn perf_hpp_list__init(list: *mut perf_hpp_list) {
     INIT_LIST_HEAD(&mut (*list).fields);
     INIT_LIST_HEAD(&mut (*list).sorts);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

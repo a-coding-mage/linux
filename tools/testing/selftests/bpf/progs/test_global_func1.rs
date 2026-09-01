@@ -62,3 +62,5 @@ pub unsafe extern "C" fn f3(val: i32, skb: *mut __sk_buff, var: i32) -> i32 {
 pub unsafe extern "C" fn global_func1(skb: *mut __sk_buff) -> i32 {
     f0(1, skb) + f1(skb) + f2(2, skb) + f3(3, skb, 4)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

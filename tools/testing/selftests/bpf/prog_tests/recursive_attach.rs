@@ -386,3 +386,5 @@ unsafe fn goto_close_prog_stress(
 	fentry_recursive__destroy(tracing_skel);
 	fentry_recursive_target__destroy(target_skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

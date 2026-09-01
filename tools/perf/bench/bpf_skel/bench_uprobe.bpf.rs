@@ -50,3 +50,5 @@ pub unsafe extern "C" fn trace_printk_ret() -> i32 {
 #[unsafe(link_section = "license")]
 #[unsafe(no_mangle)]
 pub static mut LICENSE: [::core::ffi::c_char; 13] = *b"Dual BSD/GPL\0".as_ptr().cast();
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

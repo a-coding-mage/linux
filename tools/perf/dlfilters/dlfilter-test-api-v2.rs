@@ -536,3 +536,5 @@ pub unsafe extern "C" fn filter_description(long_description: *mut *const c_char
     *long_description = c"Filter used by the 'dlfilter C API' perf test".as_ptr();
     c"dlfilter to test v2 C API".as_ptr()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

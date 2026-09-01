@@ -216,3 +216,5 @@ pub const THERMAL_SYSFS: &[u8] = b"/sys/class/thermal\0";
 pub const CDEV: &[u8] = b"cooling_device\0";
 pub const TZONE: &[u8] = b"thermal_zone\0";
 pub const TDATA_LEFT: c_int = 16;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -87,3 +87,5 @@ pub unsafe extern "C" fn to_cxl_host_bridge(
     unsafe { put_cxl_mock_ops(index.assume_init()) };
     found
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

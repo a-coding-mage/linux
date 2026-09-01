@@ -852,3 +852,5 @@ pub unsafe extern "C" fn test_core_reloc() {
 pub unsafe extern "C" fn test_core_reloc_btfgen() {
     run_core_reloc_tests(true);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

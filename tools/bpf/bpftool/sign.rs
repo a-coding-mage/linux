@@ -434,3 +434,5 @@ pub unsafe extern "C" fn bpftool_prog_sign(opts: *mut bpf_load_and_run_opts) -> 
     unsafe { (*opts).signature_sz = actual_sig_len as usize };
     goto_cleanup!(bd_out, cms, x509, private_key, bd_in, data, err);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -19,3 +19,5 @@ unsafe extern "C" {
         which: acpi_cppc_value,
     ) -> core::ffi::c_ulong;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -49,3 +49,5 @@ unsafe extern "C" {
 
 // Dependency intent from C include:
 // #include "enums.autogen.h"
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -50,3 +50,5 @@ pub const fn generic___fls(mut word: core::ffi::c_ulong) -> u32 {
 pub const fn __fls(word: core::ffi::c_ulong) -> u32 {
     generic___fls(word)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

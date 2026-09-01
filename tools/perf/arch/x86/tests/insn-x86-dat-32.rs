@@ -1624,3 +1624,5 @@ InsnTest { bytes: &[0x0f, 0x01, 0xc0, ], len: 3, rel: 0, branch: "", branch_kind
 InsnTest { bytes: &[0x0f, 0x01, 0xc5, ], len: 3, rel: 0, branch: "", branch_kind: "", asm: "0f 01 c5             \tpconfig " },
 InsnTest { bytes: &[0xf3, 0x0f, 0x09, ], len: 3, rel: 0, branch: "", branch_kind: "", asm: "f3 0f 09             \twbnoinvd " },
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

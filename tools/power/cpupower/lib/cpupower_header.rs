@@ -30,3 +30,5 @@ unsafe extern "C" {
     pub fn cpu_topology_release(cpu_top: cpupower_topology);
     pub fn cpupower_is_cpu_online(cpu: ::std::os::raw::c_uint) -> ::std::os::raw::c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

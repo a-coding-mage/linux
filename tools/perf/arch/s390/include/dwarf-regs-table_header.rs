@@ -61,3 +61,5 @@ pub static s390_dwarf_regs: [&str; 66] = [
 
 // If DEFINE_DWARF_REGSTR_TABLE is defined by the includer:
 // #define s390_regstr_tbl s390_dwarf_regs
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

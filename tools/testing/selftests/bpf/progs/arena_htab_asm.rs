@@ -10,3 +10,5 @@
 // implementation. The included implementation is an external future dependency
 // in this isolated pass, with BPF_ARENA_FORCE_ASM enabled and arena_htab_llvm
 // renamed to arena_htab_asm by the original C preprocessor.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1,0 +1,669 @@
+/* SPDX-License-Identifier: GPL-2.0-only
+ * Copyright (c) 2023-2024 Qualcomm Innovation Center, Inc. All rights reserved.
+ */
+
+// C includes translated as external dependency intent:
+// <linux/soundwire/sdw.h>, <linux/soundwire/sdw_type.h>, "wcd-common.h".
+
+use core::ffi::c_void;
+
+pub type c_int = i32;
+pub type c_uint = u32;
+
+const fn bit(n: u32) -> u32 { 1u32 << n }
+const fn genmask(h: u32, l: u32) -> u32 { (u32::MAX << l) & (u32::MAX >> (31 - h)) }
+
+pub const WCD937X_BASE_ADDRESS: u32 = 0x3000;
+pub const WCD937X_ANA_BIAS: u32 = 0x3001;
+pub const WCD937X_ANA_RX_SUPPLIES: u32 = 0x3008;
+pub const WCD937X_ANA_HPH: u32 = 0x3009;
+pub const WCD937X_ANA_EAR: u32 = 0x300A;
+pub const WCD937X_ANA_EAR_COMPANDER_CTL: u32 = 0x300B;
+pub const WCD937X_EAR_GAIN_MASK: u32 = genmask(6, 2);
+pub const WCD937X_ANA_TX_CH1: u32 = 0x300E;
+pub const WCD937X_ANA_TX_CH2: u32 = 0x300F;
+pub const WCD937X_ANA_TX_CH3: u32 = 0x3010;
+pub const WCD937X_ANA_TX_CH3_HPF: u32 = 0x3011;
+pub const WCD937X_ANA_MICB1_MICB2_DSP_EN_LOGIC: u32 = 0x3012;
+pub const WCD937X_ANA_MICB3_DSP_EN_LOGIC: u32 = 0x3013;
+pub const WCD937X_ANA_MBHC_MECH: u32 = 0x3014;
+pub const WCD937X_MBHC_L_DET_EN_MASK: u32 = bit(7);
+pub const WCD937X_MBHC_L_DET_EN: u32 = bit(7);
+pub const WCD937X_MBHC_GND_DET_EN_MASK: u32 = bit(6);
+pub const WCD937X_MBHC_MECH_DETECT_TYPE_MASK: u32 = bit(5);
+pub const WCD937X_MBHC_MECH_DETECT_TYPE_INS: u32 = 1;
+pub const WCD937X_MBHC_HPHL_PLUG_TYPE_MASK: u32 = bit(4);
+pub const WCD937X_MBHC_HPHL_PLUG_TYPE_NO: u32 = 1;
+pub const WCD937X_MBHC_GND_PLUG_TYPE_MASK: u32 = bit(3);
+pub const WCD937X_MBHC_GND_PLUG_TYPE_NO: u32 = 1;
+pub const WCD937X_MBHC_HSL_PULLUP_COMP_EN: u32 = bit(2);
+pub const WCD937X_MBHC_HSG_PULLUP_COMP_EN: u32 = bit(1);
+pub const WCD937X_MBHC_HPHL_100K_TO_GND_EN: u32 = bit(0);
+pub const WCD937X_ANA_MBHC_ELECT: u32 = 0x3015;
+pub const WCD937X_ANA_MBHC_BD_ISRC_CTL_MASK: u32 = genmask(6, 4);
+pub const WCD937X_ANA_MBHC_BD_ISRC_100UA: u32 = genmask(5, 4);
+pub const WCD937X_ANA_MBHC_BD_ISRC_OFF: u32 = 0;
+pub const WCD937X_ANA_MBHC_BIAS_EN_MASK: u32 = bit(0);
+pub const WCD937X_ANA_MBHC_BIAS_EN: u32 = bit(0);
+pub const WCD937X_ANA_MBHC_ZDET: u32 = 0x3016;
+pub const WCD937X_ANA_MBHC_RESULT_1: u32 = 0x3017;
+pub const WCD937X_ANA_MBHC_RESULT_2: u32 = 0x3018;
+pub const WCD937X_ANA_MBHC_RESULT_3: u32 = 0x3019;
+pub const WCD937X_MBHC_BTN_RESULT_MASK: u32 = genmask(2, 0);
+pub const WCD937X_ANA_MBHC_BTN0: u32 = 0x301A;
+pub const WCD937X_MBHC_BTN_VTH_MASK: u32 = genmask(7, 2);
+pub const WCD937X_ANA_MBHC_BTN1: u32 = 0x301B;
+pub const WCD937X_ANA_MBHC_BTN2: u32 = 0x301C;
+pub const WCD937X_ANA_MBHC_BTN3: u32 = 0x301D;
+pub const WCD937X_ANA_MBHC_BTN4: u32 = 0x301E;
+pub const WCD937X_ANA_MBHC_BTN5: u32 = 0x301F;
+pub const WCD937X_VTH_MASK: u32 = genmask(7, 2);
+pub const WCD937X_ANA_MBHC_BTN6: u32 = 0x3020;
+pub const WCD937X_ANA_MBHC_BTN7: u32 = 0x3021;
+pub const WCD937X_ANA_MICB1: u32 = 0x3022;
+pub const WCD937X_MICB_VOUT_MASK: u32 = genmask(5, 0);
+pub const WCD937X_MICB_EN_MASK: u32 = genmask(7, 6);
+pub const WCD937X_MICB_DISABLE: u32 = 0;
+pub const WCD937X_MICB_ENABLE: u32 = 1;
+pub const WCD937X_MICB_PULL_UP: u32 = 2;
+pub const WCD937X_MICB_PULL_DOWN: u32 = 3;
+pub const WCD937X_ANA_MICB2: u32 = 0x3023;
+pub const WCD937X_ANA_MICB2_ENABLE: u32 = bit(6);
+pub const WCD937X_ANA_MICB2_ENABLE_MASK: u32 = genmask(7, 6);
+pub const WCD937X_ANA_MICB2_VOUT_MASK: u32 = genmask(5, 0);
+pub const WCD937X_ANA_MICB2_RAMP: u32 = 0x3024;
+pub const WCD937X_RAMP_EN_MASK: u32 = bit(7);
+pub const WCD937X_RAMP_SHIFT_CTRL_MASK: u32 = genmask(4, 2);
+pub const WCD937X_ANA_MICB3: u32 = 0x3025;
+pub const WCD937X_ANA_MICB_EN: u32 = genmask(7, 6);
+// Duplicate C #define preserved: WCD937X_MICB_DISABLE 0
+// Duplicate C #define preserved: WCD937X_MICB_ENABLE 1
+// Duplicate C #define preserved: WCD937X_MICB_PULL_UP 2
+pub const WCD937X_ANA_MICB_VOUT: u32 = genmask(5, 0);
+pub const WCD937X_BIAS_CTL: u32 = 0x3028;
+pub const WCD937X_BIAS_VBG_FINE_ADJ: u32 = 0x3029;
+pub const WCD937X_LDOL_VDDCX_ADJUST: u32 = 0x3040;
+pub const WCD937X_LDOL_DISABLE_LDOL: u32 = 0x3041;
+pub const WCD937X_MBHC_CTL_CLK: u32 = 0x3056;
+pub const WCD937X_MBHC_CTL_ANA: u32 = 0x3057;
+pub const WCD937X_MBHC_CTL_SPARE_1: u32 = 0x3058;
+pub const WCD937X_MBHC_CTL_SPARE_2: u32 = 0x3059;
+pub const WCD937X_MBHC_CTL_BCS: u32 = 0x305A;
+pub const WCD937X_MBHC_MOISTURE_DET_FSM_STATUS: u32 = 0x305B;
+pub const WCD937X_MBHC_TEST_CTL: u32 = 0x305C;
+pub const WCD937X_LDOH_MODE: u32 = 0x3067;
+pub const WCD937X_LDOH_BIAS: u32 = 0x3068;
+pub const WCD937X_LDOH_STB_LOADS: u32 = 0x3069;
+pub const WCD937X_LDOH_SLOWRAMP: u32 = 0x306A;
+pub const WCD937X_MICB1_TEST_CTL_1: u32 = 0x306B;
+pub const WCD937X_MICB1_TEST_CTL_2: u32 = 0x306C;
+pub const WCD937X_MICB1_TEST_CTL_3: u32 = 0x306D;
+pub const WCD937X_MICB2_TEST_CTL_1: u32 = 0x306E;
+pub const WCD937X_MICB2_TEST_CTL_2: u32 = 0x306F;
+pub const WCD937X_MICB2_TEST_CTL_3: u32 = 0x3070;
+pub const WCD937X_MICB3_TEST_CTL_1: u32 = 0x3071;
+pub const WCD937X_MICB3_TEST_CTL_2: u32 = 0x3072;
+pub const WCD937X_MICB3_TEST_CTL_3: u32 = 0x3073;
+pub const WCD937X_TX_COM_ADC_VCM: u32 = 0x3077;
+pub const WCD937X_TX_COM_BIAS_ATEST: u32 = 0x3078;
+pub const WCD937X_TX_COM_ADC_INT1_IB: u32 = 0x3079;
+pub const WCD937X_TX_COM_ADC_INT2_IB: u32 = 0x307A;
+pub const WCD937X_TX_COM_TXFE_DIV_CTL: u32 = 0x307B;
+pub const WCD937X_TX_COM_TXFE_DIV_START: u32 = 0x307C;
+pub const WCD937X_TX_COM_TXFE_DIV_STOP_9P6M: u32 = 0x307D;
+pub const WCD937X_TX_COM_TXFE_DIV_STOP_12P288M: u32 = 0x307E;
+pub const WCD937X_TX_1_2_TEST_EN: u32 = 0x307F;
+pub const WCD937X_TX_1_2_ADC_IB: u32 = 0x3080;
+pub const WCD937X_TX_1_2_ATEST_REFCTL: u32 = 0x3081;
+pub const WCD937X_TX_1_2_TEST_CTL: u32 = 0x3082;
+pub const WCD937X_TX_1_2_TEST_BLK_EN: u32 = 0x3083;
+pub const WCD937X_TX_1_2_TXFE_CLKDIV: u32 = 0x3084;
+pub const WCD937X_TX_1_2_SAR2_ERR: u32 = 0x3085;
+pub const WCD937X_TX_1_2_SAR1_ERR: u32 = 0x3086;
+pub const WCD937X_TX_3_TEST_EN: u32 = 0x3087;
+pub const WCD937X_TX_3_ADC_IB: u32 = 0x3088;
+pub const WCD937X_TX_3_ATEST_REFCTL: u32 = 0x3089;
+pub const WCD937X_TX_3_TEST_CTL: u32 = 0x308A;
+pub const WCD937X_TX_3_TEST_BLK_EN: u32 = 0x308B;
+pub const WCD937X_TX_3_TXFE_CLKDIV: u32 = 0x308C;
+pub const WCD937X_TX_3_SPARE_MONO: u32 = 0x308D;
+pub const WCD937X_TX_3_SAR1_ERR: u32 = 0x308E;
+pub const WCD937X_CLASSH_MODE_1: u32 = 0x3097;
+pub const WCD937X_CLASSH_MODE_2: u32 = 0x3098;
+pub const WCD937X_CLASSH_MODE_3: u32 = 0x3099;
+pub const WCD937X_CLASSH_CTRL_VCL_1: u32 = 0x309A;
+pub const WCD937X_CLASSH_CTRL_VCL_2: u32 = 0x309B;
+pub const WCD937X_CLASSH_CTRL_CCL_1: u32 = 0x309C;
+pub const WCD937X_CLASSH_CTRL_CCL_2: u32 = 0x309D;
+pub const WCD937X_CLASSH_CTRL_CCL_3: u32 = 0x309E;
+pub const WCD937X_CLASSH_CTRL_CCL_4: u32 = 0x309F;
+pub const WCD937X_CLASSH_CTRL_CCL_5: u32 = 0x30A0;
+pub const WCD937X_CLASSH_BUCK_TMUX_A_D: u32 = 0x30A1;
+pub const WCD937X_CLASSH_BUCK_SW_DRV_CNTL: u32 = 0x30A2;
+pub const WCD937X_CLASSH_SPARE: u32 = 0x30A3;
+pub const WCD937X_FLYBACK_EN: u32 = 0x30A4;
+pub const WCD937X_FLYBACK_VNEG_CTRL_1: u32 = 0x30A5;
+pub const WCD937X_FLYBACK_VNEG_CTRL_2: u32 = 0x30A6;
+pub const WCD937X_FLYBACK_VNEG_CTRL_3: u32 = 0x30A7;
+pub const WCD937X_FLYBACK_VNEG_CTRL_4: u32 = 0x30A8;
+pub const WCD937X_FLYBACK_VNEG_CTRL_5: u32 = 0x30A9;
+pub const WCD937X_FLYBACK_VNEG_CTRL_6: u32 = 0x30AA;
+pub const WCD937X_FLYBACK_VNEG_CTRL_7: u32 = 0x30AB;
+pub const WCD937X_FLYBACK_VNEG_CTRL_8: u32 = 0x30AC;
+pub const WCD937X_FLYBACK_VNEG_CTRL_9: u32 = 0x30AD;
+pub const WCD937X_FLYBACK_VNEGDAC_CTRL_1: u32 = 0x30AE;
+pub const WCD937X_FLYBACK_VNEGDAC_CTRL_2: u32 = 0x30AF;
+pub const WCD937X_FLYBACK_VNEGDAC_CTRL_3: u32 = 0x30B0;
+pub const WCD937X_FLYBACK_CTRL_1: u32 = 0x30B1;
+pub const WCD937X_FLYBACK_TEST_CTL: u32 = 0x30B2;
+pub const WCD937X_RX_AUX_SW_CTL: u32 = 0x30B3;
+pub const WCD937X_RX_PA_AUX_IN_CONN: u32 = 0x30B4;
+pub const WCD937X_RX_TIMER_DIV: u32 = 0x30B5;
+pub const WCD937X_RX_OCP_CTL: u32 = 0x30B6;
+pub const WCD937X_RX_OCP_COUNT: u32 = 0x30B7;
+pub const WCD937X_RX_BIAS_EAR_DAC: u32 = 0x30B8;
+pub const WCD937X_RX_BIAS_EAR_AMP: u32 = 0x30B9;
+pub const WCD937X_RX_BIAS_HPH_LDO: u32 = 0x30BA;
+pub const WCD937X_RX_BIAS_HPH_PA: u32 = 0x30BB;
+pub const WCD937X_RX_BIAS_HPH_RDACBUFF_CNP2: u32 = 0x30BC;
+pub const WCD937X_RX_BIAS_HPH_RDAC_LDO: u32 = 0x30BD;
+pub const WCD937X_RX_BIAS_HPH_CNP1: u32 = 0x30BE;
+pub const WCD937X_RX_BIAS_HPH_LOWPOWER: u32 = 0x30BF;
+pub const WCD937X_RX_BIAS_AUX_DAC: u32 = 0x30C0;
+pub const WCD937X_RX_BIAS_AUX_AMP: u32 = 0x30C1;
+pub const WCD937X_RX_BIAS_VNEGDAC_BLEEDER: u32 = 0x30C2;
+pub const WCD937X_RX_BIAS_MISC: u32 = 0x30C3;
+pub const WCD937X_RX_BIAS_BUCK_RST: u32 = 0x30C4;
+pub const WCD937X_RX_BIAS_BUCK_VREF_ERRAMP: u32 = 0x30C5;
+pub const WCD937X_RX_BIAS_FLYB_ERRAMP: u32 = 0x30C6;
+pub const WCD937X_RX_BIAS_FLYB_BUFF: u32 = 0x30C7;
+pub const WCD937X_RX_BIAS_FLYB_MID_RST: u32 = 0x30C8;
+pub const WCD937X_HPH_L_STATUS: u32 = 0x30C9;
+pub const WCD937X_HPH_R_STATUS: u32 = 0x30CA;
+pub const WCD937X_HPH_CNP_EN: u32 = 0x30CB;
+pub const WCD937X_HPH_CNP_WG_CTL: u32 = 0x30CC;
+pub const WCD937X_HPH_CNP_WG_TIME: u32 = 0x30CD;
+pub const WCD937X_HPH_OCP_CTL: u32 = 0x30CE;
+pub const WCD937X_HPH_AUTO_CHOP: u32 = 0x30CF;
+pub const WCD937X_HPH_CHOP_CTL: u32 = 0x30D0;
+pub const WCD937X_HPH_PA_CTL1: u32 = 0x30D1;
+pub const WCD937X_HPH_PA_CTL2: u32 = 0x30D2;
+pub const WCD937X_HPHPA_GND_R_MASK: u32 = bit(6);
+pub const WCD937X_HPHPA_GND_L_MASK: u32 = bit(4);
+pub const WCD937X_HPH_L_EN: u32 = 0x30D3;
+pub const WCD937X_HPH_L_TEST: u32 = 0x30D4;
+pub const WCD937X_HPH_L_ATEST: u32 = 0x30D5;
+pub const WCD937X_HPH_R_EN: u32 = 0x30D6;
+pub const WCD937X_GAIN_SRC_SEL_MASK: u32 = bit(5);
+pub const WCD937X_GAIN_SRC_SEL_REGISTER: u32 = 1;
+pub const WCD937X_HPH_R_TEST: u32 = 0x30D7;
+pub const WCD937X_HPH_R_ATEST: u32 = 0x30D8;
+pub const WCD937X_HPH_RDAC_CLK_CTL1: u32 = 0x30D9;
+pub const WCD937X_HPHPA_GND_OVR_MASK: u32 = bit(1);
+pub const WCD937X_CHOP_CLK_EN_MASK: u32 = bit(7);
+pub const WCD937X_HPH_RDAC_CLK_CTL2: u32 = 0x30DA;
+pub const WCD937X_HPH_RDAC_LDO_CTL: u32 = 0x30DB;
+pub const WCD937X_HPH_RDAC_CHOP_CLK_LP_CTL: u32 = 0x30DC;
+pub const WCD937X_HPH_REFBUFF_UHQA_CTL: u32 = 0x30DD;
+pub const WCD937X_HPH_REFBUFF_LP_CTL: u32 = 0x30DE;
+pub const WCD937X_PREREF_FLIT_BYPASS_MASK: u32 = bit(0);
+pub const WCD937X_HPH_L_DAC_CTL: u32 = 0x30DF;
+pub const WCD937X_HPH_R_DAC_CTL: u32 = 0x30E0;
+pub const WCD937X_HPH_SURGE_HPHLR_SURGE_COMP_SEL: u32 = 0x30E1;
+pub const WCD937X_HPH_SURGE_HPHLR_SURGE_EN: u32 = 0x30E2;
+pub const WCD937X_HPH_SURGE_HPHLR_SURGE_MISC1: u32 = 0x30E3;
+pub const WCD937X_HPH_SURGE_HPHLR_SURGE_STATUS: u32 = 0x30E4;
+pub const WCD937X_EAR_EAR_EN_REG: u32 = 0x30E9;
+pub const WCD937X_EAR_EAR_PA_CON: u32 = 0x30EA;
+pub const WCD937X_EAR_EAR_SP_CON: u32 = 0x30EB;
+pub const WCD937X_EAR_EAR_DAC_CON: u32 = 0x30EC;
+pub const WCD937X_EAR_EAR_CNP_FSM_CON: u32 = 0x30ED;
+pub const WCD937X_EAR_TEST_CTL: u32 = 0x30EE;
+pub const WCD937X_EAR_STATUS_REG_1: u32 = 0x30EF;
+pub const WCD937X_EAR_STATUS_REG_2: u32 = 0x30F0;
+pub const WCD937X_ANA_NEW_PAGE_REGISTER: u32 = 0x3100;
+pub const WCD937X_HPH_NEW_ANA_HPH2: u32 = 0x3101;
+pub const WCD937X_HPH_NEW_ANA_HPH3: u32 = 0x3102;
+pub const WCD937X_SLEEP_CTL: u32 = 0x3103;
+pub const WCD937X_SLEEP_WATCHDOG_CTL: u32 = 0x3104;
+pub const WCD937X_MBHC_NEW_ELECT_REM_CLAMP_CTL: u32 = 0x311F;
+pub const WCD937X_MBHC_NEW_CTL_1: u32 = 0x3120;
+pub const WCD937X_MBHC_CTL_RCO_EN_MASK: u32 = bit(7);
+pub const WCD937X_MBHC_CTL_RCO_EN: u32 = bit(7);
+pub const WCD937X_MBHC_BTN_DBNC_MASK: u32 = genmask(1, 0);
+pub const WCD937X_MBHC_BTN_DBNC_T_16_MS: u32 = 0x2;
+pub const WCD937X_MBHC_NEW_CTL_2: u32 = 0x3121;
+pub const WCD937X_MBHC_NEW_PLUG_DETECT_CTL: u32 = 0x3122;
+pub const WCD937X_MBHC_NEW_ZDET_ANA_CTL: u32 = 0x3123;
+pub const WCD937X_M_RTH_CTL_MASK: u32 = genmask(3, 2);
+pub const WCD937X_MBHC_HS_VREF_CTL_MASK: u32 = genmask(1, 0);
+pub const WCD937X_MBHC_HS_VREF_1P5_V: u32 = 0x1;
+pub const WCD937X_MBHC_DBNC_TIMER_INSREM_DBNC_T_96_MS: u32 = 0x6;
+pub const WCD937X_ZDET_RANGE_CTL_MASK: u32 = genmask(3, 0);
+pub const WCD937X_ZDET_MAXV_CTL_MASK: u32 = genmask(6, 4);
+pub const WCD937X_MBHC_NEW_ZDET_RAMP_CTL: u32 = 0x3124;
+pub const WCD937X_MBHC_NEW_FSM_STATUS: u32 = 0x3125;
+pub const WCD937X_MBHC_NEW_ADC_RESULT: u32 = 0x3126;
+pub const WCD937X_TX_NEW_TX_CH2_SEL: u32 = 0x3127;
+pub const WCD937X_AUX_AUXPA: u32 = 0x3128;
+pub const WCD937X_AUXPA_CLK_EN_MASK: u32 = bit(4);
+// Duplicate C #define preserved: WCD937X_AUXPA_CLK_EN_MASK bit(4)
+pub const WCD937X_LDORXTX_MODE: u32 = 0x3129;
+pub const WCD937X_LDORXTX_CONFIG: u32 = 0x312A;
+pub const WCD937X_DIE_CRACK_DIE_CRK_DET_EN: u32 = 0x312C;
+pub const WCD937X_DIE_CRACK_DIE_CRK_DET_OUT: u32 = 0x312D;
+pub const WCD937X_HPH_NEW_INT_RDAC_GAIN_CTL: u32 = 0x3132;
+pub const WCD937X_HPH_NEW_INT_RDAC_HD2_CTL_L: u32 = 0x3133;
+pub const WCD937X_HPH_NEW_INT_RDAC_VREF_CTL: u32 = 0x3134;
+pub const WCD937X_HPH_NEW_INT_RDAC_OVERRIDE_CTL: u32 = 0x3135;
+pub const WCD937X_HPH_NEW_INT_RDAC_HD2_CTL_R: u32 = 0x3136;
+pub const WCD937X_HPH_NEW_INT_PA_MISC1: u32 = 0x3137;
+pub const WCD937X_HPH_NEW_INT_PA_MISC2: u32 = 0x3138;
+pub const WCD937X_HPH_NEW_INT_PA_RDAC_MISC: u32 = 0x3139;
+pub const WCD937X_HPH_NEW_INT_HPH_TIMER1: u32 = 0x313A;
+pub const WCD937X_HPH_NEW_INT_HPH_TIMER2: u32 = 0x313B;
+pub const WCD937X_HPH_NEW_INT_HPH_TIMER3: u32 = 0x313C;
+pub const WCD937X_HPH_NEW_INT_HPH_TIMER4: u32 = 0x313D;
+pub const WCD937X_HPH_NEW_INT_PA_RDAC_MISC2: u32 = 0x313E;
+pub const WCD937X_HPH_NEW_INT_PA_RDAC_MISC3: u32 = 0x313F;
+pub const WCD937X_RX_NEW_INT_HPH_RDAC_BIAS_LOHIFI: u32 = 0x3145;
+pub const WCD937X_RX_NEW_INT_HPH_RDAC_BIAS_ULP: u32 = 0x3146;
+pub const WCD937X_RX_NEW_INT_HPH_RDAC_LDO_LP: u32 = 0x3147;
+pub const WCD937X_MBHC_NEW_INT_MOISTURE_DET_DC_CTRL: u32 = 0x31AF;
+pub const WCD937X_MBHC_NEW_INT_MOISTURE_DET_POLLING_CTRL: u32 = 0x31B0;
+pub const WCD937X_MOISTURE_EN_POLLING_MASK: u32 = bit(2);
+pub const WCD937X_HSDET_PULLUP_C_MASK: u32 = genmask(4, 0);
+pub const WCD937X_MBHC_NEW_INT_MECH_DET_CURRENT: u32 = 0x31B1;
+pub const WCD937X_MBHC_NEW_INT_SPARE_2: u32 = 0x31B2;
+pub const WCD937X_EAR_INT_NEW_EAR_CHOPPER_CON: u32 = 0x31B7;
+pub const WCD937X_EAR_INT_NEW_CNP_VCM_CON1: u32 = 0x31B8;
+pub const WCD937X_EAR_INT_NEW_CNP_VCM_CON2: u32 = 0x31B9;
+pub const WCD937X_EAR_INT_NEW_EAR_DYNAMIC_BIAS: u32 = 0x31BA;
+pub const WCD937X_AUX_INT_EN_REG: u32 = 0x31BD;
+pub const WCD937X_AUX_INT_PA_CTRL: u32 = 0x31BE;
+pub const WCD937X_AUX_INT_SP_CTRL: u32 = 0x31BF;
+pub const WCD937X_AUX_INT_DAC_CTRL: u32 = 0x31C0;
+pub const WCD937X_AUX_INT_CLK_CTRL: u32 = 0x31C1;
+pub const WCD937X_AUX_INT_TEST_CTRL: u32 = 0x31C2;
+pub const WCD937X_AUX_INT_STATUS_REG: u32 = 0x31C3;
+pub const WCD937X_AUX_INT_MISC: u32 = 0x31C4;
+pub const WCD937X_LDORXTX_INT_BIAS: u32 = 0x31C5;
+pub const WCD937X_LDORXTX_INT_STB_LOADS_DTEST: u32 = 0x31C6;
+pub const WCD937X_LDORXTX_INT_TEST0: u32 = 0x31C7;
+pub const WCD937X_LDORXTX_INT_STARTUP_TIMER: u32 = 0x31C8;
+pub const WCD937X_LDORXTX_INT_TEST1: u32 = 0x31C9;
+pub const WCD937X_LDORXTX_INT_STATUS: u32 = 0x31CA;
+pub const WCD937X_SLEEP_INT_WATCHDOG_CTL_1: u32 = 0x31D0;
+pub const WCD937X_SLEEP_INT_WATCHDOG_CTL_2: u32 = 0x31D1;
+pub const WCD937X_DIE_CRACK_INT_DIE_CRK_DET_INT1: u32 = 0x31D3;
+pub const WCD937X_DIE_CRACK_INT_DIE_CRK_DET_INT2: u32 = 0x31D4;
+pub const WCD937X_DIGITAL_PAGE_REGISTER: u32 = 0x3400;
+pub const WCD937X_DIGITAL_CHIP_ID0: u32 = 0x3401;
+pub const WCD937X_DIGITAL_CHIP_ID1: u32 = 0x3402;
+pub const WCD937X_DIGITAL_CHIP_ID2: u32 = 0x3403;
+pub const WCD937X_DIGITAL_CHIP_ID3: u32 = 0x3404;
+pub const WCD937X_DIGITAL_CDC_RST_CTL: u32 = 0x3406;
+pub const WCD937X_DIGITAL_TOP_CLK_CFG: u32 = 0x3407;
+pub const WCD937X_DIGITAL_CDC_ANA_CLK_CTL: u32 = 0x3408;
+pub const WCD937X_DIGITAL_CDC_DIG_CLK_CTL: u32 = 0x3409;
+pub const WCD937X_DIGITAL_SWR_RST_EN: u32 = 0x340A;
+pub const WCD937X_DIGITAL_CDC_PATH_MODE: u32 = 0x340B;
+pub const WCD937X_DIGITAL_CDC_RX_RST: u32 = 0x340C;
+pub const WCD937X_DIGITAL_CDC_RX0_CTL: u32 = 0x340D;
+pub const WCD937X_DIGITAL_CDC_RX1_CTL: u32 = 0x340E;
+pub const WCD937X_DIGITAL_CDC_RX2_CTL: u32 = 0x340F;
+pub const WCD937X_DIGITAL_DEM_BYPASS_DATA0: u32 = 0x3410;
+pub const WCD937X_DIGITAL_DEM_BYPASS_DATA1: u32 = 0x3411;
+pub const WCD937X_DIGITAL_DEM_BYPASS_DATA2: u32 = 0x3412;
+pub const WCD937X_DIGITAL_DEM_BYPASS_DATA3: u32 = 0x3413;
+pub const WCD937X_DIGITAL_CDC_COMP_CTL_0: u32 = 0x3414;
+pub const WCD937X_DIGITAL_CDC_RX_DELAY_CTL: u32 = 0x3417;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A1_0: u32 = 0x3418;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A1_1: u32 = 0x3419;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A2_0: u32 = 0x341A;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A2_1: u32 = 0x341B;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A3_0: u32 = 0x341C;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A3_1: u32 = 0x341D;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A4_0: u32 = 0x341E;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A4_1: u32 = 0x341F;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A5_0: u32 = 0x3420;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A5_1: u32 = 0x3421;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A6_0: u32 = 0x3422;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_A7_0: u32 = 0x3423;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_C_0: u32 = 0x3424;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_C_1: u32 = 0x3425;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_C_2: u32 = 0x3426;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_C_3: u32 = 0x3427;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_R1: u32 = 0x3428;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_R2: u32 = 0x3429;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_R3: u32 = 0x342A;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_R4: u32 = 0x342B;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_R5: u32 = 0x342C;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_R6: u32 = 0x342D;
+pub const WCD937X_DIGITAL_CDC_HPH_DSM_R7: u32 = 0x342E;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A1_0: u32 = 0x342F;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A1_1: u32 = 0x3430;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A2_0: u32 = 0x3431;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A2_1: u32 = 0x3432;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A3_0: u32 = 0x3433;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A3_1: u32 = 0x3434;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A4_0: u32 = 0x3435;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A4_1: u32 = 0x3436;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A5_0: u32 = 0x3437;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A5_1: u32 = 0x3438;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A6_0: u32 = 0x3439;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_A7_0: u32 = 0x343A;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_C_0: u32 = 0x343B;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_C_1: u32 = 0x343C;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_C_2: u32 = 0x343D;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_C_3: u32 = 0x343E;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_R1: u32 = 0x343F;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_R2: u32 = 0x3440;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_R3: u32 = 0x3441;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_R4: u32 = 0x3442;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_R5: u32 = 0x3443;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_R6: u32 = 0x3444;
+pub const WCD937X_DIGITAL_CDC_AUX_DSM_R7: u32 = 0x3445;
+pub const WCD937X_DIGITAL_CDC_HPH_GAIN_RX_0: u32 = 0x3446;
+pub const WCD937X_DIGITAL_CDC_HPH_GAIN_RX_1: u32 = 0x3447;
+pub const WCD937X_DIGITAL_CDC_HPH_GAIN_DSD_0: u32 = 0x3448;
+pub const WCD937X_DIGITAL_CDC_HPH_GAIN_DSD_1: u32 = 0x3449;
+pub const WCD937X_DIGITAL_CDC_HPH_GAIN_DSD_2: u32 = 0x344A;
+pub const WCD937X_DIGITAL_CDC_AUX_GAIN_DSD_0: u32 = 0x344B;
+pub const WCD937X_DIGITAL_CDC_AUX_GAIN_DSD_1: u32 = 0x344C;
+pub const WCD937X_DIGITAL_CDC_AUX_GAIN_DSD_2: u32 = 0x344D;
+pub const WCD937X_DIGITAL_CDC_HPH_GAIN_CTL: u32 = 0x344E;
+pub const WCD937X_DIGITAL_CDC_AUX_GAIN_CTL: u32 = 0x344F;
+pub const WCD937X_DIGITAL_CDC_EAR_PATH_CTL: u32 = 0x3450;
+pub const WCD937X_DIGITAL_CDC_SWR_CLH: u32 = 0x3451;
+pub const WCD937X_DIGITAL_SWR_CLH_BYP: u32 = 0x3452;
+pub const WCD937X_DIGITAL_CDC_TX0_CTL: u32 = 0x3453;
+pub const WCD937X_DIGITAL_CDC_TX1_CTL: u32 = 0x3454;
+pub const WCD937X_DIGITAL_CDC_TX2_CTL: u32 = 0x3455;
+pub const WCD937X_DIGITAL_CDC_TX_RST: u32 = 0x3456;
+pub const WCD937X_DIGITAL_CDC_REQ_CTL: u32 = 0x3457;
+pub const WCD937X_DIGITAL_CDC_AMIC_CTL: u32 = 0x345A;
+pub const WCD937X_DIGITAL_CDC_DMIC_CTL: u32 = 0x345B;
+pub const WCD937X_DIGITAL_CDC_DMIC1_CTL: u32 = 0x345C;
+pub const WCD937X_DIGITAL_CDC_DMIC2_CTL: u32 = 0x345D;
+pub const WCD937X_DIGITAL_CDC_DMIC3_CTL: u32 = 0x345E;
+pub const WCD937X_DIGITAL_EFUSE_CTL: u32 = 0x345F;
+pub const WCD937X_DIGITAL_EFUSE_PRG_CTL: u32 = 0x3460;
+pub const WCD937X_DIGITAL_EFUSE_TEST_CTL_0: u32 = 0x3461;
+pub const WCD937X_DIGITAL_EFUSE_TEST_CTL_1: u32 = 0x3462;
+pub const WCD937X_DIGITAL_EFUSE_T_DATA_0: u32 = 0x3463;
+pub const WCD937X_DIGITAL_EFUSE_T_DATA_1: u32 = 0x3464;
+pub const WCD937X_DIGITAL_PDM_WD_CTL0: u32 = 0x3465;
+pub const WCD937X_DIGITAL_PDM_WD_CTL1: u32 = 0x3466;
+pub const WCD937X_DIGITAL_PDM_WD_CTL2: u32 = 0x3467;
+pub const WCD937X_DIGITAL_PDM_WD_CTL2_HOLD_OFF: u32 = bit(2);
+pub const WCD937X_DIGITAL_PDM_WD_CTL2_TIMEOUT_SEL: u32 = bit(1);
+pub const WCD937X_DIGITAL_PDM_WD_CTL2_EN: u32 = bit(0);
+pub const WCD937X_DIGITAL_PDM_WD_CTL2_MASK: u32 = genmask(2, 0);
+pub const WCD937X_DIGITAL_INTR_MODE: u32 = 0x346A;
+pub const WCD937X_DIGITAL_INTR_MASK_0: u32 = 0x346B;
+pub const WCD937X_DIGITAL_INTR_MASK_1: u32 = 0x346C;
+pub const WCD937X_DIGITAL_INTR_MASK_2: u32 = 0x346D;
+pub const WCD937X_DIGITAL_INTR_STATUS_0: u32 = 0x346E;
+pub const WCD937X_DIGITAL_INTR_STATUS_1: u32 = 0x346F;
+pub const WCD937X_DIGITAL_INTR_STATUS_2: u32 = 0x3470;
+pub const WCD937X_DIGITAL_INTR_CLEAR_0: u32 = 0x3471;
+pub const WCD937X_DIGITAL_INTR_CLEAR_1: u32 = 0x3472;
+pub const WCD937X_DIGITAL_INTR_CLEAR_2: u32 = 0x3473;
+pub const WCD937X_DIGITAL_INTR_LEVEL_0: u32 = 0x3474;
+pub const WCD937X_DIGITAL_INTR_LEVEL_1: u32 = 0x3475;
+pub const WCD937X_DIGITAL_INTR_LEVEL_2: u32 = 0x3476;
+pub const WCD937X_DIGITAL_INTR_SET_0: u32 = 0x3477;
+pub const WCD937X_DIGITAL_INTR_SET_1: u32 = 0x3478;
+pub const WCD937X_DIGITAL_INTR_SET_2: u32 = 0x3479;
+pub const WCD937X_DIGITAL_INTR_TEST_0: u32 = 0x347A;
+pub const WCD937X_DIGITAL_INTR_TEST_1: u32 = 0x347B;
+pub const WCD937X_DIGITAL_INTR_TEST_2: u32 = 0x347C;
+pub const WCD937X_DIGITAL_CDC_CONN_RX0_CTL: u32 = 0x347F;
+pub const WCD937X_DIGITAL_CDC_CONN_RX1_CTL: u32 = 0x3480;
+pub const WCD937X_DIGITAL_CDC_CONN_RX2_CTL: u32 = 0x3481;
+pub const WCD937X_DIGITAL_CDC_CONN_TX_CTL: u32 = 0x3482;
+pub const WCD937X_DIGITAL_LOOP_BACK_MODE: u32 = 0x3483;
+pub const WCD937X_DIGITAL_SWR_DAC_TEST: u32 = 0x3484;
+pub const WCD937X_DIGITAL_SWR_HM_TEST_RX_0: u32 = 0x3485;
+pub const WCD937X_DIGITAL_SWR_HM_TEST_TX_0: u32 = 0x3491;
+pub const WCD937X_DIGITAL_SWR_HM_TEST_RX_1: u32 = 0x3492;
+pub const WCD937X_DIGITAL_SWR_HM_TEST_TX_1: u32 = 0x3493;
+pub const WCD937X_DIGITAL_SWR_HM_TEST: u32 = 0x3494;
+pub const WCD937X_DIGITAL_PAD_CTL_PDM_RX0: u32 = 0x3495;
+pub const WCD937X_DIGITAL_PAD_CTL_PDM_RX1: u32 = 0x3496;
+pub const WCD937X_DIGITAL_PAD_CTL_PDM_TX0: u32 = 0x3497;
+pub const WCD937X_DIGITAL_PAD_CTL_PDM_TX1: u32 = 0x3498;
+pub const WCD937X_DIGITAL_PAD_INP_DIS_0: u32 = 0x3499;
+pub const WCD937X_DIGITAL_PAD_INP_DIS_1: u32 = 0x349A;
+pub const WCD937X_DIGITAL_DRIVE_STRENGTH_0: u32 = 0x349B;
+pub const WCD937X_DIGITAL_DRIVE_STRENGTH_1: u32 = 0x349C;
+pub const WCD937X_DIGITAL_DRIVE_STRENGTH_2: u32 = 0x349D;
+pub const WCD937X_DIGITAL_RX_DATA_EDGE_CTL: u32 = 0x349E;
+pub const WCD937X_DIGITAL_TX_DATA_EDGE_CTL: u32 = 0x349F;
+pub const WCD937X_DIGITAL_GPIO_MODE: u32 = 0x34A0;
+pub const WCD937X_DIGITAL_PIN_CTL_OE: u32 = 0x34A1;
+pub const WCD937X_DIGITAL_PIN_CTL_DATA_0: u32 = 0x34A2;
+pub const WCD937X_DIGITAL_PIN_CTL_DATA_1: u32 = 0x34A3;
+pub const WCD937X_DIGITAL_PIN_STATUS_0: u32 = 0x34A4;
+pub const WCD937X_DIGITAL_PIN_STATUS_1: u32 = 0x34A5;
+pub const WCD937X_DIGITAL_DIG_DEBUG_CTL: u32 = 0x34A6;
+pub const WCD937X_DIGITAL_DIG_DEBUG_EN: u32 = 0x34A7;
+pub const WCD937X_DIGITAL_ANA_CSR_DBG_ADD: u32 = 0x34A8;
+pub const WCD937X_DIGITAL_ANA_CSR_DBG_CTL: u32 = 0x34A9;
+pub const WCD937X_DIGITAL_SSP_DBG: u32 = 0x34AA;
+pub const WCD937X_DIGITAL_MODE_STATUS_0: u32 = 0x34AB;
+pub const WCD937X_DIGITAL_MODE_STATUS_1: u32 = 0x34AC;
+pub const WCD937X_DIGITAL_SPARE_0: u32 = 0x34AD;
+pub const WCD937X_DIGITAL_SPARE_1: u32 = 0x34AE;
+pub const WCD937X_DIGITAL_SPARE_2: u32 = 0x34AF;
+pub const WCD937X_DIGITAL_EFUSE_REG_0: u32 = 0x34B0;
+pub const WCD937X_DIGITAL_EFUSE_REG_1: u32 = 0x34B1;
+pub const WCD937X_DIGITAL_EFUSE_REG_2: u32 = 0x34B2;
+pub const WCD937X_DIGITAL_EFUSE_REG_3: u32 = 0x34B3;
+pub const WCD937X_DIGITAL_EFUSE_REG_4: u32 = 0x34B4;
+pub const WCD937X_DIGITAL_EFUSE_REG_5: u32 = 0x34B5;
+pub const WCD937X_DIGITAL_EFUSE_REG_6: u32 = 0x34B6;
+pub const WCD937X_DIGITAL_EFUSE_REG_7: u32 = 0x34B7;
+pub const WCD937X_DIGITAL_EFUSE_REG_8: u32 = 0x34B8;
+pub const WCD937X_DIGITAL_EFUSE_REG_9: u32 = 0x34B9;
+pub const WCD937X_DIGITAL_EFUSE_REG_10: u32 = 0x34BA;
+pub const WCD937X_DIGITAL_EFUSE_REG_11: u32 = 0x34BB;
+pub const WCD937X_DIGITAL_EFUSE_REG_12: u32 = 0x34BC;
+pub const WCD937X_DIGITAL_EFUSE_REG_13: u32 = 0x34BD;
+pub const WCD937X_DIGITAL_EFUSE_REG_14: u32 = 0x34BE;
+pub const WCD937X_DIGITAL_EFUSE_REG_15: u32 = 0x34BF;
+pub const WCD937X_DIGITAL_EFUSE_REG_16: u32 = 0x34C0;
+pub const WCD937X_DIGITAL_EFUSE_REG_17: u32 = 0x34C1;
+pub const WCD937X_DIGITAL_EFUSE_REG_18: u32 = 0x34C2;
+pub const WCD937X_DIGITAL_EFUSE_REG_19: u32 = 0x34C3;
+pub const WCD937X_DIGITAL_EFUSE_REG_20: u32 = 0x34C4;
+pub const WCD937X_DIGITAL_EFUSE_REG_21: u32 = 0x34C5;
+pub const WCD937X_DIGITAL_EFUSE_REG_22: u32 = 0x34C6;
+pub const WCD937X_DIGITAL_EFUSE_REG_23: u32 = 0x34C7;
+pub const WCD937X_DIGITAL_EFUSE_REG_24: u32 = 0x34C8;
+pub const WCD937X_DIGITAL_EFUSE_REG_25: u32 = 0x34C9;
+pub const WCD937X_DIGITAL_EFUSE_REG_26: u32 = 0x34CA;
+pub const WCD937X_DIGITAL_EFUSE_REG_27: u32 = 0x34CB;
+pub const WCD937X_DIGITAL_EFUSE_REG_28: u32 = 0x34CC;
+pub const WCD937X_DIGITAL_EFUSE_REG_29: u32 = 0x34CD;
+pub const WCD937X_DIGITAL_EFUSE_REG_30: u32 = 0x34CE;
+pub const WCD937X_DIGITAL_EFUSE_REG_31: u32 = 0x34CF;
+pub const WCD937X_MAX_REGISTER: u32 = WCD937X_DIGITAL_EFUSE_REG_31;
+pub const WCD937X_MAX_MICBIAS: u32 = 3;
+pub const WCD937X_MAX_SWR_CH_IDS: u32 = 15;
+pub const fn WCD937X_SWRM_CH_MASK(ch_idx: u32) -> u32 { bit(ch_idx - 1) }
+
+#[repr(C)]
+pub struct sdw_slave { _private: [u8; 0] }
+#[repr(C)]
+pub struct sdw_stream_config { _private: [u8; 0] }
+#[repr(C)]
+pub struct sdw_stream_runtime { _private: [u8; 0] }
+#[repr(C)]
+pub struct sdw_port_config { _private: [u8; 0] }
+#[repr(C)]
+pub struct wcd_sdw_ch_info { _private: [u8; 0] }
+#[repr(C)]
+pub struct irq_domain { _private: [u8; 0] }
+#[repr(C)]
+pub struct regmap { _private: [u8; 0] }
+#[repr(C)]
+pub struct snd_pcm_substream { _private: [u8; 0] }
+#[repr(C)]
+pub struct snd_soc_dai { _private: [u8; 0] }
+#[repr(C)]
+pub struct snd_pcm_hw_params { _private: [u8; 0] }
+
+// From the included SoundWire headers.
+pub const SDW_MAX_PORTS: usize = 15;
+// From errno.h via kernel headers.
+pub const EOPNOTSUPP: c_int = 95;
+
+#[repr(C)]
+pub enum wcd937x_tx_sdw_ports {
+    WCD937X_ADC_1_PORT = 1,
+    WCD937X_ADC_2_3_PORT = 2,
+    WCD937X_DMIC_0_3_MBHC_PORT = 3,
+    WCD937X_DMIC_4_6_PORT = 4,
+    WCD937X_MAX_TX_SWR_PORTS = 4,
+}
+
+#[repr(C)]
+pub enum wcd937x_rx_sdw_ports {
+    WCD937X_HPH_PORT = 1,
+    WCD937X_CLSH_PORT = 2,
+    WCD937X_COMP_PORT = 3,
+    WCD937X_LO_PORT = 4,
+    WCD937X_DSD_PORT = 5,
+    WCD937X_MAX_SWR_PORTS = 5,
+}
+
+#[repr(C)]
+pub struct wcd937x_priv { _private: [u8; 0] }
+
+#[repr(C)]
+pub struct wcd937x_sdw_priv {
+    pub sdev: *mut sdw_slave,
+    pub sconfig: sdw_stream_config,
+    pub sruntime: *mut sdw_stream_runtime,
+    pub port_config: [sdw_port_config; WCD937X_MAX_SWR_PORTS as usize],
+    pub ch_info: *mut wcd_sdw_ch_info,
+    pub port_enable: [bool; WCD937X_MAX_SWR_CH_IDS as usize],
+    pub master_channel_map: [c_uint; SDW_MAX_PORTS],
+    pub active_ports: c_int,
+    pub num_ports: c_int,
+    pub is_tx: bool,
+    pub wcd937x: *mut wcd937x_priv,
+    pub slave_irq: *mut irq_domain,
+    pub regmap: *mut regmap,
+}
+
+// C conditional: #if IS_ENABLED(CONFIG_SND_SOC_WCD937X_SDW) declares externs; #else defines inline -EOPNOTSUPP fallbacks.
+unsafe extern "C" {
+    pub fn wcd937x_sdw_free(
+        wcd: *mut wcd937x_sdw_priv,
+        substream: *mut snd_pcm_substream,
+        dai: *mut snd_soc_dai,
+    ) -> c_int;
+    pub fn wcd937x_sdw_set_sdw_stream(
+        wcd: *mut wcd937x_sdw_priv,
+        dai: *mut snd_soc_dai,
+        stream: *mut c_void,
+        direction: c_int,
+    ) -> c_int;
+    pub fn wcd937x_sdw_hw_params(
+        wcd: *mut wcd937x_sdw_priv,
+        substream: *mut snd_pcm_substream,
+        params: *mut snd_pcm_hw_params,
+        dai: *mut snd_soc_dai,
+    ) -> c_int;
+}
+
+#[inline]
+pub unsafe fn wcd937x_sdw_free_fallback(
+    _wcd: *mut wcd937x_sdw_priv,
+    _substream: *mut snd_pcm_substream,
+    _dai: *mut snd_soc_dai,
+) -> c_int {
+    -EOPNOTSUPP
+}
+
+#[inline]
+pub unsafe fn wcd937x_sdw_set_sdw_stream_fallback(
+    _wcd: *mut wcd937x_sdw_priv,
+    _dai: *mut snd_soc_dai,
+    _stream: *mut c_void,
+    _direction: c_int,
+) -> c_int {
+    -EOPNOTSUPP
+}
+
+#[inline]
+pub unsafe fn wcd937x_sdw_hw_params_fallback(
+    _wcd: *mut wcd937x_sdw_priv,
+    _substream: *mut snd_pcm_substream,
+    _params: *mut snd_pcm_hw_params,
+    _dai: *mut snd_soc_dai,
+) -> c_int {
+    -EOPNOTSUPP
+}
+
+#[repr(C)]
+pub enum wcd937x_irqs {
+    /* INTR_CTRL_INT_MASK_0 */
+    WCD937X_IRQ_MBHC_BUTTON_PRESS_DET = 0,
+    WCD937X_IRQ_MBHC_BUTTON_RELEASE_DET = 1,
+    WCD937X_IRQ_MBHC_ELECT_INS_REM_DET = 2,
+    WCD937X_IRQ_MBHC_ELECT_INS_REM_LEG_DET = 3,
+    WCD937X_IRQ_MBHC_SW_DET = 4,
+    WCD937X_IRQ_HPHR_OCP_INT = 5,
+    WCD937X_IRQ_HPHR_CNP_INT = 6,
+    WCD937X_IRQ_HPHL_OCP_INT = 7,
+
+    /* INTR_CTRL_INT_MASK_1 */
+    WCD937X_IRQ_HPHL_CNP_INT = 8,
+    WCD937X_IRQ_EAR_CNP_INT = 9,
+    WCD937X_IRQ_EAR_SCD_INT = 10,
+    WCD937X_IRQ_AUX_CNP_INT = 11,
+    WCD937X_IRQ_AUX_SCD_INT = 12,
+    WCD937X_IRQ_HPHL_PDM_WD_INT = 13,
+    WCD937X_IRQ_HPHR_PDM_WD_INT = 14,
+    WCD937X_IRQ_AUX_PDM_WD_INT = 15,
+
+    /* INTR_CTRL_INT_MASK_2 */
+    WCD937X_IRQ_LDORT_SCD_INT = 16,
+    WCD937X_IRQ_MBHC_MOISTURE_INT = 17,
+    WCD937X_IRQ_HPHL_SURGE_DET_INT = 18,
+    WCD937X_IRQ_HPHR_SURGE_DET_INT = 19,
+    WCD937X_NUM_IRQS = 20,
+}
+
+#[repr(C)]
+pub enum wcd937x_tx_sdw_channels {
+    WCD937X_ADC1 = 0,
+    WCD937X_ADC2 = 1,
+    WCD937X_ADC3 = 2,
+    WCD937X_DMIC0 = 3,
+    WCD937X_DMIC1 = 4,
+    WCD937X_MBHC = 5,
+    WCD937X_DMIC2 = 6,
+    WCD937X_DMIC3 = 7,
+    WCD937X_DMIC4 = 8,
+    WCD937X_DMIC5 = 9,
+    WCD937X_DMIC6 = 10,
+}
+
+#[repr(C)]
+pub enum wcd937x_rx_sdw_channels {
+    WCD937X_HPH_L = 0,
+    WCD937X_HPH_R = 1,
+    WCD937X_CLSH = 2,
+    WCD937X_COMP_L = 3,
+    WCD937X_COMP_R = 4,
+    WCD937X_LO = 5,
+    WCD937X_DSD_R = 6,
+    WCD937X_DSD_L = 7,
+}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

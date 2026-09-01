@@ -905,3 +905,5 @@ pub unsafe extern "C" fn evlist__gtk_browse_hists(evlist: *mut evlist, help: *co
 
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

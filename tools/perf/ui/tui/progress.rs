@@ -135,3 +135,5 @@ static mut tui_progress__ops: ui_progress_ops = ui_progress_ops {
 pub unsafe extern "C" fn tui_progress__init() {
     ui_progress__ops = &raw mut tui_progress__ops;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

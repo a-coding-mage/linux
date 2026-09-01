@@ -1151,3 +1151,5 @@ pub unsafe extern "C" fn cpufreq_put_stats(any: *mut cpufreq_stats) {
 pub unsafe extern "C" fn cpufreq_get_transitions(cpu: c_uint) -> c_ulong {
     unsafe { sysfs_cpufreq_get_one_value(cpu, cpufreq_value::STATS_NUM_TRANSITIONS) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

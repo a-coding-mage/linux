@@ -481,3 +481,5 @@ pub unsafe extern "C" fn kvm_async_pf_wakeup_all(vcpu: *mut kvm_vcpu) -> c_int {
         0
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

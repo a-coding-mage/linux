@@ -35,3 +35,5 @@ pub unsafe extern "C" fn refcounted(dummy: ::core::ffi::c_int, task: *mut task_s
 pub static mut testmod_refcounted: bpf_testmod_ops = bpf_testmod_ops {
     test_refcounted: refcounted as *mut ::core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

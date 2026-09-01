@@ -112,3 +112,5 @@ pub unsafe extern "C" fn test_skb_load_bytes() {
 unsafe fn goto_out(skel: *mut skb_load_bytes) {
     skb_load_bytes__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

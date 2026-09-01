@@ -124,3 +124,5 @@ pub unsafe extern "C" fn test_vmx_syscall() -> c_int {
 pub unsafe extern "C" fn main(_argc: c_int, _argv: *mut *mut c_char) -> c_int {
     test_harness(Some(test_vmx_syscall), b"vmx_syscall\0".as_ptr() as *const c_char)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

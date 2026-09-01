@@ -645,3 +645,5 @@ pub unsafe fn set_sym_next_reloc(reloc: *mut reloc, next: *mut reloc) {
  * for_each_sym_continue, for_each_sym_by_name, and
  * for_each_sym_by_demangled_name are C list/hash iteration macros.
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

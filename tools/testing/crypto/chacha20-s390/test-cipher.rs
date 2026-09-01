@@ -473,3 +473,5 @@ unsafe fn chacha_s390_test_exit() {
 // MODULE_DESCRIPTION("s390 ChaCha20 self-test");
 // MODULE_AUTHOR("Vladis Dronov <vdronoff@gmail.com>");
 // MODULE_LICENSE("GPL v2");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

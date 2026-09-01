@@ -282,3 +282,5 @@ pub fn inat_evex_scalable(attr: insn_attr_t) -> core::ffi::c_int {
 pub fn inat_is_invalid64(attr: insn_attr_t) -> core::ffi::c_int {
     (attr & INAT_INV64 as insn_attr_t) as core::ffi::c_int
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

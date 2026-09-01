@@ -135,3 +135,5 @@ const EINVAL: c_int = 22;
 // MODULE_AUTHOR("Kuifeng Lee");
 // MODULE_DESCRIPTION("BPF no cfi_stubs test module");
 // MODULE_LICENSE("Dual BSD/GPL");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

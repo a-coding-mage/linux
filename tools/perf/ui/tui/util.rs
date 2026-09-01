@@ -406,3 +406,5 @@ pub static mut perf_tui_eops: perf_error_ops = perf_error_ops {
     error: Some(perf_tui__error),
     warning: Some(perf_tui__warning),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

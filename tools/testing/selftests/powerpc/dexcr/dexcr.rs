@@ -275,3 +275,5 @@ pub unsafe extern "C" fn do_bad_hashchk() {
         hashchk(0, (&mut hash as *mut c_ulong).cast::<c_void>());
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

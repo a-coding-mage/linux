@@ -12,3 +12,5 @@ extern "C" {
 pub unsafe extern "C" fn test_struct_ops_multi_args() {
     RUN_TESTS(b"struct_ops_multi_args\0".as_ptr() as *const ::core::ffi::c_char);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

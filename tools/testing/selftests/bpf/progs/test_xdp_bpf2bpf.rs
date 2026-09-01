@@ -120,3 +120,5 @@ pub unsafe extern "C" fn trace_on_exit(_xdp: *mut xdp_buff, ret: c_int) -> c_int
     test_result_fexit = ret as __u64;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

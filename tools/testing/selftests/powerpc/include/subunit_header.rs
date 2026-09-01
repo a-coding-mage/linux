@@ -62,3 +62,5 @@ pub unsafe fn test_set_git_version(value: *const c_char) {
         printf(c"tags: git_version:%s\n".as_ptr(), value);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

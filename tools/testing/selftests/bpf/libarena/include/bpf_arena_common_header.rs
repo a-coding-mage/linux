@@ -143,3 +143,5 @@ pub unsafe fn bpf_arena_alloc_pages(
 #[cfg(not(__BPF__))]
 #[inline]
 pub unsafe fn bpf_arena_free_pages(_map: *mut c_void, _ptr: *mut c_void, _page_cnt: u32) {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

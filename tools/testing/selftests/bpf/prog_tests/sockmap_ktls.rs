@@ -549,3 +549,5 @@ pub unsafe extern "C" fn test_sockmap_ktls() {
     run_ktls_test(AF_INET, SOCK_STREAM);
     run_ktls_test(AF_INET6, SOCK_STREAM);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

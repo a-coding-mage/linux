@@ -34,3 +34,5 @@ pub static i: i32 = 0;
 pub unsafe extern "C" fn global_func17(skb: *mut __sk_buff) -> i32 {
     unsafe { foo((&raw const i) as *mut i32) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

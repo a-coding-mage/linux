@@ -1,0 +1,303 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * es8328.h  --  ES8328 ALSA SoC Audio driver
+ */
+
+use std::os::raw::c_int;
+
+/* From <linux/regmap.h> and forward declarations in the original header. */
+#[repr(C)]
+pub struct device {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct regmap {
+    _private: [u8; 0],
+}
+
+#[repr(C)]
+pub struct regmap_config {
+    _private: [u8; 0],
+}
+
+unsafe extern "C" {
+    pub static es8328_regmap_config: regmap_config;
+    pub fn es8328_probe(dev: *mut device, regmap: *mut regmap) -> c_int;
+}
+
+pub const ES8328_DACLVOL: u32 = 46;
+pub const ES8328_DACRVOL: u32 = 47;
+pub const ES8328_DACCTL: u32 = 28;
+pub const ES8328_RATEMASK: u32 = 0x1f << 0;
+
+pub const ES8328_CONTROL1: u32 = 0x00;
+pub const ES8328_CONTROL1_VMIDSEL_OFF: u32 = 0 << 0;
+pub const ES8328_CONTROL1_VMIDSEL_50k: u32 = 1 << 0;
+pub const ES8328_CONTROL1_VMIDSEL_500k: u32 = 2 << 0;
+pub const ES8328_CONTROL1_VMIDSEL_5k: u32 = 3 << 0;
+pub const ES8328_CONTROL1_VMIDSEL_MASK: u32 = 3 << 0;
+pub const ES8328_CONTROL1_ENREF: u32 = 1 << 2;
+pub const ES8328_CONTROL1_SEQEN: u32 = 1 << 3;
+pub const ES8328_CONTROL1_SAMEFS: u32 = 1 << 4;
+pub const ES8328_CONTROL1_DACMCLK_ADC: u32 = 0 << 5;
+pub const ES8328_CONTROL1_DACMCLK_DAC: u32 = 1 << 5;
+pub const ES8328_CONTROL1_LRCM: u32 = 1 << 6;
+pub const ES8328_CONTROL1_SCP_RESET: u32 = 1 << 7;
+
+pub const ES8328_CONTROL2: u32 = 0x01;
+pub const ES8328_CONTROL2_VREF_BUF_OFF: u32 = 1 << 0;
+pub const ES8328_CONTROL2_VREF_LOWPOWER: u32 = 1 << 1;
+pub const ES8328_CONTROL2_IBIASGEN_OFF: u32 = 1 << 2;
+pub const ES8328_CONTROL2_ANALOG_OFF: u32 = 1 << 3;
+pub const ES8328_CONTROL2_VREF_BUF_LOWPOWER: u32 = 1 << 4;
+pub const ES8328_CONTROL2_VCM_MOD_LOWPOWER: u32 = 1 << 5;
+pub const ES8328_CONTROL2_OVERCURRENT_ON: u32 = 1 << 6;
+pub const ES8328_CONTROL2_THERMAL_SHUTDOWN_ON: u32 = 1 << 7;
+
+pub const ES8328_CHIPPOWER: u32 = 0x02;
+pub const ES8328_CHIPPOWER_DACVREF_OFF: u32 = 0;
+pub const ES8328_CHIPPOWER_ADCVREF_OFF: u32 = 1;
+pub const ES8328_CHIPPOWER_DACDLL_OFF: u32 = 2;
+pub const ES8328_CHIPPOWER_ADCDLL_OFF: u32 = 3;
+pub const ES8328_CHIPPOWER_DACSTM_RESET: u32 = 4;
+pub const ES8328_CHIPPOWER_ADCSTM_RESET: u32 = 5;
+pub const ES8328_CHIPPOWER_DACDIG_OFF: u32 = 6;
+pub const ES8328_CHIPPOWER_ADCDIG_OFF: u32 = 7;
+
+pub const ES8328_ADCPOWER: u32 = 0x03;
+pub const ES8328_ADCPOWER_INT1_LOWPOWER: u32 = 0;
+pub const ES8328_ADCPOWER_FLASH_ADC_LOWPOWER: u32 = 1;
+pub const ES8328_ADCPOWER_ADC_BIAS_GEN_OFF: u32 = 2;
+pub const ES8328_ADCPOWER_MIC_BIAS_OFF: u32 = 3;
+pub const ES8328_ADCPOWER_ADCR_OFF: u32 = 4;
+pub const ES8328_ADCPOWER_ADCL_OFF: u32 = 5;
+pub const ES8328_ADCPOWER_AINR_OFF: u32 = 6;
+pub const ES8328_ADCPOWER_AINL_OFF: u32 = 7;
+
+pub const ES8328_DACPOWER: u32 = 0x04;
+pub const ES8328_DACPOWER_OUT3_ON: u32 = 0;
+pub const ES8328_DACPOWER_MONO_ON: u32 = 1;
+pub const ES8328_DACPOWER_ROUT2_ON: u32 = 2;
+pub const ES8328_DACPOWER_LOUT2_ON: u32 = 3;
+pub const ES8328_DACPOWER_ROUT1_ON: u32 = 4;
+pub const ES8328_DACPOWER_LOUT1_ON: u32 = 5;
+pub const ES8328_DACPOWER_RDAC_OFF: u32 = 6;
+pub const ES8328_DACPOWER_LDAC_OFF: u32 = 7;
+
+pub const ES8328_CHIPLOPOW1: u32 = 0x05;
+pub const ES8328_CHIPLOPOW2: u32 = 0x06;
+pub const ES8328_ANAVOLMANAG: u32 = 0x07;
+
+pub const ES8328_MASTERMODE: u32 = 0x08;
+pub const ES8328_MASTERMODE_BCLKDIV: u32 = 0 << 0;
+pub const ES8328_MASTERMODE_BCLK_INV: u32 = 1 << 5;
+pub const ES8328_MASTERMODE_MCLKDIV2: u32 = 1 << 6;
+pub const ES8328_MASTERMODE_MSC: u32 = 1 << 7;
+
+pub const ES8328_ADCCONTROL1: u32 = 0x09;
+pub const ES8328_ADCCONTROL2: u32 = 0x0a;
+pub const ES8328_ADCCONTROL3: u32 = 0x0b;
+
+pub const ES8328_ADCCONTROL4: u32 = 0x0c;
+pub const ES8328_ADCCONTROL4_ADCFORMAT_MASK: u32 = 3 << 0;
+pub const ES8328_ADCCONTROL4_ADCFORMAT_I2S: u32 = 0 << 0;
+pub const ES8328_ADCCONTROL4_ADCFORMAT_LJUST: u32 = 1 << 0;
+pub const ES8328_ADCCONTROL4_ADCFORMAT_RJUST: u32 = 2 << 0;
+pub const ES8328_ADCCONTROL4_ADCFORMAT_PCM: u32 = 3 << 0;
+pub const ES8328_ADCCONTROL4_ADCWL_SHIFT: u32 = 2;
+pub const ES8328_ADCCONTROL4_ADCWL_MASK: u32 = 7 << 2;
+pub const ES8328_ADCCONTROL4_ADCLRP_I2S_POL_NORMAL: u32 = 0 << 5;
+pub const ES8328_ADCCONTROL4_ADCLRP_I2S_POL_INV: u32 = 1 << 5;
+pub const ES8328_ADCCONTROL4_ADCLRP_PCM_MSB_CLK2: u32 = 0 << 5;
+pub const ES8328_ADCCONTROL4_ADCLRP_PCM_MSB_CLK1: u32 = 1 << 5;
+
+pub const ES8328_ADCCONTROL5: u32 = 0x0d;
+pub const ES8328_ADCCONTROL5_RATEMASK: u32 = 0x1f << 0;
+
+pub const ES8328_ADCCONTROL6: u32 = 0x0e;
+
+pub const ES8328_ADCCONTROL7: u32 = 0x0f;
+pub const ES8328_ADCCONTROL7_ADC_MUTE: u32 = 1 << 2;
+pub const ES8328_ADCCONTROL7_ADC_LER: u32 = 1 << 3;
+pub const ES8328_ADCCONTROL7_ADC_ZERO_CROSS: u32 = 1 << 4;
+pub const ES8328_ADCCONTROL7_ADC_SOFT_RAMP: u32 = 1 << 5;
+pub const ES8328_ADCCONTROL7_ADC_RAMP_RATE_4: u32 = 0 << 6;
+pub const ES8328_ADCCONTROL7_ADC_RAMP_RATE_8: u32 = 1 << 6;
+pub const ES8328_ADCCONTROL7_ADC_RAMP_RATE_16: u32 = 2 << 6;
+pub const ES8328_ADCCONTROL7_ADC_RAMP_RATE_32: u32 = 3 << 6;
+
+pub const ES8328_ADCCONTROL8: u32 = 0x10;
+pub const ES8328_ADCCONTROL9: u32 = 0x11;
+pub const ES8328_ADCCONTROL10: u32 = 0x12;
+pub const ES8328_ADCCONTROL11: u32 = 0x13;
+pub const ES8328_ADCCONTROL12: u32 = 0x14;
+pub const ES8328_ADCCONTROL13: u32 = 0x15;
+pub const ES8328_ADCCONTROL14: u32 = 0x16;
+
+pub const ES8328_DACCONTROL1: u32 = 0x17;
+pub const ES8328_DACCONTROL1_DACFORMAT_MASK: u32 = 3 << 1;
+pub const ES8328_DACCONTROL1_DACFORMAT_I2S: u32 = 0 << 1;
+pub const ES8328_DACCONTROL1_DACFORMAT_LJUST: u32 = 1 << 1;
+pub const ES8328_DACCONTROL1_DACFORMAT_RJUST: u32 = 2 << 1;
+pub const ES8328_DACCONTROL1_DACFORMAT_PCM: u32 = 3 << 1;
+pub const ES8328_DACCONTROL1_DACWL_SHIFT: u32 = 3;
+pub const ES8328_DACCONTROL1_DACWL_MASK: u32 = 7 << 3;
+pub const ES8328_DACCONTROL1_DACLRP_I2S_POL_NORMAL: u32 = 0 << 6;
+pub const ES8328_DACCONTROL1_DACLRP_I2S_POL_INV: u32 = 1 << 6;
+pub const ES8328_DACCONTROL1_DACLRP_PCM_MSB_CLK2: u32 = 0 << 6;
+pub const ES8328_DACCONTROL1_DACLRP_PCM_MSB_CLK1: u32 = 1 << 6;
+pub const ES8328_DACCONTROL1_LRSWAP: u32 = 1 << 7;
+
+pub const ES8328_DACCONTROL2: u32 = 0x18;
+pub const ES8328_DACCONTROL2_RATEMASK: u32 = 0x1f << 0;
+pub const ES8328_DACCONTROL2_DOUBLESPEED: u32 = 1 << 5;
+
+pub const ES8328_DACCONTROL3: u32 = 0x19;
+pub const ES8328_DACCONTROL3_AUTOMUTE: u32 = 1 << 2;
+pub const ES8328_DACCONTROL3_DACMUTE: u32 = 1 << 2;
+pub const ES8328_DACCONTROL3_LEFTGAINVOL: u32 = 1 << 3;
+pub const ES8328_DACCONTROL3_DACZEROCROSS: u32 = 1 << 4;
+pub const ES8328_DACCONTROL3_DACSOFTRAMP: u32 = 1 << 5;
+pub const ES8328_DACCONTROL3_DACRAMPRATE: u32 = 3 << 6;
+
+pub const ES8328_LDACVOL: u32 = 0x1a;
+pub const ES8328_LDACVOL_MASK: u32 = 0 << 0;
+pub const ES8328_LDACVOL_MAX: u32 = 0xc0;
+
+pub const ES8328_RDACVOL: u32 = 0x1b;
+pub const ES8328_RDACVOL_MASK: u32 = 0 << 0;
+pub const ES8328_RDACVOL_MAX: u32 = 0xc0;
+
+pub const ES8328_DACVOL_MAX: u32 = 0xc0;
+
+pub const ES8328_DACCONTROL4: u32 = 0x1a;
+pub const ES8328_DACCONTROL5: u32 = 0x1b;
+
+pub const ES8328_DACCONTROL6: u32 = 0x1c;
+pub const ES8328_DACCONTROL6_CLICKFREE: u32 = 1 << 3;
+pub const ES8328_DACCONTROL6_DAC_INVR: u32 = 1 << 4;
+pub const ES8328_DACCONTROL6_DAC_INVL: u32 = 1 << 5;
+pub const ES8328_DACCONTROL6_DEEMPH_MASK: u32 = 3 << 6;
+pub const ES8328_DACCONTROL6_DEEMPH_OFF: u32 = 0 << 6;
+pub const ES8328_DACCONTROL6_DEEMPH_32k: u32 = 1 << 6;
+pub const ES8328_DACCONTROL6_DEEMPH_44_1k: u32 = 2 << 6;
+pub const ES8328_DACCONTROL6_DEEMPH_48k: u32 = 3 << 6;
+
+pub const ES8328_DACCONTROL7: u32 = 0x1d;
+pub const ES8328_DACCONTROL7_VPP_SCALE_3p5: u32 = 0 << 0;
+pub const ES8328_DACCONTROL7_VPP_SCALE_4p0: u32 = 1 << 0;
+pub const ES8328_DACCONTROL7_VPP_SCALE_3p0: u32 = 2 << 0;
+pub const ES8328_DACCONTROL7_VPP_SCALE_2p5: u32 = 3 << 0;
+pub const ES8328_DACCONTROL7_SHELVING_STRENGTH: u32 = 1 << 2; /* In eights */
+pub const ES8328_DACCONTROL7_MONO: u32 = 1 << 5;
+pub const ES8328_DACCONTROL7_ZEROR: u32 = 1 << 6;
+pub const ES8328_DACCONTROL7_ZEROL: u32 = 1 << 7;
+
+/* Shelving filter */
+pub const ES8328_DACCONTROL8: u32 = 0x1e;
+pub const ES8328_DACCONTROL9: u32 = 0x1f;
+pub const ES8328_DACCONTROL10: u32 = 0x20;
+pub const ES8328_DACCONTROL11: u32 = 0x21;
+pub const ES8328_DACCONTROL12: u32 = 0x22;
+pub const ES8328_DACCONTROL13: u32 = 0x23;
+pub const ES8328_DACCONTROL14: u32 = 0x24;
+pub const ES8328_DACCONTROL15: u32 = 0x25;
+
+pub const ES8328_DACCONTROL16: u32 = 0x26;
+pub const ES8328_DACCONTROL16_RMIXSEL_RIN1: u32 = 0 << 0;
+pub const ES8328_DACCONTROL16_RMIXSEL_RIN2: u32 = 1 << 0;
+pub const ES8328_DACCONTROL16_RMIXSEL_RIN3: u32 = 2 << 0;
+pub const ES8328_DACCONTROL16_RMIXSEL_RADC: u32 = 3 << 0;
+pub const ES8328_DACCONTROL16_LMIXSEL_LIN1: u32 = 0 << 3;
+pub const ES8328_DACCONTROL16_LMIXSEL_LIN2: u32 = 1 << 3;
+pub const ES8328_DACCONTROL16_LMIXSEL_LIN3: u32 = 2 << 3;
+pub const ES8328_DACCONTROL16_LMIXSEL_LADC: u32 = 3 << 3;
+
+pub const ES8328_DACCONTROL17: u32 = 0x27;
+pub const ES8328_DACCONTROL17_LI2LOVOL: u32 = 7 << 3;
+pub const ES8328_DACCONTROL17_LI2LO: u32 = 1 << 6;
+pub const ES8328_DACCONTROL17_LD2LO: u32 = 1 << 7;
+
+pub const ES8328_DACCONTROL18: u32 = 0x28;
+pub const ES8328_DACCONTROL18_RI2LOVOL: u32 = 7 << 3;
+pub const ES8328_DACCONTROL18_RI2LO: u32 = 1 << 6;
+pub const ES8328_DACCONTROL18_RD2LO: u32 = 1 << 7;
+
+pub const ES8328_DACCONTROL19: u32 = 0x29;
+pub const ES8328_DACCONTROL19_LI2ROVOL: u32 = 7 << 3;
+pub const ES8328_DACCONTROL19_LI2RO: u32 = 1 << 6;
+pub const ES8328_DACCONTROL19_LD2RO: u32 = 1 << 7;
+
+pub const ES8328_DACCONTROL20: u32 = 0x2a;
+pub const ES8328_DACCONTROL20_RI2ROVOL: u32 = 7 << 3;
+pub const ES8328_DACCONTROL20_RI2RO: u32 = 1 << 6;
+pub const ES8328_DACCONTROL20_RD2RO: u32 = 1 << 7;
+
+pub const ES8328_DACCONTROL21: u32 = 0x2b;
+pub const ES8328_DACCONTROL21_LI2MOVOL: u32 = 7 << 3;
+pub const ES8328_DACCONTROL21_LI2MO: u32 = 1 << 6;
+pub const ES8328_DACCONTROL21_LD2MO: u32 = 1 << 7;
+
+pub const ES8328_DACCONTROL22: u32 = 0x2c;
+pub const ES8328_DACCONTROL22_RI2MOVOL: u32 = 7 << 3;
+pub const ES8328_DACCONTROL22_RI2MO: u32 = 1 << 6;
+pub const ES8328_DACCONTROL22_RD2MO: u32 = 1 << 7;
+
+pub const ES8328_DACCONTROL23: u32 = 0x2d;
+pub const ES8328_DACCONTROL23_MOUTINV: u32 = 1 << 1;
+pub const ES8328_DACCONTROL23_HPSWPOL: u32 = 1 << 2;
+pub const ES8328_DACCONTROL23_HPSWEN: u32 = 1 << 3;
+pub const ES8328_DACCONTROL23_VROI_1p5k: u32 = 0 << 4;
+pub const ES8328_DACCONTROL23_VROI_40k: u32 = 1 << 4;
+pub const ES8328_DACCONTROL23_OUT3_VREF: u32 = 0 << 5;
+pub const ES8328_DACCONTROL23_OUT3_ROUT1: u32 = 1 << 5;
+pub const ES8328_DACCONTROL23_OUT3_MONOOUT: u32 = 2 << 5;
+pub const ES8328_DACCONTROL23_OUT3_RIGHT_MIXER: u32 = 3 << 5;
+pub const ES8328_DACCONTROL23_ROUT2INV: u32 = 1 << 7;
+
+/* LOUT1 Amplifier */
+pub const ES8328_LOUT1VOL: u32 = 0x2e;
+pub const ES8328_LOUT1VOL_MASK: u32 = 0 << 5;
+pub const ES8328_LOUT1VOL_MAX: u32 = 0x24;
+
+/* ROUT1 Amplifier */
+pub const ES8328_ROUT1VOL: u32 = 0x2f;
+pub const ES8328_ROUT1VOL_MASK: u32 = 0 << 5;
+pub const ES8328_ROUT1VOL_MAX: u32 = 0x24;
+
+pub const ES8328_OUT1VOL_MAX: u32 = 0x24;
+
+/* LOUT2 Amplifier */
+pub const ES8328_LOUT2VOL: u32 = 0x30;
+pub const ES8328_LOUT2VOL_MASK: u32 = 0 << 5;
+pub const ES8328_LOUT2VOL_MAX: u32 = 0x24;
+
+/* ROUT2 Amplifier */
+pub const ES8328_ROUT2VOL: u32 = 0x31;
+pub const ES8328_ROUT2VOL_MASK: u32 = 0 << 5;
+pub const ES8328_ROUT2VOL_MAX: u32 = 0x24;
+
+pub const ES8328_OUT2VOL_MAX: u32 = 0x24;
+
+/* Mono Out Amplifier */
+pub const ES8328_MONOOUTVOL: u32 = 0x32;
+pub const ES8328_MONOOUTVOL_MASK: u32 = 0 << 5;
+pub const ES8328_MONOOUTVOL_MAX: u32 = 0x24;
+
+pub const ES8328_DACCONTROL29: u32 = 0x33;
+pub const ES8328_DACCONTROL30: u32 = 0x34;
+
+pub const ES8328_SYSCLK: u32 = 0;
+
+pub const ES8328_REG_MAX: u32 = 0x35;
+
+pub const ES8328_1536FS: u32 = 1536;
+pub const ES8328_1024FS: u32 = 1024;
+pub const ES8328_768FS: u32 = 768;
+pub const ES8328_512FS: u32 = 512;
+pub const ES8328_384FS: u32 = 384;
+pub const ES8328_256FS: u32 = 256;
+pub const ES8328_128FS: u32 = 128;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

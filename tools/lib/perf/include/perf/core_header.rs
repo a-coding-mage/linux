@@ -28,3 +28,5 @@ unsafe extern "C" {
     /* LIBPERF_API: extern symbol with default visibility in C. */
     pub fn libperf_init(fn_: libperf_print_fn_t);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

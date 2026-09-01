@@ -39,3 +39,5 @@ pub unsafe fn lsm_set_self_attr(
 pub unsafe fn lsm_list_modules(ids: *mut __u64, size: *mut __u32, flags: __u32) -> c_int {
     unsafe { syscall(__NR_lsm_list_modules as c_long, ids, size, flags) as c_int }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

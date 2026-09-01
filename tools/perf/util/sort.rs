@@ -104,3 +104,5 @@ pub unsafe extern "C" fn sort_help(_prefix:*const c_char,_mode:sort_mode)->*mut 
 // dereference perf-private structs from headers outside this isolated file. Those dependencies are
 // represented here as opaque C ABI items; behavior that cannot be expressed file-locally is kept as
 // narrow unsafe extern-shaped placeholders rather than implemented with invented layouts.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

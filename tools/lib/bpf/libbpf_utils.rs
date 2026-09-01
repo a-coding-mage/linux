@@ -333,3 +333,5 @@ pub unsafe extern "C" fn libbpf_sha256(data: *const c_void, len: size_t, out: *m
         i += 1;
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

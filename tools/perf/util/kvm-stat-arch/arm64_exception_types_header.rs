@@ -116,3 +116,5 @@ pub const kvm_arm_exception_class: &[(u32, &str)] = &[
     (ESR_ELx_EC_VECTOR32, "VECTOR32"),
     (ESR_ELx_EC_BRK64, "BRK64"),
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

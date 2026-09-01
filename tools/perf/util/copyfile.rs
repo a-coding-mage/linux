@@ -291,3 +291,5 @@ pub unsafe extern "C" fn copyfile_mode(
 pub unsafe extern "C" fn copyfile(from: *const c_char, to: *const c_char) -> c_int {
     copyfile_mode(from, to, 0o755)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

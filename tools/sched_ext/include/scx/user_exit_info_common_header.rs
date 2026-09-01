@@ -33,3 +33,5 @@ pub struct user_exit_info {
     pub reason: [::std::os::raw::c_char; UEI_REASON_LEN],
     pub msg: [::std::os::raw::c_char; UEI_MSG_LEN],
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

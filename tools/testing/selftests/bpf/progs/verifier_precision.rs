@@ -504,3 +504,5 @@ extern "Rust" {
     static BPF_REG_6: u32;
     static BPF_REG_10: u32;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

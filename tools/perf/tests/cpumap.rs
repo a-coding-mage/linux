@@ -430,3 +430,5 @@ pub static mut suite__cpu_map: test_suite = test_suite {
     desc: c"CPU map".as_ptr(),
     test_cases: unsafe { tests__cpu_map.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

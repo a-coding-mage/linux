@@ -506,3 +506,5 @@ macro_rules! RSEQ_ASM_OP_R_BAD_MEMCPY {
  * including rseq-arm64-bits.h, then undefines RSEQ_TEMPLATE_MO_RELAXED and
  * RSEQ_TEMPLATE_CPU_ID_NONE.
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

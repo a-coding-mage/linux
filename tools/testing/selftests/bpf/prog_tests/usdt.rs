@@ -908,3 +908,5 @@ pub unsafe extern "C" fn test_usdt() {
         subtest_urandom_usdt(false /* auto_attach */);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

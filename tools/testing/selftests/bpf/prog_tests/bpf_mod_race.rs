@@ -456,3 +456,5 @@ pub unsafe extern "C" fn serial_test_bpf_mod_race() {
         test_bpf_mod_race_config(&KFUNC_CONFIG);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

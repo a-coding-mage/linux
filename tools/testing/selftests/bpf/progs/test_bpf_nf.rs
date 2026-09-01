@@ -768,3 +768,5 @@ pub unsafe extern "C" fn nf_skb_ct_test(ctx: *mut __sk_buff) -> core::ffi::c_int
 // char _license[] SEC("license") = "GPL";
 #[unsafe(no_mangle)]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

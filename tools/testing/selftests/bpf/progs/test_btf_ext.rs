@@ -39,3 +39,5 @@ pub unsafe extern "C" fn global_func(xdp: *mut xdp_md) -> __u64 {
     f0();
     XDP_DROP
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

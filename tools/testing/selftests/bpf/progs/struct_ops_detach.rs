@@ -25,3 +25,5 @@ extern "C" {
 #[no_mangle]
 #[link_section = ".struct_ops.link"]
 pub static mut testmod_do_detach: bpf_testmod_ops;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

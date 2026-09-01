@@ -22,3 +22,5 @@ pub const __ARCH_WANT_TIME32_SYSCALLS: bool = true;
 pub const __ARCH_WANT_MEMFD_SECRET: bool = true;
 
 /* Depends on declarations and constants from <asm-generic/unistd.h>. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

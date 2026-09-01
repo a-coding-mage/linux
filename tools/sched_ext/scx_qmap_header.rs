@@ -206,3 +206,5 @@ pub struct qmap_arena {
     pub nr_rescue_dsp: u64, /* SCX_ENQ_RESCUE dispatch attempts */
     pub inject_mode: u32, /* fault-injection mode (QMAP_INJ_*) */
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

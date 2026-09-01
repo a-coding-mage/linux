@@ -537,3 +537,5 @@ pub unsafe fn strtoimax(nptr: *const c_char, endptr: *mut *mut c_char, base: c_i
 pub unsafe fn strtoumax(nptr: *const c_char, endptr: *mut *mut c_char, base: c_int) -> uintmax_t {
 	__strtox(nptr, endptr, base, 0, UINTMAX_MAX)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

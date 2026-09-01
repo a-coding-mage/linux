@@ -713,3 +713,5 @@ pub unsafe extern "C" fn bench_epoll_ctl(mut argc: c_int, argv: *const *const c_
 unsafe fn errmem() -> ! {
     err(EXIT_FAILURE, c"calloc".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

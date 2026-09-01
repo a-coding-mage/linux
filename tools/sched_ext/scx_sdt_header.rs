@@ -122,3 +122,5 @@ unsafe extern "C" {
     pub fn scx_alloc_internal(alloc: *mut scx_allocator) -> u64;
     pub fn scx_alloc_free_idx(alloc: *mut scx_allocator, idx: u64) -> core::ffi::c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

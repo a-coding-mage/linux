@@ -35,3 +35,5 @@ unsafe extern "C" {
     pub fn sync_fence_size(fd: i32) -> i32;
     pub fn sync_fence_count_with_status(fd: i32, status: i32) -> i32;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

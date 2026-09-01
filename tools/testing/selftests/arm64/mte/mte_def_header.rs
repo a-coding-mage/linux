@@ -79,3 +79,5 @@ pub const fn MT_INCLUDE_VALID_TAGS(x: u64) -> u64 {
 }
 
 pub const MTE_ALLOW_NON_ZERO_TAG: u64 = MT_INCLUDE_VALID_TAG(0);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

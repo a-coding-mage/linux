@@ -293,3 +293,5 @@ pub unsafe fn cache_portion_size(
         .wrapping_mul(unsafe { count_bits(portion_mask) } as c_ulong)
         .wrapping_div(bits as c_ulong)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

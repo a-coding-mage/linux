@@ -1012,3 +1012,5 @@ pub unsafe extern "C" fn test_xdp_veth_egress() {
         xdp_veth_egress_last_dst(XDP_FLAGS_SKB_MODE);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

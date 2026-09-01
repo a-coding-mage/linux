@@ -1269,3 +1269,5 @@ pub unsafe extern "C" fn cmd_klp_diff(mut argc: c_int, argv: *const *const c_cha
     if elf_write(e.out) != 0 { return -1; }
     elf_close(e.out)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

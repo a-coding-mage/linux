@@ -248,3 +248,5 @@ unsafe fn goto_done(fd: c_int, old_pie_rate: c_ulong) {
         close(fd);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

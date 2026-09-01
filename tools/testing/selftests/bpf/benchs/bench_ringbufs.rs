@@ -916,3 +916,5 @@ pub static bench_pb_custom: bench = bench {
     report_progress: unsafe { &hits_drops_report_progress as *const c_void },
     report_final: unsafe { &hits_drops_report_final as *const c_void },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

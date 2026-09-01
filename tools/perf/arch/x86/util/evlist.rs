@@ -159,3 +159,5 @@ pub unsafe extern "C" fn arch_evlist__add_required_events(list: *mut list_head) 
     }
     topdown_insert_slots_event(list, idx + 1, metric_event)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

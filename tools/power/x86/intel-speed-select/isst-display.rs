@@ -971,3 +971,5 @@ pub unsafe extern "C" fn isst_trl_display_information(id: *mut isst_id, outf: *m
 
     format_and_print(outf, level, std::ptr::null_mut(), std::ptr::null_mut());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1232,3 +1232,5 @@ unsafe fn run_merge_tests(num_tests: *mut i32, num_fail: *mut i32) {
     TEST(merge_extend);
     TEST(expand_only_mode);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

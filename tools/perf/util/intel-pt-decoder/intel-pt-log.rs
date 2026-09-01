@@ -325,3 +325,5 @@ pub unsafe extern "C" fn __intel_pt_log_insn(intel_pt_insn: *mut intel_pt_insn, 
         fprintf(f, c"Bad instruction!\n".as_ptr());
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

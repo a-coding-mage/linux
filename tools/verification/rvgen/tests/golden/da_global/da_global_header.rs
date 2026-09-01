@@ -61,3 +61,5 @@ pub const automaton_da_global: automaton_da_global = automaton_da_global {
     initial_state: states_da_global::state_a_da_global as u8,
     final_states: [true, false],
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

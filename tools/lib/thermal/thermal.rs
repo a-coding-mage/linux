@@ -270,3 +270,5 @@ pub unsafe extern "C" fn thermal_init(ops: *mut thermal_ops) -> *mut thermal_han
 
     th
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

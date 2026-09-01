@@ -323,3 +323,5 @@ pub unsafe extern "C" fn get_dwarf_regnum_for_perf_regnum(
     }
     reg
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -159,3 +159,5 @@ pub unsafe fn bpf_free(mut addr: *mut core::ffi::c_void) {
 // C #else branch:
 // static inline void __arena* bpf_alloc(unsigned int size) { return NULL; }
 // static inline void bpf_free(void __arena *addr) {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

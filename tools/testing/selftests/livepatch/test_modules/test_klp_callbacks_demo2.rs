@@ -160,3 +160,5 @@ static MODULE_INFO_LIVEPATCH: &[u8] = b"Y\0";
 static MODULE_AUTHOR: &[u8] = b"Joe Lawrence <joe.lawrence@redhat.com>\0";
 #[used]
 static MODULE_DESCRIPTION: &[u8] = b"Livepatch test: livepatch demo2\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

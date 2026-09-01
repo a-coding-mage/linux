@@ -660,3 +660,5 @@ pub unsafe fn test_map_create_failure() {
         test_common_attr_padding();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

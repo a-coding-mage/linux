@@ -105,3 +105,5 @@ pub unsafe fn ordered_events__set_copy_on_queue(oe: *mut ordered_events, copy: b
 pub unsafe fn ordered_events__last_flush_time(oe: *mut ordered_events) -> u64 {
     (*oe).last_flush
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

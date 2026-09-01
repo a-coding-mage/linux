@@ -412,3 +412,5 @@ pub const PR_CFI_BRANCH_LANDING_PADS: u32 = 0;
 pub const PR_CFI_ENABLE: usize = 1usize << 0;
 pub const PR_CFI_DISABLE: usize = 1usize << 1;
 pub const PR_CFI_LOCK: usize = 1usize << 2;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

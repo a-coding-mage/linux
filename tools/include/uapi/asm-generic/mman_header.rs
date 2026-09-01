@@ -19,3 +19,5 @@ pub const MCL_ONFAULT: u32 = 4; /* lock all pages that are faulted in */
 
 pub const SHADOW_STACK_SET_TOKEN: u64 = 1u64 << 0; /* Set up a restore token in the shadow stack */
 pub const SHADOW_STACK_SET_MARKER: u64 = 1u64 << 1; /* Set up a top of stack marker in the shadow stack */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

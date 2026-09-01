@@ -185,3 +185,5 @@ pub unsafe extern "C" fn clockid_name(clk_id: clockid_t) -> *const c_char {
     }
     b"(not found)\0".as_ptr() as *const c_char
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

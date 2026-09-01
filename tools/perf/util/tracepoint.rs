@@ -103,3 +103,5 @@ pub unsafe extern "C" fn is_valid_tracepoint(event_string: *const c_char) -> boo
 
     have_file
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

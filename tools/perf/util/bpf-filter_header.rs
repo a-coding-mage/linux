@@ -91,3 +91,5 @@ pub unsafe extern "C" fn perf_bpf_filter__pin() -> ::std::os::raw::c_int {
 pub unsafe extern "C" fn perf_bpf_filter__unpin() -> ::std::os::raw::c_int {
     -EOPNOTSUPP
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

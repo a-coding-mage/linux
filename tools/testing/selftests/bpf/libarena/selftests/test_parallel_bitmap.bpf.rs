@@ -259,3 +259,5 @@ pub unsafe extern "C" fn parallel_test_bitmap__0() -> i32 {
 pub unsafe extern "C" fn parallel_test_bitmap__1() -> i32 {
     bitmap_test_common(1)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

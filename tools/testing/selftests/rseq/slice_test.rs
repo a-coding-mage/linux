@@ -336,3 +336,5 @@ unsafe fn slice_ext_slice_test(_self: *mut slice_ext, variant: *const slice_ext_
 }
 
 // TEST_HARNESS_MAIN
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

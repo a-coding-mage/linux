@@ -185,3 +185,5 @@ pub struct bpf_testmod_multi_st_ops {
     pub node: hlist_node,
     pub id: i32,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

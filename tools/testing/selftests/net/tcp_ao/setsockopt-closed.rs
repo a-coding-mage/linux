@@ -1243,3 +1243,5 @@ fn main() {
         test_init(126, Some(client_fn), ptr::null_mut());
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

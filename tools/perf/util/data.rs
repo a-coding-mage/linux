@@ -819,3 +819,5 @@ pub unsafe extern "C" fn perf_data__make_kcore_dir(
 
     mkdir(buf, S_IRWXU)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

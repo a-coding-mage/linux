@@ -1062,3 +1062,5 @@ pub unsafe extern "C" fn evsel__drm_pmu_read(
     }
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

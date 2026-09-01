@@ -68,3 +68,5 @@ pub unsafe fn rseq_after_asm_goto() {
  * C++ decltype/remove_cv/remove_reference that can expand to a type in this
  * source-level position without external context.
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

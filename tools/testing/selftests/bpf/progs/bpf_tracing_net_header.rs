@@ -195,3 +195,5 @@ pub unsafe fn tcp_is_cwnd_limited(sk: *const sock) -> bool {
 
     BPF_CORE_READ_BITFIELD!(tp, is_cwnd_limited) != 0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

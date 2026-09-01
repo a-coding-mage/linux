@@ -8,3 +8,5 @@
 pub unsafe fn test_verifier_kfunc_prog_types() {
     RUN_TESTS(verifier_kfunc_prog_types);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

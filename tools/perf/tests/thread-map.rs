@@ -263,3 +263,5 @@ unsafe extern "C" fn test__thread_map_remove(
 // DEFINE_SUITE("Thread map", thread_map);
 // DEFINE_SUITE("Synthesize thread map", thread_map_synthesize);
 // DEFINE_SUITE("Remove thread map", thread_map_remove);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

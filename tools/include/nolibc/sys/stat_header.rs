@@ -132,3 +132,5 @@ pub unsafe fn fstat(fildes: i32, buf: *mut stat) -> i32 {
 pub unsafe fn lstat(path: *const core::ffi::c_char, buf: *mut stat) -> i32 {
     unsafe { fstatat(AT_FDCWD, path, buf, AT_SYMLINK_NOFOLLOW) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

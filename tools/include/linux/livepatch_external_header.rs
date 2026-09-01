@@ -75,3 +75,5 @@ pub struct klp_object_ext {
     pub callbacks: klp_callbacks,
     pub nr_funcs: ::core::ffi::c_uint,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

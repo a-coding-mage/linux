@@ -121,3 +121,5 @@ unsafe extern "C" fn mmcr2_l2l3() -> c_int {
 pub unsafe fn main() -> c_int {
     test_harness(mmcr2_l2l3, b"mmcr2_l2l3\0".as_ptr() as *const c_char)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -27,3 +27,5 @@ pub unsafe fn bswap_32(_x: u32) -> u32 {
 pub unsafe fn bswap_64(_x: u64) -> u64 {
     unsafe { __swab64(_x) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

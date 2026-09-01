@@ -31,3 +31,5 @@ extern "C" {
 
     pub fn addr_location__copy(dst: *mut addr_location, src: *mut addr_location);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

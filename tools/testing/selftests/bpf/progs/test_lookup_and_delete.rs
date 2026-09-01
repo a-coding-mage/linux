@@ -62,3 +62,5 @@ pub unsafe extern "C" fn bpf_lookup_and_delete_test(ctx: *const core::ffi::c_voi
 #[no_mangle]
 #[link_section = "license"]
 pub static _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

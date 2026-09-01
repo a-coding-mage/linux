@@ -46,3 +46,5 @@ pub unsafe extern "C" fn lsm_kernfs_init_security_entry(ctx: *mut core::ffi::c_v
     bpf_tail_call_static(ctx, &mut jmp_table, 0);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

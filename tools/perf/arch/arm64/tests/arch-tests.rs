@@ -33,3 +33,5 @@ pub static mut arch_tests: [*mut test_suite; 2] = [
     unsafe { &mut suite__cpuid_match as *mut test_suite },
     core::ptr::null_mut(),
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

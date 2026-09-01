@@ -78,3 +78,5 @@ pub unsafe extern "C" fn test_timer_start_deadlock() {
     ASSERT_EQ((*(*skel).bss).tp_called, 1, c"tp_called".as_ptr());
     timer_start_deadlock__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

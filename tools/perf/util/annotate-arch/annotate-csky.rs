@@ -97,3 +97,5 @@ pub unsafe extern "C" fn arch__new_csky(
     (*arch).associate_instruction_ops = Some(csky__associate_ins_ops);
     arch
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

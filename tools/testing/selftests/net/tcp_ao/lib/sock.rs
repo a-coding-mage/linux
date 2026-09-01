@@ -974,3 +974,5 @@ pub unsafe extern "C" fn test_skpair_client(
     }
     if ret != buf_sz as ssize_t { -1 } else { 0 }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -99,3 +99,5 @@ unsafe extern "C" {
     ) -> c_int;
     pub fn get_percent_color(percent: c_double) -> *const c_char;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

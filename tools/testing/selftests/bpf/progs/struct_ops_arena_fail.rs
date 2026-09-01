@@ -32,3 +32,5 @@ pub struct bpf_testmod_ops3_init {
 pub static mut testmod_arena_fail: bpf_testmod_ops3_init = bpf_testmod_ops3_init {
     test_arena: test_arena_no_arena as *mut core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

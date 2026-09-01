@@ -1,0 +1,823 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * wm8990.h  --  audio driver for WM8990
+ *
+ * Copyright 2007 Wolfson Microelectronics PLC.
+ * Author: Graeme Gregory
+ *         graeme.gregory@wolfsonmicro.com or linux@wolfsonmicro.com
+ */
+
+/* Translated from C header: include guard and C preprocessor syntax omitted. */
+
+
+
+/*
+ * Register values.
+ */
+pub const WM8990_RESET: u16 = 0x00;
+pub const WM8990_POWER_MANAGEMENT_1: u16 = 0x01;
+pub const WM8990_POWER_MANAGEMENT_2: u16 = 0x02;
+pub const WM8990_POWER_MANAGEMENT_3: u16 = 0x03;
+pub const WM8990_AUDIO_INTERFACE_1: u16 = 0x04;
+pub const WM8990_AUDIO_INTERFACE_2: u16 = 0x05;
+pub const WM8990_CLOCKING_1: u16 = 0x06;
+pub const WM8990_CLOCKING_2: u16 = 0x07;
+pub const WM8990_AUDIO_INTERFACE_3: u16 = 0x08;
+pub const WM8990_AUDIO_INTERFACE_4: u16 = 0x09;
+pub const WM8990_DAC_CTRL: u16 = 0x0A;
+pub const WM8990_LEFT_DAC_DIGITAL_VOLUME: u16 = 0x0B;
+pub const WM8990_RIGHT_DAC_DIGITAL_VOLUME: u16 = 0x0C;
+pub const WM8990_DIGITAL_SIDE_TONE: u16 = 0x0D;
+pub const WM8990_ADC_CTRL: u16 = 0x0E;
+pub const WM8990_LEFT_ADC_DIGITAL_VOLUME: u16 = 0x0F;
+pub const WM8990_RIGHT_ADC_DIGITAL_VOLUME: u16 = 0x10;
+pub const WM8990_GPIO_CTRL_1: u16 = 0x12;
+pub const WM8990_GPIO1_GPIO2: u16 = 0x13;
+pub const WM8990_GPIO3_GPIO4: u16 = 0x14;
+pub const WM8990_GPIO5_GPIO6: u16 = 0x15;
+pub const WM8990_GPIOCTRL_2: u16 = 0x16;
+pub const WM8990_GPIO_POL: u16 = 0x17;
+pub const WM8990_LEFT_LINE_INPUT_1_2_VOLUME: u16 = 0x18;
+pub const WM8990_LEFT_LINE_INPUT_3_4_VOLUME: u16 = 0x19;
+pub const WM8990_RIGHT_LINE_INPUT_1_2_VOLUME: u16 = 0x1A;
+pub const WM8990_RIGHT_LINE_INPUT_3_4_VOLUME: u16 = 0x1B;
+pub const WM8990_LEFT_OUTPUT_VOLUME: u16 = 0x1C;
+pub const WM8990_RIGHT_OUTPUT_VOLUME: u16 = 0x1D;
+pub const WM8990_LINE_OUTPUTS_VOLUME: u16 = 0x1E;
+pub const WM8990_OUT3_4_VOLUME: u16 = 0x1F;
+pub const WM8990_LEFT_OPGA_VOLUME: u16 = 0x20;
+pub const WM8990_RIGHT_OPGA_VOLUME: u16 = 0x21;
+pub const WM8990_SPEAKER_VOLUME: u16 = 0x22;
+pub const WM8990_CLASSD1: u16 = 0x23;
+pub const WM8990_CLASSD3: u16 = 0x25;
+pub const WM8990_CLASSD4: u16 = 0x26;
+pub const WM8990_INPUT_MIXER1: u16 = 0x27;
+pub const WM8990_INPUT_MIXER2: u16 = 0x28;
+pub const WM8990_INPUT_MIXER3: u16 = 0x29;
+pub const WM8990_INPUT_MIXER4: u16 = 0x2A;
+pub const WM8990_INPUT_MIXER5: u16 = 0x2B;
+pub const WM8990_INPUT_MIXER6: u16 = 0x2C;
+pub const WM8990_OUTPUT_MIXER1: u16 = 0x2D;
+pub const WM8990_OUTPUT_MIXER2: u16 = 0x2E;
+pub const WM8990_OUTPUT_MIXER3: u16 = 0x2F;
+pub const WM8990_OUTPUT_MIXER4: u16 = 0x30;
+pub const WM8990_OUTPUT_MIXER5: u16 = 0x31;
+pub const WM8990_OUTPUT_MIXER6: u16 = 0x32;
+pub const WM8990_OUT3_4_MIXER: u16 = 0x33;
+pub const WM8990_LINE_MIXER1: u16 = 0x34;
+pub const WM8990_LINE_MIXER2: u16 = 0x35;
+pub const WM8990_SPEAKER_MIXER: u16 = 0x36;
+pub const WM8990_ADDITIONAL_CONTROL: u16 = 0x37;
+pub const WM8990_ANTIPOP1: u16 = 0x38;
+pub const WM8990_ANTIPOP2: u16 = 0x39;
+pub const WM8990_MICBIAS: u16 = 0x3A;
+pub const WM8990_PLL1: u16 = 0x3C;
+pub const WM8990_PLL2: u16 = 0x3D;
+pub const WM8990_PLL3: u16 = 0x3E;
+
+pub const WM8990_EXT_ACCESS_ENA: u16 = 0x75;
+pub const WM8990_EXT_CTL1: u16 = 0x7a;
+
+/*
+ * Field Definitions.
+ */
+
+/*
+ * R0 (0x00) - Reset
+ */
+pub const WM8990_SW_RESET_CHIP_ID_MASK: u16 = 0xFFFF;   /* SW_RESET_CHIP_ID */
+
+/*
+ * R1 (0x01) - Power Management (1)
+ */
+pub const WM8990_SPK_ENA: u16 = 0x1000;   /* SPK_ENA */
+pub const WM8990_SPK_ENA_BIT: u16 = 12;
+pub const WM8990_OUT3_ENA: u16 = 0x0800;   /* OUT3_ENA */
+pub const WM8990_OUT3_ENA_BIT: u16 = 11;
+pub const WM8990_OUT4_ENA: u16 = 0x0400;   /* OUT4_ENA */
+pub const WM8990_OUT4_ENA_BIT: u16 = 10;
+pub const WM8990_LOUT_ENA: u16 = 0x0200;   /* LOUT_ENA */
+pub const WM8990_LOUT_ENA_BIT: u16 = 9;
+pub const WM8990_ROUT_ENA: u16 = 0x0100;   /* ROUT_ENA */
+pub const WM8990_ROUT_ENA_BIT: u16 = 8;
+pub const WM8990_MICBIAS_ENA: u16 = 0x0010;   /* MICBIAS_ENA */
+pub const WM8990_MICBIAS_ENA_BIT: u16 = 4;
+pub const WM8990_VMID_MODE_MASK: u16 = 0x0006;   /* VMID_MODE - [2:1] */
+pub const WM8990_VREF_ENA: u16 = 0x0001;   /* VREF_ENA */
+pub const WM8990_VREF_ENA_BIT: u16 = 0;
+
+/*
+ * R2 (0x02) - Power Management (2)
+ */
+pub const WM8990_PLL_ENA: u16 = 0x8000;   /* PLL_ENA */
+pub const WM8990_PLL_ENA_BIT: u16 = 15;
+pub const WM8990_TSHUT_ENA: u16 = 0x4000;   /* TSHUT_ENA */
+pub const WM8990_TSHUT_ENA_BIT: u16 = 14;
+pub const WM8990_TSHUT_OPDIS: u16 = 0x2000;   /* TSHUT_OPDIS */
+pub const WM8990_TSHUT_OPDIS_BIT: u16 = 13;
+pub const WM8990_OPCLK_ENA: u16 = 0x0800;   /* OPCLK_ENA */
+pub const WM8990_OPCLK_ENA_BIT: u16 = 11;
+pub const WM8990_AINL_ENA: u16 = 0x0200;   /* AINL_ENA */
+pub const WM8990_AINL_ENA_BIT: u16 = 9;
+pub const WM8990_AINR_ENA: u16 = 0x0100;   /* AINR_ENA */
+pub const WM8990_AINR_ENA_BIT: u16 = 8;
+pub const WM8990_LIN34_ENA: u16 = 0x0080;   /* LIN34_ENA */
+pub const WM8990_LIN34_ENA_BIT: u16 = 7;
+pub const WM8990_LIN12_ENA: u16 = 0x0040;   /* LIN12_ENA */
+pub const WM8990_LIN12_ENA_BIT: u16 = 6;
+pub const WM8990_RIN34_ENA: u16 = 0x0020;   /* RIN34_ENA */
+pub const WM8990_RIN34_ENA_BIT: u16 = 5;
+pub const WM8990_RIN12_ENA: u16 = 0x0010;   /* RIN12_ENA */
+pub const WM8990_RIN12_ENA_BIT: u16 = 4;
+pub const WM8990_ADCL_ENA: u16 = 0x0002;   /* ADCL_ENA */
+pub const WM8990_ADCL_ENA_BIT: u16 = 1;
+pub const WM8990_ADCR_ENA: u16 = 0x0001;   /* ADCR_ENA */
+pub const WM8990_ADCR_ENA_BIT: u16 = 0;
+
+/*
+ * R3 (0x03) - Power Management (3)
+ */
+pub const WM8990_LON_ENA: u16 = 0x2000;   /* LON_ENA */
+pub const WM8990_LON_ENA_BIT: u16 = 13;
+pub const WM8990_LOP_ENA: u16 = 0x1000;   /* LOP_ENA */
+pub const WM8990_LOP_ENA_BIT: u16 = 12;
+pub const WM8990_RON_ENA: u16 = 0x0800;   /* RON_ENA */
+pub const WM8990_RON_ENA_BIT: u16 = 11;
+pub const WM8990_ROP_ENA: u16 = 0x0400;   /* ROP_ENA */
+pub const WM8990_ROP_ENA_BIT: u16 = 10;
+pub const WM8990_LOPGA_ENA: u16 = 0x0080;   /* LOPGA_ENA */
+pub const WM8990_LOPGA_ENA_BIT: u16 = 7;
+pub const WM8990_ROPGA_ENA: u16 = 0x0040;   /* ROPGA_ENA */
+pub const WM8990_ROPGA_ENA_BIT: u16 = 6;
+pub const WM8990_LOMIX_ENA: u16 = 0x0020;   /* LOMIX_ENA */
+pub const WM8990_LOMIX_ENA_BIT: u16 = 5;
+pub const WM8990_ROMIX_ENA: u16 = 0x0010;   /* ROMIX_ENA */
+pub const WM8990_ROMIX_ENA_BIT: u16 = 4;
+pub const WM8990_DACL_ENA: u16 = 0x0002;   /* DACL_ENA */
+pub const WM8990_DACL_ENA_BIT: u16 = 1;
+pub const WM8990_DACR_ENA: u16 = 0x0001;   /* DACR_ENA */
+pub const WM8990_DACR_ENA_BIT: u16 = 0;
+
+/*
+ * R4 (0x04) - Audio Interface (1)
+ */
+pub const WM8990_AIFADCL_SRC: u16 = 0x8000;   /* AIFADCL_SRC */
+pub const WM8990_AIFADCR_SRC: u16 = 0x4000;   /* AIFADCR_SRC */
+pub const WM8990_AIFADC_TDM: u16 = 0x2000;   /* AIFADC_TDM */
+pub const WM8990_AIFADC_TDM_CHAN: u16 = 0x1000;   /* AIFADC_TDM_CHAN */
+pub const WM8990_AIF_BCLK_INV: u16 = 0x0100;   /* AIF_BCLK_INV */
+pub const WM8990_AIF_LRCLK_INV: u16 = 0x0080;   /* AIF_LRCLK_INV */
+pub const WM8990_AIF_WL_MASK: u16 = 0x0060;   /* AIF_WL - [6:5] */
+pub const WM8990_AIF_WL_16BITS: u16 = (0 << 5);
+pub const WM8990_AIF_WL_20BITS: u16 = (1 << 5);
+pub const WM8990_AIF_WL_24BITS: u16 = (2 << 5);
+pub const WM8990_AIF_WL_32BITS: u16 = (3 << 5);
+pub const WM8990_AIF_FMT_MASK: u16 = 0x0018;   /* AIF_FMT - [4:3] */
+pub const WM8990_AIF_TMF_RIGHTJ: u16 = (0 << 3);
+pub const WM8990_AIF_TMF_LEFTJ: u16 = (1 << 3);
+pub const WM8990_AIF_TMF_I2S: u16 = (2 << 3);
+pub const WM8990_AIF_TMF_DSP: u16 = (3 << 3);
+
+/*
+ * R5 (0x05) - Audio Interface (2)
+ */
+pub const WM8990_DACL_SRC: u16 = 0x8000;   /* DACL_SRC */
+pub const WM8990_DACR_SRC: u16 = 0x4000;   /* DACR_SRC */
+pub const WM8990_AIFDAC_TDM: u16 = 0x2000;   /* AIFDAC_TDM */
+pub const WM8990_AIFDAC_TDM_CHAN: u16 = 0x1000;   /* AIFDAC_TDM_CHAN */
+pub const WM8990_DAC_BOOST_MASK: u16 = 0x0C00;   /* DAC_BOOST */
+pub const WM8990_DAC_COMP: u16 = 0x0010;   /* DAC_COMP */
+pub const WM8990_DAC_COMPMODE: u16 = 0x0008;   /* DAC_COMPMODE */
+pub const WM8990_ADC_COMP: u16 = 0x0004;   /* ADC_COMP */
+pub const WM8990_ADC_COMPMODE: u16 = 0x0002;   /* ADC_COMPMODE */
+pub const WM8990_LOOPBACK: u16 = 0x0001;   /* LOOPBACK */
+
+/*
+ * R6 (0x06) - Clocking (1)
+ */
+pub const WM8990_TOCLK_RATE: u16 = 0x8000;   /* TOCLK_RATE */
+pub const WM8990_TOCLK_ENA: u16 = 0x4000;   /* TOCLK_ENA */
+pub const WM8990_OPCLKDIV_MASK: u16 = 0x1E00;   /* OPCLKDIV - [12:9] */
+pub const WM8990_DCLKDIV_MASK: u16 = 0x01C0;   /* DCLKDIV - [8:6] */
+pub const WM8990_BCLK_DIV_MASK: u16 = 0x001E;   /* BCLK_DIV - [4:1] */
+pub const WM8990_BCLK_DIV_1: u16 = (0x0 << 1);
+pub const WM8990_BCLK_DIV_1_5: u16 = (0x1 << 1);
+pub const WM8990_BCLK_DIV_2: u16 = (0x2 << 1);
+pub const WM8990_BCLK_DIV_3: u16 = (0x3 << 1);
+pub const WM8990_BCLK_DIV_4: u16 = (0x4 << 1);
+pub const WM8990_BCLK_DIV_5_5: u16 = (0x5 << 1);
+pub const WM8990_BCLK_DIV_6: u16 = (0x6 << 1);
+pub const WM8990_BCLK_DIV_8: u16 = (0x7 << 1);
+pub const WM8990_BCLK_DIV_11: u16 = (0x8 << 1);
+pub const WM8990_BCLK_DIV_12: u16 = (0x9 << 1);
+pub const WM8990_BCLK_DIV_16: u16 = (0xA << 1);
+pub const WM8990_BCLK_DIV_22: u16 = (0xB << 1);
+pub const WM8990_BCLK_DIV_24: u16 = (0xC << 1);
+pub const WM8990_BCLK_DIV_32: u16 = (0xD << 1);
+pub const WM8990_BCLK_DIV_44: u16 = (0xE << 1);
+pub const WM8990_BCLK_DIV_48: u16 = (0xF << 1);
+
+/*
+ * R7 (0x07) - Clocking (2)
+ */
+pub const WM8990_MCLK_SRC: u16 = 0x8000;   /* MCLK_SRC */
+pub const WM8990_SYSCLK_SRC: u16 = 0x4000;   /* SYSCLK_SRC */
+pub const WM8990_CLK_FORCE: u16 = 0x2000;   /* CLK_FORCE */
+pub const WM8990_MCLK_DIV_MASK: u16 = 0x1800;   /* MCLK_DIV - [12:11] */
+pub const WM8990_MCLK_DIV_1: u16 = (0 << 11);
+pub const WM8990_MCLK_DIV_2: u16 = (2 << 11);
+pub const WM8990_MCLK_INV: u16 = 0x0400;   /* MCLK_INV */
+pub const WM8990_ADC_CLKDIV_MASK: u16 = 0x00E0;   /* ADC_CLKDIV */
+pub const WM8990_ADC_CLKDIV_1: u16 = (0 << 5);
+pub const WM8990_ADC_CLKDIV_1_5: u16 = (1 << 5);
+pub const WM8990_ADC_CLKDIV_2: u16 = (2 << 5);
+pub const WM8990_ADC_CLKDIV_3: u16 = (3 << 5);
+pub const WM8990_ADC_CLKDIV_4: u16 = (4 << 5);
+pub const WM8990_ADC_CLKDIV_5_5: u16 = (5 << 5);
+pub const WM8990_ADC_CLKDIV_6: u16 = (6 << 5);
+pub const WM8990_DAC_CLKDIV_MASK: u16 = 0x001C;   /* DAC_CLKDIV - [4:2] */
+pub const WM8990_DAC_CLKDIV_1: u16 = (0 << 2);
+pub const WM8990_DAC_CLKDIV_1_5: u16 = (1 << 2);
+pub const WM8990_DAC_CLKDIV_2: u16 = (2 << 2);
+pub const WM8990_DAC_CLKDIV_3: u16 = (3 << 2);
+pub const WM8990_DAC_CLKDIV_4: u16 = (4 << 2);
+pub const WM8990_DAC_CLKDIV_5_5: u16 = (5 << 2);
+pub const WM8990_DAC_CLKDIV_6: u16 = (6 << 2);
+
+/*
+ * R8 (0x08) - Audio Interface (3)
+ */
+pub const WM8990_AIF_MSTR1: u16 = 0x8000;   /* AIF_MSTR1 */
+pub const WM8990_AIF_MSTR2: u16 = 0x4000;   /* AIF_MSTR2 */
+pub const WM8990_AIF_SEL: u16 = 0x2000;   /* AIF_SEL */
+pub const WM8990_ADCLRC_DIR: u16 = 0x0800;   /* ADCLRC_DIR */
+pub const WM8990_ADCLRC_RATE_MASK: u16 = 0x07FF;   /* ADCLRC_RATE */
+
+/*
+ * R9 (0x09) - Audio Interface (4)
+ */
+pub const WM8990_ALRCGPIO1: u16 = 0x8000;   /* ALRCGPIO1 */
+pub const WM8990_ALRCBGPIO6: u16 = 0x4000;   /* ALRCBGPIO6 */
+pub const WM8990_AIF_TRIS: u16 = 0x2000;   /* AIF_TRIS */
+pub const WM8990_DACLRC_DIR: u16 = 0x0800;   /* DACLRC_DIR */
+pub const WM8990_DACLRC_RATE_MASK: u16 = 0x07FF;   /* DACLRC_RATE */
+
+/*
+ * R10 (0x0A) - DAC CTRL
+ */
+pub const WM8990_AIF_LRCLKRATE: u16 = 0x0400;   /* AIF_LRCLKRATE */
+pub const WM8990_DAC_MONO: u16 = 0x0200;   /* DAC_MONO */
+pub const WM8990_DAC_SB_FILT: u16 = 0x0100;   /* DAC_SB_FILT */
+pub const WM8990_DAC_MUTERATE: u16 = 0x0080;   /* DAC_MUTERATE */
+pub const WM8990_DAC_MUTEMODE: u16 = 0x0040;   /* DAC_MUTEMODE */
+pub const WM8990_DEEMP_MASK: u16 = 0x0030;   /* DEEMP - [5:4] */
+pub const WM8990_DAC_MUTE: u16 = 0x0004;   /* DAC_MUTE */
+pub const WM8990_DACL_DATINV: u16 = 0x0002;   /* DACL_DATINV */
+pub const WM8990_DACR_DATINV: u16 = 0x0001;   /* DACR_DATINV */
+
+/*
+ * R11 (0x0B) - Left DAC Digital Volume
+ */
+pub const WM8990_DAC_VU: u16 = 0x0100;   /* DAC_VU */
+pub const WM8990_DACL_VOL_MASK: u16 = 0x00FF;   /* DACL_VOL - [7:0] */
+pub const WM8990_DACL_VOL_SHIFT: u16 = 0;
+/*
+ * R12 (0x0C) - Right DAC Digital Volume
+ */
+/* Duplicate C macro: #define WM8990_DAC_VU 0x0100    /* DAC_VU */ */
+pub const WM8990_DACR_VOL_MASK: u16 = 0x00FF;   /* DACR_VOL - [7:0] */
+pub const WM8990_DACR_VOL_SHIFT: u16 = 0;
+/*
+ * R13 (0x0D) - Digital Side Tone
+ */
+pub const WM8990_ADCL_DAC_SVOL_MASK: u16 = 0x0F;   /* ADCL_DAC_SVOL */
+pub const WM8990_ADCL_DAC_SVOL_SHIFT: u16 = 9;
+pub const WM8990_ADCR_DAC_SVOL_MASK: u16 = 0x0F;   /* ADCR_DAC_SVOL */
+pub const WM8990_ADCR_DAC_SVOL_SHIFT: u16 = 5;
+pub const WM8990_ADC_TO_DACL_MASK: u16 = 0x03;   /* ADC_TO_DACL - [3:2] */
+pub const WM8990_ADC_TO_DACL_SHIFT: u16 = 2;
+pub const WM8990_ADC_TO_DACR_MASK: u16 = 0x03;   /* ADC_TO_DACR - [1:0] */
+pub const WM8990_ADC_TO_DACR_SHIFT: u16 = 0;
+
+/*
+ * R14 (0x0E) - ADC CTRL
+ */
+pub const WM8990_ADC_HPF_ENA: u16 = 0x0100;   /* ADC_HPF_ENA */
+pub const WM8990_ADC_HPF_ENA_BIT: u16 = 8;
+pub const WM8990_ADC_HPF_CUT_MASK: u16 = 0x03;   /* ADC_HPF_CUT - [6:5] */
+pub const WM8990_ADC_HPF_CUT_SHIFT: u16 = 5;
+pub const WM8990_ADCL_DATINV: u16 = 0x0002;   /* ADCL_DATINV */
+pub const WM8990_ADCL_DATINV_BIT: u16 = 1;
+pub const WM8990_ADCR_DATINV: u16 = 0x0001;   /* ADCR_DATINV */
+pub const WM8990_ADCR_DATINV_BIT: u16 = 0;
+
+/*
+ * R15 (0x0F) - Left ADC Digital Volume
+ */
+pub const WM8990_ADC_VU: u16 = 0x0100;   /* ADC_VU */
+pub const WM8990_ADCL_VOL_MASK: u16 = 0x00FF;   /* ADCL_VOL - [7:0] */
+pub const WM8990_ADCL_VOL_SHIFT: u16 = 0;
+
+/*
+ * R16 (0x10) - Right ADC Digital Volume
+ */
+/* Duplicate C macro: #define WM8990_ADC_VU 0x0100    /* ADC_VU */ */
+pub const WM8990_ADCR_VOL_MASK: u16 = 0x00FF;   /* ADCR_VOL - [7:0] */
+pub const WM8990_ADCR_VOL_SHIFT: u16 = 0;
+
+/*
+ * R18 (0x12) - GPIO CTRL 1
+ */
+pub const WM8990_IRQ: u16 = 0x1000;   /* IRQ */
+pub const WM8990_TEMPOK: u16 = 0x0800;   /* TEMPOK */
+pub const WM8990_MICSHRT: u16 = 0x0400;   /* MICSHRT */
+pub const WM8990_MICDET: u16 = 0x0200;   /* MICDET */
+pub const WM8990_PLL_LCK: u16 = 0x0100;   /* PLL_LCK */
+pub const WM8990_GPI8_STATUS: u16 = 0x0080;   /* GPI8_STATUS */
+pub const WM8990_GPI7_STATUS: u16 = 0x0040;   /* GPI7_STATUS */
+pub const WM8990_GPIO6_STATUS: u16 = 0x0020;   /* GPIO6_STATUS */
+pub const WM8990_GPIO5_STATUS: u16 = 0x0010;   /* GPIO5_STATUS */
+pub const WM8990_GPIO4_STATUS: u16 = 0x0008;   /* GPIO4_STATUS */
+pub const WM8990_GPIO3_STATUS: u16 = 0x0004;   /* GPIO3_STATUS */
+pub const WM8990_GPIO2_STATUS: u16 = 0x0002;   /* GPIO2_STATUS */
+pub const WM8990_GPIO1_STATUS: u16 = 0x0001;   /* GPIO1_STATUS */
+
+/*
+ * R19 (0x13) - GPIO1 & GPIO2
+ */
+pub const WM8990_GPIO2_DEB_ENA: u16 = 0x8000;   /* GPIO2_DEB_ENA */
+pub const WM8990_GPIO2_IRQ_ENA: u16 = 0x4000;   /* GPIO2_IRQ_ENA */
+pub const WM8990_GPIO2_PU: u16 = 0x2000;   /* GPIO2_PU */
+pub const WM8990_GPIO2_PD: u16 = 0x1000;   /* GPIO2_PD */
+pub const WM8990_GPIO2_SEL_MASK: u16 = 0x0F00;   /* GPIO2_SEL - [11:8] */
+pub const WM8990_GPIO1_DEB_ENA: u16 = 0x0080;   /* GPIO1_DEB_ENA */
+pub const WM8990_GPIO1_IRQ_ENA: u16 = 0x0040;   /* GPIO1_IRQ_ENA */
+pub const WM8990_GPIO1_PU: u16 = 0x0020;   /* GPIO1_PU */
+pub const WM8990_GPIO1_PD: u16 = 0x0010;   /* GPIO1_PD */
+pub const WM8990_GPIO1_SEL_MASK: u16 = 0x000F;   /* GPIO1_SEL - [3:0] */
+
+/*
+ * R20 (0x14) - GPIO3 & GPIO4
+ */
+pub const WM8990_GPIO4_DEB_ENA: u16 = 0x8000;   /* GPIO4_DEB_ENA */
+pub const WM8990_GPIO4_IRQ_ENA: u16 = 0x4000;   /* GPIO4_IRQ_ENA */
+pub const WM8990_GPIO4_PU: u16 = 0x2000;   /* GPIO4_PU */
+pub const WM8990_GPIO4_PD: u16 = 0x1000;   /* GPIO4_PD */
+pub const WM8990_GPIO4_SEL_MASK: u16 = 0x0F00;   /* GPIO4_SEL - [11:8] */
+pub const WM8990_GPIO3_DEB_ENA: u16 = 0x0080;   /* GPIO3_DEB_ENA */
+pub const WM8990_GPIO3_IRQ_ENA: u16 = 0x0040;   /* GPIO3_IRQ_ENA */
+pub const WM8990_GPIO3_PU: u16 = 0x0020;   /* GPIO3_PU */
+pub const WM8990_GPIO3_PD: u16 = 0x0010;   /* GPIO3_PD */
+pub const WM8990_GPIO3_SEL_MASK: u16 = 0x000F;   /* GPIO3_SEL - [3:0] */
+
+/*
+ * R21 (0x15) - GPIO5 & GPIO6
+ */
+pub const WM8990_GPIO6_DEB_ENA: u16 = 0x8000;   /* GPIO6_DEB_ENA */
+pub const WM8990_GPIO6_IRQ_ENA: u16 = 0x4000;   /* GPIO6_IRQ_ENA */
+pub const WM8990_GPIO6_PU: u16 = 0x2000;   /* GPIO6_PU */
+pub const WM8990_GPIO6_PD: u16 = 0x1000;   /* GPIO6_PD */
+pub const WM8990_GPIO6_SEL_MASK: u16 = 0x0F00;   /* GPIO6_SEL - [11:8] */
+pub const WM8990_GPIO5_DEB_ENA: u16 = 0x0080;   /* GPIO5_DEB_ENA */
+pub const WM8990_GPIO5_IRQ_ENA: u16 = 0x0040;   /* GPIO5_IRQ_ENA */
+pub const WM8990_GPIO5_PU: u16 = 0x0020;   /* GPIO5_PU */
+pub const WM8990_GPIO5_PD: u16 = 0x0010;   /* GPIO5_PD */
+pub const WM8990_GPIO5_SEL_MASK: u16 = 0x000F;   /* GPIO5_SEL - [3:0] */
+
+/*
+ * R22 (0x16) - GPIOCTRL 2
+ */
+pub const WM8990_RD_3W_ENA: u16 = 0x8000;   /* RD_3W_ENA */
+pub const WM8990_MODE_3W4W: u16 = 0x4000;   /* MODE_3W4W */
+pub const WM8990_TEMPOK_IRQ_ENA: u16 = 0x0800;   /* TEMPOK_IRQ_ENA */
+pub const WM8990_MICSHRT_IRQ_ENA: u16 = 0x0400;   /* MICSHRT_IRQ_ENA */
+pub const WM8990_MICDET_IRQ_ENA: u16 = 0x0200;   /* MICDET_IRQ_ENA */
+pub const WM8990_PLL_LCK_IRQ_ENA: u16 = 0x0100;   /* PLL_LCK_IRQ_ENA */
+pub const WM8990_GPI8_DEB_ENA: u16 = 0x0080;   /* GPI8_DEB_ENA */
+pub const WM8990_GPI8_IRQ_ENA: u16 = 0x0040;   /* GPI8_IRQ_ENA */
+pub const WM8990_GPI8_ENA: u16 = 0x0010;   /* GPI8_ENA */
+pub const WM8990_GPI7_DEB_ENA: u16 = 0x0008;   /* GPI7_DEB_ENA */
+pub const WM8990_GPI7_IRQ_ENA: u16 = 0x0004;   /* GPI7_IRQ_ENA */
+pub const WM8990_GPI7_ENA: u16 = 0x0001;   /* GPI7_ENA */
+
+/*
+ * R23 (0x17) - GPIO_POL
+ */
+pub const WM8990_IRQ_INV: u16 = 0x1000;   /* IRQ_INV */
+pub const WM8990_TEMPOK_POL: u16 = 0x0800;   /* TEMPOK_POL */
+pub const WM8990_MICSHRT_POL: u16 = 0x0400;   /* MICSHRT_POL */
+pub const WM8990_MICDET_POL: u16 = 0x0200;   /* MICDET_POL */
+pub const WM8990_PLL_LCK_POL: u16 = 0x0100;   /* PLL_LCK_POL */
+pub const WM8990_GPI8_POL: u16 = 0x0080;   /* GPI8_POL */
+pub const WM8990_GPI7_POL: u16 = 0x0040;   /* GPI7_POL */
+pub const WM8990_GPIO6_POL: u16 = 0x0020;   /* GPIO6_POL */
+pub const WM8990_GPIO5_POL: u16 = 0x0010;   /* GPIO5_POL */
+pub const WM8990_GPIO4_POL: u16 = 0x0008;   /* GPIO4_POL */
+pub const WM8990_GPIO3_POL: u16 = 0x0004;   /* GPIO3_POL */
+pub const WM8990_GPIO2_POL: u16 = 0x0002;   /* GPIO2_POL */
+pub const WM8990_GPIO1_POL: u16 = 0x0001;   /* GPIO1_POL */
+
+/*
+ * R24 (0x18) - Left Line Input 1&2 Volume
+ */
+pub const WM8990_IPVU: u16 = 0x0100;   /* IPVU */
+pub const WM8990_LI12MUTE: u16 = 0x0080;   /* LI12MUTE */
+pub const WM8990_LI12MUTE_BIT: u16 = 7;
+pub const WM8990_LI12ZC: u16 = 0x0040;   /* LI12ZC */
+pub const WM8990_LI12ZC_BIT: u16 = 6;
+pub const WM8990_LIN12VOL_MASK: u16 = 0x001F;   /* LIN12VOL - [4:0] */
+pub const WM8990_LIN12VOL_SHIFT: u16 = 0;
+/*
+ * R25 (0x19) - Left Line Input 3&4 Volume
+ */
+/* Duplicate C macro: #define WM8990_IPVU 0x0100    /* IPVU */ */
+pub const WM8990_LI34MUTE: u16 = 0x0080;   /* LI34MUTE */
+pub const WM8990_LI34MUTE_BIT: u16 = 7;
+pub const WM8990_LI34ZC: u16 = 0x0040;   /* LI34ZC */
+pub const WM8990_LI34ZC_BIT: u16 = 6;
+pub const WM8990_LIN34VOL_MASK: u16 = 0x001F;   /* LIN34VOL - [4:0] */
+pub const WM8990_LIN34VOL_SHIFT: u16 = 0;
+
+/*
+ * R26 (0x1A) - Right Line Input 1&2 Volume
+ */
+/* Duplicate C macro: #define WM8990_IPVU 0x0100    /* IPVU */ */
+pub const WM8990_RI12MUTE: u16 = 0x0080;   /* RI12MUTE */
+pub const WM8990_RI12MUTE_BIT: u16 = 7;
+pub const WM8990_RI12ZC: u16 = 0x0040;   /* RI12ZC */
+pub const WM8990_RI12ZC_BIT: u16 = 6;
+pub const WM8990_RIN12VOL_MASK: u16 = 0x001F;   /* RIN12VOL - [4:0] */
+pub const WM8990_RIN12VOL_SHIFT: u16 = 0;
+
+/*
+ * R27 (0x1B) - Right Line Input 3&4 Volume
+ */
+/* Duplicate C macro: #define WM8990_IPVU 0x0100    /* IPVU */ */
+pub const WM8990_RI34MUTE: u16 = 0x0080;   /* RI34MUTE */
+pub const WM8990_RI34MUTE_BIT: u16 = 7;
+pub const WM8990_RI34ZC: u16 = 0x0040;   /* RI34ZC */
+pub const WM8990_RI34ZC_BIT: u16 = 6;
+pub const WM8990_RIN34VOL_MASK: u16 = 0x001F;   /* RIN34VOL - [4:0] */
+pub const WM8990_RIN34VOL_SHIFT: u16 = 0;
+
+/*
+ * R28 (0x1C) - Left Output Volume
+ */
+pub const WM8990_OPVU: u16 = 0x0100;   /* OPVU */
+pub const WM8990_LOZC: u16 = 0x0080;   /* LOZC */
+pub const WM8990_LOZC_BIT: u16 = 7;
+pub const WM8990_LOUTVOL_MASK: u16 = 0x007F;   /* LOUTVOL - [6:0] */
+pub const WM8990_LOUTVOL_SHIFT: u16 = 0;
+/*
+ * R29 (0x1D) - Right Output Volume
+ */
+/* Duplicate C macro: #define WM8990_OPVU 0x0100    /* OPVU */ */
+pub const WM8990_ROZC: u16 = 0x0080;   /* ROZC */
+pub const WM8990_ROZC_BIT: u16 = 7;
+pub const WM8990_ROUTVOL_MASK: u16 = 0x007F;   /* ROUTVOL - [6:0] */
+pub const WM8990_ROUTVOL_SHIFT: u16 = 0;
+/*
+ * R30 (0x1E) - Line Outputs Volume
+ */
+pub const WM8990_LONMUTE: u16 = 0x0040;   /* LONMUTE */
+pub const WM8990_LONMUTE_BIT: u16 = 6;
+pub const WM8990_LOPMUTE: u16 = 0x0020;   /* LOPMUTE */
+pub const WM8990_LOPMUTE_BIT: u16 = 5;
+pub const WM8990_LOATTN: u16 = 0x0010;   /* LOATTN */
+pub const WM8990_LOATTN_BIT: u16 = 4;
+pub const WM8990_RONMUTE: u16 = 0x0004;   /* RONMUTE */
+pub const WM8990_RONMUTE_BIT: u16 = 2;
+pub const WM8990_ROPMUTE: u16 = 0x0002;   /* ROPMUTE */
+pub const WM8990_ROPMUTE_BIT: u16 = 1;
+pub const WM8990_ROATTN: u16 = 0x0001;   /* ROATTN */
+pub const WM8990_ROATTN_BIT: u16 = 0;
+
+/*
+ * R31 (0x1F) - Out3/4 Volume
+ */
+pub const WM8990_OUT3MUTE: u16 = 0x0020;   /* OUT3MUTE */
+pub const WM8990_OUT3MUTE_BIT: u16 = 5;
+pub const WM8990_OUT3ATTN: u16 = 0x0010;   /* OUT3ATTN */
+pub const WM8990_OUT3ATTN_BIT: u16 = 4;
+pub const WM8990_OUT4MUTE: u16 = 0x0002;   /* OUT4MUTE */
+pub const WM8990_OUT4MUTE_BIT: u16 = 1;
+pub const WM8990_OUT4ATTN: u16 = 0x0001;   /* OUT4ATTN */
+pub const WM8990_OUT4ATTN_BIT: u16 = 0;
+
+/*
+ * R32 (0x20) - Left OPGA Volume
+ */
+/* Duplicate C macro: #define WM8990_OPVU 0x0100    /* OPVU */ */
+pub const WM8990_LOPGAZC: u16 = 0x0080;   /* LOPGAZC */
+pub const WM8990_LOPGAZC_BIT: u16 = 7;
+pub const WM8990_LOPGAVOL_MASK: u16 = 0x007F;   /* LOPGAVOL - [6:0] */
+pub const WM8990_LOPGAVOL_SHIFT: u16 = 0;
+
+/*
+ * R33 (0x21) - Right OPGA Volume
+ */
+/* Duplicate C macro: #define WM8990_OPVU 0x0100    /* OPVU */ */
+pub const WM8990_ROPGAZC: u16 = 0x0080;   /* ROPGAZC */
+pub const WM8990_ROPGAZC_BIT: u16 = 7;
+pub const WM8990_ROPGAVOL_MASK: u16 = 0x007F;   /* ROPGAVOL - [6:0] */
+pub const WM8990_ROPGAVOL_SHIFT: u16 = 0;
+/*
+ * R34 (0x22) - Speaker Volume
+ */
+pub const WM8990_SPKATTN_MASK: u16 = 0x0003;   /* SPKATTN - [1:0] */
+pub const WM8990_SPKATTN_SHIFT: u16 = 0;
+
+/*
+ * R35 (0x23) - ClassD1
+ */
+pub const WM8990_CDMODE: u16 = 0x0100;   /* CDMODE */
+pub const WM8990_CDMODE_BIT: u16 = 8;
+
+/*
+ * R37 (0x25) - ClassD3
+ */
+pub const WM8990_DCGAIN_MASK: u16 = 0x0007;   /* DCGAIN - [5:3] */
+pub const WM8990_DCGAIN_SHIFT: u16 = 3;
+pub const WM8990_ACGAIN_MASK: u16 = 0x0007;   /* ACGAIN - [2:0] */
+pub const WM8990_ACGAIN_SHIFT: u16 = 0;
+
+/*
+ * R38 (0x26) - ClassD4
+ */
+pub const WM8990_SPKZC_MASK: u16 = 0x0001;   /* SPKZC */
+pub const WM8990_SPKZC_SHIFT: u16 = 7;   /* SPKZC */
+pub const WM8990_SPKVOL_MASK: u16 = 0x007F;   /* SPKVOL - [6:0] */
+pub const WM8990_SPKVOL_SHIFT: u16 = 0;   /* SPKVOL - [6:0] */
+
+/*
+ * R39 (0x27) - Input Mixer1
+ */
+pub const WM8990_AINLMODE_MASK: u16 = 0x000C;   /* AINLMODE - [3:2] */
+pub const WM8990_AINLMODE_SHIFT: u16 = 2;
+pub const WM8990_AINRMODE_MASK: u16 = 0x0003;   /* AINRMODE - [1:0] */
+pub const WM8990_AINRMODE_SHIFT: u16 = 0;
+
+/*
+ * R40 (0x28) - Input Mixer2
+ */
+pub const WM8990_LMP4: u16 = 0x0080; 	/* LMP4 */
+pub const WM8990_LMP4_BIT: u16 = 7; 	/* LMP4 */
+pub const WM8990_LMN3: u16 = 0x0040;   /* LMN3 */
+pub const WM8990_LMN3_BIT: u16 = 6;        /* LMN3 */
+pub const WM8990_LMP2: u16 = 0x0020;   /* LMP2 */
+pub const WM8990_LMP2_BIT: u16 = 5;        /* LMP2 */
+pub const WM8990_LMN1: u16 = 0x0010;   /* LMN1 */
+pub const WM8990_LMN1_BIT: u16 = 4;        /* LMN1 */
+pub const WM8990_RMP4: u16 = 0x0008;   /* RMP4 */
+pub const WM8990_RMP4_BIT: u16 = 3;        /* RMP4 */
+pub const WM8990_RMN3: u16 = 0x0004;   /* RMN3 */
+pub const WM8990_RMN3_BIT: u16 = 2;        /* RMN3 */
+pub const WM8990_RMP2: u16 = 0x0002;   /* RMP2 */
+pub const WM8990_RMP2_BIT: u16 = 1;        /* RMP2 */
+pub const WM8990_RMN1: u16 = 0x0001;   /* RMN1 */
+pub const WM8990_RMN1_BIT: u16 = 0;        /* RMN1 */
+
+/*
+ * R41 (0x29) - Input Mixer3
+ */
+pub const WM8990_L34MNB: u16 = 0x0100;   /* L34MNB */
+pub const WM8990_L34MNB_BIT: u16 = 8;
+pub const WM8990_L34MNBST: u16 = 0x0080;   /* L34MNBST */
+pub const WM8990_L34MNBST_BIT: u16 = 7;
+pub const WM8990_L12MNB: u16 = 0x0020;   /* L12MNB */
+pub const WM8990_L12MNB_BIT: u16 = 5;
+pub const WM8990_L12MNBST: u16 = 0x0010;   /* L12MNBST */
+pub const WM8990_L12MNBST_BIT: u16 = 4;
+pub const WM8990_LDBVOL_MASK: u16 = 0x0007;   /* LDBVOL - [2:0] */
+pub const WM8990_LDBVOL_SHIFT: u16 = 0;
+
+/*
+ * R42 (0x2A) - Input Mixer4
+ */
+pub const WM8990_R34MNB: u16 = 0x0100;   /* R34MNB */
+pub const WM8990_R34MNB_BIT: u16 = 8;
+pub const WM8990_R34MNBST: u16 = 0x0080;   /* R34MNBST */
+pub const WM8990_R34MNBST_BIT: u16 = 7;
+pub const WM8990_R12MNB: u16 = 0x0020;   /* R12MNB */
+pub const WM8990_R12MNB_BIT: u16 = 5;
+pub const WM8990_R12MNBST: u16 = 0x0010;   /* R12MNBST */
+pub const WM8990_R12MNBST_BIT: u16 = 4;
+pub const WM8990_RDBVOL_MASK: u16 = 0x0007;   /* RDBVOL - [2:0] */
+pub const WM8990_RDBVOL_SHIFT: u16 = 0;
+
+/*
+ * R43 (0x2B) - Input Mixer5
+ */
+pub const WM8990_LI2BVOL_MASK: u16 = 0x07;   /* LI2BVOL - [8:6] */
+pub const WM8990_LI2BVOL_SHIFT: u16 = 6;
+pub const WM8990_LR4BVOL_MASK: u16 = 0x07;   /* LR4BVOL - [5:3] */
+pub const WM8990_LR4BVOL_SHIFT: u16 = 3;
+pub const WM8990_LL4BVOL_MASK: u16 = 0x07;   /* LL4BVOL - [2:0] */
+pub const WM8990_LL4BVOL_SHIFT: u16 = 0;
+
+/*
+ * R44 (0x2C) - Input Mixer6
+ */
+pub const WM8990_RI2BVOL_MASK: u16 = 0x07;   /* RI2BVOL - [8:6] */
+pub const WM8990_RI2BVOL_SHIFT: u16 = 6;
+pub const WM8990_RL4BVOL_MASK: u16 = 0x07;   /* RL4BVOL - [5:3] */
+pub const WM8990_RL4BVOL_SHIFT: u16 = 3;
+pub const WM8990_RR4BVOL_MASK: u16 = 0x07;   /* RR4BVOL - [2:0] */
+pub const WM8990_RR4BVOL_SHIFT: u16 = 0;
+
+/*
+ * R45 (0x2D) - Output Mixer1
+ */
+pub const WM8990_LRBLO: u16 = 0x0080;   /* LRBLO */
+pub const WM8990_LRBLO_BIT: u16 = 7;
+pub const WM8990_LLBLO: u16 = 0x0040;   /* LLBLO */
+pub const WM8990_LLBLO_BIT: u16 = 6;
+pub const WM8990_LRI3LO: u16 = 0x0020;   /* LRI3LO */
+pub const WM8990_LRI3LO_BIT: u16 = 5;
+pub const WM8990_LLI3LO: u16 = 0x0010;   /* LLI3LO */
+pub const WM8990_LLI3LO_BIT: u16 = 4;
+pub const WM8990_LR12LO: u16 = 0x0008;   /* LR12LO */
+pub const WM8990_LR12LO_BIT: u16 = 3;
+pub const WM8990_LL12LO: u16 = 0x0004;   /* LL12LO */
+pub const WM8990_LL12LO_BIT: u16 = 2;
+pub const WM8990_LDLO: u16 = 0x0001;   /* LDLO */
+pub const WM8990_LDLO_BIT: u16 = 0;
+
+/*
+ * R46 (0x2E) - Output Mixer2
+ */
+pub const WM8990_RLBRO: u16 = 0x0080;   /* RLBRO */
+pub const WM8990_RLBRO_BIT: u16 = 7;
+pub const WM8990_RRBRO: u16 = 0x0040;   /* RRBRO */
+pub const WM8990_RRBRO_BIT: u16 = 6;
+pub const WM8990_RLI3RO: u16 = 0x0020;   /* RLI3RO */
+pub const WM8990_RLI3RO_BIT: u16 = 5;
+pub const WM8990_RRI3RO: u16 = 0x0010;   /* RRI3RO */
+pub const WM8990_RRI3RO_BIT: u16 = 4;
+pub const WM8990_RL12RO: u16 = 0x0008;   /* RL12RO */
+pub const WM8990_RL12RO_BIT: u16 = 3;
+pub const WM8990_RR12RO: u16 = 0x0004;   /* RR12RO */
+pub const WM8990_RR12RO_BIT: u16 = 2;
+pub const WM8990_RDRO: u16 = 0x0001;   /* RDRO */
+pub const WM8990_RDRO_BIT: u16 = 0;
+
+/*
+ * R47 (0x2F) - Output Mixer3
+ */
+pub const WM8990_LLI3LOVOL_MASK: u16 = 0x07;   /* LLI3LOVOL - [8:6] */
+pub const WM8990_LLI3LOVOL_SHIFT: u16 = 6;
+pub const WM8990_LR12LOVOL_MASK: u16 = 0x07;   /* LR12LOVOL - [5:3] */
+pub const WM8990_LR12LOVOL_SHIFT: u16 = 3;
+pub const WM8990_LL12LOVOL_MASK: u16 = 0x07;   /* LL12LOVOL - [2:0] */
+pub const WM8990_LL12LOVOL_SHIFT: u16 = 0;
+
+/*
+ * R48 (0x30) - Output Mixer4
+ */
+pub const WM8990_RRI3ROVOL_MASK: u16 = 0x07;   /* RRI3ROVOL - [8:6] */
+pub const WM8990_RRI3ROVOL_SHIFT: u16 = 6;
+pub const WM8990_RL12ROVOL_MASK: u16 = 0x07;   /* RL12ROVOL - [5:3] */
+pub const WM8990_RL12ROVOL_SHIFT: u16 = 3;
+pub const WM8990_RR12ROVOL_MASK: u16 = 0x07;   /* RR12ROVOL - [2:0] */
+pub const WM8990_RR12ROVOL_SHIFT: u16 = 0;
+
+/*
+ * R49 (0x31) - Output Mixer5
+ */
+pub const WM8990_LRI3LOVOL_MASK: u16 = 0x07;   /* LRI3LOVOL - [8:6] */
+pub const WM8990_LRI3LOVOL_SHIFT: u16 = 6;
+pub const WM8990_LRBLOVOL_MASK: u16 = 0x07;   /* LRBLOVOL - [5:3] */
+pub const WM8990_LRBLOVOL_SHIFT: u16 = 3;
+pub const WM8990_LLBLOVOL_MASK: u16 = 0x07;   /* LLBLOVOL - [2:0] */
+pub const WM8990_LLBLOVOL_SHIFT: u16 = 0;
+
+/*
+ * R50 (0x32) - Output Mixer6
+ */
+pub const WM8990_RLI3ROVOL_MASK: u16 = 0x07;   /* RLI3ROVOL - [8:6] */
+pub const WM8990_RLI3ROVOL_SHIFT: u16 = 6;
+pub const WM8990_RLBROVOL_MASK: u16 = 0x07;   /* RLBROVOL - [5:3] */
+pub const WM8990_RLBROVOL_SHIFT: u16 = 3;
+pub const WM8990_RRBROVOL_MASK: u16 = 0x07;   /* RRBROVOL - [2:0] */
+pub const WM8990_RRBROVOL_SHIFT: u16 = 0;
+
+/*
+ * R51 (0x33) - Out3/4 Mixer
+ */
+pub const WM8990_VSEL_MASK: u16 = 0x0180;   /* VSEL - [8:7] */
+pub const WM8990_LI4O3: u16 = 0x0020;   /* LI4O3 */
+pub const WM8990_LI4O3_BIT: u16 = 5;
+pub const WM8990_LPGAO3: u16 = 0x0010;   /* LPGAO3 */
+pub const WM8990_LPGAO3_BIT: u16 = 4;
+pub const WM8990_RI4O4: u16 = 0x0002;   /* RI4O4 */
+pub const WM8990_RI4O4_BIT: u16 = 1;
+pub const WM8990_RPGAO4: u16 = 0x0001;   /* RPGAO4 */
+pub const WM8990_RPGAO4_BIT: u16 = 0;
+/*
+ * R52 (0x34) - Line Mixer1
+ */
+pub const WM8990_LLOPGALON: u16 = 0x0040;   /* LLOPGALON */
+pub const WM8990_LLOPGALON_BIT: u16 = 6;
+pub const WM8990_LROPGALON: u16 = 0x0020;   /* LROPGALON */
+pub const WM8990_LROPGALON_BIT: u16 = 5;
+pub const WM8990_LOPLON: u16 = 0x0010;   /* LOPLON */
+pub const WM8990_LOPLON_BIT: u16 = 4;
+pub const WM8990_LR12LOP: u16 = 0x0004;   /* LR12LOP */
+pub const WM8990_LR12LOP_BIT: u16 = 2;
+pub const WM8990_LL12LOP: u16 = 0x0002;   /* LL12LOP */
+pub const WM8990_LL12LOP_BIT: u16 = 1;
+pub const WM8990_LLOPGALOP: u16 = 0x0001;   /* LLOPGALOP */
+pub const WM8990_LLOPGALOP_BIT: u16 = 0;
+/*
+ * R53 (0x35) - Line Mixer2
+ */
+pub const WM8990_RROPGARON: u16 = 0x0040;   /* RROPGARON */
+pub const WM8990_RROPGARON_BIT: u16 = 6;
+pub const WM8990_RLOPGARON: u16 = 0x0020;   /* RLOPGARON */
+pub const WM8990_RLOPGARON_BIT: u16 = 5;
+pub const WM8990_ROPRON: u16 = 0x0010;   /* ROPRON */
+pub const WM8990_ROPRON_BIT: u16 = 4;
+pub const WM8990_RL12ROP: u16 = 0x0004;   /* RL12ROP */
+pub const WM8990_RL12ROP_BIT: u16 = 2;
+pub const WM8990_RR12ROP: u16 = 0x0002;   /* RR12ROP */
+pub const WM8990_RR12ROP_BIT: u16 = 1;
+pub const WM8990_RROPGAROP: u16 = 0x0001;   /* RROPGAROP */
+pub const WM8990_RROPGAROP_BIT: u16 = 0;
+
+/*
+ * R54 (0x36) - Speaker Mixer
+ */
+pub const WM8990_LB2SPK: u16 = 0x0080;   /* LB2SPK */
+pub const WM8990_LB2SPK_BIT: u16 = 7;
+pub const WM8990_RB2SPK: u16 = 0x0040;   /* RB2SPK */
+pub const WM8990_RB2SPK_BIT: u16 = 6;
+pub const WM8990_LI2SPK: u16 = 0x0020;   /* LI2SPK */
+pub const WM8990_LI2SPK_BIT: u16 = 5;
+pub const WM8990_RI2SPK: u16 = 0x0010;   /* RI2SPK */
+pub const WM8990_RI2SPK_BIT: u16 = 4;
+pub const WM8990_LOPGASPK: u16 = 0x0008;   /* LOPGASPK */
+pub const WM8990_LOPGASPK_BIT: u16 = 3;
+pub const WM8990_ROPGASPK: u16 = 0x0004;   /* ROPGASPK */
+pub const WM8990_ROPGASPK_BIT: u16 = 2;
+pub const WM8990_LDSPK: u16 = 0x0002;   /* LDSPK */
+pub const WM8990_LDSPK_BIT: u16 = 1;
+pub const WM8990_RDSPK: u16 = 0x0001;   /* RDSPK */
+pub const WM8990_RDSPK_BIT: u16 = 0;
+
+/*
+ * R55 (0x37) - Additional Control
+ */
+pub const WM8990_VROI: u16 = 0x0001;   /* VROI */
+
+/*
+ * R56 (0x38) - AntiPOP1
+ */
+pub const WM8990_DIS_LLINE: u16 = 0x0020;   /* DIS_LLINE */
+pub const WM8990_DIS_RLINE: u16 = 0x0010;   /* DIS_RLINE */
+pub const WM8990_DIS_OUT3: u16 = 0x0008;   /* DIS_OUT3 */
+pub const WM8990_DIS_OUT4: u16 = 0x0004;   /* DIS_OUT4 */
+pub const WM8990_DIS_LOUT: u16 = 0x0002;   /* DIS_LOUT */
+pub const WM8990_DIS_ROUT: u16 = 0x0001;   /* DIS_ROUT */
+
+/*
+ * R57 (0x39) - AntiPOP2
+ */
+pub const WM8990_SOFTST: u16 = 0x0040;   /* SOFTST */
+pub const WM8990_BUFIOEN: u16 = 0x0008;   /* BUFIOEN */
+pub const WM8990_BUFDCOPEN: u16 = 0x0004;   /* BUFDCOPEN */
+pub const WM8990_POBCTRL: u16 = 0x0002;   /* POBCTRL */
+pub const WM8990_VMIDTOG: u16 = 0x0001;   /* VMIDTOG */
+
+/*
+ * R58 (0x3A) - MICBIAS
+ */
+pub const WM8990_MCDSCTH_MASK: u16 = 0x00C0;   /* MCDSCTH - [7:6] */
+pub const WM8990_MCDTHR_MASK: u16 = 0x0038;   /* MCDTHR - [5:3] */
+pub const WM8990_MCD: u16 = 0x0004;   /* MCD */
+pub const WM8990_MBSEL: u16 = 0x0001;   /* MBSEL */
+
+/*
+ * R60 (0x3C) - PLL1
+ */
+pub const WM8990_SDM: u16 = 0x0080;   /* SDM */
+pub const WM8990_PRESCALE: u16 = 0x0040;   /* PRESCALE */
+pub const WM8990_PLLN_MASK: u16 = 0x000F;   /* PLLN - [3:0] */
+
+/*
+ * R61 (0x3D) - PLL2
+ */
+pub const WM8990_PLLK1_MASK: u16 = 0x00FF;   /* PLLK1 - [7:0] */
+
+/*
+ * R62 (0x3E) - PLL3
+ */
+pub const WM8990_PLLK2_MASK: u16 = 0x00FF;   /* PLLK2 - [7:0] */
+
+pub const WM8990_MCLK_DIV: u16 = 0;
+pub const WM8990_DACCLK_DIV: u16 = 1;
+pub const WM8990_ADCCLK_DIV: u16 = 2;
+pub const WM8990_BCLK_DIV: u16 = 3;
+
+/*------------------------------ END OF FILE ---------------------------------*/
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

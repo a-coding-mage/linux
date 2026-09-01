@@ -749,3 +749,5 @@ pub unsafe extern "C" fn __wrap_acpi_evaluate_dsm(
 
 // MODULE_DESCRIPTION("NVDIMM unit test");
 // MODULE_LICENSE("GPL v2");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

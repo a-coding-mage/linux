@@ -67,3 +67,5 @@ unsafe extern "C" fn mmcr3_src() -> i32 {
 pub unsafe fn main() -> i32 {
     return test_harness(Some(mmcr3_src), c"mmcr3_src".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

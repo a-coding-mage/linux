@@ -1,0 +1,459 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+/* recording channel A */
+pub const OXYGEN_DMA_A_ADDRESS: u32 = 0x00; /* 32-bit base address */
+pub const OXYGEN_DMA_A_COUNT: u32 = 0x04; /* buffer counter (dwords) */
+pub const OXYGEN_DMA_A_TCOUNT: u32 = 0x06; /* interrupt counter (dwords) */
+
+/* recording channel B */
+pub const OXYGEN_DMA_B_ADDRESS: u32 = 0x08;
+pub const OXYGEN_DMA_B_COUNT: u32 = 0x0c;
+pub const OXYGEN_DMA_B_TCOUNT: u32 = 0x0e;
+
+/* recording channel C */
+pub const OXYGEN_DMA_C_ADDRESS: u32 = 0x10;
+pub const OXYGEN_DMA_C_COUNT: u32 = 0x14;
+pub const OXYGEN_DMA_C_TCOUNT: u32 = 0x16;
+
+/* SPDIF playback channel */
+pub const OXYGEN_DMA_SPDIF_ADDRESS: u32 = 0x18;
+pub const OXYGEN_DMA_SPDIF_COUNT: u32 = 0x1c;
+pub const OXYGEN_DMA_SPDIF_TCOUNT: u32 = 0x1e;
+
+/* multichannel playback channel */
+pub const OXYGEN_DMA_MULTICH_ADDRESS: u32 = 0x20;
+pub const OXYGEN_DMA_MULTICH_COUNT: u32 = 0x24; /* 24 bits */
+pub const OXYGEN_DMA_MULTICH_TCOUNT: u32 = 0x28; /* 24 bits */
+
+/* AC'97 (front panel) playback channel */
+pub const OXYGEN_DMA_AC97_ADDRESS: u32 = 0x30;
+pub const OXYGEN_DMA_AC97_COUNT: u32 = 0x34;
+pub const OXYGEN_DMA_AC97_TCOUNT: u32 = 0x36;
+
+/* all registers 0x00..0x36 return current position on read */
+
+pub const OXYGEN_DMA_STATUS: u32 = 0x40; /* 1 = running, 0 = stop */
+pub const OXYGEN_CHANNEL_A: u32 = 0x01;
+pub const OXYGEN_CHANNEL_B: u32 = 0x02;
+pub const OXYGEN_CHANNEL_C: u32 = 0x04;
+pub const OXYGEN_CHANNEL_SPDIF: u32 = 0x08;
+pub const OXYGEN_CHANNEL_MULTICH: u32 = 0x10;
+pub const OXYGEN_CHANNEL_AC97: u32 = 0x20;
+
+pub const OXYGEN_DMA_PAUSE: u32 = 0x41; /* 1 = pause */
+/* OXYGEN_CHANNEL_* */
+
+pub const OXYGEN_DMA_RESET: u32 = 0x42;
+/* OXYGEN_CHANNEL_* */
+
+pub const OXYGEN_PLAY_CHANNELS: u32 = 0x43;
+pub const OXYGEN_PLAY_CHANNELS_MASK: u32 = 0x03;
+pub const OXYGEN_PLAY_CHANNELS_2: u32 = 0x00;
+pub const OXYGEN_PLAY_CHANNELS_4: u32 = 0x01;
+pub const OXYGEN_PLAY_CHANNELS_6: u32 = 0x02;
+pub const OXYGEN_PLAY_CHANNELS_8: u32 = 0x03;
+pub const OXYGEN_DMA_A_BURST_MASK: u32 = 0x04;
+pub const OXYGEN_DMA_A_BURST_8: u32 = 0x00; /* dwords */
+pub const OXYGEN_DMA_A_BURST_16: u32 = 0x04;
+pub const OXYGEN_DMA_MULTICH_BURST_MASK: u32 = 0x08;
+pub const OXYGEN_DMA_MULTICH_BURST_8: u32 = 0x00;
+pub const OXYGEN_DMA_MULTICH_BURST_16: u32 = 0x08;
+
+pub const OXYGEN_INTERRUPT_MASK: u32 = 0x44;
+/* OXYGEN_CHANNEL_* */
+pub const OXYGEN_INT_SPDIF_IN_DETECT: u32 = 0x0100;
+pub const OXYGEN_INT_MCU: u32 = 0x0200;
+pub const OXYGEN_INT_2WIRE: u32 = 0x0400;
+pub const OXYGEN_INT_GPIO: u32 = 0x0800;
+pub const OXYGEN_INT_MCB: u32 = 0x2000;
+pub const OXYGEN_INT_AC97: u32 = 0x4000;
+
+pub const OXYGEN_INTERRUPT_STATUS: u32 = 0x46;
+/* OXYGEN_CHANNEL_* amd OXYGEN_INT_* */
+pub const OXYGEN_INT_MIDI: u32 = 0x1000;
+
+pub const OXYGEN_MISC: u32 = 0x48;
+pub const OXYGEN_MISC_WRITE_PCI_SUBID: u32 = 0x01;
+pub const OXYGEN_MISC_LATENCY_3F: u32 = 0x02;
+pub const OXYGEN_MISC_REC_C_FROM_SPDIF: u32 = 0x04;
+pub const OXYGEN_MISC_REC_B_FROM_AC97: u32 = 0x08;
+pub const OXYGEN_MISC_REC_A_FROM_MULTICH: u32 = 0x10;
+pub const OXYGEN_MISC_PCI_MEM_W_1_CLOCK: u32 = 0x20;
+pub const OXYGEN_MISC_MIDI: u32 = 0x40;
+pub const OXYGEN_MISC_CRYSTAL_MASK: u32 = 0x80;
+pub const OXYGEN_MISC_CRYSTAL_24576: u32 = 0x00;
+pub const OXYGEN_MISC_CRYSTAL_27: u32 = 0x80; /* MHz */
+
+pub const OXYGEN_REC_FORMAT: u32 = 0x4a;
+pub const OXYGEN_REC_FORMAT_A_MASK: u32 = 0x03;
+pub const OXYGEN_REC_FORMAT_A_SHIFT: u32 = 0;
+pub const OXYGEN_REC_FORMAT_B_MASK: u32 = 0x0c;
+pub const OXYGEN_REC_FORMAT_B_SHIFT: u32 = 2;
+pub const OXYGEN_REC_FORMAT_C_MASK: u32 = 0x30;
+pub const OXYGEN_REC_FORMAT_C_SHIFT: u32 = 4;
+pub const OXYGEN_FORMAT_16: u32 = 0x00;
+pub const OXYGEN_FORMAT_24: u32 = 0x01;
+pub const OXYGEN_FORMAT_32: u32 = 0x02;
+
+pub const OXYGEN_PLAY_FORMAT: u32 = 0x4b;
+pub const OXYGEN_SPDIF_FORMAT_MASK: u32 = 0x03;
+pub const OXYGEN_SPDIF_FORMAT_SHIFT: u32 = 0;
+pub const OXYGEN_MULTICH_FORMAT_MASK: u32 = 0x0c;
+pub const OXYGEN_MULTICH_FORMAT_SHIFT: u32 = 2;
+/* OXYGEN_FORMAT_* */
+
+pub const OXYGEN_REC_CHANNELS: u32 = 0x4c;
+pub const OXYGEN_REC_CHANNELS_MASK: u32 = 0x07;
+pub const OXYGEN_REC_CHANNELS_2_2_2: u32 = 0x00; /* DMA A, B, C */
+pub const OXYGEN_REC_CHANNELS_4_2_2: u32 = 0x01;
+pub const OXYGEN_REC_CHANNELS_6_0_2: u32 = 0x02;
+pub const OXYGEN_REC_CHANNELS_6_2_0: u32 = 0x03;
+pub const OXYGEN_REC_CHANNELS_8_0_0: u32 = 0x04;
+
+pub const OXYGEN_FUNCTION: u32 = 0x50;
+pub const OXYGEN_FUNCTION_CLOCK_MASK: u32 = 0x01;
+pub const OXYGEN_FUNCTION_CLOCK_PLL: u32 = 0x00;
+pub const OXYGEN_FUNCTION_CLOCK_CRYSTAL: u32 = 0x01;
+pub const OXYGEN_FUNCTION_RESET_CODEC: u32 = 0x02;
+pub const OXYGEN_FUNCTION_RESET_POL: u32 = 0x04;
+pub const OXYGEN_FUNCTION_PWDN: u32 = 0x08;
+pub const OXYGEN_FUNCTION_PWDN_EN: u32 = 0x10;
+pub const OXYGEN_FUNCTION_PWDN_POL: u32 = 0x20;
+pub const OXYGEN_FUNCTION_2WIRE_SPI_MASK: u32 = 0x40;
+pub const OXYGEN_FUNCTION_SPI: u32 = 0x00;
+pub const OXYGEN_FUNCTION_2WIRE: u32 = 0x40;
+pub const OXYGEN_FUNCTION_ENABLE_SPI_4_5: u32 = 0x80; /* 0 = EEPROM */
+
+pub const OXYGEN_I2S_MULTICH_FORMAT: u32 = 0x60;
+pub const OXYGEN_I2S_RATE_MASK: u32 = 0x0007; /* LRCK */
+pub const OXYGEN_RATE_32000: u32 = 0x0000;
+pub const OXYGEN_RATE_44100: u32 = 0x0001;
+pub const OXYGEN_RATE_48000: u32 = 0x0002;
+pub const OXYGEN_RATE_64000: u32 = 0x0003;
+pub const OXYGEN_RATE_88200: u32 = 0x0004;
+pub const OXYGEN_RATE_96000: u32 = 0x0005;
+pub const OXYGEN_RATE_176400: u32 = 0x0006;
+pub const OXYGEN_RATE_192000: u32 = 0x0007;
+pub const OXYGEN_I2S_FORMAT_MASK: u32 = 0x0008;
+pub const OXYGEN_I2S_FORMAT_I2S: u32 = 0x0000;
+pub const OXYGEN_I2S_FORMAT_LJUST: u32 = 0x0008;
+pub const OXYGEN_I2S_MCLK_MASK: u32 = 0x0030; /* MCLK/LRCK */
+pub const OXYGEN_I2S_MCLK_SHIFT: u32 = 4;
+pub const MCLK_128: u32 = 0;
+pub const MCLK_256: u32 = 1;
+pub const MCLK_512: u32 = 2;
+pub const fn OXYGEN_I2S_MCLK(f: u32) -> u32 {
+    ((f) & 3) << OXYGEN_I2S_MCLK_SHIFT
+}
+pub const OXYGEN_I2S_BITS_MASK: u32 = 0x00c0;
+pub const OXYGEN_I2S_BITS_16: u32 = 0x0000;
+pub const OXYGEN_I2S_BITS_20: u32 = 0x0040;
+pub const OXYGEN_I2S_BITS_24: u32 = 0x0080;
+pub const OXYGEN_I2S_BITS_32: u32 = 0x00c0;
+pub const OXYGEN_I2S_MASTER: u32 = 0x0100;
+pub const OXYGEN_I2S_BCLK_MASK: u32 = 0x0600; /* BCLK/LRCK */
+pub const OXYGEN_I2S_BCLK_64: u32 = 0x0000;
+pub const OXYGEN_I2S_BCLK_128: u32 = 0x0200;
+pub const OXYGEN_I2S_BCLK_256: u32 = 0x0400;
+pub const OXYGEN_I2S_MUTE_MCLK: u32 = 0x0800;
+
+pub const OXYGEN_I2S_A_FORMAT: u32 = 0x62;
+pub const OXYGEN_I2S_B_FORMAT: u32 = 0x64;
+pub const OXYGEN_I2S_C_FORMAT: u32 = 0x66;
+/* like OXYGEN_I2S_MULTICH_FORMAT */
+
+pub const OXYGEN_SPDIF_CONTROL: u32 = 0x70;
+pub const OXYGEN_SPDIF_OUT_ENABLE: u32 = 0x00000002;
+pub const OXYGEN_SPDIF_LOOPBACK: u32 = 0x00000004; /* in to out */
+pub const OXYGEN_SPDIF_SENSE_MASK: u32 = 0x00000008;
+pub const OXYGEN_SPDIF_LOCK_MASK: u32 = 0x00000010;
+pub const OXYGEN_SPDIF_RATE_MASK: u32 = 0x00000020;
+pub const OXYGEN_SPDIF_SPDVALID: u32 = 0x00000040;
+pub const OXYGEN_SPDIF_SENSE_PAR: u32 = 0x00000200;
+pub const OXYGEN_SPDIF_LOCK_PAR: u32 = 0x00000400;
+pub const OXYGEN_SPDIF_SENSE_STATUS: u32 = 0x00000800;
+pub const OXYGEN_SPDIF_LOCK_STATUS: u32 = 0x00001000;
+pub const OXYGEN_SPDIF_SENSE_INT: u32 = 0x00002000; /* r/wc */
+pub const OXYGEN_SPDIF_LOCK_INT: u32 = 0x00004000; /* r/wc */
+pub const OXYGEN_SPDIF_RATE_INT: u32 = 0x00008000; /* r/wc */
+pub const OXYGEN_SPDIF_IN_CLOCK_MASK: u32 = 0x00010000;
+pub const OXYGEN_SPDIF_IN_CLOCK_96: u32 = 0x00000000; /* <= 96 kHz */
+pub const OXYGEN_SPDIF_IN_CLOCK_192: u32 = 0x00010000; /* > 96 kHz */
+pub const OXYGEN_SPDIF_OUT_RATE_MASK: u32 = 0x07000000;
+pub const OXYGEN_SPDIF_OUT_RATE_SHIFT: u32 = 24;
+/* OXYGEN_RATE_* << OXYGEN_SPDIF_OUT_RATE_SHIFT */
+
+pub const OXYGEN_SPDIF_OUTPUT_BITS: u32 = 0x74;
+pub const OXYGEN_SPDIF_NONAUDIO: u32 = 0x00000002;
+pub const OXYGEN_SPDIF_C: u32 = 0x00000004;
+pub const OXYGEN_SPDIF_PREEMPHASIS: u32 = 0x00000008;
+pub const OXYGEN_SPDIF_CATEGORY_MASK: u32 = 0x000007f0;
+pub const OXYGEN_SPDIF_CATEGORY_SHIFT: u32 = 4;
+pub const OXYGEN_SPDIF_ORIGINAL: u32 = 0x00000800;
+pub const OXYGEN_SPDIF_CS_RATE_MASK: u32 = 0x0000f000;
+pub const OXYGEN_SPDIF_CS_RATE_SHIFT: u32 = 12;
+pub const OXYGEN_SPDIF_V: u32 = 0x00010000; /* 0 = valid */
+
+pub const OXYGEN_SPDIF_INPUT_BITS: u32 = 0x78;
+/* 32 bits, IEC958_AES_* */
+
+pub const OXYGEN_EEPROM_CONTROL: u32 = 0x80;
+pub const OXYGEN_EEPROM_ADDRESS_MASK: u32 = 0x7f;
+pub const OXYGEN_EEPROM_DIR_MASK: u32 = 0x80;
+pub const OXYGEN_EEPROM_DIR_READ: u32 = 0x00;
+pub const OXYGEN_EEPROM_DIR_WRITE: u32 = 0x80;
+
+pub const OXYGEN_EEPROM_STATUS: u32 = 0x81;
+pub const OXYGEN_EEPROM_VALID: u32 = 0x40;
+pub const OXYGEN_EEPROM_BUSY: u32 = 0x80;
+
+pub const OXYGEN_EEPROM_DATA: u32 = 0x82; /* 16 bits */
+
+pub const OXYGEN_2WIRE_CONTROL: u32 = 0x90;
+pub const OXYGEN_2WIRE_DIR_MASK: u32 = 0x01;
+pub const OXYGEN_2WIRE_DIR_WRITE: u32 = 0x00;
+pub const OXYGEN_2WIRE_DIR_READ: u32 = 0x01;
+pub const OXYGEN_2WIRE_ADDRESS_MASK: u32 = 0xfe; /* slave device address */
+pub const OXYGEN_2WIRE_ADDRESS_SHIFT: u32 = 1;
+
+pub const OXYGEN_2WIRE_MAP: u32 = 0x91; /* address, 8 bits */
+pub const OXYGEN_2WIRE_DATA: u32 = 0x92; /* data, 16 bits */
+
+pub const OXYGEN_2WIRE_BUS_STATUS: u32 = 0x94;
+pub const OXYGEN_2WIRE_BUSY: u32 = 0x0001;
+pub const OXYGEN_2WIRE_LENGTH_MASK: u32 = 0x0002;
+pub const OXYGEN_2WIRE_LENGTH_8: u32 = 0x0000;
+pub const OXYGEN_2WIRE_LENGTH_16: u32 = 0x0002;
+pub const OXYGEN_2WIRE_MANUAL_READ: u32 = 0x0004; /* 0 = auto read */
+pub const OXYGEN_2WIRE_WRITE_MAP_ONLY: u32 = 0x0008;
+pub const OXYGEN_2WIRE_SLAVE_AD_MASK: u32 = 0x0030; /* AD0, AD1 */
+pub const OXYGEN_2WIRE_INTERRUPT_MASK: u32 = 0x0040; /* 0 = int. if not responding */
+pub const OXYGEN_2WIRE_SLAVE_NO_RESPONSE: u32 = 0x0080;
+pub const OXYGEN_2WIRE_SPEED_MASK: u32 = 0x0100;
+pub const OXYGEN_2WIRE_SPEED_STANDARD: u32 = 0x0000;
+pub const OXYGEN_2WIRE_SPEED_FAST: u32 = 0x0100;
+pub const OXYGEN_2WIRE_CLOCK_SYNC: u32 = 0x0200;
+pub const OXYGEN_2WIRE_BUS_RESET: u32 = 0x0400;
+
+pub const OXYGEN_SPI_CONTROL: u32 = 0x98;
+pub const OXYGEN_SPI_BUSY: u32 = 0x01; /* read */
+pub const OXYGEN_SPI_TRIGGER: u32 = 0x01; /* write */
+pub const OXYGEN_SPI_DATA_LENGTH_MASK: u32 = 0x02;
+pub const OXYGEN_SPI_DATA_LENGTH_2: u32 = 0x00;
+pub const OXYGEN_SPI_DATA_LENGTH_3: u32 = 0x02;
+pub const OXYGEN_SPI_CLOCK_MASK: u32 = 0x0c;
+pub const OXYGEN_SPI_CLOCK_160: u32 = 0x00; /* ns */
+pub const OXYGEN_SPI_CLOCK_320: u32 = 0x04;
+pub const OXYGEN_SPI_CLOCK_640: u32 = 0x08;
+pub const OXYGEN_SPI_CLOCK_1280: u32 = 0x0c;
+pub const OXYGEN_SPI_CODEC_MASK: u32 = 0x70; /* 0..5 */
+pub const OXYGEN_SPI_CODEC_SHIFT: u32 = 4;
+pub const OXYGEN_SPI_CEN_MASK: u32 = 0x80;
+pub const OXYGEN_SPI_CEN_LATCH_CLOCK_LO: u32 = 0x00;
+pub const OXYGEN_SPI_CEN_LATCH_CLOCK_HI: u32 = 0x80;
+
+pub const OXYGEN_SPI_DATA1: u32 = 0x99;
+pub const OXYGEN_SPI_DATA2: u32 = 0x9a;
+pub const OXYGEN_SPI_DATA3: u32 = 0x9b;
+
+pub const OXYGEN_MPU401: u32 = 0xa0;
+
+pub const OXYGEN_MPU401_CONTROL: u32 = 0xa2;
+pub const OXYGEN_MPU401_LOOPBACK: u32 = 0x01; /* TXD to RXD */
+
+pub const OXYGEN_GPI_DATA: u32 = 0xa4;
+/* bits 0..5 = pin XGPI0..XGPI5 */
+
+pub const OXYGEN_GPI_INTERRUPT_MASK: u32 = 0xa5;
+/* bits 0..5, 1 = enable */
+
+pub const OXYGEN_GPIO_DATA: u32 = 0xa6;
+/* bits 0..9 */
+
+pub const OXYGEN_GPIO_CONTROL: u32 = 0xa8;
+/* bits 0..9, 0 = input, 1 = output */
+pub const OXYGEN_GPIO1_XSLAVE_RDY: u32 = 0x8000;
+
+pub const OXYGEN_GPIO_INTERRUPT_MASK: u32 = 0xaa;
+/* bits 0..9, 1 = enable */
+
+pub const OXYGEN_DEVICE_SENSE: u32 = 0xac;
+pub const OXYGEN_HEAD_PHONE_DETECT: u32 = 0x01;
+pub const OXYGEN_HEAD_PHONE_MASK: u32 = 0x06;
+pub const OXYGEN_HEAD_PHONE_PASSIVE_SPK: u32 = 0x00;
+pub const OXYGEN_HEAD_PHONE_HP: u32 = 0x02;
+pub const OXYGEN_HEAD_PHONE_ACTIVE_SPK: u32 = 0x04;
+
+pub const OXYGEN_MCU_2WIRE_DATA: u32 = 0xb0;
+
+pub const OXYGEN_MCU_2WIRE_MAP: u32 = 0xb2;
+
+pub const OXYGEN_MCU_2WIRE_STATUS: u32 = 0xb3;
+pub const OXYGEN_MCU_2WIRE_BUSY: u32 = 0x01;
+pub const OXYGEN_MCU_2WIRE_LENGTH_MASK: u32 = 0x06;
+pub const OXYGEN_MCU_2WIRE_LENGTH_1: u32 = 0x00;
+pub const OXYGEN_MCU_2WIRE_LENGTH_2: u32 = 0x02;
+pub const OXYGEN_MCU_2WIRE_LENGTH_3: u32 = 0x04;
+pub const OXYGEN_MCU_2WIRE_WRITE: u32 = 0x08; /* r/wc */
+pub const OXYGEN_MCU_2WIRE_READ: u32 = 0x10; /* r/wc */
+pub const OXYGEN_MCU_2WIRE_DRV_XACT_FAIL: u32 = 0x20; /* r/wc */
+pub const OXYGEN_MCU_2WIRE_RESET: u32 = 0x40;
+
+pub const OXYGEN_MCU_2WIRE_CONTROL: u32 = 0xb4;
+pub const OXYGEN_MCU_2WIRE_DRV_ACK: u32 = 0x01;
+pub const OXYGEN_MCU_2WIRE_DRV_XACT: u32 = 0x02;
+pub const OXYGEN_MCU_2WIRE_INT_MASK: u32 = 0x04;
+pub const OXYGEN_MCU_2WIRE_SYNC_MASK: u32 = 0x08;
+pub const OXYGEN_MCU_2WIRE_SYNC_RDY_PIN: u32 = 0x00;
+pub const OXYGEN_MCU_2WIRE_SYNC_DATA: u32 = 0x08;
+pub const OXYGEN_MCU_2WIRE_ADDRESS_MASK: u32 = 0x30;
+pub const OXYGEN_MCU_2WIRE_ADDRESS_10: u32 = 0x00;
+pub const OXYGEN_MCU_2WIRE_ADDRESS_12: u32 = 0x10;
+pub const OXYGEN_MCU_2WIRE_ADDRESS_14: u32 = 0x20;
+pub const OXYGEN_MCU_2WIRE_ADDRESS_16: u32 = 0x30;
+pub const OXYGEN_MCU_2WIRE_INT_POL: u32 = 0x40;
+pub const OXYGEN_MCU_2WIRE_SYNC_ENABLE: u32 = 0x80;
+
+pub const OXYGEN_PLAY_ROUTING: u32 = 0xc0;
+pub const OXYGEN_PLAY_MUTE01: u32 = 0x0001;
+pub const OXYGEN_PLAY_MUTE23: u32 = 0x0002;
+pub const OXYGEN_PLAY_MUTE45: u32 = 0x0004;
+pub const OXYGEN_PLAY_MUTE67: u32 = 0x0008;
+pub const OXYGEN_PLAY_MUTE_MASK: u32 = 0x000f;
+pub const OXYGEN_PLAY_MULTICH_MASK: u32 = 0x0010;
+pub const OXYGEN_PLAY_MULTICH_I2S_DAC: u32 = 0x0000;
+pub const OXYGEN_PLAY_MULTICH_AC97: u32 = 0x0010;
+pub const OXYGEN_PLAY_SPDIF_MASK: u32 = 0x00e0;
+pub const OXYGEN_PLAY_SPDIF_SPDIF: u32 = 0x0000;
+pub const OXYGEN_PLAY_SPDIF_MULTICH_01: u32 = 0x0020;
+pub const OXYGEN_PLAY_SPDIF_MULTICH_23: u32 = 0x0040;
+pub const OXYGEN_PLAY_SPDIF_MULTICH_45: u32 = 0x0060;
+pub const OXYGEN_PLAY_SPDIF_MULTICH_67: u32 = 0x0080;
+pub const OXYGEN_PLAY_SPDIF_REC_A: u32 = 0x00a0;
+pub const OXYGEN_PLAY_SPDIF_REC_B: u32 = 0x00c0;
+pub const OXYGEN_PLAY_SPDIF_I2S_ADC_3: u32 = 0x00e0;
+pub const OXYGEN_PLAY_DAC0_SOURCE_MASK: u32 = 0x0300;
+pub const OXYGEN_PLAY_DAC0_SOURCE_SHIFT: u32 = 8;
+pub const OXYGEN_PLAY_DAC1_SOURCE_MASK: u32 = 0x0c00;
+pub const OXYGEN_PLAY_DAC1_SOURCE_SHIFT: u32 = 10;
+pub const OXYGEN_PLAY_DAC2_SOURCE_MASK: u32 = 0x3000;
+pub const OXYGEN_PLAY_DAC2_SOURCE_SHIFT: u32 = 12;
+pub const OXYGEN_PLAY_DAC3_SOURCE_MASK: u32 = 0xc000;
+pub const OXYGEN_PLAY_DAC3_SOURCE_SHIFT: u32 = 14;
+
+pub const OXYGEN_REC_ROUTING: u32 = 0xc2;
+pub const OXYGEN_MUTE_I2S_ADC_1: u32 = 0x01;
+pub const OXYGEN_MUTE_I2S_ADC_2: u32 = 0x02;
+pub const OXYGEN_MUTE_I2S_ADC_3: u32 = 0x04;
+pub const OXYGEN_REC_A_ROUTE_MASK: u32 = 0x08;
+pub const OXYGEN_REC_A_ROUTE_I2S_ADC_1: u32 = 0x00;
+pub const OXYGEN_REC_A_ROUTE_AC97_0: u32 = 0x08;
+pub const OXYGEN_REC_B_ROUTE_MASK: u32 = 0x10;
+pub const OXYGEN_REC_B_ROUTE_I2S_ADC_2: u32 = 0x00;
+pub const OXYGEN_REC_B_ROUTE_AC97_1: u32 = 0x10;
+pub const OXYGEN_REC_C_ROUTE_MASK: u32 = 0x20;
+pub const OXYGEN_REC_C_ROUTE_SPDIF: u32 = 0x00;
+pub const OXYGEN_REC_C_ROUTE_I2S_ADC_3: u32 = 0x20;
+
+pub const OXYGEN_ADC_MONITOR: u32 = 0xc3;
+pub const OXYGEN_ADC_MONITOR_A: u32 = 0x01;
+pub const OXYGEN_ADC_MONITOR_A_HALF_VOL: u32 = 0x02;
+pub const OXYGEN_ADC_MONITOR_B: u32 = 0x04;
+pub const OXYGEN_ADC_MONITOR_B_HALF_VOL: u32 = 0x08;
+pub const OXYGEN_ADC_MONITOR_C: u32 = 0x10;
+pub const OXYGEN_ADC_MONITOR_C_HALF_VOL: u32 = 0x20;
+
+pub const OXYGEN_A_MONITOR_ROUTING: u32 = 0xc4;
+pub const OXYGEN_A_MONITOR_ROUTE_0_MASK: u32 = 0x03;
+pub const OXYGEN_A_MONITOR_ROUTE_0_SHIFT: u32 = 0;
+pub const OXYGEN_A_MONITOR_ROUTE_1_MASK: u32 = 0x0c;
+pub const OXYGEN_A_MONITOR_ROUTE_1_SHIFT: u32 = 2;
+pub const OXYGEN_A_MONITOR_ROUTE_2_MASK: u32 = 0x30;
+pub const OXYGEN_A_MONITOR_ROUTE_2_SHIFT: u32 = 4;
+pub const OXYGEN_A_MONITOR_ROUTE_3_MASK: u32 = 0xc0;
+pub const OXYGEN_A_MONITOR_ROUTE_3_SHIFT: u32 = 6;
+
+pub const OXYGEN_AC97_CONTROL: u32 = 0xd0;
+pub const OXYGEN_AC97_COLD_RESET: u32 = 0x0001;
+pub const OXYGEN_AC97_SUSPENDED: u32 = 0x0002; /* read */
+pub const OXYGEN_AC97_RESUME: u32 = 0x0002; /* write */
+pub const OXYGEN_AC97_CLOCK_DISABLE: u32 = 0x0004;
+pub const OXYGEN_AC97_NO_CODEC_0: u32 = 0x0008;
+pub const OXYGEN_AC97_CODEC_0: u32 = 0x0010;
+pub const OXYGEN_AC97_CODEC_1: u32 = 0x0020;
+
+pub const OXYGEN_AC97_INTERRUPT_MASK: u32 = 0xd2;
+pub const OXYGEN_AC97_INT_READ_DONE: u32 = 0x01;
+pub const OXYGEN_AC97_INT_WRITE_DONE: u32 = 0x02;
+pub const OXYGEN_AC97_INT_CODEC_0: u32 = 0x10;
+pub const OXYGEN_AC97_INT_CODEC_1: u32 = 0x20;
+
+pub const OXYGEN_AC97_INTERRUPT_STATUS: u32 = 0xd3;
+/* OXYGEN_AC97_INT_* */
+
+pub const OXYGEN_AC97_OUT_CONFIG: u32 = 0xd4;
+pub const OXYGEN_AC97_CODEC1_SLOT3: u32 = 0x00000001;
+pub const OXYGEN_AC97_CODEC1_SLOT3_VSR: u32 = 0x00000002;
+pub const OXYGEN_AC97_CODEC1_SLOT4: u32 = 0x00000010;
+pub const OXYGEN_AC97_CODEC1_SLOT4_VSR: u32 = 0x00000020;
+pub const OXYGEN_AC97_CODEC0_FRONTL: u32 = 0x00000100;
+pub const OXYGEN_AC97_CODEC0_FRONTR: u32 = 0x00000200;
+pub const OXYGEN_AC97_CODEC0_SIDEL: u32 = 0x00000400;
+pub const OXYGEN_AC97_CODEC0_SIDER: u32 = 0x00000800;
+pub const OXYGEN_AC97_CODEC0_CENTER: u32 = 0x00001000;
+pub const OXYGEN_AC97_CODEC0_BASE: u32 = 0x00002000;
+pub const OXYGEN_AC97_CODEC0_REARL: u32 = 0x00004000;
+pub const OXYGEN_AC97_CODEC0_REARR: u32 = 0x00008000;
+
+pub const OXYGEN_AC97_IN_CONFIG: u32 = 0xd8;
+pub const OXYGEN_AC97_CODEC1_LINEL: u32 = 0x00000001;
+pub const OXYGEN_AC97_CODEC1_LINEL_VSR: u32 = 0x00000002;
+pub const OXYGEN_AC97_CODEC1_LINEL_16: u32 = 0x00000000;
+pub const OXYGEN_AC97_CODEC1_LINEL_18: u32 = 0x00000004;
+pub const OXYGEN_AC97_CODEC1_LINEL_20: u32 = 0x00000008;
+pub const OXYGEN_AC97_CODEC1_LINER: u32 = 0x00000010;
+pub const OXYGEN_AC97_CODEC1_LINER_VSR: u32 = 0x00000020;
+pub const OXYGEN_AC97_CODEC1_LINER_16: u32 = 0x00000000;
+pub const OXYGEN_AC97_CODEC1_LINER_18: u32 = 0x00000040;
+pub const OXYGEN_AC97_CODEC1_LINER_20: u32 = 0x00000080;
+pub const OXYGEN_AC97_CODEC0_LINEL: u32 = 0x00000100;
+pub const OXYGEN_AC97_CODEC0_LINER: u32 = 0x00000200;
+
+pub const OXYGEN_AC97_REGS: u32 = 0xdc;
+pub const OXYGEN_AC97_REG_DATA_MASK: u32 = 0x0000ffff;
+pub const OXYGEN_AC97_REG_ADDR_MASK: u32 = 0x007f0000;
+pub const OXYGEN_AC97_REG_ADDR_SHIFT: u32 = 16;
+pub const OXYGEN_AC97_REG_DIR_MASK: u32 = 0x00800000;
+pub const OXYGEN_AC97_REG_DIR_WRITE: u32 = 0x00000000;
+pub const OXYGEN_AC97_REG_DIR_READ: u32 = 0x00800000;
+pub const OXYGEN_AC97_REG_CODEC_MASK: u32 = 0x01000000;
+pub const OXYGEN_AC97_REG_CODEC_SHIFT: u32 = 24;
+
+pub const OXYGEN_TEST: u32 = 0xe0;
+pub const OXYGEN_TEST_RAM_SUCCEEDED: u32 = 0x01;
+pub const OXYGEN_TEST_PLAYBACK_RAM: u32 = 0x02;
+pub const OXYGEN_TEST_RECORD_RAM: u32 = 0x04;
+pub const OXYGEN_TEST_PLL: u32 = 0x08;
+pub const OXYGEN_TEST_2WIRE_LOOPBACK: u32 = 0x10;
+
+pub const OXYGEN_DMA_FLUSH: u32 = 0xe1;
+/* OXYGEN_CHANNEL_* */
+
+pub const OXYGEN_CODEC_VERSION: u32 = 0xe4;
+pub const OXYGEN_CODEC_ID_MASK: u32 = 0x07;
+
+pub const OXYGEN_REVISION: u32 = 0xe6;
+pub const OXYGEN_PACKAGE_ID_MASK: u32 = 0x0007;
+pub const OXYGEN_PACKAGE_ID_8786: u32 = 0x0004;
+pub const OXYGEN_PACKAGE_ID_8787: u32 = 0x0006;
+pub const OXYGEN_PACKAGE_ID_8788: u32 = 0x0007;
+pub const OXYGEN_REVISION_MASK: u32 = 0xfff8;
+pub const OXYGEN_REVISION_2: u32 = 0x0008;
+
+pub const OXYGEN_OFFSIN_48K: u32 = 0xe8;
+pub const OXYGEN_OFFSBASE_48K: u32 = 0xe9;
+pub const OXYGEN_OFFSBASE_MASK: u32 = 0x0fff;
+pub const OXYGEN_OFFSIN_44K: u32 = 0xec;
+pub const OXYGEN_OFFSBASE_44K: u32 = 0xed;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

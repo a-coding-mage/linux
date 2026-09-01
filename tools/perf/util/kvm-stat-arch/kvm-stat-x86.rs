@@ -341,3 +341,5 @@ pub unsafe extern "C" fn __kvm_reg_events_ops_x86() -> *const kvm_reg_events_ops
 pub unsafe extern "C" fn __kvm_skip_events_x86() -> *const *const c_char {
     core::ptr::addr_of!(__kvm_skip_events) as *const *const c_char
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

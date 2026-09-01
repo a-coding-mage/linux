@@ -225,3 +225,5 @@ unsafe extern "C" {
     fn bpf_program__attach(prog: *mut bpf_program) -> *mut bpf_link;
     fn atomic_swap(ptr: *mut u64, val: u64) -> u64;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

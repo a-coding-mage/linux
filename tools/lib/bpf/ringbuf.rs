@@ -936,3 +936,5 @@ pub unsafe extern "C" fn user_ring_buffer__reserve_blocking(
     /* Try one more time to reserve a sample after the specified timeout has elapsed. */
     user_ring_buffer__reserve(rb, size)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

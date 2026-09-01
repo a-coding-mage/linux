@@ -292,3 +292,5 @@ pub unsafe fn time_bench_stop(rec: *mut time_bench_record, invoked_cnt: u64) {
     ktime_get_real_ts64(core::ptr::addr_of_mut!((*rec).ts_stop));
     (*rec).invoked_cnt = invoked_cnt;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

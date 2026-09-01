@@ -156,3 +156,5 @@ pub const NR_IRQS: usize = NR_VECTORS + CPU_VECTOR_LIMIT;
 /* Original condition: #else */
 #[cfg(all(not(CONFIG_X86_IO_APIC), not(CONFIG_PCI_MSI)))]
 pub const NR_IRQS: usize = NR_IRQS_LEGACY;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

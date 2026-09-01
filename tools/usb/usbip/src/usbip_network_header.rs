@@ -197,3 +197,5 @@ unsafe extern "C" {
     pub fn usbip_net_set_v6only(sockfd: c_int) -> c_int;
     pub fn usbip_net_tcp_connect(hostname: *mut c_char, port: *mut c_char) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -30,3 +30,5 @@ pub unsafe extern "C" fn foo(s: *const S) -> i32 {
 pub unsafe extern "C" fn global_func11(skb: *mut __sk_buff) -> i32 {
     foo(skb as *const core::ffi::c_void as *const S)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

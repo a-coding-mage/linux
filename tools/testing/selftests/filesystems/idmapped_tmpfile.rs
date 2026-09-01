@@ -269,3 +269,5 @@ unsafe fn idmapped_tmpfile_mapped_caller_creates_and_links(self_: *mut idmapped_
 }
 
 TEST_HARNESS_MAIN!();
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

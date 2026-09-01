@@ -107,3 +107,5 @@ pub unsafe fn ___test_and_change_bit(nr: c_ulong, addr: *mut c_ulong) -> bool {
 pub unsafe fn _test_bit(nr: c_ulong, addr: *const c_ulong) -> bool {
     (1 as c_ulong) & (*addr.add(BIT_WORD(nr) as usize) >> (nr & (BITS_PER_LONG - 1))) != 0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

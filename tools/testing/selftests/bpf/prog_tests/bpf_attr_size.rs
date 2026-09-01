@@ -171,3 +171,5 @@ pub unsafe fn test_bpf_attr_size() {
         test_prog_info_tail_zero();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

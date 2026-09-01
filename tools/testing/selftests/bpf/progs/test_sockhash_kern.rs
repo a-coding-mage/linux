@@ -7,3 +7,5 @@
 //   #include "./test_sockmap_kern.h"
 
 pub const TEST_MAP_TYPE: u32 = BPF_MAP_TYPE_SOCKHASH;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

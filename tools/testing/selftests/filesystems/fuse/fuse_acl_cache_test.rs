@@ -571,3 +571,5 @@ unsafe fn test_acl_cache_stale_after_force_sync(self_: *mut acl_cache) {
  * Their generated entry points are external to this isolated source-level
  * translation.
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

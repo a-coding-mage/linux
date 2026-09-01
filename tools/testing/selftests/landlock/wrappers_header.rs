@@ -68,3 +68,5 @@ pub unsafe fn landlock_restrict_self(ruleset_fd: c_int, flags: u32) -> c_int {
 pub unsafe fn sys_gettid() -> pid_t {
 	unsafe { syscall(__NR_gettid as c_long) as pid_t }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

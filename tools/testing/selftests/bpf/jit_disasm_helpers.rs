@@ -496,3 +496,5 @@ unsafe fn goto_text_out(text_out: *mut FILE, image: *mut uint8_t, func_lens: *mu
 // }
 //
 // #endif /* HAVE_LLVM_SUPPORT */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

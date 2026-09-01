@@ -25,3 +25,5 @@ unsafe extern "C" {
     pub fn vdso_sym(version: *const c_char, name: *const c_char) -> *mut core::ffi::c_void;
     pub fn vdso_init_from_sysinfo_ehdr(base: usize);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -273,3 +273,5 @@ pub static simple_ops: scx_ops = scx_ops {
     exit: Some(simple_exit),
     name: b"simple\0".as_ptr(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

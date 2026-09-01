@@ -1359,3 +1359,5 @@ pub unsafe extern "C" fn multiprobe_event_is_supported() -> bool {
 pub unsafe extern "C" fn immediate_value_is_supported() -> bool {
     scan_ftrace_readme(FTRACE_README_IMMEDIATE_VALUE)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

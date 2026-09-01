@@ -328,3 +328,5 @@ pub unsafe extern "C" fn btf_field_iter_next(it: *mut btf_field_iter) -> *mut __
     (*it).p = ptr::null_mut();
     ptr::null_mut()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

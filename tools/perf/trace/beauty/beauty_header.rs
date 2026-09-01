@@ -628,3 +628,5 @@ pub use syscall_arg__scnprintf_seccomp_flags as SCA_SECCOMP_FLAGS;
 pub use syscall_arg__scnprintf_signum as SCA_SIGNUM;
 pub use syscall_arg__scnprintf_socket_type as SCA_SK_TYPE;
 pub use syscall_arg__scnprintf_waitid_options as SCA_WAITID_OPTIONS;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

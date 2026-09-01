@@ -100,3 +100,5 @@ pub unsafe fn init_disassemble_info_compat(
     let _ = styled_func;
     init_disassemble_info(info, stream, unstyled_func);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

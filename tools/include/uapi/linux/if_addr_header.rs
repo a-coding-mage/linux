@@ -79,3 +79,5 @@ pub const IFAPROT_UNSPEC: u32 = 0;
 pub const IFAPROT_KERNEL_LO: u32 = 1; /* loopback */
 pub const IFAPROT_KERNEL_RA: u32 = 2; /* set by kernel from router announcement */
 pub const IFAPROT_KERNEL_LL: u32 = 3; /* link-local set by kernel */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

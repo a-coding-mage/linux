@@ -28,3 +28,5 @@ pub extern "C" fn main_prog(ctx: *mut ::core::ffi::c_void) -> ::core::ffi::c_int
     let _ = ctx;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

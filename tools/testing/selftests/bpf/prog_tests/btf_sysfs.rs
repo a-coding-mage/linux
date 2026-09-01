@@ -217,3 +217,5 @@ unsafe fn goto_cleanup(btf: *mut btf, raw_data: *mut c_void, btf_size: __u64, fd
 pub unsafe extern "C" fn test_btf_sysfs() {
     test_btf_mmap_sysfs(c"/sys/kernel/btf/vmlinux".as_ptr(), ptr::null_mut());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -176,3 +176,5 @@ pub unsafe extern "C" fn global_func9(skb: *mut __sk_buff) -> i32 {
 
     if result != 0 { 1 } else { 0 }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -14,3 +14,5 @@ unsafe extern "C" {
 pub unsafe fn movable_node_is_enabled() -> bool {
     unsafe { movable_node_enabled }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

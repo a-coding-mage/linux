@@ -604,3 +604,5 @@ pub unsafe extern "C" fn test_btf_dedup_split() {
         test_split_module();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

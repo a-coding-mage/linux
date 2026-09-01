@@ -220,3 +220,5 @@ pub unsafe extern "C" fn usdt_extra(_ctx: *mut pt_regs) -> i32 {
     /* we need this one just to mix PID-filtered and global USDT probes */
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

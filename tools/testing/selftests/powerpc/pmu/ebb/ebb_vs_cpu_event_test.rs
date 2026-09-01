@@ -147,3 +147,5 @@ fn main() {
         test_harness(ebb_vs_cpu_event, b"ebb_vs_cpu_event\0".as_ptr() as *const c_char);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

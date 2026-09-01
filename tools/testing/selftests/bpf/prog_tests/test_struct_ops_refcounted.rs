@@ -11,3 +11,5 @@ pub unsafe fn test_struct_ops_refcounted() {
     RUN_TESTS!(struct_ops_refcounted_fail__global_subprog);
     RUN_TESTS!(struct_ops_refcounted_fail__tail_call);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -116,3 +116,5 @@ pub unsafe fn list_del(n: *mut arena_list_node_t) {
     (*n).next = LIST_POISON1 as *mut arena_list_node_t;
     (*n).pprev = LIST_POISON2 as *mut *mut arena_list_node_t;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

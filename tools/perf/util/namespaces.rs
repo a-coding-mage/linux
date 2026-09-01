@@ -561,3 +561,5 @@ pub unsafe extern "C" fn nsinfo__is_in_root_namespace() -> bool_ {
     );
     !in_pidns
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

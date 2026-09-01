@@ -637,3 +637,5 @@ unsafe extern "C" {
 pub unsafe fn ynl_attr_validate(yarg: *mut ynl_parse_arg, attr: *const nlattr) -> c_int {
     unsafe { __ynl_attr_validate(yarg, attr, ynl_attr_type(attr)) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

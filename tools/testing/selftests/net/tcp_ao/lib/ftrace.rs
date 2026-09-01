@@ -735,3 +735,5 @@ pub unsafe extern "C" fn test_init_ftrace(nsfd1: c_int, nsfd2: c_int) {
     /* Populate kernel config state */
     kernel_config_has(KCONFIG_FTRACE);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

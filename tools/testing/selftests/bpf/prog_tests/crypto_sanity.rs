@@ -527,3 +527,5 @@ unsafe fn goto_fail(nstoken: *mut nstoken, skel: *mut crypto_sanity) {
     SYS_NOFAIL(b"ip netns del crypto_sanity_ns &> /dev/null\0".as_ptr() as *const c_char);
     crypto_sanity__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

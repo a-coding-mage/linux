@@ -104,3 +104,5 @@ macro_rules! CLI_ASSERT_SINGLE_ACTION {
         compile_error!("unsupported ck_assert value type in CLI_ASSERT_SINGLE_ACTION");
     }};
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

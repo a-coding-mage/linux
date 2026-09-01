@@ -350,3 +350,5 @@ pub unsafe extern "C" fn llvm_name_for_data(
 	let res = ExpectedDIGlobal_get(&mut res_or_err);
 	make_symbol_relative_string(dso, CxxString_c_str(&(*res).Name), addr, (*res).Start)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

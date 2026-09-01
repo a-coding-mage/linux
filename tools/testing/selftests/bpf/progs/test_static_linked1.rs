@@ -37,3 +37,5 @@ pub static mut LICENSE: [core::ffi::c_char; 4] = [b'G' as core::ffi::c_char, b'P
 #[no_mangle]
 #[link_section = "version"]
 pub static mut VERSION: core::ffi::c_int = 1;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

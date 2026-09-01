@@ -199,3 +199,5 @@ pub unsafe extern "C" fn xdp_mimtest0(ctx: *mut xdp_md) -> i32 {
 #[link_section = "license"]
 #[no_mangle]
 pub static mut _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -58,3 +58,5 @@ unsafe extern "C" {
     pub fn metricgroup__print(print_cb: *const print_callbacks, print_state: *mut c_void);
     pub fn is_event_supported(type_: u8, config: u64) -> bool;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

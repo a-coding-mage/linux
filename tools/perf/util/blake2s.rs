@@ -234,3 +234,5 @@ pub unsafe extern "C" fn blake2s_final(ctx: *mut blake2s_ctx, out: *mut u8) {
         ::std::mem::size_of::<blake2s_ctx>(),
     );
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

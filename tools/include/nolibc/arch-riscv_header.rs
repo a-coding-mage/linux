@@ -196,3 +196,5 @@ pub unsafe extern "C" fn _start() -> ! {
 }
 
 /* End of original condition: #endif / NOLIBC_NO_RUNTIME */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

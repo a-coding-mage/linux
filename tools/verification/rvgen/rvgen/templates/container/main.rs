@@ -55,3 +55,5 @@ unsafe extern "C" fn unregister_%%MODEL_NAME%%() {
 // MODULE_LICENSE("GPL");
 // MODULE_AUTHOR("rvgen: auto-generated");
 // MODULE_DESCRIPTION("%%MODEL_NAME%%: %%DESCRIPTION%%");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

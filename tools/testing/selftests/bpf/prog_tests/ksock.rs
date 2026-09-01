@@ -331,3 +331,5 @@ unsafe fn goto_fail(skel: *mut ksock_lsm, tfd: c_int, env: *mut ksock_test_env) 
 pub unsafe extern "C" fn test_ksock_lsm_verifier() {
 	RUN_TESTS(c"ksock_lsm_verifier".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

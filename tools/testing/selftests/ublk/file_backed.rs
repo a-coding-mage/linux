@@ -566,3 +566,5 @@ pub static loop_tgt_ops: ublk_tgt_ops = ublk_tgt_ops {
     queue_io: Some(ublk_loop_queue_io),
     tgt_io_done: Some(ublk_loop_io_done),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -1913,3 +1913,5 @@ pub unsafe extern "C" fn test_ns_tc_opts_query_attach() {
     test_tc_opts_query_attach_target(BPF_TCX_INGRESS);
     test_tc_opts_query_attach_target(BPF_TCX_EGRESS);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

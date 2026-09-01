@@ -30,3 +30,5 @@ pub const kvm_trace_symbol_exit: &[(u32, &str)] = &[
     (0xf40, "VSX"),
     (0xf80, "H_FAC_UNAVAIL"),
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

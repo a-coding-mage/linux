@@ -23,3 +23,5 @@ unsafe extern "C" {
     pub fn perf_thread_map__get(map: *mut perf_thread_map) -> *mut perf_thread_map;
     pub fn perf_thread_map__put(map: *mut perf_thread_map);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

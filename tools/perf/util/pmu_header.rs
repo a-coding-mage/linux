@@ -521,3 +521,5 @@ pub unsafe fn perf_pmu__kind(pmu: *const perf_pmu) -> pmu_kind {
     }
     pmu_kind::PERF_PMU_KIND_FAKE
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

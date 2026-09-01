@@ -63,3 +63,5 @@ pub enum perf_event_csky_regs {
     PERF_REG_CSKY_DCSR,
     PERF_REG_CSKY_MAX,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

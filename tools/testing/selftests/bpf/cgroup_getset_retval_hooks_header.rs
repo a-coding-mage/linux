@@ -23,3 +23,5 @@ BPF_RETVAL_HOOK!(getpeername6, "cgroup/getpeername6", bpf_sock_addr, -EINVAL);
 BPF_RETVAL_HOOK!(getsockname4, "cgroup/getsockname4", bpf_sock_addr, -EINVAL);
 BPF_RETVAL_HOOK!(getsockname6, "cgroup/getsockname6", bpf_sock_addr, -EINVAL);
 BPF_RETVAL_HOOK!(sock_release, "cgroup/sock_release", bpf_sock, 0);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

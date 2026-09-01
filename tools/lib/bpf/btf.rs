@@ -1595,3 +1595,5 @@ unsafe extern "C" {
     fn btf__relocate(btf: *mut btf, base_btf: *const btf) -> c_int;
     fn btf__permute(btf: *mut btf, id_map: *mut __u32, id_map_cnt: __u32, opts: *const btf_permute_opts) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

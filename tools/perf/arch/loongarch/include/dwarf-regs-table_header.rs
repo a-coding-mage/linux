@@ -16,3 +16,5 @@ static loongarch_regstr_tbl: [&CStr; 32] = [
     c"%r24", c"%r25", c"%r26", c"%r27", c"%r28", c"%r29", c"%r30", c"%r31",
 ];
 // C source condition end: #endif
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

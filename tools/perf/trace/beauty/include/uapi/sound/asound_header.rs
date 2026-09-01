@@ -783,3 +783,5 @@ pub const SNDRV_CTL_NAME_IEC958_CON_MASK: &str = "Con Mask";
 pub const SNDRV_CTL_NAME_IEC958_PRO_MASK: &str = "Pro Mask";
 pub const SNDRV_CTL_NAME_IEC958_PCM_STREAM: &str = "PCM Stream";
 /* SNDRV_CTL_NAME_IEC958(expl,direction,what) concatenates string literals in C. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

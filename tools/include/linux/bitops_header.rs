@@ -179,3 +179,5 @@ pub fn sign_extend64(value: __u64, index: core::ffi::c_int) -> __s64 {
     let shift: __u8 = (63 - index) as __u8;
     ((value.wrapping_shl(shift as u32)) as __s64) >> shift
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

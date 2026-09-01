@@ -261,3 +261,5 @@ unsafe extern "C" {
 
     pub fn test_generic_metric(mexp: *mut metric_expr, aggr_idx: c_int) -> f64;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

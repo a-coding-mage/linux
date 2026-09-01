@@ -9,3 +9,5 @@
 pub extern "C" fn test_stack_arg_precision() {
     RUN_TESTS!(stack_arg_precision);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

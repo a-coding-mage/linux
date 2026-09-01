@@ -391,3 +391,5 @@ pub unsafe extern "C" fn arch_skip_callchain_idx(
     addr_location__exit(&mut al);
     skip_slot
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -773,3 +773,5 @@ pub unsafe extern "C" fn main(_argc: c_int, _argv: *mut *const c_char) -> c_int 
      */
     todo!("translate main option table and driver once parse-options macro layout is available")
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

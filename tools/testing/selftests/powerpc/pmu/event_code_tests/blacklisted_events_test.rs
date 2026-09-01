@@ -169,3 +169,5 @@ unsafe extern "C" fn blacklisted_events() -> c_int {
 pub unsafe extern "C" fn main() -> c_int {
     test_harness(blacklisted_events, c"blacklisted_events".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

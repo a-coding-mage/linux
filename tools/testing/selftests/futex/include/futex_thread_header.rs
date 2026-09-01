@@ -147,3 +147,5 @@ pub unsafe fn futex_thread_destroy(t: *mut futex_thread) -> libc::c_int {
     libc::pthread_barrier_destroy(&mut (*t).barrier);
     (*t).retval
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

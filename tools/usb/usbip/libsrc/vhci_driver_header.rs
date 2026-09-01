@@ -69,3 +69,5 @@ unsafe extern "C" {
 
     pub fn usbip_vhci_imported_device_dump(idev: *mut usbip_imported_device) -> core::ffi::c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

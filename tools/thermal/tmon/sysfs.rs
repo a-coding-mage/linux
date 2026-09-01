@@ -814,3 +814,5 @@ pub unsafe extern "C" fn free_thermal_data() {
     free(ptdata.tzi as *mut c_void);
     free(ptdata.cdi as *mut c_void);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

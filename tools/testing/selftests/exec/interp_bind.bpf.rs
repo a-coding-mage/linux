@@ -111,3 +111,5 @@ pub static mut interp_bind: binfmt_misc_ops = binfmt_misc_ops {
     load: interp_bind_load as *mut ::core::ffi::c_void,
     name: c"interp_bind".as_ptr(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

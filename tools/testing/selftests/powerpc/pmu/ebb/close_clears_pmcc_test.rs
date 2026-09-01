@@ -102,3 +102,5 @@ pub unsafe extern "C" fn close_clears_pmcc() -> i32 {
 pub unsafe extern "C" fn main() -> i32 {
     unsafe { test_harness(close_clears_pmcc, c"close_clears_pmcc".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

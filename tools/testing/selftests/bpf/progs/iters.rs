@@ -814,3 +814,5 @@ pub unsafe extern "C" fn stack_misc_vs_scalar_in_a_loop() -> i32 {
 #[unsafe(link_section = "license")]
 #[unsafe(no_mangle)]
 pub static mut _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

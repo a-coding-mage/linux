@@ -35,3 +35,5 @@ unsafe extern "C" {
     pub static mut ui_helpline__current: [c_char; 512];
     pub static mut ui_helpline__last_msg: [c_char; 0];
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

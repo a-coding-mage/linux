@@ -117,3 +117,5 @@ unsafe fn goto_cleanup(online: *mut bool, skel: *mut get_smp_processor_id) {
     free(online as *mut c_void);
     get_smp_processor_id__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

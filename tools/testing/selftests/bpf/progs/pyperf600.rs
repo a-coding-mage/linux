@@ -10,3 +10,5 @@ pub const STACK_MAX_LEN: i32 = 600;
  */
 pub const UNROLL_COUNT: i32 = 150;
 // Depends on declarations and definitions from "pyperf.h".
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

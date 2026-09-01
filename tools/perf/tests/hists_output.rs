@@ -596,3 +596,5 @@ unsafe fn test__hists_output(_test: *mut test_suite, _subtest: c_int) -> c_int {
 }
 
 DEFINE_SUITE(c"Sort output of hist entries".as_ptr(), hists_output);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

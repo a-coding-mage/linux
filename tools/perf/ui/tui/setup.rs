@@ -351,3 +351,5 @@ pub unsafe extern "C" fn ui__exit(wait_for_ok: bool_) {
         perf_error__unregister(&raw mut perf_tui_eops);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

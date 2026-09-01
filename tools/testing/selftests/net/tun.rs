@@ -1047,3 +1047,5 @@ unsafe fn tun_vnet_udptnl_recv_gso_packet(self_: *mut tun_vnet_udptnl, variant: 
 // XFAIL_ADD(tun_vnet_udptnl, 6in6_over_maxbytes, recv_gso_packet);
 
 fn main() {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

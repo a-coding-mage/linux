@@ -72,3 +72,5 @@ pub extern "C" fn test6(ctx: *mut pt_regs) -> i32 {
     let _ = ctx;
     return 0;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -291,3 +291,5 @@ pub static mut suite__openat_syscall_event_on_all_cpus: test_suite = test_suite 
     desc: c"Detect openat syscall event on all cpus".as_ptr(),
     test_cases: unsafe { tests__openat_syscall_event_on_all_cpus.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

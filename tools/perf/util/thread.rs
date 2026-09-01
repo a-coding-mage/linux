@@ -1083,3 +1083,5 @@ pub unsafe extern "C" fn thread__free_stitch_list(thread: *mut thread) {
     free(thread__lbr_stitch(thread) as *mut c_void);
     thread__set_lbr_stitch(thread, core::ptr::null_mut());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

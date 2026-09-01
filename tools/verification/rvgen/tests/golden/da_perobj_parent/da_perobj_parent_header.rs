@@ -73,3 +73,5 @@ pub const automaton_da_perobj_parent: automaton_da_perobj_parent = automaton_da_
     initial_state: states_da_perobj_parent::state_a_da_perobj_parent as u8,
     final_states: [true, false, false],
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

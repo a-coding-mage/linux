@@ -73,3 +73,5 @@ pub unsafe fn siphash_2u64(first: u64, second: u64, key: *const siphash_key_t) -
 
     (v0 ^ v1) ^ (v2 ^ v3)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

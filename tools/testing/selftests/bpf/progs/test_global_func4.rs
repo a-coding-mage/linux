@@ -48,3 +48,5 @@ pub unsafe extern "C" fn f7(skb: *mut __sk_buff) -> i32 {
 pub unsafe extern "C" fn global_func4(skb: *mut __sk_buff) -> i32 {
     unsafe { f7(skb) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

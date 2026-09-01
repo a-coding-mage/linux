@@ -39,3 +39,5 @@ pub unsafe fn sharded_mutex__get_mutex(sm: *mut sharded_mutex, hash: size_t) -> 
             .add(hash_bits(hash, (*sm).cap_bits))
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

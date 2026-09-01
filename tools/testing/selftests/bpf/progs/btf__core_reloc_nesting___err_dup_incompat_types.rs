@@ -5,3 +5,5 @@ pub extern "C" fn f1(_x: core_reloc_nesting___err_dup_incompat_types__1) {}
 
 #[no_mangle]
 pub extern "C" fn f2(_x: core_reloc_nesting___err_dup_incompat_types__2) {}
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -150,3 +150,5 @@ unsafe fn goto_out(skel: *mut clone_attach_btf_id, fd1: c_int, fd2: c_int) {
     }
     clone_attach_btf_id__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -432,3 +432,5 @@ pub unsafe extern "C" fn trace_alt_end(
     }
     TRACE_ALT_INFO_NOADDR(orig_insn, cstr!("\\ "), cstr!("%s"), alt_name);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

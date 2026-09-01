@@ -232,3 +232,5 @@ pub unsafe fn RSEQ_TEMPLATE_IDENTIFIER_rseq_cmpeqv_trymemcpy_storev(
  * rseq_bug("cpu_id comparison failed");
  * rseq_bug("expected value comparison failed");
  */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

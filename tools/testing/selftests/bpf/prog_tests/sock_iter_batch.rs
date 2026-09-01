@@ -1135,3 +1135,5 @@ pub unsafe extern "C" fn test_sock_iter_batch() {
 
     SYS_NOFAIL(c"ip netns del sock_iter_batch_netns".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

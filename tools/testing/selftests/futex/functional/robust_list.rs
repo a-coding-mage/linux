@@ -996,3 +996,5 @@ unsafe fn test_futex_robust_unlock(_self: *mut futex_op, variant: *const futex_o
 }
 
 // TEST_HARNESS_MAIN
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

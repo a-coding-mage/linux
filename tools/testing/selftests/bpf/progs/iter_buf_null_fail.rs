@@ -49,3 +49,5 @@ pub unsafe extern "C" fn iter_buf_null_check_ok(ctx: *mut bpf_iter__bpf_map_elem
     core::ptr::read_volatile(&v);
     return 0;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

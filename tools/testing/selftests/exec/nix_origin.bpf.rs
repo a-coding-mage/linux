@@ -445,3 +445,5 @@ pub static nix_origin: binfmt_misc_ops = binfmt_misc_ops {
     load: Some(nix_origin_load),
     name: b"nix_origin\0".as_ptr(),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

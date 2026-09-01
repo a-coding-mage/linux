@@ -303,3 +303,5 @@ unsafe fn goto_cleanup(obj: *mut bpf_object, kprobe_links: &mut [*mut bpf_link],
     }
     bpf_object__close(obj);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

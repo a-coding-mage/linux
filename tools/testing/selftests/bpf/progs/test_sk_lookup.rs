@@ -872,3 +872,5 @@ pub unsafe extern "C" fn multi_prog_redir2(ctx: *mut bpf_sk_lookup) -> i32 {
 #[unsafe(link_section = "license")]
 #[unsafe(no_mangle)]
 pub static _license: [u8; 13] = *b"Dual BSD/GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

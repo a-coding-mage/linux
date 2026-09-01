@@ -9,3 +9,5 @@
 //
 // This header defines no local declarations, constants, types, or inline
 // functions beyond selecting the architecture-specific atomic definitions.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

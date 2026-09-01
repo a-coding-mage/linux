@@ -178,3 +178,5 @@ pub unsafe extern "C" fn cmd_kallsyms(mut argc: c_int, argv: *const *const c_cha
 
     __cmd_kallsyms(argc, argv)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

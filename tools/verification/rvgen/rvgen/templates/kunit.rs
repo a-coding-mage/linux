@@ -61,3 +61,5 @@ unsafe extern "C" fn rv_test_%%MODEL_NAME%%(test: *mut kunit) {
 // #else
 // #define rv_test_%%MODEL_NAME%% rv_test_stub
 // #endif
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

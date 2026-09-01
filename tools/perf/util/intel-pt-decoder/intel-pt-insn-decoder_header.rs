@@ -67,3 +67,5 @@ unsafe extern "C" {
 
     pub fn intel_pt_insn_type(op: intel_pt_insn_op) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -78,3 +78,5 @@ pub extern "C" fn __sw_hweight64(mut w: __u64) -> c_ulong {
         return (res.wrapping_add(res >> 32) & 0x00000000000000FF) as c_ulong;
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

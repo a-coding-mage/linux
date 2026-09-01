@@ -255,3 +255,5 @@ pub unsafe fn jhash2(mut k: *const u32, mut length: u32, initval: u32) -> u32 {
 
     c
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

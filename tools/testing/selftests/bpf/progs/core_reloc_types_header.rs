@@ -1474,3 +1474,5 @@ pub struct core_reloc_enum64val___err_missing {
     pub f1: named_unsigned_enum64___err_missing,
     pub f2: named_signed_enum64___err_missing,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

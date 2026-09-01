@@ -1074,3 +1074,5 @@ pub static mut suite__pmu_events: test_suite = test_suite {
     test_cases: unsafe { PMU_EVENTS_TESTS.as_mut_ptr() },
     setup: Some(setup_pmu_events_suite),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

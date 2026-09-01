@@ -7,3 +7,5 @@
 pub const __BITS_PER_LONG: usize = _MIPS_SZLONG as usize;
 
 /* C source includes <asm-generic/bitsperlong.h> here for generic definitions. */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

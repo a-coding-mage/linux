@@ -61,3 +61,5 @@ pub struct xdp_meta {
     pub rx_vlan_tag_union: xdp_meta_rx_vlan_tag_union,
     pub hint_valid: xdp_meta_field,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

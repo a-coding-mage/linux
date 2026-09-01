@@ -309,3 +309,5 @@ pub unsafe extern "C" fn main(mut argc: c_int, argv: *mut *mut c_char) -> c_int 
         usage_unknown_command(EXIT_FAILURE, *argv.add(0), *argv.add(1));
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -43,3 +43,5 @@ pub const riscv_regstr_tbl: [*const ::std::os::raw::c_char; 32] = [
 ];
 
 /* #endif */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

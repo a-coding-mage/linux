@@ -80,3 +80,5 @@ pub unsafe extern "C" fn test_kprobe_2(ctx: *mut pt_regs) -> i32 {
 pub unsafe extern "C" fn test_kprobe_3(ctx: *mut pt_regs) -> i32 {
     return unsafe { check_cookie(ctx, 3, &raw mut test_kprobe_3_result) };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

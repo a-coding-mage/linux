@@ -2341,3 +2341,5 @@ pub static qmap_ops: scx_ops_cid = scx_ops_cid {
     timeout_ms: 5000u32,
     name: *b"qmap\0",
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

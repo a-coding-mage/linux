@@ -16,3 +16,5 @@ pub struct wakeup_event_t {
     pub wakeup_count: core::ffi::c_ulong,
     pub name: [core::ffi::c_char; WAKEUP_NAME_LEN],
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

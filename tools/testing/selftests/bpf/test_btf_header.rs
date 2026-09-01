@@ -172,3 +172,5 @@ macro_rules! BTF_TYPE_TAG_ENC {
         BTF_TYPE_ENC!($value, BTF_INFO_ENC!(BTF_KIND_TYPE_TAG, 0, 0), $type)
     };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

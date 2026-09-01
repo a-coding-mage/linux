@@ -11,3 +11,5 @@ unsafe extern "C" {
 
     pub fn launch_test(next_program: *mut c_char, test_inherit: c_int, xtheadvector: c_int) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

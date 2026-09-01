@@ -139,3 +139,5 @@ pub struct bpf_testmod_ops {
 pub static mut st_ops_resize: bpf_testmod_ops = bpf_testmod_ops {
     test_1: Some(test_1),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

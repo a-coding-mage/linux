@@ -201,3 +201,5 @@ DOMAIN_FIELD!(__u32, ttwu_move_affine,
 #[cfg(feature = "DOMAIN_FIELD")]
 DOMAIN_FIELD!(__u32, ttwu_move_balance,
 	     "try_to_wake_up() started passive balancing", "%11u", false, v17);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

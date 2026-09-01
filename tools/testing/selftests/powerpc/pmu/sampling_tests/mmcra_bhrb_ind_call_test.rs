@@ -84,3 +84,5 @@ pub unsafe extern "C" fn main() -> c_int {
         c"mmcra_bhrb_ind_call_test".as_ptr() as *const u8,
     )
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

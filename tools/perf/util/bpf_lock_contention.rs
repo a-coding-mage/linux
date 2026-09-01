@@ -1377,3 +1377,5 @@ unsafe fn rb_entry_cgroup(node: *mut rb_node) -> *mut cgroup {
 fn size_of_val<T>(val: &T) -> usize {
     core::mem::size_of_val(val)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

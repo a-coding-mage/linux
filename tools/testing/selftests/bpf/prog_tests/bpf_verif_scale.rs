@@ -404,3 +404,5 @@ pub unsafe extern "C" fn test_verif_twfw() {
         scale_test(c"twfw.bpf.o".as_ptr(), BPF_PROG_TYPE_CGROUP_SKB, false);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

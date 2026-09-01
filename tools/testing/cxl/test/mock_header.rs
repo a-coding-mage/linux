@@ -71,3 +71,5 @@ unsafe extern "C" {
     pub fn get_cxl_mock_ops(index: *mut core::ffi::c_int) -> *mut cxl_mock_ops;
     pub fn put_cxl_mock_ops(index: core::ffi::c_int);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -177,3 +177,5 @@ pub static bench_bpf_nop: bench = bench {
     measure: Some(nop_measure),
     report_final: Some(nop_report_final),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

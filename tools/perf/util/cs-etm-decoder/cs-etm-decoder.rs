@@ -948,3 +948,5 @@ pub unsafe extern "C" fn cs_etm_decoder__free(decoder: *mut cs_etm_decoder) {
 pub unsafe extern "C" fn cs_etm_decoder__get_name(decoder: *mut cs_etm_decoder) -> *const c_char {
 	(*decoder).decoder_name
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

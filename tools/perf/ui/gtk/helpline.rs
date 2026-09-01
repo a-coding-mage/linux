@@ -119,3 +119,5 @@ pub unsafe extern "C" fn perf_gtk__init_helpline() {
         helpline_fns = &raw mut gtk_helpline_fns;
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

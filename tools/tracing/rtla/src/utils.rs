@@ -1202,3 +1202,5 @@ pub unsafe extern "C" fn strtoi(s: *const c_char, res: *mut c_int) -> c_int {
 unsafe fn fatal_alloc() {
     fatal(c"Error allocating memory\n".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

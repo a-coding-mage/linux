@@ -124,3 +124,5 @@ pub struct trace_event_raw_bpf_testmod_test_read {
 // #define TRACE_INCLUDE_FILE bpf_testmod-events
 // #include <trace/define_trace.h>
 
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

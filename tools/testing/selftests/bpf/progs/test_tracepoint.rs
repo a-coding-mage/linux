@@ -31,3 +31,5 @@ pub unsafe extern "C" fn oncpu(ctx: *mut sched_switch_args) -> ::core::ffi::c_in
 #[no_mangle]
 #[link_section = "license"]
 pub static mut _license: [::core::ffi::c_char; 4] = [b'G' as ::core::ffi::c_char, b'P' as ::core::ffi::c_char, b'L' as ::core::ffi::c_char, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -315,3 +315,5 @@ pub fn get_mmcra_sample_mode(mmcra: u64, _pmc: c_int) -> c_int {
 pub fn get_mmcra_marked(mmcra: u64, _pmc: c_int) -> c_int {
     (mmcra & 0x1) as c_int
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

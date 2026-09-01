@@ -649,3 +649,5 @@ pub unsafe extern "C" fn dso__free_a2l(dso: *mut dso) {
 
     dso__set_a2l(dso, core::ptr::null_mut());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

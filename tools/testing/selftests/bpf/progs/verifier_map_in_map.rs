@@ -410,3 +410,5 @@ pub unsafe extern "C" fn map_ptr_is_never_null_rb(ctx: *mut core::ffi::c_void) -
 // SEC("license")
 #[no_mangle]
 static mut _license: [u8; 4] = *b"GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

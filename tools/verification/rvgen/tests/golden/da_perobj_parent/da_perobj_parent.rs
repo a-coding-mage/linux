@@ -186,3 +186,5 @@ unsafe extern "C" fn unregister_da_perobj_parent() {
 /* MODULE_LICENSE("GPL"); */
 /* MODULE_AUTHOR("rvgen: auto-generated"); */
 /* MODULE_DESCRIPTION("da_perobj_parent: auto-generated"); */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

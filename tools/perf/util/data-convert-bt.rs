@@ -1724,3 +1724,5 @@ pub unsafe extern "C" fn bt_convert__perf2ctf(input: *const c_char, path: *const
     ctf_writer__cleanup(cw);
     err
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

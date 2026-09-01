@@ -752,3 +752,5 @@ pub static bench_hashmap_with_bloom: bench = bench {
     report_progress: Some(hits_drops_report_progress),
     report_final: Some(hits_drops_report_final),
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

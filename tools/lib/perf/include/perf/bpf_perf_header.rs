@@ -26,3 +26,5 @@ pub struct perf_event_attr_map_entry {
 
 /* default attr_map name */
 pub const BPF_PERF_DEFAULT_ATTR_MAP_PATH: &str = "perf_attr_map";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

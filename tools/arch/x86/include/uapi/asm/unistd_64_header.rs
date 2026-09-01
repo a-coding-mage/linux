@@ -32,3 +32,5 @@ pub const __NR_getcpu: u32 = 309;
 
 /* Defined in C only when __NR_seccomp is not already provided. */
 pub const __NR_seccomp: u32 = 317;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

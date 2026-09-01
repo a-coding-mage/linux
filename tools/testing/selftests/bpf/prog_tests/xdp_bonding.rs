@@ -1401,3 +1401,5 @@ unsafe fn goto_serial_out(skeletons: *mut skeletons, old_print_fn: libbpf_print_
         close(root_netns_fd);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -43,3 +43,5 @@ struct task_struct_with_tgid {
 pub static mut testmod_struct_ptr: bpf_testmod_ops = bpf_testmod_ops {
     test_maybe_null: test_maybe_null_struct_ptr as *mut core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

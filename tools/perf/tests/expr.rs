@@ -386,3 +386,5 @@ unsafe fn test__expr(_t: *mut test_suite, _subtest: c_int) -> c_int {
 }
 
 // C source registers this as: DEFINE_SUITE("Simple expression parser", expr);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

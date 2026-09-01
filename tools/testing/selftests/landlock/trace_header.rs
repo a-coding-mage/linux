@@ -944,3 +944,5 @@ pub unsafe fn sandbox_child_exec_true(_metadata: *mut __test_metadata, restrict_
     ASSERT_TRUE!(WIFEXITED(status));
     EXPECT_EQ!(0, WEXITSTATUS(status));
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

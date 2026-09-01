@@ -87,3 +87,5 @@ pub type size_t = usize;
 pub unsafe fn kho_scratch_overlap(_phys: phys_addr_t, _size: size_t) -> bool {
     false
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

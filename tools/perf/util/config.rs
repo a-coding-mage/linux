@@ -1370,3 +1370,5 @@ pub unsafe extern "C" fn perf_config_get(name: *const c_char) -> *const c_char {
     perf_config(Some(perf_config_get_cb), &mut d as *mut _ as *mut c_void);
     d.value
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -208,3 +208,5 @@ pub unsafe extern "C" fn pthread__unblock_sigwinch() {
     sigaddset(set.as_mut_ptr(), SIGWINCH);
     pthread_sigmask(SIG_UNBLOCK, set.as_ptr(), ptr::null_mut());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

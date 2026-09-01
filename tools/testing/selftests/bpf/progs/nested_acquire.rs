@@ -63,3 +63,5 @@ pub unsafe extern "C" fn test_nested_acquire_zero(
     }
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

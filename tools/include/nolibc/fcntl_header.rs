@@ -116,3 +116,5 @@ pub unsafe extern "C" fn open(
 pub unsafe fn creat(path: *const core::ffi::c_char, mode: mode_t) -> i32 {
     unsafe { open(path, O_CREAT | O_WRONLY | O_TRUNC, mode) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

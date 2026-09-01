@@ -1081,3 +1081,5 @@ pub unsafe extern "C" fn cli_opt_callback_suite() -> *mut Suite {
 
     s
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

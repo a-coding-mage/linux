@@ -18,3 +18,5 @@ pub const PERF_SAMPLE_REGS_ABI: u32 = PERF_SAMPLE_REGS_ABI_64;
 
 #[cfg(not(target_pointer_width = "64"))]
 pub const PERF_SAMPLE_REGS_ABI: u32 = PERF_SAMPLE_REGS_ABI_32;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

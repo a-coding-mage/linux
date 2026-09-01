@@ -32,3 +32,5 @@ unsafe extern "C" {
     pub fn sysfs_get_sched(smt_mc: *const c_char) -> c_int;
     pub fn sysfs_set_sched(smt_mc: *const c_char, val: c_int) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

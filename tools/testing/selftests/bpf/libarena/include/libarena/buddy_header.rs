@@ -88,3 +88,5 @@ unsafe extern "C" {
     pub fn buddy_free(buddy: *mut buddy, free: *mut core::ffi::c_void) -> i32;
     pub fn buddy_alloc(buddy: *mut buddy, size: usize) -> *mut core::ffi::c_void;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

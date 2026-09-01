@@ -188,3 +188,5 @@ pub unsafe extern "C" fn pmae_handling() -> c_int {
 pub unsafe extern "C" fn main() -> c_int {
     test_harness(pmae_handling, c"pmae_handling".as_ptr())
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

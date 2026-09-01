@@ -266,3 +266,5 @@ pub unsafe extern "C" fn cmd_evlist(mut argc: c_int, argv: *const *const c_char)
 
     __cmd_evlist(input_name, &mut details)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

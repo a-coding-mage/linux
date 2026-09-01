@@ -96,3 +96,5 @@ pub unsafe extern "C" fn cmd_klp(mut argc: c_int, mut argv: *const *const c_char
     cmd_klp_usage();
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -19,3 +19,5 @@ unsafe extern "C" {
     #[link_name = "__builtin_strlen"]
     pub fn strlen(_s: *const core::ffi::c_char) -> size_t;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

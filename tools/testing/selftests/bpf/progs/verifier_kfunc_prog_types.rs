@@ -213,3 +213,5 @@ pub unsafe extern "C" fn cpumask_kfunc_perf_event() -> i32 {
     cpumask_kfunc_load_test();
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

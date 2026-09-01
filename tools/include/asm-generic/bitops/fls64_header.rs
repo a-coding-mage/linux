@@ -36,3 +36,5 @@ pub unsafe fn fls64(x: __u64) -> core::ffi::c_int {
 }
 
 // Original C fallback: #error BITS_PER_LONG not 32 or 64
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

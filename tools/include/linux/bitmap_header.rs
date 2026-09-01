@@ -355,3 +355,5 @@ pub unsafe fn bitmap_xor(dst: *mut c_ulong, src1: *const c_ulong, src2: *const c
         }
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

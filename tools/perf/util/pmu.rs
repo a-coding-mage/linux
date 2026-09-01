@@ -1639,3 +1639,5 @@ pub unsafe extern "C" fn perf_pmu__reads_only_on_cpu_idx0(attr: *const perf_even
     let event = (*attr).config as c_int;
     event != TOOL_PMU__EVENT_USER_TIME && event != TOOL_PMU__EVENT_SYSTEM_TIME
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

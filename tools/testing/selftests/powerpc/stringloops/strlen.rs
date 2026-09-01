@@ -198,3 +198,5 @@ type c_ulong_compat = std::os::raw::c_ulong;
 pub extern "C" fn main() -> c_int {
     unsafe { test_harness(Some(testcase), CStr::from_bytes_with_nul_unchecked(b"strlen\0").as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

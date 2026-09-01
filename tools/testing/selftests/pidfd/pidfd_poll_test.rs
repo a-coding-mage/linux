@@ -182,3 +182,5 @@ pub unsafe extern "C" fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
 	ksft_test_result_pass(c"pidfd poll test: pass\n".as_ptr());
 	ksft_exit_pass();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

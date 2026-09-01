@@ -62,3 +62,5 @@ pub unsafe fn prandom_u32_state(state: *mut rnd_state) -> u32 {
         (*state).s1 ^ (*state).s2 ^ (*state).s3 ^ (*state).s4
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -95,3 +95,5 @@ pub static mut ghead: bpf_list_head = unsafe { ::core::mem::zeroed() };
 #[link_section = ".bss.B"]
 #[no_mangle]
 pub static mut glock2: bpf_spin_lock = unsafe { ::core::mem::zeroed() };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

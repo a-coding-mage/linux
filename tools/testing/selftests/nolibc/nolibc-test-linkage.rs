@@ -38,3 +38,5 @@ static CONSTRUCTOR1: unsafe extern "C" fn() = constructor1;
     link_section = ".init_array"
 )]
 static CONSTRUCTOR2: unsafe extern "C" fn() = constructor2;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

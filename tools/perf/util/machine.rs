@@ -3529,3 +3529,5 @@ unsafe extern "C" {
     pub fn machine__is_lock_function(machine: *mut machine, addr: u64) -> bool;
     pub fn machine__hit_all_dsos(machine: *mut machine) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -836,3 +836,5 @@ pub static mut suite__pmu: test_suite = test_suite {
     desc: c!("Sysfs PMU tests"),
     test_cases: unsafe { tests__pmu.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -21,3 +21,5 @@ pub unsafe extern "C" fn test_enable_stats(ctx: *mut core::ffi::c_void) -> i32 {
     core::intrinsics::atomic_xadd_seqcst(&mut count, 1);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

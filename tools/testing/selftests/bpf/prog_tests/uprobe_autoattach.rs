@@ -165,3 +165,5 @@ pub unsafe extern "C" fn test_uprobe_autoattach() {
 	fclose(devnull);
 	test_uprobe_autoattach__destroy(skel);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -661,3 +661,5 @@ unsafe fn test_scm_pidfd_test(self_: *mut scm_pidfd, variant: *const scm_pidfd_v
 
 // TEST_HARNESS_MAIN: the original C file relies on kselftest_harness.h macros
 // to instantiate and run the fixture variants above.
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

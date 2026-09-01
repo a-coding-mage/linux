@@ -256,3 +256,5 @@ pub unsafe fn io__getline(
 ) -> ssize_t {
     unsafe { io__getdelim(io, line_out, line_len_out, /*delim=*/ b'\n' as c_int) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

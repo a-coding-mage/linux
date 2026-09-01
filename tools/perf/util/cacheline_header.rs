@@ -33,3 +33,5 @@ pub unsafe fn cl_offset(address: u64, double_cl: bool) -> u64 {
     /* return the offset inside cacheline */
     address & (size - 1)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -129,3 +129,5 @@ macro_rules! dma_wmb {
 
 #[cfg(not(any(target_arch = "x86", target_arch = "x86_64", target_arch = "aarch64")))]
 compile_error!("Please fill in barrier macros");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

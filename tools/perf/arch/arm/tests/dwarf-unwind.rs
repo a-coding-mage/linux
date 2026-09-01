@@ -123,3 +123,5 @@ pub unsafe extern "C" fn test__arch_unwind_sample(
 
     sample_ustack(sample, thread, buf)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

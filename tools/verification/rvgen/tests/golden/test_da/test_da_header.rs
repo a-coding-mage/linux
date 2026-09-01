@@ -54,3 +54,5 @@ pub static automaton_test_da: automaton_test_da = automaton_test_da {
     initial_state: states_test_da::state_a_test_da as u8,
     final_states: [true, false],
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

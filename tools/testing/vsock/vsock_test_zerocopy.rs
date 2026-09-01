@@ -548,3 +548,5 @@ pub unsafe extern "C" fn test_stream_msgzcopy_mangle_server(opts: *const test_op
 
     close(fd);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

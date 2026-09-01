@@ -207,3 +207,5 @@ unsafe extern "C" fn back_to_back_ebbs() -> c_int {
 fn main() -> c_int {
     unsafe { test_harness(back_to_back_ebbs, c"back_to_back_ebbs".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -41,3 +41,5 @@ pub const fn generic_fls(mut x: u32) -> i32 {
 // #ifndef __HAVE_ARCH_FLS
 // #define fls(x) generic_fls(x)
 // #endif
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

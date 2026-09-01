@@ -209,3 +209,5 @@ unsafe extern "C" {
 pub unsafe fn cpufreq_get(cpu: c_uint) -> c_ulong {
     unsafe { cpufreq_get_freq_kernel(cpu) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

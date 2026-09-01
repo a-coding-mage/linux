@@ -727,3 +727,5 @@ pub union perf_event {
     pub schedstat_cpu: perf_record_schedstat_cpu,
     pub schedstat_domain: perf_record_schedstat_domain,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -62,3 +62,5 @@ pub unsafe fn spin_unlock_irqrestore(lock: *mut spinlock_t, f: ::core::ffi::c_ul
     let _ = f;
     unsafe { spin_unlock(lock) };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

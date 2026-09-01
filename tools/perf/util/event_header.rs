@@ -565,3 +565,5 @@ pub unsafe fn perf_event_header__is_guest(header: *const perf_event_header) -> b
 pub unsafe fn perf_event__is_guest(event: *const perf_event) -> bool {
     unsafe { perf_event_header__is_guest(&(*event).header as *const perf_event_header) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

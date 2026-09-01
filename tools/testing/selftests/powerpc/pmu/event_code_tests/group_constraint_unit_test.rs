@@ -124,3 +124,5 @@ unsafe extern "C" fn group_constraint_unit() -> c_int {
 pub unsafe extern "C" fn main() -> c_int {
     unsafe { test_harness(group_constraint_unit, c"group_constraint_unit".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

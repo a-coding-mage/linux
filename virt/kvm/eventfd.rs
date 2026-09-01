@@ -1285,3 +1285,5 @@ pub unsafe extern "C" fn kvm_eventfd_init(kvm: *mut kvm) {
     /* #endif */
     INIT_LIST_HEAD(&mut (*kvm).ioeventfds);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

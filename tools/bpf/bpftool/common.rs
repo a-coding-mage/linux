@@ -1614,3 +1614,5 @@ pub unsafe extern "C" fn read_kernel_config(requested_options: *const kernel_con
     gzclose(file);
     ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

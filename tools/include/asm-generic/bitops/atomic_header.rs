@@ -24,3 +24,5 @@ pub unsafe fn set_bit(nr: ::core::ffi::c_ulong, addr: *mut ::core::ffi::c_ulong)
 pub unsafe fn clear_bit(nr: ::core::ffi::c_ulong, addr: *mut ::core::ffi::c_ulong) -> ::core::ffi::c_int {
     unsafe { test_and_clear_bit(nr, addr) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

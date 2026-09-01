@@ -49,3 +49,5 @@ pub unsafe fn rblist__empty(rblist: *const rblist) -> bool {
 pub unsafe fn rblist__nr_entries(rblist: *const rblist) -> u32 {
     unsafe { (*rblist).nr_entries }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

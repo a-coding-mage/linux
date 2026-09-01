@@ -178,3 +178,5 @@ pub static mut cxl_mock_accel_driver: platform_driver = platform_driver {
 // MODULE_LICENSE("GPL");
 // MODULE_DESCRIPTION("cxl_test: accelerator device mock module");
 // MODULE_IMPORT_NS("CXL");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

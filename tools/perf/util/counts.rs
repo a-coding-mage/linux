@@ -125,3 +125,5 @@ pub unsafe extern "C" fn evsel__free_counts(evsel: *mut evsel) {
     perf_counts__delete((*evsel).counts);
     (*evsel).counts = ptr::null_mut();
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

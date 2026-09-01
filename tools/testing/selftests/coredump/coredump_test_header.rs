@@ -67,3 +67,5 @@ unsafe extern "C" {
     pub fn open_coredump_tmpfile(fd_tmpfs_detached: c_int) -> c_int;
     pub fn process_coredump_worker(fd_coredump: c_int, fd_peer_pidfd: c_int, fd_core_file: c_int);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -340,3 +340,5 @@ pub unsafe extern "C" fn perf_c2c__browse_function_view(
 unsafe fn goto_out(saved_use_callchain: *mut bool) {
 	symbol_conf.use_callchain = *saved_use_callchain;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

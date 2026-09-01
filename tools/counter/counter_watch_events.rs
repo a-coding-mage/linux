@@ -534,3 +534,5 @@ unsafe fn goto_err_free_watches(watches: *mut counter_watch) {
         free(watches as *mut c_void);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

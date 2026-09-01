@@ -2476,3 +2476,5 @@ Insn { bytes: &[0x0f, 0x01, 0xc0, ], len: 3, flags: 0, typ: "", subtype: "", asm
 Insn { bytes: &[0x0f, 0x01, 0xc5, ], len: 3, flags: 0, typ: "", subtype: "", asm: "0f 01 c5             \tpconfig " },
 Insn { bytes: &[0xf3, 0x0f, 0x09, ], len: 3, flags: 0, typ: "", subtype: "", asm: "f3 0f 09             \twbnoinvd " },
 ];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

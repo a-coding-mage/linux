@@ -100,3 +100,5 @@ pub unsafe fn pthread_attr_setaffinity_np(
     let _ = cpuset;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

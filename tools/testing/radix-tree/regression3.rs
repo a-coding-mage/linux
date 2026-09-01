@@ -160,3 +160,5 @@ pub unsafe extern "C" fn regression3_test() {
 
     printv(1, c"regression test 3 passed\n".as_ptr());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

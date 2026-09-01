@@ -37,3 +37,5 @@ pub enum perf_event_loongarch_regs {
     PERF_REG_LOONGARCH_R31,
     PERF_REG_LOONGARCH_MAX,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

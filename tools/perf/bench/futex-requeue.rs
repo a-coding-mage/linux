@@ -570,3 +570,5 @@ pub unsafe extern "C" fn bench_futex_requeue(mut argc: c_int, argv: *const *cons
     perf_cpu_map__put(cpu);
     ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

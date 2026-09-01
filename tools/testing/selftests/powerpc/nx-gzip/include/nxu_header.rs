@@ -772,3 +772,5 @@ pub const EFT_FC_COMPRESS_WITH_CRC: u32 = 0x1;
 pub const EFT_FC_DECOMPRESS: u32 = 0x2;
 pub const EFT_FC_DECOMPRESS_WITH_CRC: u32 = 0x3;
 pub const EFT_FC_BLK_DATA_MOVE: u32 = 0x4;
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

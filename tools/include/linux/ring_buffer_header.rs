@@ -86,3 +86,5 @@ pub unsafe fn ring_buffer_write_tail(base: *mut perf_event_mmap_page, tail: u64)
         smp_store_release(core::ptr::addr_of_mut!((*base).data_tail), tail);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

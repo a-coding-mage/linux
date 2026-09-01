@@ -175,3 +175,5 @@ pub unsafe extern "C" fn on_enter(regs: *mut pt_regs, id: i64) -> i32 {
     __on_enter(regs, id, (*(*task).cgroups).dfl_cgrp);
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

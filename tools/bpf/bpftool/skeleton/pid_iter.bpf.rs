@@ -226,3 +226,5 @@ pub unsafe extern "C" fn iter(ctx: *mut bpf_iter__task_file) -> i32 {
 #[unsafe(no_mangle)]
 #[unsafe(link_section = "license")]
 pub static LICENSE: &[u8; 13] = b"Dual BSD/GPL\0";
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

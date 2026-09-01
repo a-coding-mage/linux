@@ -642,3 +642,5 @@ extern "C" {
     pub static mut btf_bpf_map_id: [u32; 0];
     pub static mut bpf_kmem_cache_btf_id: [u32; 0];
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

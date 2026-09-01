@@ -48,3 +48,5 @@ unsafe extern "C" {
 	pub fn prepare_config(path: *const c_char, config: *mut config) -> c_int;
 	pub fn prepare_default_config() -> *mut config;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

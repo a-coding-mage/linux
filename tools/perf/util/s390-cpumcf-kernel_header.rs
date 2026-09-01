@@ -106,3 +106,5 @@ pub const CPUMF_CTR_SET_USER: u32 = 1; /* Problem-State Counter Set */
 pub const CPUMF_CTR_SET_CRYPTO: u32 = 2; /* Crypto-Activity Counter Set */
 pub const CPUMF_CTR_SET_EXT: u32 = 3; /* Extended Counter Set */
 pub const CPUMF_CTR_SET_MT_DIAG: u32 = 4; /* MT-diagnostic Counter Set */
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

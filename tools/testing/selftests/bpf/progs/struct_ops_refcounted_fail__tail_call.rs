@@ -74,3 +74,5 @@ pub unsafe extern "C" fn refcounted_fail__tail_call(ctx: *mut u64) -> i32 {
 pub static mut testmod_ref_acquire: bpf_testmod_ops = bpf_testmod_ops {
     test_refcounted: refcounted_fail__tail_call as *mut c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

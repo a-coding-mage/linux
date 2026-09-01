@@ -1236,3 +1236,5 @@ pub unsafe extern "C" fn test_tailcalls() {
     test_tailcall_callback();
     if test__start_subtest(c!("tailcall_bpf2bpf_fexit_links")) { test_tailcall_bpf2bpf_fexit_links(); }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

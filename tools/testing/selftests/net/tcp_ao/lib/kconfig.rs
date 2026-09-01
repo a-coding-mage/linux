@@ -285,3 +285,5 @@ pub unsafe extern "C" fn kernel_config_has(k: test_needs_kconfig) -> bool {
     pthread_mutex_unlock(ptr::addr_of_mut!(kconfig_lock));
     ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

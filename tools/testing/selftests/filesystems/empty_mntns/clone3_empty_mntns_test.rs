@@ -1273,3 +1273,5 @@ test!(clone3_newns_full_copy, {
 });
 
 test_harness_main!();
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

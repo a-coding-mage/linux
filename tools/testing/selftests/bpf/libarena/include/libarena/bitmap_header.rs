@@ -65,3 +65,5 @@ unsafe extern "C" {
     pub fn bmp_subset(bits: usize, big: *mut arena_bitmap, small: *mut arena_bitmap) -> bool;
     pub fn bmp_print(bits: usize, bmp: *mut arena_bitmap);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

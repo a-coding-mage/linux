@@ -676,3 +676,5 @@ pub static mut suite__hwmon_pmu: test_suite = test_suite {
     desc: b"Hwmon PMU\0".as_ptr() as *const c_char,
     test_cases: unsafe { tests__hwmon_pmu.as_mut_ptr() },
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

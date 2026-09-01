@@ -120,3 +120,5 @@ extern "C" {
 
     pub fn branch_spec_desc(spec: ::std::os::raw::c_int) -> *const ::std::os::raw::c_char;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

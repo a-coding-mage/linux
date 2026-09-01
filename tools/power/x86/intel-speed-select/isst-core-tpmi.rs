@@ -1053,3 +1053,5 @@ static mut tpmi_ops: isst_platform_ops = isst_platform_ops {
 pub unsafe extern "C" fn tpmi_get_platform_ops() -> *mut isst_platform_ops {
     &mut tpmi_ops
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

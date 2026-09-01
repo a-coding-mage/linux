@@ -122,3 +122,5 @@ pub unsafe extern "C" fn handle_pe() -> i32 {
     find_zero_ret = bpf_find_vma(task, 0, Some(check_vma), &mut data, 0) as i32;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

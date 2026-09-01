@@ -18,3 +18,5 @@ unsafe extern "C" {
     pub fn copyfile_ns(from: *const c_char, to: *const c_char, nsi: *mut nsinfo) -> c_int;
     pub fn copyfile_offset(ifd: c_int, off_in: loff_t, ofd: c_int, off_out: loff_t, size: u64) -> c_int;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

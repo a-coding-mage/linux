@@ -185,3 +185,5 @@ pub static mut pro_epilogue: bpf_testmod_st_ops = bpf_testmod_st_ops {
     test_epilogue: test_epilogue as *mut core::ffi::c_void,
     test_pro_epilogue: test_pro_epilogue as *mut core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

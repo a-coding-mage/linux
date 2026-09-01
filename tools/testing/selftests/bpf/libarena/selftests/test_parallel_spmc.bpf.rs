@@ -781,3 +781,5 @@ pub unsafe extern "C" fn parallel_test_spmc_burst__1() -> i32 {
 pub unsafe extern "C" fn parallel_test_spmc_burst__2() -> i32 {
     spmc_burst_stealer()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

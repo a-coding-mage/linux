@@ -38,3 +38,5 @@ unsafe fn traploop(argc: c_int, argv: *const *const c_char) -> c_int {
 
 // External test harness macro from "../tests.h": DEFINE_WORKLOAD(traploop);
 DEFINE_WORKLOAD!(traploop);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

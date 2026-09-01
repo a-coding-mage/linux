@@ -12,3 +12,5 @@ extern "C" {
 
     pub fn preadn(fd: c_int, buf: *mut c_void, n: size_t, offs: off_t) -> ssize_t;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

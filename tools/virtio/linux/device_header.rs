@@ -7,3 +7,5 @@ pub struct device {
 pub struct device_driver {
     pub name: *const core::ffi::c_char,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

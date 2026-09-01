@@ -12,3 +12,5 @@ pub const STROBE_MAX_MAP_ENTRIES: u32 = 20;
 // #define SUBPROGS
 
 // Dependency intent from C: #include "strobemeta.h"
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -32,3 +32,5 @@ unsafe extern "C" {
     pub fn map_symbol__copy(dst: *mut map_symbol, src: *mut map_symbol);
     pub fn addr_map_symbol__copy(dst: *mut addr_map_symbol, src: *mut addr_map_symbol);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

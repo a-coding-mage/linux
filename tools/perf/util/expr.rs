@@ -646,3 +646,5 @@ pub unsafe extern "C" fn expr__strcmp_cpuid_str(
 	free(cpuid as *mut c_void);
 	ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

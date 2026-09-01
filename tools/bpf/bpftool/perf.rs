@@ -407,3 +407,5 @@ static cmds: [cmd; 4] = [
 pub unsafe extern "C" fn do_perf(argc: i32, argv: *mut *mut i8) -> i32 {
     cmd_select(cmds.as_ptr(), argc, argv, do_help)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

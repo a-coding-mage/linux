@@ -1205,3 +1205,5 @@ pub unsafe extern "C" fn xfrm_get_state_xdp(xdp: *mut xdp_md) -> ::core::ffi::c_
 #[link_section = "license"]
 #[no_mangle]
 pub static _license: [::core::ffi::c_char; 4] = [b'G' as _, b'P' as _, b'L' as _, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

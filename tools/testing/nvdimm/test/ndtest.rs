@@ -1013,3 +1013,5 @@ unsafe extern "C" fn ndtest_exit() {
 // MODULE_DESCRIPTION("Test non-NFIT devices");
 // MODULE_LICENSE("GPL");
 // MODULE_AUTHOR("IBM Corporation");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

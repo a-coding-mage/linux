@@ -58,3 +58,5 @@ pub unsafe fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
 
     unsafe { test_harness(test_denormal_fpu, c"fpu_denormal".as_ptr()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

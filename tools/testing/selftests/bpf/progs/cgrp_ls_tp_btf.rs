@@ -226,3 +226,5 @@ pub unsafe extern "C" fn on_exit(regs: *mut pt_regs, id: i64) -> i32 {
     unsafe { __on_exit(regs, id, (*(*task).cgroups).dfl_cgrp) };
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

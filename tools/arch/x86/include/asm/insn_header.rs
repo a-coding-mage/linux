@@ -437,3 +437,5 @@ pub unsafe fn insn_masking_exception(insn: *mut insn) -> ::core::ffi::c_int {
                 && X86_MODRM_REG((*insn).modrm.data.bytes[0]) == 2)) as ::core::ffi::c_int
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -241,3 +241,5 @@ pub unsafe extern "C" fn test_l4lb_all() {
         test_l4lb(c"test_l4lb_noinline_dynptr.bpf.o".as_ptr());
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

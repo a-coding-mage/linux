@@ -5,3 +5,5 @@
 // The original source invokes the watermark macro for libnvdimm:
 // nfit_test_watermark(libnvdimm);
 nfit_test_watermark!(libnvdimm);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

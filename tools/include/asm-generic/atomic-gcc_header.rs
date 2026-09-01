@@ -114,3 +114,5 @@ pub unsafe fn test_and_clear_bit(nr: c_long, mut addr: *mut c_ulong) -> c_int {
     old = (*(addr as *mut AtomicUlong)).fetch_and(!mask as _, Ordering::SeqCst) as c_ulong;
     ((old & mask) != 0) as c_int
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -143,3 +143,5 @@ pub unsafe fn disas_alt_name(_alt: *mut alternative) -> *mut c_char {
 pub unsafe fn disas_alt_type_name(_insn: *mut instruction) -> *const c_char {
     core::ptr::null()
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

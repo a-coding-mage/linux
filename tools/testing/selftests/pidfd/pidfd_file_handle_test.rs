@@ -660,3 +660,5 @@ unsafe fn decode_purely_based_on_file_handle(self_: *mut file_handle_fixture) {
 }
 
 TEST_HARNESS_MAIN!();
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

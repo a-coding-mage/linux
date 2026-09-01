@@ -106,3 +106,5 @@ pub unsafe extern "C" fn syscall_prog(ctx: *mut core::ffi::c_void) -> i32 {
 pub static mut st_ops_map: bpf_testmod_multi_st_ops = bpf_testmod_multi_st_ops {
     test_1: test_1 as *mut core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

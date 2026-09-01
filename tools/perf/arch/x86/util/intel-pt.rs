@@ -1695,3 +1695,5 @@ pub unsafe extern "C" fn intel_pt_recording_init(err: *mut c_int) -> *mut auxtra
     (*ptr).itr.default_aux_sample_size = 4096;
     &mut (*ptr).itr
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

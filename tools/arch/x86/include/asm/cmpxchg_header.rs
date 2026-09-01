@@ -115,3 +115,5 @@ macro_rules! cmpxchg {
         $crate::__cmpxchg!(($ptr), ($old), ($new), core::mem::size_of_val(&*($ptr)))
     };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

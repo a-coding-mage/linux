@@ -892,3 +892,5 @@ unsafe fn test_rfc4884(_metadata: *mut __test_metadata, variant: *const rfc4884_
 }
 
 // TEST_HARNESS_MAIN
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

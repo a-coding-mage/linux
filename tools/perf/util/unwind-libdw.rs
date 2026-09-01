@@ -926,3 +926,5 @@ unsafe fn goto_out(
 unsafe fn finish_unwind(ui: *mut unwind_info, dwfl_ui_ti: *mut dwfl_ui_thread_info, err: c_int) -> c_int {
     out(ui, dwfl_ui_ti, err)
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

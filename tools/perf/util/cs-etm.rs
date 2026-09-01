@@ -2276,3 +2276,5 @@ pub unsafe extern "C" fn cs_etm__process_auxtrace_info_full(event: *mut perf_eve
     (*etm).data_queued = (*etm).queues.populated;
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -114,3 +114,5 @@ pub unsafe extern "C" fn syscall_pro_epilogue(_ctx: *mut c_void) -> i32 {
 pub static mut pro_epilogue_with_kfunc: bpf_testmod_st_ops = bpf_testmod_st_ops {
     test_pro_epilogue: test_kfunc_pro_epilogue as *mut c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

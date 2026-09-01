@@ -180,3 +180,5 @@ static mut MEMFD_OPS: fuse_operations = fuse_operations {
 pub unsafe fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
     unsafe { fuse_main(argc, argv, &raw const MEMFD_OPS, ::core::ptr::null_mut()) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

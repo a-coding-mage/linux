@@ -457,3 +457,5 @@ pub unsafe extern "C" fn trace_netif_receive_skb(skb: *mut sk_buff) -> c_int {
 
 #[link_section = "license"]
 pub static mut _license: [c_char; 4] = [b'G' as c_char, b'P' as c_char, b'L' as c_char, 0];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

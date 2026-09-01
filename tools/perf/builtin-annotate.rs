@@ -1577,3 +1577,5 @@ pub unsafe extern "C" fn cmd_annotate(mut argc: c_int, argv: *mut *const c_char)
 
     ret
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

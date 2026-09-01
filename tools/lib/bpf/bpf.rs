@@ -909,3 +909,5 @@ pub unsafe extern "C" fn bpf_prog_assoc_struct_ops(prog_fd:c_int,map_fd:c_int,op
     attr.prog_assoc_struct_ops.flags = OPTS_GET!(opts, flags, 0);
     libbpf_err_errno(sys_bpf(BPF_PROG_ASSOC_STRUCT_OPS, &mut attr, attr_sz as c_uint))
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

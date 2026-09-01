@@ -11,3 +11,5 @@ pub const __XEN_EMULATE_PREFIX: [u8; 5] = [0x0f, 0x0b, 0x78, 0x65, 0x6e];
 
 /* ud2 ; .ascii "kvm" */
 pub const __KVM_EMULATE_PREFIX: [u8; 5] = [0x0f, 0x0b, 0x6b, 0x76, 0x6d];
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

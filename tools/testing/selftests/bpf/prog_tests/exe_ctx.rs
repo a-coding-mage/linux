@@ -139,3 +139,5 @@ unsafe fn goto_restore_affinity(old_cpuset: *const cpu_set_t) {
 		b"restore_affinity\0".as_ptr() as *const c_char,
 	);
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

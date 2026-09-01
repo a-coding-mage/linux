@@ -381,3 +381,5 @@ pub unsafe extern "C" fn bpf_prog_linfo__lfind(
         (raw_linfo as *const u8).sub(rec_size as usize) as *const bpf_line_info
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

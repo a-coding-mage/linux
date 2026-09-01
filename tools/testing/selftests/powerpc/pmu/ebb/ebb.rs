@@ -688,3 +688,5 @@ unsafe extern "C" fn ebb_init() {
 
     unsafe { ebb_state.trace = trace_buffer_allocate(1 * 1024 * 1024) };
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

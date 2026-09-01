@@ -40,3 +40,5 @@ unsafe impl Sync for bpf_testmod_ops {}
 pub static testmod_ref_acquire: bpf_testmod_ops = bpf_testmod_ops {
     test_refcounted: refcounted_fail__ref_leak as *mut ::core::ffi::c_void,
 };
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

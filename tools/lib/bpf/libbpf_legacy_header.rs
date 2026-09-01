@@ -157,3 +157,5 @@ unsafe extern "C" {
     pub fn btf__get_raw_data(btf: *const btf, size: *mut u32) -> *const c_void;
     pub fn btf_ext__get_raw_data(btf_ext: *const btf_ext, size: *mut u32) -> *const c_void;
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

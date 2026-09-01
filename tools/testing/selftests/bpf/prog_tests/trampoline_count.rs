@@ -179,3 +179,5 @@ unsafe fn goto_cleanup(mut i: c_int, inst: *mut inst) {
     }
     free(inst.cast::<c_void>());
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -23,3 +23,5 @@ pub const NUMA_NO_NODE: i32 = -1;
 pub fn numa_valid_node(nid: i32) -> bool {
     nid >= 0 && nid < MAX_NUMNODES
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

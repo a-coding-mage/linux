@@ -902,3 +902,5 @@ BENCH_TRIG_USERMODE!(bench_trig_uretprobe_multi_nop10, uretprobe_multi_nop10_set
 BENCH_TRIG_USERMODE!(bench_trig_usdt_nop, usdt_nop_setup, uprobe_producer_usdt_nop, "usdt-nop");
 #[cfg(target_arch = "x86_64")]
 BENCH_TRIG_USERMODE!(bench_trig_usdt_nop10, usdt_nop10_setup, uprobe_producer_usdt_nop10, "usdt-nop10");
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

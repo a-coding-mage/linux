@@ -120,3 +120,5 @@ DOMAIN_FIELD!(__u32, ttwu_move_affine,
 	     "try_to_wake_up() moved task because cache-cold on own cpu", "%11u", false, v16);
 DOMAIN_FIELD!(__u32, ttwu_move_balance,
 	     "try_to_wake_up() started passive balancing", "%11u", false, v16);
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

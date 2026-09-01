@@ -1207,3 +1207,5 @@ pub struct kvm_tdx_init_mem_region {
     pub gpa: __u64,
     pub nr_pages: __u64,
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -238,3 +238,5 @@ pub unsafe extern "C" fn test_task_work_stress() {
         task_work_run(true);
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

@@ -310,3 +310,5 @@ pub unsafe fn perf_session__set_tracepoints_handlers<const N: usize>(
 pub unsafe fn session_done_read_once() -> c_int {
     unsafe { core::ptr::read_volatile(core::ptr::addr_of!(session_done)) }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

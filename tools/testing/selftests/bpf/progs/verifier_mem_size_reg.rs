@@ -31,3 +31,5 @@ pub unsafe extern "C" fn dynptr_slice_null_buf_size_precise(skb: *mut __sk_buff)
     }
     0
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

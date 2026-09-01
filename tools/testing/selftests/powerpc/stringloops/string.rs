@@ -21,3 +21,5 @@ pub unsafe extern "C" fn test_strlen(s: *const ::core::ffi::c_char) -> usize {
     }
     sc.offset_from(s) as usize
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

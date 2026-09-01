@@ -1341,3 +1341,5 @@ pub const LEGACY_XAPIC_DISABLED: u64 = BIT(0); /*
 						* a #GP
 						*/
 
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

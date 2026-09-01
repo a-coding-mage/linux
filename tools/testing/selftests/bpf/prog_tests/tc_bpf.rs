@@ -710,3 +710,5 @@ pub unsafe extern "C" fn test_tc_bpf() {
         tc_bpf_non_root();
     }
 }
+
+// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
