@@ -208,13 +208,24 @@ unsafe fn d_namespace_path(
         {
             /* TODO: convert over to using a per namespace
              * control instead of hard coded /proc
-             */
+            */
             error = prepend(name, *name as isize as i32 - buf as isize as i32, b"/proc\0".as_ptr(), 5);
-            return error;
         } else {
             error = disconnect(path, buf, name, flags, disconnected);
-            return error;
         }
+
+        /* Append "/" to directory paths and reterminate string, except for
+         * root "/" which already ends in a slash.
+         */
+        if error == 0 && isdir != 0 {
+            let is_root = *(*name) == b'/' as u8 && *(*name).offset(1) == b'\0' as u8;
+
+            if !is_root {
+                *(buf.offset((aa_g_path_max - 2) as isize)) = b'/' as u8;
+                *(buf.offset((aa_g_path_max - 1) as isize)) = b'\0' as u8;
+            }
+        }
+        return error;
     }
 
     /* resolve paths relative to chroot?*/
@@ -332,4 +343,5 @@ pub unsafe fn aa_path_name(
     error
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1,95 +1,65 @@
 // Dependencies: signal constants from linux/signal.h and "signal.h"
-// MAXMAPPED_SIG and MAXMAPPED_SIGNAME constants
-// Signal constants: SIGHUP, SIGINT, SIGQUIT, SIGILL, SIGTRAP, SIGABRT, SIGBUS, SIGFPE,
-// SIGKILL, SIGUSR1, SIGSEGV, SIGUSR2, SIGPIPE, SIGALRM, SIGTERM, SIGSTKFLT (conditional),
-// SIGCHLD, SIGCONT, SIGSTOP, SIGTSTP, SIGTTIN, SIGTTOU, SIGURG, SIGXCPU, SIGXFSZ,
-// SIGVTALRM, SIGPROF, SIGWINCH, SIGIO, SIGPWR, SIGSYS (conditional), SIGEMT (conditional),
-// SIGLOST (conditional), SIGUNUSED (conditional)
 
-// provide a mapping of arch signal to internal signal # for mediation
-// those that are always an alias SIGCLD for SIGCLHD and SIGPOLL for SIGIO
-// map to the same entry those that may/or may not get a separate entry
-pub const SIG_MAP: [i32; MAXMAPPED_SIG as usize] = [
-    MAXMAPPED_SIG,   // [0] existence test
-    1,               // [SIGHUP]
-    2,               // [SIGINT]
-    3,               // [SIGQUIT]
-    4,               // [SIGILL]
-    5,               // [SIGTRAP] -, 5, -
-    6,               // [SIGABRT] SIGIOT: -, 6, -
-    7,               // [SIGBUS] 10, 7, 10
-    8,               // [SIGFPE]
-    9,               // [SIGKILL]
-    10,              // [SIGUSR1] 30, 10, 16
-    11,              // [SIGSEGV]
-    12,              // [SIGUSR2] 31, 12, 17
-    13,              // [SIGPIPE]
-    14,              // [SIGALRM]
-    15,              // [SIGTERM]
+// Provide a mapping of arch signal to internal signal # for mediation.
+const fn make_sig_map() -> [i32; MAXMAPPED_SIG as usize] {
+    let mut map = [0; MAXMAPPED_SIG as usize];
+    map[0] = MAXMAPPED_SIG;
+    map[SIGHUP as usize] = 1;
+    map[SIGINT as usize] = 2;
+    map[SIGQUIT as usize] = 3;
+    map[SIGILL as usize] = 4;
+    map[SIGTRAP as usize] = 5;
+    map[SIGABRT as usize] = 6;
+    map[SIGBUS as usize] = 7;
+    map[SIGFPE as usize] = 8;
+    map[SIGKILL as usize] = 9;
+    map[SIGUSR1 as usize] = 10;
+    map[SIGSEGV as usize] = 11;
+    map[SIGUSR2 as usize] = 12;
+    map[SIGPIPE as usize] = 13;
+    map[SIGALRM as usize] = 14;
+    map[SIGTERM as usize] = 15;
+    // #ifdef SIGSTKFLT
     #[cfg(target_os = "linux")]
-    16,              // [SIGSTKFLT] -, 16, -
-    17,              // [SIGCHLD] 20, 17, 18. SIGCHLD -, -, 18
-    18,              // [SIGCONT] 19, 18, 25
-    19,              // [SIGSTOP] 17, 19, 23
-    20,              // [SIGTSTP] 18, 20, 24
-    21,              // [SIGTTIN] 21, 21, 26
-    22,              // [SIGTTOU] 22, 22, 27
-    23,              // [SIGURG] 16, 23, 21
-    24,              // [SIGXCPU] 24, 24, 30
-    25,              // [SIGXFSZ] 25, 25, 31
-    26,              // [SIGVTALRM] 26, 26, 28
-    27,              // [SIGPROF] 27, 27, 29
-    28,              // [SIGWINCH] 28, 28, 20
-    29,              // [SIGIO] SIGPOLL: 23, 29, 22
-    30,              // [SIGPWR] 29, 30, 19. SIGINFO 29, -, -
-    #[cfg(any(target_os = "linux", target_os = "unix"))]
-    31,              // [SIGSYS] 12, 31, 12. often SIG LOST/UNUSED
-    #[cfg(any(target_os = "bsd", target_os = "macos"))]
-    32,              // [SIGEMT] 7, -, 7
-    #[cfg(target_arch = "sparc")]
-    33,              // [SIGLOST] unused on Linux
-    #[cfg(all(target_os = "linux", target_arch = "sparc"))]
-    34,              // [SIGUNUSED] -, 31, -
+    { map[SIGSTKFLT as usize] = 16; }
+    // #endif
+    map[SIGCHLD as usize] = 17;
+    map[SIGCONT as usize] = 18;
+    map[SIGSTOP as usize] = 19;
+    map[SIGTSTP as usize] = 20;
+    map[SIGTTIN as usize] = 21;
+    map[SIGTTOU as usize] = 22;
+    map[SIGURG as usize] = 23;
+    map[SIGXCPU as usize] = 24;
+    map[SIGXFSZ as usize] = 25;
+    map[SIGVTALRM as usize] = 26;
+    map[SIGPROF as usize] = 27;
+    map[SIGWINCH as usize] = 28;
+    map[SIGIO as usize] = 29;
+    map[SIGPWR as usize] = 30;
+    // #ifdef SIGSYS
+    map[SIGSYS as usize] = 31;
+    // #endif
+    // #ifdef SIGEMT
+    map[SIGEMT as usize] = 32;
+    // #endif
+    // #if defined(SIGLOST) && SIGPWR != SIGLOST
+    map[SIGLOST as usize] = 33;
+    // #endif
+    // #if defined(SIGUNUSED) && defined(SIGLOST) && defined(SIGSYS) && SIGLOST != SIGSYS
+    map[SIGUNUSED as usize] = 34;
+    // #endif
+    map
+}
+
+static SIG_MAP: [i32; MAXMAPPED_SIG as usize] = make_sig_map();
+
+// This table is ordered post sig_map[sig] mapping.
+static SIG_NAMES: [&str; MAXMAPPED_SIGNAME as usize] = [
+    "unknown", "hup", "int", "quit", "ill", "trap", "abrt", "bus", "fpe", "kill",
+    "usr1", "segv", "usr2", "pipe", "alrm", "term", "stkflt", "chld", "cont", "stop",
+    "stp", "ttin", "ttou", "urg", "xcpu", "xfsz", "vtalrm", "prof", "winch", "io",
+    "pwr", "sys", "emt", "lost", "unused", "exists", // always last existence test
 ];
 
-// this table is ordered post sig_map[sig] mapping
-pub const SIG_NAMES: &[&str] = &[
-    "unknown",
-    "hup",
-    "int",
-    "quit",
-    "ill",
-    "trap",
-    "abrt",
-    "bus",
-    "fpe",
-    "kill",
-    "usr1",
-    "segv",
-    "usr2",
-    "pipe",
-    "alrm",
-    "term",
-    "stkflt",
-    "chld",
-    "cont",
-    "stop",
-    "stp",
-    "ttin",
-    "ttou",
-    "urg",
-    "xcpu",
-    "xfsz",
-    "vtalrm",
-    "prof",
-    "winch",
-    "io",
-    "pwr",
-    "sys",
-    "emt",
-    "lost",
-    "unused",
-    "exists",        // always last existence test mapped to MAXMAPPED_SIG
-];
-
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

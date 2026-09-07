@@ -28,7 +28,7 @@ pub const AA_AUDIT_DATA: i32 = 0x40;
 pub const AA_MNT_CONT_MATCH: i32 = 0x40;
 
 // AA_MS_IGNORE_MASK = (MS_KERNMOUNT | MS_NOSEC | MS_ACTIVE | MS_BORN)
-// Requires external constants from <linux/fs.h>
+// Requires external constants from <linux/fs.h>.
 
 extern "C" {
     pub fn aa_remount(
@@ -93,4 +93,4 @@ extern "C" {
     ) -> c_int;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

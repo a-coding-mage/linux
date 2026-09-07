@@ -8,7 +8,6 @@
 
 // Dependencies: <linux/sched.h>, audit.h, label.h
 
-// Opaque external types
 pub enum aa_label {}
 pub enum callback_head {}
 pub enum task_struct {}
@@ -31,7 +30,7 @@ extern "C" {
     pub fn aa_restore_previous_label(cookie: u64) -> i32;
     pub fn aa_get_task_label(task: *mut task_struct) -> *mut aa_label;
     pub fn aa_put_label(label: *mut aa_label);
-    pub fn aa_get_label(label: *mut aa_label) -> *mut aa_label;
+    pub fn aa_get_label(label: *const aa_label) -> *mut aa_label;
     pub fn aa_may_ptrace(
         tracer_cred: *const cred,
         tracer: *mut aa_label,
@@ -57,78 +56,50 @@ pub struct aa_task_ctx {
 }
 
 #[inline]
-pub fn task_ctx(task: *mut task_struct) -> *mut aa_task_ctx {
-    unsafe {
-        ((*task).security as *mut u8).add(apparmor_blob_sizes.lbs_task) as *mut aa_task_ctx
-    }
+pub unsafe fn task_ctx(task: *mut task_struct) -> *mut aa_task_ctx {
+    (*(task as *mut *mut u8)).add(apparmor_blob_sizes.lbs_task) as *mut aa_task_ctx
 }
 
-/// Free a task_ctx.
-///
-/// # Arguments
-/// * `ctx` - task_ctx to free (MAY BE NULL)
 #[inline]
-pub fn aa_free_task_ctx(ctx: *mut aa_task_ctx) {
+pub unsafe fn aa_free_task_ctx(ctx: *mut aa_task_ctx) {
     if !ctx.is_null() {
-        unsafe {
-            aa_put_label((*ctx).nnp);
-            aa_put_label((*ctx).previous);
-            aa_put_label((*ctx).onexec);
-        }
-    }
-}
-
-/// Duplicate a task context, incrementing reference counts.
-///
-/// # Arguments
-/// * `new` - a blank task context (NOT NULL)
-/// * `old` - the task context to copy (NOT NULL)
-#[inline]
-pub fn aa_dup_task_ctx(new: *mut aa_task_ctx, old: *const aa_task_ctx) {
-    unsafe {
-        (*new).nnp = aa_get_label((*old).nnp);
-        (*new).onexec = aa_get_label((*old).onexec);
-        (*new).previous = aa_get_label((*old).previous);
-        (*new).token = (*old).token;
-    }
-}
-
-/// Clear transition tracking info from the ctx.
-///
-/// # Arguments
-/// * `ctx` - task context to clear (NOT NULL)
-#[inline]
-pub fn aa_clear_task_ctx_trans(ctx: *mut aa_task_ctx) {
-    // AA_BUG(!ctx) check - ctx must not be null
-    debug_assert!(!ctx.is_null());
-
-    unsafe {
+        aa_put_label((*ctx).nnp);
         aa_put_label((*ctx).previous);
         aa_put_label((*ctx).onexec);
-        (*ctx).previous = std::ptr::null_mut();
-        (*ctx).onexec = std::ptr::null_mut();
-        (*ctx).token = 0;
     }
 }
 
-// Ptrace permission constants
-// References: MAY_WRITE and MAY_READ from linux/fs.h, AA_MAY_APPEND and AA_MAY_CREATE from apparmor audit definitions
-// These constants would need to be imported from their respective source files
-// pub const AA_PTRACE_TRACE: u32 = MAY_WRITE;
-// pub const AA_PTRACE_READ: u32 = MAY_READ;
-// pub const AA_MAY_BE_TRACED: u32 = AA_MAY_APPEND;
-// pub const AA_MAY_BE_READ: u32 = AA_MAY_CREATE;
+#[inline]
+pub unsafe fn aa_dup_task_ctx(new: *mut aa_task_ctx, old: *const aa_task_ctx) {
+    (*new).nnp = aa_get_label((*old).nnp);
+    (*new).onexec = aa_get_label((*old).onexec);
+    (*new).previous = aa_get_label((*old).previous);
+    (*new).token = (*old).token;
+}
 
+#[inline]
+pub unsafe fn aa_clear_task_ctx_trans(ctx: *mut aa_task_ctx) {
+    // AA_BUG(!ctx)
+    debug_assert!(!ctx.is_null());
+    aa_put_label((*ctx).previous);
+    aa_put_label((*ctx).onexec);
+    (*ctx).previous = core::ptr::null_mut();
+    (*ctx).onexec = core::ptr::null_mut();
+    (*ctx).token = 0;
+}
+
+pub const AA_PTRACE_TRACE: u32 = MAY_WRITE;
+pub const AA_PTRACE_READ: u32 = MAY_READ;
+pub const AA_MAY_BE_TRACED: u32 = AA_MAY_APPEND;
+pub const AA_MAY_BE_READ: u32 = AA_MAY_CREATE;
 pub const PTRACE_PERM_SHIFT: u32 = 2;
+pub const AA_PTRACE_PERM_MASK: u32 =
+    AA_PTRACE_READ | AA_PTRACE_TRACE | AA_MAY_BE_READ | AA_MAY_BE_TRACED;
+pub const AA_SIGNAL_PERM_MASK: u32 = MAY_READ | MAY_WRITE;
 
-// Composed permissions requiring external constants:
-// pub const AA_PTRACE_PERM_MASK: u32 = AA_PTRACE_READ | AA_PTRACE_TRACE | AA_MAY_BE_READ | AA_MAY_BE_TRACED;
-// pub const AA_SIGNAL_PERM_MASK: u32 = MAY_READ | MAY_WRITE;
-
-pub const AA_SFS_SIG_MASK: &str = "hup int quit ill trap abrt bus fpe kill usr1 \
-    segv usr2 pipe alrm term stkflt chld cont stop stp ttin ttou urg \
-    xcpu xfsz vtalrm prof winch io pwr sys emt lost";
+pub const AA_SFS_SIG_MASK: &str =
+    "hup int quit ill trap abrt bus fpe kill usr1 segv usr2 pipe alrm term stkflt chld cont stop stp ttin ttou urg xcpu xfsz vtalrm prof winch io pwr sys emt lost";
 
 pub const AA_USERNS_CREATE: u32 = 8;
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

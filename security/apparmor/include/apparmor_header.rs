@@ -10,7 +10,7 @@
 
 // Requires: linux/types.h
 
-// Class of mediation types in the AppArmor policy db
+/* Class of mediation types in the AppArmor policy db */
 pub const AA_CLASS_NONE: i32 = 0;
 pub const AA_CLASS_UNKNOWN: i32 = 1;
 pub const AA_CLASS_FILE: i32 = 2;
@@ -30,7 +30,6 @@ pub const AA_CLASS_MODULE: i32 = 19;
 pub const AA_CLASS_DISPLAY_LSM: i32 = 20;
 pub const AA_CLASS_NS: i32 = 21;
 pub const AA_CLASS_IO_URING: i32 = 22;
-
 pub const AA_CLASS_NETV9_SKB: i32 = 30;
 pub const AA_CLASS_X: i32 = 31;
 pub const AA_CLASS_DBUS: i32 = 32;
@@ -40,24 +39,20 @@ pub const AA_CLASS_LAST: i32 = AA_CLASS_DBUS;
 
 // Control parameters settable through module/boot flags
 pub type audit_mode = i32;
-
 extern "C" {
-    pub static aa_g_audit: audit_mode;
-    pub static aa_g_audit_header: bool;
-    pub static aa_g_debug: i32;
-    pub static aa_g_hash_policy: bool;
-    pub static aa_g_export_binary: bool;
-    pub static aa_g_rawdata_compression_level: i32;
-    pub static aa_g_lock_policy: bool;
-    pub static aa_g_logsyscall: bool;
-    pub static aa_g_paranoid_load: bool;
-    pub static aa_g_path_max: u32;
+    pub static mut aa_g_audit: audit_mode;
+    pub static mut aa_g_audit_header: bool;
+    pub static mut aa_g_debug: i32;
+    pub static mut aa_g_hash_policy: bool;
+    pub static mut aa_g_export_binary: bool;
+    pub static mut aa_g_rawdata_compression_level: i32;
+    pub static mut aa_g_lock_policy: bool;
+    pub static mut aa_g_logsyscall: bool;
+    pub static mut aa_g_paranoid_load: bool;
+    pub static mut aa_g_path_max: u32;
 }
 
 // Conditional: CONFIG_SECURITY_APPARMOR_EXPORT_BINARY
-// When defined: AA_MIN_CLEVEL = zstd_min_clevel()
-//              AA_MAX_CLEVEL = zstd_max_clevel()
-//              AA_DEFAULT_CLEVEL = ZSTD_CLEVEL_DEFAULT
 #[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
 extern "C" {
     pub fn zstd_min_clevel() -> i32;
@@ -66,31 +61,20 @@ extern "C" {
 }
 
 #[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
-#[inline]
-pub fn aa_min_clevel() -> i32 {
-    unsafe { zstd_min_clevel() }
-}
-
+#[allow(non_snake_case)]
+pub unsafe fn AA_MIN_CLEVEL() -> i32 { zstd_min_clevel() }
 #[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
-#[inline]
-pub fn aa_max_clevel() -> i32 {
-    unsafe { zstd_max_clevel() }
-}
-
+#[allow(non_snake_case)]
+pub unsafe fn AA_MAX_CLEVEL() -> i32 { zstd_max_clevel() }
 #[cfg(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY")]
-#[inline]
-pub fn aa_default_clevel() -> i32 {
-    unsafe { ZSTD_CLEVEL_DEFAULT }
-}
+#[allow(non_snake_case)]
+pub unsafe fn AA_DEFAULT_CLEVEL() -> i32 { ZSTD_CLEVEL_DEFAULT }
 
-// When CONFIG_SECURITY_APPARMOR_EXPORT_BINARY is not defined:
 #[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
 pub const AA_MIN_CLEVEL: i32 = 0;
-
 #[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
 pub const AA_MAX_CLEVEL: i32 = 0;
-
 #[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
 pub const AA_DEFAULT_CLEVEL: i32 = 0;
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

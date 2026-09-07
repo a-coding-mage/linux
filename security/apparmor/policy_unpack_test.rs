@@ -636,4 +636,5 @@ const APPARMOR_POLICY_UNPACK_TEST_CASES: &[(&[u8], KunitTestCaseFn)] = &[
 // MODULE_DESCRIPTION("KUnit tests for AppArmor's policy unpack");
 // MODULE_LICENSE("GPL");
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

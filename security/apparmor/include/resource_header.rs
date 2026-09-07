@@ -15,10 +15,15 @@ use std::ffi::c_uint;
 #[repr(C)]
 pub struct aa_profile;
 
+#[repr(C)]
 pub struct cred;
+#[repr(C)]
 pub struct aa_label;
+#[repr(C)]
 pub struct task_struct;
+#[repr(C)]
 pub struct aa_sfs_entry;
+#[repr(C)]
 pub struct rlimit;
 
 // struct aa_rlimit - rlimit settings for the profile
@@ -32,9 +37,6 @@ pub struct aa_rlimit {
     pub mask: c_uint,
     pub limits: [rlimit; RLIM_NLIMITS],
 }
-
-// RLIM_NLIMITS constant from <linux/resource.h> - value defined in external header
-const RLIM_NLIMITS: usize = 16; // Placeholder for external constant
 
 extern "C" {
     pub static aa_sfs_entry_rlimit: [aa_sfs_entry; 0];
@@ -57,4 +59,4 @@ pub fn aa_free_rlimit_rules(_rlims: *mut aa_rlimit) {
     // NOP
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

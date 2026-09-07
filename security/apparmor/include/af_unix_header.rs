@@ -194,4 +194,5 @@ pub type sa_family_t = u16;
 // Placeholder for external macro
 // fn unix_sk(sk: *const sock) -> *const unix_sock { /* implementation from net/af_unix.h */ }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

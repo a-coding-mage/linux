@@ -366,7 +366,7 @@ pub unsafe fn aa_alloc_root_ns() -> i32 {
         return -ENOMEM;
     }
     kernel_t = &(*kernel_p).label;
-    (*root_ns).unconfined.ns = aa_get_ns(root_ns);
+    (*(*root_ns).unconfined).ns = aa_get_ns(root_ns);
 
     0
 }
@@ -384,4 +384,5 @@ pub unsafe fn aa_free_root_ns() {
     aa_put_ns(ns);
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

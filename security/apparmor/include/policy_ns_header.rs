@@ -79,7 +79,7 @@ pub struct aa_ns {
     pub labels: aa_labelset,
     pub rawdata_list: list_head,
     // AAFS_NS_SIZEOF comes from apparmorfs.h
-    pub dents: [*mut dentry; 0],
+    pub dents: [*mut dentry; AAFS_NS_SIZEOF],
 }
 
 extern "C" {
@@ -169,4 +169,5 @@ pub unsafe fn __aa_find_ns(head: *mut list_head, name: *const u8) -> *mut aa_ns 
     __aa_findn_ns(head, name, strlen(name))
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

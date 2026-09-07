@@ -281,24 +281,23 @@ extern "C" {
 }
 
 #[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
-pub mod _stubs {
-    use super::*;
-
-    pub fn __aa_fs_remove_rawdata(_rawdata: *mut aa_loaddata) {
-        // empty stub
-    }
-
-    pub fn __aa_fs_create_rawdata(_ns: *mut aa_ns, _rawdata: *mut aa_loaddata) -> c_int {
-        0
-    }
-
-    pub fn __aa_remove_rawdata_symlink_dents(_profile: *mut aa_profile) {
-        // empty stub
-    }
-
-    pub fn __aa_create_rawdata_symlink_dents(_profile: *mut aa_profile) -> c_int {
-        0
-    }
+pub fn __aa_fs_remove_rawdata(_rawdata: *mut aa_loaddata) {
+    // empty stub
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+pub fn __aa_fs_create_rawdata(_ns: *mut aa_ns, _rawdata: *mut aa_loaddata) -> c_int {
+    0
+}
+
+#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+pub fn __aa_remove_rawdata_symlink_dents(_profile: *mut aa_profile) {
+    // empty stub
+}
+
+#[cfg(not(feature = "CONFIG_SECURITY_APPARMOR_EXPORT_BINARY"))]
+pub fn __aa_create_rawdata_symlink_dents(_profile: *mut aa_profile) -> c_int {
+    0
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

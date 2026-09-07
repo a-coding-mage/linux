@@ -111,7 +111,7 @@ thread_local! {
 pub static mut aa_sfs_entry_caps: [aa_sfs_entry; 3] = [
     aa_sfs_entry {
         name: b"mask\0".as_ptr(),
-        value: 0, // AA_SFS_CAPS_MASK - resolved at runtime
+        value: AA_SFS_CAPS_MASK,
     },
     aa_sfs_entry {
         name: b"extended\0".as_ptr(),
@@ -229,7 +229,7 @@ unsafe fn profile_capable(
             if (perms.complain & request) != 0 {
                 (*ad).info = b"optional: no audit\0".as_ptr();
             } else {
-                // ad = NULL;
+                ad = core::ptr::null_mut();
             }
         }
         return aa_check_perms(profile, &perms, request, ad, audit_cb);
@@ -280,12 +280,19 @@ pub extern "C" fn aa_capable(
 
         (*(&mut ad as *mut apparmor_audit_data)).subj_cred = subj_cred;
         (*(&mut ad as *mut apparmor_audit_data)).common.u.cap = cap;
-        error = fn_for_each_confined(label, &mut profile, |prof, _cap, _opts, audit_data| {
-            profile_capable(prof, cap, opts, audit_data)
-        });
+        error = fn_for_each_confined(label, &mut profile, profile_capable_callback);
 
         error
     }
+}
+
+unsafe extern "C" fn profile_capable_callback(
+    profile: *mut aa_profile,
+    cap: c_int,
+    opts: u32,
+    ad: *mut apparmor_audit_data,
+) -> c_int {
+    profile_capable(profile, cap, opts, ad)
 }
 
 #[no_mangle]
@@ -307,8 +314,8 @@ pub extern "C" fn aa_profile_capget(profile: *const aa_profile) -> kernel_cap_t 
                 tmp = aa_dfa_next((*(*rules).policy).dfa, state, i as c_int);
                 perms = *aa_lookup_perms((*rules).policy, tmp);
                 aa_apply_modes_to_perms(profile as *mut aa_profile, &mut perms);
-                // caps.val |= ((u64)(perms.allow)) << (i * 5);
-                // caps.val |= ((u64)(perms.complain)) << (i * 5);
+                caps.val |= (perms.allow as u64) << (i * 5);
+                caps.val |= (perms.complain as u64) << (i * 5);
                 i += 1;
             }
             return caps;
@@ -316,11 +323,12 @@ pub extern "C" fn aa_profile_capget(profile: *const aa_profile) -> kernel_cap_t 
 
         // fallback to old caps
         if COMPLAIN_MODE(profile as *mut aa_profile) {
-            // return CAP_FULL_SET;
+            return CAP_FULL_SET;
         }
 
         (*rules).caps.allow
     }
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

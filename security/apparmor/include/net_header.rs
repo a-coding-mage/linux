@@ -92,8 +92,8 @@ pub struct aa_secmark {
 }
 
 extern "C" {
-    pub static mut aa_sfs_entry_network: aa_sfs_entry;
-    pub static mut aa_sfs_entry_networkv9: aa_sfs_entry;
+    pub static mut aa_sfs_entry_network: [aa_sfs_entry; 0];
+    pub static mut aa_sfs_entry_networkv9: [aa_sfs_entry; 0];
 
     pub fn aa_do_perms(
         profile: *mut aa_profile,
@@ -112,7 +112,7 @@ extern "C" {
         af: u16,
         r#type: i32,
         protocol: i32,
-        p: *mut *const aa_perms,
+        p: *mut *mut aa_perms,
         info: *mut *const c_char,
     ) -> aa_state_t;
 
@@ -181,4 +181,5 @@ pub unsafe fn aa_profile_af_sk_perm(
     )
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

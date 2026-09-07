@@ -411,7 +411,10 @@ pub unsafe fn aa_get_label_rcu(l: *mut *mut aa_label) -> *mut aa_label {
     crate::rcu_read_lock();
     loop {
         c = crate::rcu_dereference(l);
-        if c.is_null() || !crate::kref_get_unless_zero(&mut (*c).count.count) {
+        if c.is_null() {
+            break;
+        }
+        if crate::kref_get_unless_zero(&mut (*c).count.count) {
             break;
         }
     }
@@ -520,4 +523,5 @@ extern "C" {
     pub fn __aa_proxy_redirect(orig: *mut aa_label, new: *mut aa_label);
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

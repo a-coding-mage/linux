@@ -12,9 +12,9 @@
 
 use std::ffi::c_char;
 
-#[repr(u32)]
+#[repr(i32)]
 #[derive(Copy, Clone)]
-pub enum PathFlags {
+pub enum path_flags {
     PATH_IS_DIR = 0x1,                    // path is a directory
     PATH_SOCK_COND = 0x2,
     PATH_CONNECT_PATH = 0x4,              // connect disconnected paths to /
@@ -48,4 +48,4 @@ extern "C" {
     pub fn aa_put_buffer(buf: *mut c_char);
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

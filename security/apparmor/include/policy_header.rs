@@ -18,7 +18,54 @@ extern "C" {
     pub static unprivileged_userns_apparmor_policy: i32;
     pub static aa_unprivileged_unconfined_restricted: i32;
 
-    pub static aa_profile_mode_names: *const *const i8;
+pub static aa_profile_mode_names: *const *const i8;
+}
+
+#[inline]
+pub unsafe fn PROFILE_MODE(profile: *const AaProfile, mode: ProfileMode) -> bool {
+    aa_g_profile_mode == mode || (*profile).mode == mode as i64
+}
+
+#[inline]
+pub unsafe fn COMPLAIN_MODE(profile: *const AaProfile) -> bool {
+    PROFILE_MODE(profile, ProfileMode::AppArmorComplain)
+}
+
+#[inline]
+pub unsafe fn USER_MODE(profile: *const AaProfile) -> bool {
+    PROFILE_MODE(profile, ProfileMode::AppArmorUser)
+}
+
+#[inline]
+pub unsafe fn KILL_MODE(profile: *const AaProfile) -> bool {
+    PROFILE_MODE(profile, ProfileMode::AppArmorKill)
+}
+
+#[inline]
+pub unsafe fn PROFILE_IS_HAT(profile: *const AaProfile) -> u32 {
+    (*profile).label.flags & FLAG_HAT
+}
+
+#[inline]
+pub unsafe fn CHECK_DEBUG1(profile: *const AaProfile) -> u32 {
+    (*profile).label.flags & FLAG_DEBUG1
+}
+
+#[inline]
+pub unsafe fn CHECK_DEBUG2(profile: *const AaProfile) -> u32 {
+    (*profile).label.flags & FLAG_DEBUG2
+}
+
+#[inline]
+pub unsafe fn profile_is_stale(profile: *const AaProfile) -> bool {
+    label_is_stale(&(*profile).label)
+}
+
+extern "C" {
+    pub static FLAG_HAT: u32;
+    pub static FLAG_DEBUG1: u32;
+    pub static FLAG_DEBUG2: u32;
+    pub fn label_is_stale(label: *const AaLabel) -> bool;
 }
 
 // flags in the dfa accept2 table
@@ -529,4 +576,5 @@ extern "C" {
     pub fn aa_current_policy_admin_capable(ns: *mut AaNs) -> bool;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

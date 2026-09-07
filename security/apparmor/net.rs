@@ -105,8 +105,11 @@ extern "C" {
         bool_arg2: bool,
     ) -> *mut aa_label;
     fn aa_put_label(label: *mut aa_label);
+    fn aa_unix_file_perm(subj_cred: *const cred, label: *mut aa_label, op: *const c_char, request: u32, file: *mut file) -> c_int;
+    fn aa_inet_file_perm(subj_cred: *const cred, label: *mut aa_label, op: *const c_char, request: u32, sock: *mut socket) -> c_int;
     fn IS_ERR(ptr: *const c_char) -> bool;
     fn PTR_ERR(ptr: *const c_char) -> c_int;
+    fn strlen(s: *const c_char) -> usize;
 
     // External global variables
     static mut address_family_names: *const *const c_char;
@@ -502,12 +505,10 @@ pub unsafe fn aa_sock_file_perm(
 
     match (*(*sock).sk).sk_family as c_int {
         1 => { // PF_UNIX
-            // aa_unix_file_perm(subj_cred, label, op, request, file)
-            0
+            aa_unix_file_perm(subj_cred, label, op, request, file)
         }
         2 | 10 => { // PF_INET or PF_INET6
-            // aa_inet_file_perm(subj_cred, label, op, request, sock)
-            0
+            aa_inet_file_perm(subj_cred, label, op, request, sock)
         }
         _ => aa_label_sk_perm(subj_cred, label, op, request, (*sock).sk),
     }
@@ -606,9 +607,5 @@ pub unsafe fn apparmor_secmark_check(
 }
 // #endif CONFIG_NETWORK_SECMARK
 
-// Helper for strlen (C standard library function)
-extern "C" {
-    fn strlen(s: *const c_char) -> usize;
-}
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

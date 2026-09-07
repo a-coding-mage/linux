@@ -173,6 +173,19 @@ pub struct aa_dfa {
 }
 
 // UNPACK_ARRAY macro - complex C macro with conditional compilation
+#[macro_export]
+macro_rules! UNPACK_ARRAY {
+    ($table:expr, $blob:expr, $len:expr, $ttype:ty, $btype:ty, $ntohx:expr) => {{
+        let __t: *mut $ttype = $table as *mut $ttype;
+        let __b: *const $btype = $blob as *const $btype;
+        debug_assert_eq!(std::mem::size_of::<$ttype>(), std::mem::size_of::<$btype>());
+        #[cfg(target_endian = "big")]
+        unsafe { std::ptr::copy_nonoverlapping(__b, __t, $len); }
+        #[cfg(target_endian = "little")]
+        unsafe { for __i in 0..$len { *__t.add(__i) = ($ntohx)(&*__b.add(__i)); } }
+    }};
+}
+
 // This macro unpacks an array from network byte order (big-endian) to host order
 // Parameters: TABLE (target), BLOB (source), LEN (length), TTYPE (target type),
 //             BTYPE (blob type), NTOHX (conversion function)
@@ -229,6 +242,13 @@ pub struct match_workbuf {
 }
 
 // Helper macro to create and initialize a match_workbuf
+#[macro_export]
+macro_rules! DEFINE_MATCH_WB {
+    ($name:ident) => {
+        let mut $name = match_workbuf { pos: 0, len: 0, history: [0; WB_HISTORY_SIZE] };
+    };
+}
+
 // Original: #define DEFINE_MATCH_WB(N) struct match_workbuf N = { .pos = 0, .len = 0, }
 // In Rust, this can be expressed as a function that creates the struct
 #[inline]
@@ -289,4 +309,5 @@ pub const MATCH_FLAGS_MASK: u32 = 0xff000000;
 pub const MATCH_FLAGS_VALID: u32 = MATCH_FLAG_DIFF_ENCODE | MATCH_FLAG_OOB_TRANSITION;
 pub const MATCH_FLAGS_INVALID: u32 = MATCH_FLAGS_MASK & !MATCH_FLAGS_VALID;
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

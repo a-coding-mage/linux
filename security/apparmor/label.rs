@@ -1456,4 +1456,5 @@ pub unsafe extern "C" fn __aa_labelset_update_subtree(ns: *mut aa_ns) {
     let _child_list = &mut (*ns).sub_ns;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

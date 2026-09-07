@@ -640,6 +640,67 @@ pub extern "C" fn aa_inet_connect_perm(sock: *mut socket, addr: *mut sockaddr, a
 }
 
 #[no_mangle]
+pub unsafe extern "C" fn aa_inet_listen_perm(sock: *mut socket, backlog: i32) -> i32 {
+    let mut maddr: stored_match_addr = std::mem::zeroed();
+    let mut ad: apparmor_audit_data = std::mem::zeroed();
+    map_sock_addr(sock, addr_type::ADDR_LOCAL, &mut maddr, &mut ad);
+    profile_listen_perm(std::ptr::null_mut(), (*sock).sk, &mut maddr.maddr, backlog, &mut ad)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn aa_inet_accept_perm(sock: *mut socket, newsock: *mut socket) -> i32 {
+    let mut maddr: stored_match_addr = std::mem::zeroed();
+    let mut ad: apparmor_audit_data = std::mem::zeroed();
+    let error = map_sock_addr(sock, addr_type::ADDR_LOCAL, &mut maddr, &mut ad);
+    if error != 0 { return error; }
+    profile_accept_perm(std::ptr::null_mut(), (*sock).sk, &mut maddr.maddr,
+                        if newsock.is_null() { std::ptr::null() } else { (*newsock).sk }, &mut ad)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn aa_inet_msg_perm(op: *const c_char, request: u32,
+                                            sock: *mut socket, _msg: *mut msghdr,
+                                            _size: i32) -> i32 {
+    let mut laddr: stored_match_addr = std::mem::zeroed();
+    let mut raddr: match_addr = std::mem::zeroed();
+    let mut ad: apparmor_audit_data = std::mem::zeroed();
+    let error = map_sock_addr(sock, addr_type::ADDR_LOCAL, &mut laddr, &mut ad);
+    if error != 0 { return error; }
+    let _ = op;
+    profile_remote_perm(std::ptr::null_mut(), (*sock).sk, request, &mut raddr,
+                        &mut laddr.maddr, &mut ad)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn aa_inet_opt_perm(op: *const c_char, request: u32,
+                                            sock: *mut socket, level: i32,
+                                            optname: i32) -> i32 {
+    let mut maddr: stored_match_addr = std::mem::zeroed();
+    let mut ad: apparmor_audit_data = std::mem::zeroed();
+    let _ = op;
+    map_sock_addr(sock, addr_type::ADDR_LOCAL, &mut maddr, &mut ad);
+    profile_opt_perm(std::ptr::null_mut(), request, (*sock).sk, &mut maddr.maddr,
+                     level, optname, &mut ad)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn aa_inet_sock_perm(op: *const c_char, request: u32,
+                                             sock: *mut socket) -> i32 {
+    let mut maddr: stored_match_addr = std::mem::zeroed();
+    let mut ad: apparmor_audit_data = std::mem::zeroed();
+    let _ = op;
+    map_sock_addr(sock, addr_type::ADDR_LOCAL, &mut maddr, &mut ad);
+    profile_sk_perm(std::ptr::null_mut(), request, (*sock).sk, &mut maddr.maddr, &mut ad)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn aa_inet_file_perm(_subj_cred: *const cred, _label: *mut aa_label,
+                                             op: *const c_char, request: u32,
+                                             sock: *mut socket) -> i32 {
+    aa_inet_sock_perm(op, request & !NET_PEER_MASK, sock)
+}
+
+#[no_mangle]
 pub extern "C" fn aa_inet_listen_perm(sock: *mut socket, backlog: i32) -> i32 {
     unsafe {
         let mut maddr: stored_match_addr = std::mem::zeroed();
@@ -878,4 +939,5 @@ fn htonl(x: u32) -> u32 {
     x.to_be()
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
