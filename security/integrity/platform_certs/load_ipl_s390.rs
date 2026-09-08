@@ -53,4 +53,5 @@ unsafe fn load_ipl_certs() -> i32 {
 // In Linux kernel Rust code, module_init!() or similar kernel initialization
 // macros would be used to achieve this.
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

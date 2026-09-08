@@ -424,4 +424,5 @@ pub extern "C" fn init_commoncap_test_module() {
 // MODULE_LICENSE("GPL") - represented as a module-level attribute in Rust
 // This would be: #![crate_type = "cdylib"] with proper kernel module setup
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -198,4 +198,5 @@ pub unsafe extern "C" fn selinux_ima_measure_state() {
     mutex_unlock(&mut selinux_state.policy_mutex);
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

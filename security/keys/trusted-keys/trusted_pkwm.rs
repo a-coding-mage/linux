@@ -14,9 +14,9 @@
 
 use core::ffi::{c_char, c_int, c_ulong, c_void};
 
-type u8 = u8;
-type u16 = u16;
-type u32 = u32;
+type u8 = core::primitive::u8;
+type u16 = core::primitive::u16;
+type u32 = core::primitive::u32;
 
 const Opt_err: c_int = 0;
 const Opt_wrap_flags: c_int = 1;
@@ -349,4 +349,5 @@ pub static mut pkwm_trusted_key_ops: trusted_key_ops = trusted_key_ops {
     exit: Some(trusted_pkwm_exit),
 };
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

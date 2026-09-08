@@ -321,6 +321,31 @@ pub unsafe fn selinux_perf_event(perf_event: *mut c_void) -> *mut perf_event_sec
 
 /* CONFIG_BPF_SYSCALL conditional helpers from C. */
 #[cfg(CONFIG_BPF_SYSCALL)]
+pub unsafe fn selinux_bpf_map_security(map: *const bpf_map) -> *mut bpf_security_struct {
+    unsafe {
+        ((*map).security as *mut u8).add(selinux_blob_sizes.lbs_bpf_map as usize)
+            as *mut bpf_security_struct
+    }
+}
+
+#[cfg(CONFIG_BPF_SYSCALL)]
+pub unsafe fn selinux_bpf_prog_security(prog: *const bpf_prog) -> *mut bpf_security_struct {
+    unsafe {
+        ((*(*prog).aux).security as *mut u8).add(selinux_blob_sizes.lbs_bpf_prog as usize)
+            as *mut bpf_security_struct
+    }
+}
+
+#[cfg(CONFIG_BPF_SYSCALL)]
+pub unsafe fn selinux_bpf_token_security(token: *const bpf_token) -> *mut bpf_security_struct {
+    unsafe {
+        ((*token).security as *mut u8).add(selinux_blob_sizes.lbs_bpf_token as usize)
+            as *mut bpf_security_struct
+    }
+}
+
+/* CONFIG_BPF_SYSCALL conditional helpers from C. */
+#[cfg(CONFIG_BPF_SYSCALL)]
 pub unsafe fn selinux_bpf_map_security(map: *mut bpf_map) -> *mut bpf_security_struct {
     unsafe {
         ((*map).security as *mut u8).add(selinux_blob_sizes.lbs_bpf_map as usize)
@@ -344,4 +369,5 @@ pub unsafe fn selinux_bpf_token_security(token: *mut bpf_token) -> *mut bpf_secu
     }
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

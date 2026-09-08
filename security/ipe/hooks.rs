@@ -338,13 +338,13 @@ pub unsafe extern "C" fn ipe_bdev_setintegrity(
 
         (*info).digest = kmemdup((*digest).digest, (*digest).digest_len, GFP_KERNEL);
         if (*info).digest.is_null() {
-            ipe_bdev_setintegrity_err(info);
+            ipe_digest_free(info);
             return -ENOMEM;
         }
 
         (*info).alg = kstrdup((*digest).alg, GFP_KERNEL);
         if (*info).alg.is_null() {
-            ipe_bdev_setintegrity_err(info);
+            ipe_digest_free(info);
             return -ENOMEM;
         }
 
@@ -355,13 +355,6 @@ pub unsafe extern "C" fn ipe_bdev_setintegrity(
     }
 
     0
-}
-
-#[cfg(CONFIG_IPE_PROP_DM_VERITY)]
-unsafe fn ipe_bdev_setintegrity_err(info: *mut digest_info) {
-    unsafe {
-        ipe_digest_free(info);
-    }
 }
 
 // Original conditional: CONFIG_IPE_PROP_FS_VERITY_BUILTIN_SIG
@@ -397,4 +390,5 @@ pub unsafe extern "C" fn ipe_inode_setintegrity(
     -EINVAL
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

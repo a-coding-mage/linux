@@ -56,7 +56,7 @@ pub struct landlock_request {
     pub layer_masks: *const layer_masks,
 
     /* Required fields for requests with deny masks. */
-    pub all_existing_optional_access: *const access_mask_t,
+    pub all_existing_optional_access: access_mask_t,
     pub deny_masks: deny_masks_t,
     pub quiet_optional_accesses: optional_access_t,
 
@@ -97,4 +97,4 @@ pub unsafe fn landlock_log_denial(
     let _ = request;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

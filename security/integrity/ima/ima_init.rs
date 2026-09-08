@@ -19,8 +19,8 @@ use core::mem;
 use core::ptr;
 
 // name for boot aggregate entry
-pub const BOOT_AGGREGATE_NAME: &[u8] = b"boot_aggregate";
-pub const BOOT_AGGREGATE_LATE_NAME: &[u8] = b"boot_aggregate_late";
+pub const BOOT_AGGREGATE_NAME: &[u8] = b"boot_aggregate\0";
+pub const BOOT_AGGREGATE_LATE_NAME: &[u8] = b"boot_aggregate_late\0";
 
 // External global variable (declared, not defined here)
 pub static mut IMA_TPM_CHIP: *mut TpmChip = ptr::null_mut();
@@ -69,6 +69,9 @@ pub struct ImaMaxDigestData {
 extern "C" {
     pub static mut IMA_HASH_ALGO: u32;
     pub static HASH_DIGEST_SIZE: [u32; 256];
+    pub static mut IMA_POLICY_FLAG: u32;
+    pub static CONFIG_IMA_X509_PATH: [u8; 0];
+    pub static UTS_RELEASE: [u8; 0];
 
     // External function declarations
     pub fn ima_calc_boot_aggregate(hash_hdr: *mut ImaDigestData) -> i32;
@@ -117,6 +120,7 @@ extern "C" {
     pub fn evm_load_x509();
     pub fn tpm_default_chip() -> *mut TpmChip;
     pub fn pr_info(fmt: *const u8, ...);
+    pub fn strlen(s: *const u8) -> usize;
 }
 
 // Compile-time configuration check for CONFIG_IMA_INIT_LATE_SYNC
@@ -128,8 +132,6 @@ const CONFIG_IMA_MEASURE_PCR_IDX: u32 = 10;
 const IMA_APPRAISE: u32 = 0x20;
 
 // Configuration value from build (UTS_RELEASE macro equivalent)
-const UTS_RELEASE: &[u8] = b"";
-
 // Add the boot aggregate to the IMA measurement list and extend
 // the PCR register.
 //
@@ -267,18 +269,18 @@ fn ima_add_boot_aggregate_err_out(
     result
 }
 
-#[cfg(feature = "ima_load_x509")]
+#[cfg(feature = "CONFIG_IMA_LOAD_X509")]
 pub fn ima_load_x509() {
     unsafe {
-        let unset_flags = IMA_HASH_ALGO & IMA_APPRAISE;
+        let unset_flags = IMA_POLICY_FLAG & IMA_APPRAISE;
 
-        IMA_HASH_ALGO &= !unset_flags;
-        integrity_load_x509(INTEGRITY_KEYRING_IMA, b"CONFIG_IMA_X509_PATH\0".as_ptr());
+        IMA_POLICY_FLAG &= !unset_flags;
+        integrity_load_x509(INTEGRITY_KEYRING_IMA, CONFIG_IMA_X509_PATH.as_ptr());
 
         // load also EVM key to avoid appraisal
         evm_load_x509();
 
-        IMA_HASH_ALGO |= unset_flags;
+        IMA_POLICY_FLAG |= unset_flags;
     }
 }
 
@@ -349,7 +351,7 @@ pub fn ima_init() -> i32 {
             b"kernel_info\0".as_ptr(),
             b"kernel_version\0".as_ptr(),
             UTS_RELEASE.as_ptr(),
-            UTS_RELEASE.len(),
+            strlen(UTS_RELEASE.as_ptr()),
             false,
             ptr::null(),
             0,
@@ -359,4 +361,5 @@ pub fn ima_init() -> i32 {
     rc
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

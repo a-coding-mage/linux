@@ -442,4 +442,4 @@ static mut test_suite: kunit_suite = kunit_suite {
 
 // CONFIG_SECURITY_LANDLOCK_KUNIT_TEST: kunit_test_init_section_suite(test_suite);
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

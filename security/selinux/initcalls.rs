@@ -30,7 +30,7 @@ unsafe extern "C" {
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn selinux_initcall() -> core::ffi::c_int {
     let mut rc: core::ffi::c_int = 0;
-    let mut rc_tmp: core::ffi::c_int;
+    let mut rc_tmp: core::ffi::c_int = 0;
 
     rc_tmp = unsafe { init_sel_fs() };
     if rc == 0 && rc_tmp != 0 {
@@ -78,4 +78,4 @@ pub unsafe extern "C" fn selinux_initcall() -> core::ffi::c_int {
     rc
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

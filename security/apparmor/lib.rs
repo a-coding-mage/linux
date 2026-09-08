@@ -255,7 +255,7 @@ pub static mut nullperms: aa_perms = aa_perms {
 pub static mut allperms: aa_perms = aa_perms {
     allow: ALL_PERMS_MASK,
     deny: 0,
-    audit: ALL_PERMS_MASK,
+    audit: 0,
     quiet: ALL_PERMS_MASK,
     kill: 0,
     complain: 0,
@@ -406,7 +406,7 @@ pub unsafe extern "C" fn aa_destroy_str_table(t: *mut aa_str_table) {
         return;
     }
 
-    for i in 0..(*t).size {
+    for i in (*t).size.min(newsize)..(*t).size {
         kfree_sensitive((*(*t).table.offset(i as isize)).strs);
     }
 
@@ -448,7 +448,7 @@ pub unsafe extern "C" fn aa_splitn_fqname(
     if *name as u8 == b':' {
         let split = strnchr(name.offset(1), end as *mut c_char as usize - name.offset(1) as *mut c_char as usize, b':' as c_char);
         *ns_name = skipn_spaces(name.offset(1), end as *mut c_char as usize - name.offset(1) as *mut c_char as usize);
-        if ns_name.is_null() {
+        if (*ns_name).is_null() {
             return std::ptr::null();
         }
         if !split.is_null() {
@@ -497,7 +497,7 @@ pub unsafe extern "C" fn aa_str_alloc(size: c_int, gfp: u32) -> *const c_char {
 
     let str = str as *mut counted_str;
     kref_init(&mut (*str).count);
-    (*str).name as *const c_char
+    (str as *mut u8).add(std::mem::size_of::<kref>()) as *const c_char
 }
 
 pub unsafe extern "C" fn aa_str_kref(kref: *mut kref) {
@@ -679,7 +679,7 @@ pub unsafe extern "C" fn aa_check_perms(
         }
         (0, audit_request)
     } else {
-        let mut err = -5; // -EACCES
+        let mut err = -13; // -EACCES
 
         if denied == (denied & (*perms).hide) {
             err = -2; // -ENOENT
@@ -689,7 +689,7 @@ pub unsafe extern "C" fn aa_check_perms(
         if ad.is_null() || denied_filtered == 0 {
             return err;
         }
-        (err, denied)
+        (err, denied_filtered)
     };
 
     let type_ = aa_select_audit_type(denied, perms);
@@ -715,6 +715,9 @@ pub unsafe extern "C" fn aa_policy_init(
     name: *const c_char,
     gfp: u32,
 ) -> bool {
+    INIT_LIST_HEAD!(&mut (*policy).list);
+    INIT_LIST_HEAD!(&mut (*policy).profiles);
+
     let hname_sz = (if !prefix.is_null() {
         strlen(prefix) + 2
     } else {
@@ -740,8 +743,6 @@ pub unsafe extern "C" fn aa_policy_init(
         strscpy(hname, name, hname_sz as c_int);
     }
 
-    INIT_LIST_HEAD!(&mut (*policy).list);
-    INIT_LIST_HEAD!(&mut (*policy).profiles);
     (*policy).hname = hname as *const c_char;
     (*policy).name = basename((*policy).hname);
 
@@ -766,4 +767,5 @@ unsafe fn aa_put_str(str: *const c_char) {
     }
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

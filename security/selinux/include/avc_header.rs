@@ -253,12 +253,11 @@ unsafe extern "C" {
     pub fn avc_set_cache_threshold(cache_threshold: u32);
 }
 
-/*
- * CONFIG_SECURITY_SELINUX_AVC_STATS:
- * DECLARE_PER_CPU(struct avc_cache_stats, avc_cache_stats);
- */
+/* CONFIG_SECURITY_SELINUX_AVC_STATS */
+#[cfg(CONFIG_SECURITY_SELINUX_AVC_STATS)]
 unsafe extern "C" {
     pub static mut avc_cache_stats: avc_cache_stats;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

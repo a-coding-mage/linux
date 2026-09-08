@@ -43,6 +43,7 @@ extern "C" {
     fn current_cred() -> *const cred;
     fn current_real_cred() -> *const cred;
     fn prepare_creds() -> *mut cred;
+    fn abort_creds(cred: *mut cred);
     fn label_is_stale(label: *mut aa_label) -> bool;
     fn aa_get_newest_label(label: *mut aa_label) -> *mut aa_label;
     fn aa_put_label(label: *mut aa_label);
@@ -75,7 +76,9 @@ extern "C" {
     fn aa_get_buffer(prealloc: bool) -> *mut i8;
     fn aa_put_buffer(buffer: *mut i8);
     fn aa_lookup_perms(policy: *const c_void, state: aa_state_t) -> *mut aa_perms;
+    fn rule_mediates(rules: *mut aa_ruleset, class: u32) -> aa_state_t;
     fn xcheck_labels(a: *mut aa_label, b: *mut aa_label, profile: *mut aa_profile, res1: i32, res2: i32) -> i32;
+    static aa_g_path_max: i32;
 }
 
 const MAY_READ: u32 = 1;
@@ -230,7 +233,7 @@ pub unsafe extern "C" fn aa_set_current_hat(label: *mut aa_label, token: u64) ->
         aa_put_label(cred_label(new));
     } else {
         // previous_profile && ctx->token != token
-        // abort_creds(new); // Not translated, would require external function
+        abort_creds(new);
         return EACCES;
     }
 
@@ -402,7 +405,7 @@ pub unsafe extern "C" fn aa_may_ptrace(
     request: u32,
 ) -> i32 {
     let mut profile: *mut aa_profile = std::ptr::null_mut();
-    let _xrequest = request << PTRACE_PERM_SHIFT;
+    let xrequest = request << PTRACE_PERM_SHIFT;
     // DEFINE_AUDIT_DATA(sa, LSM_AUDIT_DATA_NONE, AA_CLASS_PTRACE, OP_PTRACE);
     let mut sa = common_audit_data {
         type_: LSM_AUDIT_DATA_NONE,
@@ -415,7 +418,7 @@ pub unsafe extern "C" fn aa_may_ptrace(
         tracee,
         profile,
         profile_tracer_perm(tracer_cred, profile, tracee, request, &mut aad(&mut sa)[0]),
-        profile_tracee_perm(tracee_cred, profile, tracer, _xrequest, &mut aad(&mut sa)[0]),
+        profile_tracee_perm(tracee_cred, profile, tracer, xrequest, &mut aad(&mut sa)[0]),
     )
 }
 
@@ -459,7 +462,7 @@ unsafe extern "C" fn audit_ns_cb(ab: *mut audit_buffer, va: *mut c_void) {
     if buffer.is_null() {
         return;
     }
-    path = get_current_exe_path(buffer, 256); // aa_g_path_max - using placeholder
+    path = get_current_exe_path(buffer, aa_g_path_max);
     if !IS_ERR(path) {
         audit_log_format(
             ab,
@@ -490,11 +493,11 @@ pub unsafe extern "C" fn aa_profile_ns_perm(
         let rules = (*profile).label.rules[0];
         let state: aa_state_t;
 
-        state = unsafe { std::mem::zeroed() }; // RULE_MEDIATES macro placeholder
+        state = rule_mediates(rules, (*ad).class);
         if state as u32 == 0 {
             return 0;
         }
-        perms = *aa_lookup_perms(std::ptr::null(), state);
+        perms = *aa_lookup_perms((*rules).policy, state);
         aa_apply_modes_to_perms(profile, &mut perms);
         error = aa_check_perms(profile, &mut perms, request, ad, audit_ns_cb);
     }
@@ -502,4 +505,5 @@ pub unsafe extern "C" fn aa_profile_ns_perm(
     error
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

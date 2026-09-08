@@ -66,7 +66,7 @@ extern "C" {
     pub static evm_config_xattrnames: list_head;
 }
 
-#[repr(C)]
+#[repr(C, packed)]
 pub struct evm_digest {
     pub hdr: ima_digest_data_hdr,
     pub digest: [c_char; 64], // IMA_MAX_DIGEST_SIZE from external header
@@ -107,4 +107,4 @@ extern "C" {
     pub fn evm_init_secfs() -> i32;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

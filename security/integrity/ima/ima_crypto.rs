@@ -120,6 +120,7 @@ extern "C" {
     static O_CREAT: c_int;
     static O_NOCTTY: c_int;
     static O_EXCL: c_int;
+    static FMODE_READ: c_ulong;
 }
 
 const ENOMEM: i64 = -12;
@@ -144,22 +145,9 @@ extern "C" {
     static ima_hash_algo: i32;
 }
 
-// Helper function to access NR_BANKS macro equivalent
-// Assumes ima_tpm_chip has nr_allocated_banks field
+// Equivalent of the NR_BANKS(chip) macro.
 unsafe fn nr_banks(chip: *mut tpm_chip_struct) -> i32 {
-    if chip.is_null() {
-        return 0;
-    }
-    // nr_allocated_banks field offset would be accessed here
-    // For now, this is a placeholder - the actual field access depends on struct layout
     (*(chip)).nr_allocated_banks as i32
-}
-
-// Helper to get allocated_banks field
-unsafe fn get_allocated_banks(chip: *mut tpm_chip_struct, idx: i32) -> *mut tpm_digest {
-    // This assumes allocated_banks is an array field in the struct
-    // Actual implementation would depend on the precise struct definition
-    ptr::null_mut()
 }
 
 unsafe fn ima_init_ima_crypto() -> i64 {
@@ -467,8 +455,7 @@ pub unsafe fn ima_calc_file_hash(
     }
 
     // Open a new file instance in O_RDONLY if we cannot read
-    if (*file).f_mode & 0x01 == 0 {
-        // FMODE_READ typically 0x00000001
+    if (*file).f_mode & FMODE_READ == 0 {
         let mut flags: c_int = (*file).f_flags & !(O_WRONLY | O_APPEND | O_TRUNC | O_CREAT | O_NOCTTY | O_EXCL);
         flags |= O_RDONLY;
         f = dentry_open(&(*file).f_path, flags, (*file).f_cred);
@@ -799,4 +786,4 @@ pub unsafe fn ima_calc_boot_aggregate(hash: *mut ima_digest_data) -> i64 {
     rc
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

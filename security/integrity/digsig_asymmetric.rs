@@ -257,7 +257,12 @@ unsafe fn asymmetric_verify_common(
         pks.encoding = b"raw\0" as *const u8 as *const c_char;
     } else {
         ret = -65; // ENOPKG
-        // goto out
+        pr_debug(
+            b"%s() = %d\n" as *const u8 as *const c_char,
+            b"asymmetric_verify_common" as *const u8 as *const c_char,
+            ret,
+        );
+        return ret;
     }
 
     pks.m = (data) as *mut u8;
@@ -337,7 +342,12 @@ pub unsafe extern "C" fn asymmetric_verify(
     pk = asymmetric_key_public_key(key as *const key);
     if pk.is_null() {
         ret = -126; // ENOKEY
-        // goto out
+        pr_debug(
+            b"%s() = %d\n" as *const u8 as *const c_char,
+            b"asymmetric_verify_common" as *const u8 as *const c_char,
+            ret,
+        );
+        return ret;
     } else {
         ret = asymmetric_verify_common(key as *const key, pk, sig, siglen, data, datalen);
     }
@@ -532,4 +542,5 @@ pub unsafe extern "C" fn asymmetric_verify_v3(
     }
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

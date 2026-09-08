@@ -1172,4 +1172,5 @@ pub unsafe extern "C" fn key_init() {
     rb_insert_color(&mut root_key_user.node, &mut key_user_tree);
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -34,4 +34,5 @@ pub unsafe fn sel_ib_pkey_sid(_subnet_prefix: u64, _pkey: u16, sid: *mut u32) ->
     return 0;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

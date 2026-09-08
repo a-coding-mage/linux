@@ -91,6 +91,8 @@ extern "C" {
     fn register_filesystem(type_: *mut file_system_type) -> i32;
     fn strlen(s: *const i8) -> usize;
     fn strcat(dest: *mut i8, src: *const i8) -> *mut i8;
+    fn spin_lock(lock: *mut spinlock_t);
+    fn spin_unlock(lock: *mut spinlock_t);
 
     pub static mut kernel_kobj: *mut c_void;
     pub static lsm_active_cnt: i32;
@@ -140,11 +142,6 @@ static mut mount_count: i32 = 0;
 
 // Security file inode free function
 unsafe extern "C" fn securityfs_free_inode(inode_ptr: *mut inode) {
-    if inode_ptr.is_null() {
-        return;
-    }
-
-    let inode = &*inode_ptr;
     if S_ISLNK((*inode_ptr).i_mode) != 0 {
         kfree_const((*inode_ptr).i_link as *const c_void);
     }
@@ -484,10 +481,10 @@ pub unsafe extern "C" fn securityfs_remove(dentry: *mut dentry) {
 
 // CONFIG_SECURITY conditional section
 #[cfg(feature = "CONFIG_SECURITY")]
-mod lsm_security {
+pub mod lsm_security {
     use super::*;
 
-    static mut lsm_dentry: *mut dentry = ptr::null_mut();
+    pub static mut lsm_dentry: *mut dentry = ptr::null_mut();
 
     unsafe extern "C" fn lsm_read(
         filp: *mut file,
@@ -527,14 +524,14 @@ mod lsm_security {
                 i += 1;
             }
 
-            // spin_lock(&lock);
+            spin_lock(&mut lock);
             if str.is_null() {
                 str = str_tmp;
                 len = len_tmp - 1;
             } else {
                 kfree(str_tmp as *mut c_void);
             }
-            // spin_unlock(&lock);
+            spin_unlock(&mut lock);
         }
 
         simple_read_from_buffer(buf, count, ppos, str, len)
@@ -547,7 +544,7 @@ mod lsm_security {
     }
 
     unsafe {
-        static LSM_OPS: file_operations = unsafe {
+        pub static LSM_OPS: file_operations = unsafe {
             // This needs to be initialized via FFI
             core::mem::zeroed()
         };
@@ -572,10 +569,17 @@ pub unsafe extern "C" fn securityfs_init() -> i32 {
 
     #[cfg(feature = "CONFIG_SECURITY")]
     {
-        // lsm_dentry = securityfs_create_file("lsm", 0o444, NULL, NULL, &lsm_ops);
+        lsm_security::lsm_dentry = securityfs_create_file(
+            b"lsm\0".as_ptr() as *const i8,
+            0o444,
+            ptr::null_mut(),
+            ptr::null_mut(),
+            &lsm_security::LSM_OPS as *const file_operations,
+        );
     }
 
     0
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -473,4 +473,5 @@ pub unsafe extern "C" fn landlock_log_free_domain(hierarchy: *const landlock_hie
 //
 // kunit_test_suite(test_suite);
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -432,6 +432,7 @@ unsafe fn parse_exclude() {
      * READING_MAX_ID, which isn't actually meaningful here.
      */
     const _: [(); READING_MAX_ID] = [(); READING_MAX_ID];
+    const _: [(); READING_MAX_ID] = [(); READING_MAX_ID];
 
     i = 0;
     while i < exclude_read_files.len() {
@@ -700,4 +701,5 @@ unsafe extern "C" {
 /* module_param_array_named(exclude, exclude_read_files, charp, NULL, 0); */
 /* MODULE_PARM_DESC(exclude, "Exclude pinning specific read file types"); */
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

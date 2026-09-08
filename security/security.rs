@@ -119,7 +119,7 @@ pub const FMODE_BACKING: c_uint = 0;
 pub const RENAME_EXCHANGE: c_uint = 2;
 pub const NOMMU_MAP_EXEC: c_uint = 0;
 
-pub static lockdown_reasons: [&[u8]; 30] = [
+pub static lockdown_reasons: [&[u8]; 31] = [
     b"none\0", b"unsigned module loading\0", b"/dev/mem,kmem,port\0",
     b"/dev/efi_test access\0", b"kexec of unsigned images\0", b"hibernation\0",
     b"direct PCI access\0", b"raw io port access\0", b"raw MSR access\0",
@@ -132,6 +132,7 @@ pub static lockdown_reasons: [&[u8]; 30] = [
     b"use of kprobes\0", b"use of bpf to read kernel RAM\0",
     b"use of kgdb/kdb to read kernel RAM\0", b"unsafe use of perf\0",
     b"use of tracefs\0", b"xmon read and write access\0", b"xfrm SA secret\0",
+    b"confidentiality\0",
 ];
 
 pub static mut lsm_debug: bool = false;
@@ -504,4 +505,5 @@ void_hook_fn!(fn security_initramfs_populated()=>initramfs_populated);
 /* EXPORT_SYMBOL/EXPORT_SYMBOL_GPL markers from C have no standalone Rust item here. */
 /* CONFIG_* preprocessor guards from C are retained as comments; in a full kernel Rust build these items would be gated with matching cfgs. */
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

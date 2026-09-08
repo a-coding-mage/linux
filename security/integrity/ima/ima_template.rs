@@ -336,19 +336,22 @@ unsafe extern "C" fn ima_template_fmt_setup(str_: *mut c_char) -> c_int {
 #[no_mangle]
 pub unsafe extern "C" fn lookup_template_desc(name: *const c_char) -> *mut ima_template_desc {
     let mut template_desc: *mut ima_template_desc;
-    let mut found: c_int = 0;
-
     rcu_read_lock();
-    template_desc = builtin_templates.as_mut_ptr();
-    while template_desc < builtin_templates.as_mut_ptr().add(builtin_templates.len()) {
+    let mut node = defined_templates.next;
+    while node != &raw mut defined_templates {
+        template_desc = (node as *mut u8).sub(core::mem::offset_of!(ima_template_desc, list))
+            as *mut ima_template_desc;
         if strcmp((*template_desc).name, name) == 0 || strcmp((*template_desc).fmt, name) == 0 {
-            found = 1;
             break;
         }
-        template_desc = template_desc.add(1);
+        node = (*node).next;
     }
     rcu_read_unlock();
-    if found != 0 { template_desc } else { ptr::null_mut() }
+    if node == &raw mut defined_templates {
+        ptr::null_mut()
+    } else {
+        template_desc
+    }
 }
 
 unsafe fn lookup_template_field(field_id: *const c_char) -> *const ima_template_field {
@@ -815,4 +818,5 @@ pub unsafe extern "C" fn ima_restore_measurement_list(size: loff_t, buf: *mut c_
     ret
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

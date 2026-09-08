@@ -179,4 +179,5 @@ pub unsafe extern "C" fn ipe_digest_audit(ab: *mut audit_buffer, info: *const di
     audit_log_n_hex(ab, (*info).digest, (*info).digest_len);
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

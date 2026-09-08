@@ -208,12 +208,20 @@ static lockdown_lsmid: lsm_id = lsm_id {
 };
 
 unsafe fn lockdown_lsm_init() -> c_int {
-    /* CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY:
-     * lock_kernel_down("Kernel configuration", LOCKDOWN_INTEGRITY_MAX);
-     *
-     * CONFIG_LOCK_DOWN_KERNEL_FORCE_CONFIDENTIALITY:
-     * lock_kernel_down("Kernel configuration", LOCKDOWN_CONFIDENTIALITY_MAX);
-     */
+    #[cfg(CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY)]
+    unsafe {
+        lock_kernel_down(c"Kernel configuration".as_ptr(), LOCKDOWN_INTEGRITY_MAX);
+    }
+    #[cfg(all(
+        not(CONFIG_LOCK_DOWN_KERNEL_FORCE_INTEGRITY),
+        CONFIG_LOCK_DOWN_KERNEL_FORCE_CONFIDENTIALITY
+    ))]
+    unsafe {
+        lock_kernel_down(
+            c"Kernel configuration".as_ptr(),
+            LOCKDOWN_CONFIDENTIALITY_MAX,
+        );
+    }
     unsafe {
         security_add_hooks(
             core::ptr::addr_of_mut!(lockdown_hooks) as *mut security_hook_list,
@@ -347,4 +355,4 @@ static lockdown: lsm_info = lsm_info {
     initcall_core: Some(lockdown_secfs_init),
 };
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

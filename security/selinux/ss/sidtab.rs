@@ -754,4 +754,5 @@ pub unsafe extern "C" fn sidtab_sid2str_get(
 
 /* #endif CONFIG_SECURITY_SELINUX_SID2STR_CACHE_SIZE > 0 */
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

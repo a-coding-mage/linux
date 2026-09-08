@@ -473,7 +473,7 @@ pub unsafe extern "C" fn key_free_user_ns(ns: *mut user_namespace) {
     list_del_init(&mut (*ns).keyring_name_list);
     write_unlock(&raw mut keyring_name_lock);
     key_put((*ns).user_keyring_register);
-    /* CONFIG_PERSISTENT_KEYRINGS */
+    #[cfg(feature = "CONFIG_PERSISTENT_KEYRINGS")]
     key_put((*ns).persistent_keyring_register);
 }
 
@@ -1386,4 +1386,5 @@ pub unsafe extern "C" fn keyring_restriction_gc(keyring: *mut key, dead_type: *m
     up_write(&mut (*keyring).sem);
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

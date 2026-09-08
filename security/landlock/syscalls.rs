@@ -780,6 +780,7 @@ pub unsafe extern "C" fn sys_landlock_add_rule(
         LandlockRuleType::LandlockRuleNetPort => unsafe {
             add_rule_net_port(ruleset, rule_attr, flags)
         },
+        _ => -EINVAL,
     };
     unsafe { landlock_put_ruleset(ruleset) };
     ret
@@ -987,4 +988,5 @@ pub unsafe extern "C" fn sys_landlock_restrict_self(ruleset_fd: c_int, flags: U3
     0
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -182,4 +182,5 @@ pub static secclass_map: [security_class_mapping; 108] = [
  * if PF_MAX > 46, fail the build and update secclass_map.
  */
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

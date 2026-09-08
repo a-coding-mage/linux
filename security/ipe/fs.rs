@@ -121,7 +121,7 @@ unsafe extern "C" fn setaudit(
     len: size_t,
     _offset: *mut loff_t,
 ) -> ssize_t {
-    let mut rc: c_int;
+    let mut rc: c_int = 0;
     let mut value = false;
 
     if !unsafe { file_ns_capable(f, &raw const init_user_ns, CAP_MAC_ADMIN) } {
@@ -409,4 +409,5 @@ pub unsafe extern "C" fn ipe_init_securityfs() -> c_int {
     0
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

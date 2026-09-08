@@ -180,7 +180,6 @@ pub struct ipe_eval_ctx {
 }
 
 extern "C" {
-    pub static mut ipe_active_policy: *mut ipe_policy;
     pub static mut hash_algo_name: *const *const c_char;
     pub static mut hash_digest_size: *const usize;
 
@@ -209,6 +208,8 @@ extern "C" {
     fn READ_ONCE_bool(value: *const bool) -> bool;
 }
 
+#[no_mangle]
+pub static mut ipe_active_policy: *mut ipe_policy = ptr::null_mut();
 #[no_mangle]
 pub static mut success_audit: bool = false;
 #[no_mangle]
@@ -404,6 +405,7 @@ unsafe fn evaluate_property(ctx: *const ipe_eval_ctx, p: *mut ipe_prop) -> bool 
         ipe_prop_type::IPE_PROP_FSV_DIGEST => evaluate_fsv_digest(ctx, p),
         ipe_prop_type::IPE_PROP_FSV_SIG_FALSE => evaluate_fsv_sig_false(ctx),
         ipe_prop_type::IPE_PROP_FSV_SIG_TRUE => evaluate_fsv_sig_true(ctx),
+        _ => false,
     }
 }
 
@@ -526,4 +528,5 @@ pub unsafe extern "C" fn ipe_evaluate_event(ctx: *const ipe_eval_ctx) -> c_int {
  * MODULE_PARM_DESC(enforce, "Start IPE in enforce or permissive mode");
  */
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

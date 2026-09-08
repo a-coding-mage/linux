@@ -128,6 +128,7 @@ unsafe extern "C" {
     fn memchr_inv(s: *const c_void, c: c_int, n: size_t) -> *mut c_void;
 
     fn crypto_alloc_shash(alg_name: *const c_char, type_: u32, mask: u32) -> *mut crypto_shash;
+    fn pr_info(fmt: *const c_char, ...) -> c_int;
     fn crypto_free_shash(tfm: *mut crypto_shash);
     fn crypto_shash_digestsize(tfm: *mut crypto_shash) -> c_uint;
     fn crypto_kdf108_ctr_generate(
@@ -239,6 +240,7 @@ unsafe fn kdf_alloc(hash: *mut *mut crypto_shash, hashname: *mut c_char) -> c_in
     /* allocate synchronous hash */
     tfm = crypto_alloc_shash(hashname, 0, 0);
     if IS_ERR(tfm as *const c_void) {
+        pr_info(c"could not allocate digest TFM handle %s\n".as_ptr(), hashname);
         return PTR_ERR(tfm as *const c_void) as c_int;
     }
 
@@ -564,4 +566,5 @@ pub unsafe extern "C" fn keyctl_dh_compute(
     __keyctl_dh_compute(params, buffer, buflen, &mut kdfcopy)
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

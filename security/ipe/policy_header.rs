@@ -57,7 +57,7 @@ pub const IPE_PROP_INVALID: ipe_prop_type = ipe_prop_type::__IPE_PROP_MAX;
 #[repr(C)]
 pub struct ipe_prop {
     pub next: list_head,
-    pub type_: ipe_prop_type,
+    pub r#type: ipe_prop_type,
     pub value: *mut c_void,
 }
 
@@ -86,9 +86,7 @@ pub struct ipe_parsed_policy_version {
 pub struct ipe_parsed_policy {
     pub name: *const c_char,
     pub version: ipe_parsed_policy_version,
-
     pub global_default_action: ipe_action_type,
-
     pub rules: [ipe_op_table; ipe_op_type::__IPE_OP_MAX as usize],
 }
 
@@ -96,12 +94,9 @@ pub struct ipe_parsed_policy {
 pub struct ipe_policy {
     pub pkcs7: *const c_char,
     pub pkcs7len: usize,
-
     pub text: *const c_char,
     pub textlen: usize,
-
     pub parsed: *mut ipe_parsed_policy,
-
     pub policyfs: *mut dentry,
 }
 
@@ -124,4 +119,4 @@ unsafe extern "C" {
     pub static mut ipe_policy_lock: mutex;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

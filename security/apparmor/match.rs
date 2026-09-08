@@ -19,13 +19,18 @@
 pub struct TableHeader {
     pub td_id: u16,
     pub td_flags: u16,
+    pub _pad: u32,
     pub td_lolen: u32,
     pub td_data: [u8; 0],
 }
 
 #[repr(C)]
 pub struct TableSetHeader {
-    // Fields from the binary format
+    pub magic: u32,
+    pub hsize: u32,
+    pub _reserved: u32,
+    pub flags: u16,
+    pub _pad: u16,
 }
 
 #[repr(C)]
@@ -1061,4 +1066,6 @@ pub unsafe fn aa_dfa_leftmatch(
     leftmatch_fb(dfa, start, str, &mut wb, count)
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

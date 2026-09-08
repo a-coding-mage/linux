@@ -239,7 +239,7 @@ extern "C" {
 #[inline]
 pub unsafe fn ima_inode_get_iint(inode: *const core::ffi::c_void) -> *mut ImaIintCache {
     let inode_security = *(inode as *const *const core::ffi::c_void).offset(1);
-    if unlikely(!inode_security.is_null()) {
+    if unlikely(inode_security.is_null()) {
         return core::ptr::null_mut();
     }
 
@@ -251,7 +251,7 @@ pub unsafe fn ima_inode_get_iint(inode: *const core::ffi::c_void) -> *mut ImaIin
 #[inline]
 pub unsafe fn ima_inode_set_iint(inode: *const core::ffi::c_void, iint: *mut ImaIintCache) {
     let inode_security = *(inode as *const *const core::ffi::c_void).offset(1);
-    if unlikely(!inode_security.is_null()) {
+    if unlikely(inode_security.is_null()) {
         return;
     }
 
@@ -847,4 +847,5 @@ pub const POLICY_FILE_FLAGS: u32 = 0o600;  // S_IWUSR | S_IRUSR
 #[cfg(not(feature = "CONFIG_IMA_READ_POLICY"))]
 pub const POLICY_FILE_FLAGS: u32 = 0o200;  // S_IWUSR
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

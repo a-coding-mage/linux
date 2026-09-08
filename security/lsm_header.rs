@@ -61,14 +61,16 @@ unsafe extern "C" {
 
 // C conditional:
 // #ifdef CONFIG_SECURITYFS
+#[cfg(CONFIG_SECURITYFS)]
 unsafe extern "C" {
     pub fn securityfs_init() -> ::core::ffi::c_int;
 }
 // #else
+#[cfg(not(CONFIG_SECURITYFS))]
 #[inline]
-pub fn securityfs_init_disabled() -> ::core::ffi::c_int {
+pub fn securityfs_init() -> ::core::ffi::c_int {
     0
 }
 // #endif /* CONFIG_SECURITYFS */
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

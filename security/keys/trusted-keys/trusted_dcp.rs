@@ -380,7 +380,7 @@ unsafe extern "C" fn trusted_dcp_seal(
         return -E2BIG;
     }
 
-    plain_blob_key = kmalloc(AES_KEYSIZE_128, GFP_KERNEL) as *mut U8;
+    plain_blob_key = kmalloc(AES_KEYSIZE_128, GFP_NOFS) as *mut U8;
     if plain_blob_key.is_null() {
         return -ENOMEM;
     }
@@ -565,4 +565,5 @@ pub static mut dcp_trusted_key_ops: trusted_key_ops = trusted_key_ops {
     migratable: 0,
 };
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -97,4 +97,5 @@ pub unsafe extern "C" fn symtab_search(s: *const symtab, name: *const c_char) ->
     hashtab_search(&(*s).table, name, SYMTAB_KEY_PARAMS)
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

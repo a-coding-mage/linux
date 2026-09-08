@@ -66,21 +66,9 @@ unsafe extern "C" fn apparmor_label_to_secctx(
     }
 
     if !cp.is_null() {
-        len = aa_label_asxprint(
-            &mut (*cp).context,
-            root_ns,
-            label,
-            flags,
-            0, // GFP_ATOMIC
-        );
+        len = aa_label_asxprint(&mut (*cp).context, root_ns, label, flags, 0);
     } else {
-        len = aa_label_snxprint(
-            core::ptr::null_mut(),
-            0,
-            root_ns,
-            label,
-            flags,
-        );
+        len = aa_label_snxprint(core::ptr::null_mut(), 0, root_ns, label, flags);
     }
 
     if len < 0 {
@@ -95,54 +83,30 @@ unsafe extern "C" fn apparmor_label_to_secctx(
     len
 }
 
-pub unsafe extern "C" fn apparmor_secid_to_secctx(
-    secid: u32,
-    cp: *mut lsm_context,
-) -> i32 {
+pub unsafe extern "C" fn apparmor_secid_to_secctx(secid: u32, cp: *mut lsm_context) -> i32 {
     let label = aa_secid_to_label(secid);
-
     apparmor_label_to_secctx(label, cp)
 }
 
-pub unsafe extern "C" fn apparmor_lsmprop_to_secctx(
-    prop: *mut lsm_prop,
-    cp: *mut lsm_context,
-) -> i32 {
-    let label: *mut aa_label;
-
-    label = (*prop).apparmor.label;
-
+pub unsafe extern "C" fn apparmor_lsmprop_to_secctx(prop: *mut lsm_prop, cp: *mut lsm_context) -> i32 {
+    let label: *mut aa_label = (*prop).apparmor.label;
     apparmor_label_to_secctx(label, cp)
 }
 
-pub unsafe extern "C" fn apparmor_secctx_to_secid(
-    secdata: *const u8,
-    seclen: u32,
-    secid: *mut u32,
-) -> i32 {
-    let label: *mut aa_label;
-
-    label = aa_label_strn_parse(
-        &mut (*(*root_ns).unconfined).label,
-        secdata,
-        seclen,
-        0, // GFP_KERNEL
-        0, // false
-        0, // false
-    );
-    if !IS_ERR(label as *const ()) {
+pub unsafe extern "C" fn apparmor_secctx_to_secid(secdata: *const u8, seclen: u32, secid: *mut u32) -> i32 {
+    let label = aa_label_strn_parse(&mut (*(*root_ns).unconfined).label, secdata, seclen, 0, 0, 0);
+    if IS_ERR(label as *const ()) {
         return PTR_ERR(label as *const ());
     }
     *secid = (*label).secid;
-
     0
 }
 
 pub unsafe extern "C" fn apparmor_release_secctx(cp: *mut lsm_context) {
-    if (*cp).id == 1 { // LSM_ID_APPARMOR
+    if (*cp).id == 1 {
         kfree((*cp).context);
         (*cp).context = core::ptr::null_mut();
-        (*cp).id = 0; // LSM_ID_UNDEF
+        (*cp).id = 0;
     }
 }
 
@@ -156,23 +120,16 @@ pub unsafe extern "C" fn apparmor_release_secctx(cp: *mut lsm_context) {
  */
 pub unsafe extern "C" fn aa_alloc_secid(label: *mut aa_label, gfp: u32) -> i32 {
     let mut flags: u64 = 0;
-    let mut ret: i32;
-
-    xa_lock_irqsave(&aa_secids, &mut flags);
-    ret = __xa_alloc(
-        &aa_secids,
-        &mut (*label).secid,
-        label as *const (),
-        (AA_FIRST_SECID, i32::MAX as u32),
-        gfp,
-    );
-    xa_unlock_irqrestore(&aa_secids, flags);
-
+    let ret = {
+        xa_lock_irqsave(&mut aa_secids, &mut flags);
+        let ret = __xa_alloc(&mut aa_secids, &mut (*label).secid, label as *const (), (AA_FIRST_SECID, i32::MAX as u32), gfp);
+        xa_unlock_irqrestore(&mut aa_secids, flags);
+        ret
+    };
     if ret < 0 {
-        (*label).secid = 0xffffffff; // AA_SECID_INVALID
+        (*label).secid = 0xffffffff;
         return ret;
     }
-
     0
 }
 
@@ -182,83 +139,34 @@ pub unsafe extern "C" fn aa_alloc_secid(label: *mut aa_label, gfp: u32) -> i32 {
  */
 pub unsafe extern "C" fn aa_free_secid(secid: u32) {
     let mut flags: u64 = 0;
-
-    xa_lock_irqsave(&aa_secids, &mut flags);
-    __xa_erase(&aa_secids, secid as usize);
-    xa_unlock_irqrestore(&aa_secids, flags);
+    xa_lock_irqsave(&mut aa_secids, &mut flags);
+    __xa_erase(&mut aa_secids, secid as usize);
+    xa_unlock_irqrestore(&mut aa_secids, flags);
 }
 
-// External declarations for kernel structures and functions
 extern "C" {
-    pub struct aa_label {
-        pub secid: u32,
-        // additional fields not specified in source
-    }
-
-    pub struct lsm_context {
-        pub context: *mut u8,
-        pub len: i32,
-        pub id: i32,
-    }
-
-    pub struct lsm_prop {
-        pub apparmor: AppArmorProp,
-    }
-
-    pub struct AppArmorProp {
-        pub label: *mut aa_label,
-    }
-
-    pub struct xa_struct {
-        // xarray internal structure
-    }
-
+    pub struct aa_label { pub secid: u32 }
+    pub struct lsm_context { pub context: *mut u8, pub len: i32, pub id: i32 }
+    pub struct lsm_prop { pub apparmor: AppArmorProp }
+    pub struct AppArmorProp { pub label: *mut aa_label }
+    pub struct xa_struct {}
     pub static mut root_ns: *mut ();
-
     pub fn xa_load(xa: *const xa_struct, index: usize) -> *const ();
     pub fn xa_lock_irqsave(xa: *mut xa_struct, flags: *mut u64);
     pub fn xa_unlock_irqrestore(xa: *mut xa_struct, flags: u64);
-    pub fn __xa_alloc(
-        xa: *mut xa_struct,
-        index: *mut u32,
-        entry: *const (),
-        limit: (u32, u32),
-        gfp: u32,
-    ) -> i32;
+    pub fn __xa_alloc(xa: *mut xa_struct, index: *mut u32, entry: *const (), limit: (u32, u32), gfp: u32) -> i32;
     pub fn __xa_erase(xa: *mut xa_struct, index: usize);
-
-    pub fn aa_label_asxprint(
-        context: *mut *mut u8,
-        ns: *mut (),
-        label: *mut aa_label,
-        flags: i32,
-        gfp: u32,
-    ) -> i32;
-    pub fn aa_label_snxprint(
-        buf: *mut u8,
-        size: usize,
-        ns: *mut (),
-        label: *mut aa_label,
-        flags: i32,
-    ) -> i32;
-    pub fn aa_label_strn_parse(
-        base: *mut aa_label,
-        str_: *const u8,
-        len: u32,
-        gfp: u32,
-        create: i32,
-        force_clear: i32,
-    ) -> *mut aa_label;
+    pub fn aa_label_asxprint(context: *mut *mut u8, ns: *mut (), label: *mut aa_label, flags: i32, gfp: u32) -> i32;
+    pub fn aa_label_snxprint(buf: *mut u8, size: usize, ns: *mut (), label: *mut aa_label, flags: i32) -> i32;
+    pub fn aa_label_strn_parse(base: *mut aa_label, str_: *const u8, len: u32, gfp: u32, create: i32, force_clear: i32) -> *mut aa_label;
     pub fn kfree(ptr: *const ());
-
     pub fn IS_ERR(ptr: *const ()) -> i32;
     pub fn PTR_ERR(ptr: *const ()) -> i32;
 }
 
-// Flags (from linux/err.h / AppArmor headers)
 const FLAG_VIEW_SUBNS: i32 = 1;
 const FLAG_HIDDEN_UNCONFINED: i32 = 2;
 const FLAG_ABS_ROOT: i32 = 4;
 const FLAG_SHOW_MODE: i32 = 8;
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -548,24 +548,19 @@ extern "C" fn hash_setup(str: *const c_char) -> i32 {
                 pr_err(b"invalid hash algorithm \"%s\" for template \"%s\"\0" as *const u8 as *const c_char, str, b"ima\0" as *const u8 as *const c_char);
                 return 1;
             }
-            goto_out();
+        } else {
+            let i = match_string(hash_algo_name, HASH_ALGO__LAST, str);
+            if i < 0 {
+                pr_err(b"invalid hash algorithm \"%s\"\0" as *const u8 as *const c_char, str);
+                return 1;
+            }
+            ima_hash_algo = i;
         }
-
-        let i = match_string(hash_algo_name, HASH_ALGO__LAST, str);
-        if i < 0 {
-            pr_err(b"invalid hash algorithm \"%s\"\0" as *const u8 as *const c_char, str);
-            return 1;
-        }
-
-        ima_hash_algo = i;
-        goto_out();
 
         hash_setup_done = 1;
         1
     }
 }
-
-fn goto_out() {}
 
 pub extern "C" fn ima_get_current_hash_algo() -> i32 {
     unsafe { ima_hash_algo }
@@ -1809,4 +1804,5 @@ pub const IMA_APPRAISE_KEXEC: i32 = 0x10;
 pub const IMA_APPRAISE_FIRMWARE: i32 = 0x20;
 pub const IMA_APPRAISE_MODULES: i32 = 0x40;
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

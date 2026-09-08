@@ -703,4 +703,5 @@ pub unsafe fn smk_ad_setfield_u_fs_path(_a: *mut smk_audit_info, _p: path) {}
 #[cfg(not(CONFIG_AUDIT))]
 pub unsafe fn smk_ad_setfield_u_net_sk(_a: *mut smk_audit_info, _sk: *mut sock) {}
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

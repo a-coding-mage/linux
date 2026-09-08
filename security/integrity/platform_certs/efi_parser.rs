@@ -25,10 +25,10 @@ pub struct efi_signature_data_t {
     pub signature_data: [u8; 0],
 }
 
-pub type efi_element_handler_t = Option<unsafe extern "C" fn(*const i8, *const c_void, usize)>;
+pub type efi_element_handler_t = unsafe extern "C" fn(*const i8, *const c_void, usize);
 
 // Equivalent to -EBADMSG error code
-const EBADMSG: i32 = -22;
+const EBADMSG: i32 = -74;
 
 /// Parse an EFI signature list for certificates
 /// source: The source of the key
@@ -56,24 +56,17 @@ pub unsafe fn parse_efi_signature_list(
     source: *const i8,
     data: *const c_void,
     size: usize,
-    get_handler_for_guid: unsafe fn(*const efi_guid_t) -> efi_element_handler_t,
+    get_handler_for_guid: unsafe extern "C" fn(*const efi_guid_t) -> Option<efi_element_handler_t>,
 ) -> i32 {
-    let mut handler: efi_element_handler_t;
-    let mut offs: u32 = 0;
     let mut data = data as *const u8;
     let mut size = size;
-
-    // pr_devel("-->%s(,%zu)\n", __func__, size);
+    let mut offs: u32 = 0;
 
     while size > 0 {
-        let mut elem: *const efi_signature_data_t;
         let mut list: efi_signature_list_t = std::mem::zeroed();
-        let lsize: usize;
-        let esize: usize;
-        let hsize: usize;
-        let elsize: usize;
+        let list_size = std::mem::size_of::<efi_signature_list_t>();
 
-        if size < std::mem::size_of::<efi_signature_list_t>() {
+        if size < list_size {
             return EBADMSG;
         }
 
@@ -82,33 +75,26 @@ pub unsafe fn parse_efi_signature_list(
             &mut list as *mut efi_signature_list_t,
             1,
         );
-        // pr_devel("LIST[%04x] guid=%pUl ls=%x hs=%x ss=%x\n",
-        //          offs,
-        //          &list.signature_type, list.signature_list_size,
-        //          list.signature_header_size, list.signature_size);
 
-        lsize = list.signature_list_size as usize;
-        hsize = list.signature_header_size as usize;
-        esize = list.signature_size as usize;
-        elsize = lsize - std::mem::size_of::<efi_signature_list_t>() - hsize;
+        let lsize = list.signature_list_size as usize;
+        let hsize = list.signature_header_size as usize;
+        let esize = list.signature_size as usize;
+        let mut elsize = lsize.wrapping_sub(list_size).wrapping_sub(hsize);
 
         if lsize > size {
-            // pr_devel("<--%s() = -EBADMSG [overrun @%x]\n",
-            //          __func__, offs);
             return EBADMSG;
         }
 
-        if lsize < std::mem::size_of::<efi_signature_list_t>()
-            || lsize - std::mem::size_of::<efi_signature_list_t>() < hsize
+        if lsize < list_size
+            || lsize - list_size < hsize
             || esize < std::mem::size_of::<efi_signature_data_t>()
             || elsize < esize
             || elsize % esize != 0
         {
-            // pr_devel("- bad size combo @%x\n", offs);
             return EBADMSG;
         }
 
-        handler = get_handler_for_guid(&list.signature_type);
+        let handler = get_handler_for_guid(&list.signature_type);
         if handler.is_none() {
             data = data.add(lsize);
             size -= lsize;
@@ -116,19 +102,17 @@ pub unsafe fn parse_efi_signature_list(
             continue;
         }
 
-        data = data.add(std::mem::size_of::<efi_signature_list_t>() + hsize);
-        size -= std::mem::size_of::<efi_signature_list_t>() + hsize;
-        offs = offs.wrapping_add((std::mem::size_of::<efi_signature_list_t>() + hsize) as u32);
+        data = data.add(list_size + hsize);
+        size -= list_size + hsize;
+        offs = offs.wrapping_add((list_size + hsize) as u32);
 
-        let mut elsize = elsize;
         while elsize > 0 {
-            elem = data as *const efi_signature_data_t;
+            let elem = data as *const efi_signature_data_t;
 
-            // pr_devel("ELEM[%04x]\n", offs);
             if let Some(handler_fn) = handler {
                 handler_fn(
                     source,
-                    &(*elem).signature_data as *const _ as *const c_void,
+                    (*elem).signature_data.as_ptr() as *const c_void,
                     esize - std::mem::size_of::<efi_signature_data_t>(),
                 );
             }
@@ -143,4 +127,4 @@ pub unsafe fn parse_efi_signature_list(
     0
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

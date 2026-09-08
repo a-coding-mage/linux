@@ -67,7 +67,7 @@ pub unsafe fn mls_context_init(c: *mut context) {
 }
 
 pub unsafe fn mls_context_cpy(dst: *mut context, src: *const context) -> c_int {
-    let rc: c_int;
+    let mut rc: c_int;
 
     unsafe {
         (*dst).range.level[0].sens = (*src).range.level[0].sens;
@@ -96,7 +96,7 @@ pub unsafe fn mls_context_cpy(dst: *mut context, src: *const context) -> c_int {
  * Sets both levels in the MLS range of 'dst' to the low level of 'src'.
  */
 pub unsafe fn mls_context_cpy_low(dst: *mut context, src: *const context) -> c_int {
-    let rc: c_int;
+    let mut rc: c_int;
 
     unsafe {
         (*dst).range.level[0].sens = (*src).range.level[0].sens;
@@ -125,7 +125,7 @@ pub unsafe fn mls_context_cpy_low(dst: *mut context, src: *const context) -> c_i
  * Sets both levels in the MLS range of 'dst' to the high level of 'src'.
  */
 pub unsafe fn mls_context_cpy_high(dst: *mut context, src: *const context) -> c_int {
-    let rc: c_int;
+    let mut rc: c_int;
 
     unsafe {
         (*dst).range.level[0].sens = (*src).range.level[1].sens;
@@ -223,7 +223,7 @@ pub unsafe fn context_init(c: *mut context) {
 }
 
 pub unsafe fn context_cpy(dst: *mut context, src: *const context) -> c_int {
-    let rc: c_int;
+    let mut rc: c_int;
 
     unsafe {
         (*dst).user = (*src).user;
@@ -282,4 +282,6 @@ unsafe extern "C" {
     pub fn context_compute_hash(c: *const context) -> u32;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

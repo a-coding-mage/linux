@@ -300,6 +300,7 @@ pub unsafe extern "C" fn evm_set_key(key: *mut c_void, keylen: usize) -> c_int {
 
     rc = EBUSY;
     if test_and_set_bit(EVM_SET_KEY_BUSY, &mut EVM_SET_KEY_FLAGS) != 0 {
+        pr_err(b"EVM: key initialization failed\n".as_ptr() as *const c_char);
         return rc;
     }
     rc = EINVAL;
@@ -526,7 +527,7 @@ unsafe fn evm_calc_hmac_or_hash(
         return EOPNOTSUPP;
     }
 
-    desc = init_desc(xattr_type as c_char, xattr_type);
+    desc = init_desc(xattr_type as c_char, (*data).hdr.algo);
     if IS_ERR(desc as *const c_void) {
         return PTR_ERR(desc as *const c_void);
     }
@@ -535,9 +536,29 @@ unsafe fn evm_calc_hmac_or_hash(
 
     error = ENODATA;
 
-    // list_for_each_entry_lockless simulation
-    // xattr would iterate through evm_config_xattrnames list
-    // This is simplified - actual implementation depends on kernel list structure
+    xattr = &evm_config_xattrnames;
+    while !(*xattr).name.is_null() {
+        let is_ima = strcmp((*xattr).name, XATTR_NAME_IMA.as_ptr() as *const c_char) == 0;
+        if xattr_type as c_char != EVM_XATTR_PORTABLE_DIGSIG && !(*xattr).enabled {
+            xattr = xattr.add(1); continue;
+        }
+        if !req_xattr_name.is_null() && !req_xattr_value.is_null()
+            && strcmp((*xattr).name, req_xattr_name) == 0 {
+            error = 0;
+            crypto_shash_update(desc, req_xattr_value as *const u8, req_xattr_value_len);
+            if is_ima { ima_present = true; }
+            xattr = xattr.add(1); continue;
+        }
+        size = vfs_getxattr_alloc(&nop_mnt_idmap as *const c_void, dentry,
+            (*xattr).name, &mut xattr_value, xattr_size, GFP_NOFS);
+        if size == -ENOMEM { error = -ENOMEM; break; }
+        if size < 0 { xattr = xattr.add(1); continue; }
+        error = 0;
+        xattr_size = size as usize;
+        crypto_shash_update(desc, xattr_value as *const u8, xattr_size);
+        if is_ima { ima_present = true; }
+        xattr = xattr.add(1);
+    }
 
     hmac_add_misc(desc, inode, xattr_type as c_char, (*data).digest.as_mut_ptr());
 
@@ -698,17 +719,16 @@ pub unsafe extern "C" fn evm_init_hmac(
         return PTR_ERR(desc as *const c_void);
     }
 
-    // list_for_each_entry_lockless simulation
-    // xattr_entry would iterate through evm_config_xattrnames list
-    xattr = xattrs;
-    while !(*xattr).name.is_null() {
-        // strcmp and string matching would happen here
-        crypto_shash_update(
-            desc,
-            (*xattr).value,
-            (*xattr).value_len,
-        );
-        xattr = xattr.add(1);
+    xattr_entry = &evm_config_xattrnames;
+    while !(*xattr_entry).name.is_null() {
+        xattr = xattrs;
+        while !(*xattr).name.is_null() {
+            if strcmp((*xattr_entry).name.add(XATTR_SECURITY_PREFIX_LEN), (*xattr).name) == 0 {
+                crypto_shash_update(desc, (*xattr).value, (*xattr).value_len);
+            }
+            xattr = xattr.add(1);
+        }
+        xattr_entry = xattr_entry.add(1);
     }
 
     hmac_add_misc(desc, inode, EVM_XATTR_HMAC, hmac_val as *mut u8);
@@ -743,4 +763,5 @@ pub unsafe extern "C" fn evm_init_key() -> c_int {
     rc
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

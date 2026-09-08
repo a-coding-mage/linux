@@ -671,4 +671,5 @@ unsafe fn __security_read_policy(policy: *mut selinux_policy, data: *mut c_void,
 #[no_mangle] pub unsafe extern "C" fn security_read_policy(data: *mut *mut c_void, len: *mut size_t) -> c_int { let state = &mut selinux_state as *mut selinux_state; let policy = rcu_dereference_protected((*state).policy, lockdep_is_held(&(*state).policy_mutex as *const _ as *const c_void)); if policy.is_null() { return neg(EINVAL); } *len = (*policy).policydb.len; *data = vmalloc_user(*len); if (*data).is_null() { return neg(ENOMEM); } __security_read_policy(policy, *data, len) }
 #[no_mangle] pub unsafe extern "C" fn security_read_state_kernel(data: *mut *mut c_void, len: *mut size_t) -> c_int { let state = &mut selinux_state as *mut selinux_state; let policy = rcu_dereference_protected((*state).policy, lockdep_is_held(&(*state).policy_mutex as *const _ as *const c_void)); if policy.is_null() { return neg(EINVAL); } *len = (*policy).policydb.len; *data = vmalloc(*len); if (*data).is_null() { return neg(ENOMEM); } let err = __security_read_policy(policy, *data, len); if err != 0 { vfree(*data); *data = null_mut(); *len = 0; } err }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

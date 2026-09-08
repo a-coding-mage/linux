@@ -152,7 +152,7 @@ unsafe fn dfa_other_quiet(dfa: *const aa_dfa, state: aa_state_t) -> u32 {
 }
 
 unsafe fn dfa_other_xindex(dfa: *const aa_dfa, state: aa_state_t) -> u32 {
-    dfa_map_xindex(((*ACCEPT_TABLE(dfa).add(state as usize)) >> 14) & 0x3fff as u16)
+    dfa_map_xindex(((((*ACCEPT_TABLE(dfa).add(state as usize)) >> 14) & 0x3fff) as u16))
 }
 
 unsafe fn map_old_perms(old: u32) -> u32 {
@@ -296,7 +296,19 @@ unsafe fn compute_perms(dfa: *const aa_dfa, version: u32, size: *mut u32) -> *mu
 
     for state in 1..state_count {
         *table.add(state) = compute_perms_entry(dfa, state as aa_state_t, version);
-        // AA_DEBUG call with format string - external logging dependency
+        AA_DEBUG(
+            0,
+            b"[%d]: (0x%x/0x%x/0x%x//0x%x/0x%x//0x%x), converted from accept1: 0x%x, accept2: 0x%x\0".as_ptr(),
+            state as i32,
+            (*table.add(state)).allow,
+            (*table.add(state)).deny,
+            (*table.add(state)).prompt,
+            (*table.add(state)).audit,
+            (*table.add(state)).quiet,
+            (*table.add(state)).xindex,
+            *ACCEPT_TABLE(dfa).add(state),
+            *ACCEPT_TABLE2(dfa).add(state),
+        );
     }
     table
 }
@@ -353,4 +365,5 @@ pub extern "C" fn aa_compat_map_file(policy: *mut aa_policydb) -> i32 {
     0
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

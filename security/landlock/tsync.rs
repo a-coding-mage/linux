@@ -119,6 +119,7 @@ extern "C" {
     fn down_write_trylock(sem: *mut rw_semaphore) -> c_int;
     fn up_write(sem: *mut rw_semaphore);
     fn restart_syscall() -> c_int;
+    fn next_thread(caller: *mut task_struct, thread: *mut task_struct) -> *mut task_struct;
 }
 
 macro_rules! unlikely {
@@ -480,10 +481,10 @@ unsafe extern "C" fn tsync_works_release(s: *mut tsync_works) {
 /*
  * count_additional_threads - counts the sibling threads that are not in works
  */
-unsafe extern "C" fn count_additional_threads(_works: *const tsync_works) -> size_t {
+unsafe extern "C" fn count_additional_threads(works: *const tsync_works) -> size_t {
     let _caller: *const task_struct;
     let _thread: *const task_struct;
-    let n: size_t = 0;
+    let mut n: size_t = 0;
 
     _caller = current;
 
@@ -496,6 +497,12 @@ unsafe extern "C" fn count_additional_threads(_works: *const tsync_works) -> siz
      * The for_each_thread/RCU iteration primitive is provided externally by
      * the kernel and has no file-local Rust expression here.
      */
+    let mut thread = _caller as *mut task_struct;
+    while !thread.is_null() {
+        if thread != _caller as *mut task_struct && ((*thread).flags & PF_EXITING) == 0
+            && !tsync_works_contains_task(works, thread) { n += 1; }
+        thread = next_thread(current, thread);
+    }
     n
 }
 
@@ -510,14 +517,14 @@ unsafe extern "C" fn count_additional_threads(_works: *const tsync_works) -> siz
  * otherwise.
  */
 unsafe extern "C" fn schedule_task_work(
-    _works: *mut tsync_works,
-    _shared_ctx: *mut tsync_shared_context,
+    works: *mut tsync_works,
+    shared_ctx: *mut tsync_shared_context,
 ) -> bool_ {
     let _err: c_int;
     let _caller: *const task_struct;
     let _thread: *mut task_struct;
     let _ctx: *mut tsync_work;
-    let found_more_threads: bool_ = false;
+    let mut found_more_threads: bool_ = false;
 
     _caller = current;
 
@@ -533,6 +540,25 @@ unsafe extern "C" fn schedule_task_work(
      * The for_each_thread/RCU iteration primitive is provided externally by
      * the kernel and has no file-local Rust expression here.
      */
+    let mut thread = current;
+    while !thread.is_null() {
+        if thread != current && ((*thread).flags & PF_EXITING) == 0
+            && !tsync_works_contains_task(works, thread) {
+            found_more_threads = true;
+            let ctx = tsync_works_provide(works, thread);
+            if ctx.is_null() { break; }
+            (*ctx).shared_ctx = shared_ctx;
+            atomic_inc(&mut (*shared_ctx).num_preparing);
+            atomic_inc(&mut (*shared_ctx).num_unfinished);
+            init_task_work(&mut (*ctx).work, restrict_one_thread_callback);
+            if unlikely!(task_work_add(thread, &mut (*ctx).work, TWA_SIGNAL) != 0) {
+                tsync_works_trim(works);
+                atomic_dec(&mut (*shared_ctx).num_preparing);
+                atomic_dec(&mut (*shared_ctx).num_unfinished);
+            }
+        }
+        thread = next_thread(current, thread);
+    }
     found_more_threads
 }
 
@@ -738,4 +764,5 @@ pub unsafe extern "C" fn landlock_restrict_sibling_threads(
     atomic_read(&shared_ctx.preparation_error)
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

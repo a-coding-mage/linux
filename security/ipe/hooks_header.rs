@@ -51,10 +51,10 @@ unsafe extern "C" {
 
     pub fn ipe_unpack_initramfs();
 
-    // C conditional: #ifdef CONFIG_IPE_PROP_DM_VERITY
+    #[cfg(CONFIG_IPE_PROP_DM_VERITY)]
     pub fn ipe_bdev_free_security(bdev: *mut block_device);
 
-    // C conditional: #ifdef CONFIG_IPE_PROP_DM_VERITY
+    #[cfg(CONFIG_IPE_PROP_DM_VERITY)]
     pub fn ipe_bdev_setintegrity(
         bdev: *mut block_device,
         type_: lsm_integrity_type,
@@ -62,7 +62,7 @@ unsafe extern "C" {
         len: usize,
     ) -> c_int;
 
-    // C conditional: #ifdef CONFIG_IPE_PROP_FS_VERITY_BUILTIN_SIG
+    #[cfg(CONFIG_IPE_PROP_FS_VERITY_BUILTIN_SIG)]
     pub fn ipe_inode_setintegrity(
         inode: *const inode,
         type_: lsm_integrity_type,
@@ -71,4 +71,4 @@ unsafe extern "C" {
     ) -> c_int;
 }
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -38,6 +38,7 @@ extern "C" {
         ctor: *mut c_void,
     ) -> *mut c_void;
     fn lsm_cred_alloc(cred: *mut cred, gfp: gfp_t) -> c_int;
+    fn unrcu_pointer(ptr: *mut cred) -> *mut cred;
     fn lsm_task_alloc(task: *mut task_struct) -> c_int;
     fn securityfs_init() -> c_int;
     fn call_blocking_lsm_notifier(val: c_uint, v: *mut c_void) -> c_int;
@@ -745,7 +746,7 @@ pub unsafe extern "C" fn security_init() -> c_int {
         );
     }
 
-    if lsm_cred_alloc((*current).cred, GFP_KERNEL) != 0 {
+    if lsm_cred_alloc(unrcu_pointer((*current).cred), GFP_KERNEL) != 0 {
         panic(b"early LSM cred alloc failed\n\0".as_ptr() as *const c_char);
     }
     if lsm_task_alloc(current) != 0 {
@@ -877,4 +878,5 @@ unsafe extern "C" fn security_initcall_late_sync() -> c_int {
 }
 // late_initcall_sync(security_initcall_late_sync);
 
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
