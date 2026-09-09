@@ -1,0 +1,11 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: 6b69b2642c16d8c2acb7f3ae18d7e83b695d32a6a9b817eecbbd0b8efd6e42da
+# REVIEW-CONTEXT: a982d1fe2bd75cac2bca47395509509fc3c4671f62f88f185591b39cc4029528
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0-only
+obj-$(CONFIG_IRQ_BYPASS_MANAGER) += irqbypass.o
+
+# Keep the canonical Kbuild object and configuration interface, but select the
+# repository-owned Rust implementation instead of the legacy C translation.
+$(obj)/irqbypass.o: $(obj)/irqbypass.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
