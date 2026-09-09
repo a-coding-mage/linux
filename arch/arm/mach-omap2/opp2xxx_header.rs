@@ -1,0 +1,65 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Rust translation of opp2xxx.h. */
+
+#[repr(C)]
+pub struct prcm_config {
+    pub xtal_speed: ::core::ffi::c_ulong,
+    pub dpll_speed: ::core::ffi::c_ulong,
+    pub mpu_speed: ::core::ffi::c_ulong,
+    pub cm_clksel_mpu: ::core::ffi::c_ulong,
+    pub cm_clksel_dsp: ::core::ffi::c_ulong,
+    pub cm_clksel_gfx: ::core::ffi::c_ulong,
+    pub cm_clksel1_core: ::core::ffi::c_ulong,
+    pub cm_clksel1_pll: ::core::ffi::c_ulong,
+    pub cm_clksel2_pll: ::core::ffi::c_ulong,
+    pub cm_clksel_mdm: ::core::ffi::c_ulong,
+    pub base_sdrc_rfr: ::core::ffi::c_ulong,
+    pub flags: u16,
+}
+
+pub const RX_CLKSEL_DSS1: u32 = 0x10 << 8;
+pub const RX_CLKSEL_DSS2: u32 = 0x0 << 13;
+pub const RX_CLKSEL_SSI: u32 = 0x5 << 20;
+
+macro_rules! bits { ($name:ident, $value:expr) => { pub const $name: u32 = $value; }; }
+
+bits!(R1_CLKSEL_L3,4<<0); bits!(R1_CLKSEL_L4,2<<5); bits!(R1_CLKSEL_USB,4<<25);
+pub const R1_CM_CLKSEL1_CORE_VAL:u32=R1_CLKSEL_USB|RX_CLKSEL_SSI|RX_CLKSEL_DSS2|RX_CLKSEL_DSS1|R1_CLKSEL_L4|R1_CLKSEL_L3;
+bits!(R1_CLKSEL_MPU,2<<0); pub const R1_CM_CLKSEL_MPU_VAL:u32=R1_CLKSEL_MPU;
+bits!(R1_CLKSEL_DSP,2<<0); bits!(R1_CLKSEL_DSP_IF,2<<5); pub const R1_CM_CLKSEL_DSP_VAL:u32=R1_CLKSEL_DSP|R1_CLKSEL_DSP_IF;
+bits!(R1_CLKSEL_GFX,2<<0); pub const R1_CM_CLKSEL_GFX_VAL:u32=R1_CLKSEL_GFX;
+bits!(R1_CLKSEL_MDM,4<<0); pub const R1_CM_CLKSEL_MDM_VAL:u32=R1_CLKSEL_MDM;
+
+bits!(R2_CLKSEL_L3,6<<0); bits!(R2_CLKSEL_L4,2<<5); bits!(R2_CLKSEL_USB,2<<25);
+pub const R2_CM_CLKSEL1_CORE_VAL:u32=R2_CLKSEL_USB|RX_CLKSEL_SSI|RX_CLKSEL_DSS2|RX_CLKSEL_DSS1|R2_CLKSEL_L4|R2_CLKSEL_L3;
+bits!(R2_CLKSEL_MPU,2<<0); pub const R2_CM_CLKSEL_MPU_VAL:u32=R2_CLKSEL_MPU; bits!(R2_CLKSEL_DSP,2<<0); bits!(R2_CLKSEL_DSP_IF,3<<5); pub const R2_CM_CLKSEL_DSP_VAL:u32=R2_CLKSEL_DSP|R2_CLKSEL_DSP_IF; bits!(R2_CLKSEL_GFX,2<<0); pub const R2_CM_CLKSEL_GFX_VAL:u32=R2_CLKSEL_GFX; bits!(R2_CLKSEL_MDM,6<<0); pub const R2_CM_CLKSEL_MDM_VAL:u32=R2_CLKSEL_MDM;
+
+bits!(RB_CLKSEL_L3,1<<0); bits!(RB_CLKSEL_L4,1<<5); bits!(RB_CLKSEL_USB,1<<25); pub const RB_CM_CLKSEL1_CORE_VAL:u32=RB_CLKSEL_USB|RX_CLKSEL_SSI|RX_CLKSEL_DSS2|RX_CLKSEL_DSS1|RB_CLKSEL_L4|RB_CLKSEL_L3; bits!(RB_CLKSEL_MPU,1<<0); pub const RB_CM_CLKSEL_MPU_VAL:u32=RB_CLKSEL_MPU; bits!(RB_CLKSEL_DSP,1<<0); bits!(RB_CLKSEL_DSP_IF,1<<5); pub const RB_CM_CLKSEL_DSP_VAL:u32=RB_CLKSEL_DSP|RB_CLKSEL_DSP_IF; bits!(RB_CLKSEL_GFX,1<<0); pub const RB_CM_CLKSEL_GFX_VAL:u32=RB_CLKSEL_GFX; bits!(RB_CLKSEL_MDM,1<<0); pub const RB_CM_CLKSEL_MDM_VAL:u32=RB_CLKSEL_MDM;
+
+bits!(RXX_CLKSEL_VLYNQ,0x12<<15); bits!(RXX_CLKSEL_SSI,0x8<<20);
+
+// 2420 ratio constants.
+// The following constants retain the original register expressions.
+pub const RIII_CLKSEL_L3:u32=4<<0; pub const RIII_CLKSEL_L4:u32=2<<5; pub const RIII_CLKSEL_USB:u32=4<<25; pub const RIII_CM_CLKSEL1_CORE_VAL:u32=RIII_CLKSEL_USB|RXX_CLKSEL_SSI|RXX_CLKSEL_VLYNQ|RX_CLKSEL_DSS2|RX_CLKSEL_DSS1|RIII_CLKSEL_L4|RIII_CLKSEL_L3; pub const RIII_CLKSEL_MPU:u32=2; pub const RIII_CM_CLKSEL_MPU_VAL:u32=RIII_CLKSEL_MPU; pub const RIII_CLKSEL_DSP:u32=3; pub const RIII_CLKSEL_DSP_IF:u32=2<<5; pub const RIII_SYNC_DSP:u32=1<<7; pub const RIII_CLKSEL_IVA:u32=6<<8; pub const RIII_SYNC_IVA:u32=1<<13; pub const RIII_CM_CLKSEL_DSP_VAL:u32=RIII_SYNC_IVA|RIII_CLKSEL_IVA|RIII_SYNC_DSP|RIII_CLKSEL_DSP_IF|RIII_CLKSEL_DSP; pub const RIII_CLKSEL_GFX:u32=2; pub const RIII_CM_CLKSEL_GFX_VAL:u32=RIII_CLKSEL_GFX;
+pub const RII_CLKSEL_L3:u32=6; pub const RII_CLKSEL_L4:u32=2<<5; pub const RII_CLKSEL_USB:u32=2<<25; pub const RII_CM_CLKSEL1_CORE_VAL:u32=RII_CLKSEL_USB|RXX_CLKSEL_SSI|RXX_CLKSEL_VLYNQ|RX_CLKSEL_DSS2|RX_CLKSEL_DSS1|RII_CLKSEL_L4|RII_CLKSEL_L3; pub const RII_CLKSEL_MPU:u32=2; pub const RII_CM_CLKSEL_MPU_VAL:u32=RII_CLKSEL_MPU; pub const RII_CLKSEL_DSP:u32=3; pub const RII_CLKSEL_DSP_IF:u32=2<<5; pub const RII_SYNC_DSP:u32=0; pub const RII_CLKSEL_IVA:u32=3<<8; pub const RII_SYNC_IVA:u32=0; pub const RII_CM_CLKSEL_DSP_VAL:u32=RII_SYNC_IVA|RII_CLKSEL_IVA|RII_SYNC_DSP|RII_CLKSEL_DSP_IF|RII_CLKSEL_DSP; pub const RII_CLKSEL_GFX:u32=2; pub const RII_CM_CLKSEL_GFX_VAL:u32=RII_CLKSEL_GFX;
+pub const RI_CLKSEL_L3:u32=4; pub const RI_CLKSEL_L4:u32=2<<5; pub const RI_CLKSEL_USB:u32=4<<25; pub const RI_CM_CLKSEL1_CORE_VAL:u32=RI_CLKSEL_USB|RXX_CLKSEL_SSI|RXX_CLKSEL_VLYNQ|RX_CLKSEL_DSS2|RX_CLKSEL_DSS1|RI_CLKSEL_L4|RI_CLKSEL_L3; pub const RI_CLKSEL_MPU:u32=2; pub const RI_CM_CLKSEL_MPU_VAL:u32=RI_CLKSEL_MPU; pub const RI_CLKSEL_DSP:u32=3; pub const RI_CLKSEL_DSP_IF:u32=2<<5; pub const RI_SYNC_DSP:u32=1<<7; pub const RI_CLKSEL_IVA:u32=4<<8; pub const RI_SYNC_IVA:u32=0; pub const RI_CM_CLKSEL_DSP_VAL:u32=RI_SYNC_IVA|RI_CLKSEL_IVA|RI_SYNC_DSP|RI_CLKSEL_DSP_IF|RI_CLKSEL_DSP; pub const RI_CLKSEL_GFX:u32=1; pub const RI_CM_CLKSEL_GFX_VAL:u32=RI_CLKSEL_GFX;
+
+pub const RVII_CM_CLKSEL1_CORE_VAL:u32=(1<<25)|(1<<20)|(1<<15)|(0<<13)|(1<<8)|(1<<5)|(1<<0); pub const RVII_CM_CLKSEL_MPU_VAL:u32=1; pub const RVII_CM_CLKSEL_DSP_VAL:u32=(0<<13)|(1<<8)|(0<<7)|(1<<5)|1; pub const RVII_CM_CLKSEL_GFX_VAL:u32=1;
+
+pub const MX_48M_SRC:u32=0<<3; pub const MX_54M_SRC:u32=0<<5; pub const MX_APLLS_CLIKIN_12:u32=3<<23; pub const MX_APLLS_CLIKIN_13:u32=2<<23; pub const MX_APLLS_CLIKIN_19_2:u32=0<<23;
+
+// DPLL mode register constants.
+pub const M5A_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(5<<8)|(133<<12)|MX_APLLS_CLIKIN_12; pub const M5A_CM_CLKSEL1_PLL_13_VAL:u32=MX_48M_SRC|MX_54M_SRC|(2<<8)|(61<<12)|MX_APLLS_CLIKIN_13; pub const M5A_CM_CLKSEL1_PLL_19_VAL:u32=MX_48M_SRC|MX_54M_SRC|(3<<8)|(55<<12)|MX_APLLS_CLIKIN_19_2;
+pub const M5B_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(2<<8)|(50<<12)|MX_APLLS_CLIKIN_12; pub const M5B_CM_CLKSEL1_PLL_13_VAL:u32=MX_48M_SRC|MX_54M_SRC|(12<<8)|(200<<12)|MX_APLLS_CLIKIN_13; pub const M5B_CM_CLKSEL1_PLL_19_VAL:u32=MX_48M_SRC|MX_54M_SRC|(31<<8)|(125<<12)|MX_APLLS_CLIKIN_19_2;
+pub const M4_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(3<<8)|(133<<12)|MX_APLLS_CLIKIN_12; pub const M4_CM_CLKSEL1_PLL_13_VAL:u32=MX_48M_SRC|MX_54M_SRC|(12<<8)|(399<<12)|MX_APLLS_CLIKIN_13; pub const M4_CM_CLKSEL1_PLL_19_VAL:u32=MX_48M_SRC|MX_54M_SRC|(6<<8)|(145<<12)|MX_APLLS_CLIKIN_19_2;
+pub const M3_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(1<<8)|(55<<12)|MX_APLLS_CLIKIN_12; pub const M3_CM_CLKSEL1_PLL_13_VAL:u32=MX_48M_SRC|MX_54M_SRC|(2<<8)|(76<<12)|MX_APLLS_CLIKIN_13; pub const M3_CM_CLKSEL1_PLL_19_VAL:u32=MX_48M_SRC|MX_54M_SRC|(0<<8)|(17<<12)|MX_APLLS_CLIKIN_19_2;
+pub const M2_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(1<<8)|(55<<12)|MX_APLLS_CLIKIN_12; pub const M2_CM_CLKSEL1_PLL_13_VAL:u32=MX_48M_SRC|MX_54M_SRC|(2<<8)|(76<<12)|MX_APLLS_CLIKIN_13; pub const M2_CM_CLKSEL1_PLL_19_VAL:u32=MX_48M_SRC|MX_54M_SRC|(0<<8)|(17<<12)|MX_APLLS_CLIKIN_19_2;
+pub const MB_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|MX_APLLS_CLIKIN_12; pub const MB_CM_CLKSEL1_PLL_13_VAL:u32=MX_48M_SRC|MX_54M_SRC|MX_APLLS_CLIKIN_13; pub const MB_CM_CLKSEL1_PLL_19_VAL:u32=MX_48M_SRC|MX_54M_SRC|MX_APLLS_CLIKIN_19_2;
+pub const MI_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(1<<8)|(55<<12)|MX_APLLS_CLIKIN_12; pub const MII_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(1<<8)|(50<<12)|MX_APLLS_CLIKIN_12; pub const MII_CM_CLKSEL1_PLL_13_VAL:u32=MX_48M_SRC|MX_54M_SRC|(12<<8)|(300<<12)|MX_APLLS_CLIKIN_13; pub const MIII_CM_CLKSEL1_PLL_12_VAL:u32=MX_48M_SRC|MX_54M_SRC|(5<<8)|(133<<12)|MX_APLLS_CLIKIN_12; pub const MIII_CM_CLKSEL1_PLL_13_VAL:u32=MX_48M_SRC|MX_54M_SRC|(12<<8)|(266<<12)|MX_APLLS_CLIKIN_13; pub const MVII_CM_CLKSEL1_PLL_12_VAL:u32=MB_CM_CLKSEL1_PLL_12_VAL; pub const MVII_CM_CLKSEL1_PLL_13_VAL:u32=MB_CM_CLKSEL1_PLL_13_VAL;
+
+pub const MX_CLKSEL2_PLL_2x_VAL:u32=2; pub const MX_CLKSEL2_PLL_1x_VAL:u32=1;
+pub const S12M:u32=12000000; pub const S13M:u32=13000000; pub const S19M:u32=19200000; pub const S26M:u32=26000000; pub const S100M:u32=100000000; pub const S133M:u32=133000000; pub const S150M:u32=150000000; pub const S164M:u32=164000000; pub const S165M:u32=165000000; pub const S199M:u32=199000000; pub const S200M:u32=200000000; pub const S266M:u32=266000000; pub const S300M:u32=300000000; pub const S329M:u32=329000000; pub const S330M:u32=330000000; pub const S399M:u32=399000000; pub const S400M:u32=400000000; pub const S532M:u32=532000000; pub const S600M:u32=600000000; pub const S658M:u32=658000000; pub const S660M:u32=660000000; pub const S798M:u32=798000000;
+
+unsafe extern "C" { pub static omap2420_rate_table: prcm_config; #[cfg(feature="CONFIG_SOC_OMAP2430")] pub static omap2430_rate_table: prcm_config; pub static rate_table: *const prcm_config; pub static curr_prcm_set: *const prcm_config; }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

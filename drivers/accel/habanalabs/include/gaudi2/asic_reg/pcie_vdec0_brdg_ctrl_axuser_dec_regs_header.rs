@@ -1,0 +1,58 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2020 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+/*
+ *****************************************
+ *   PCIE_VDEC0_BRDG_CTRL_AXUSER_DEC
+ *   (Prototype: AXUSER)
+ *****************************************
+ */
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_ASID: u32 = 0x4F03C00;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_MMU_BP: u32 = 0x4F03C04;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_STRONG_ORDER: u32 = 0x4F03C08;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_NO_SNOOP: u32 = 0x4F03C0C;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_WR_REDUCTION: u32 = 0x4F03C10;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_RD_ATOMIC: u32 = 0x4F03C14;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_QOS: u32 = 0x4F03C18;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_RSVD: u32 = 0x4F03C1C;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_EMEM_CPAGE: u32 = 0x4F03C20;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_CORE: u32 = 0x4F03C24;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_E2E_COORD: u32 = 0x4F03C28;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_WR_OVRD_LO: u32 = 0x4F03C30;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_WR_OVRD_HI: u32 = 0x4F03C34;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_RD_OVRD_LO: u32 = 0x4F03C38;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_HB_RD_OVRD_HI: u32 = 0x4F03C3C;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_LB_COORD: u32 = 0x4F03C40;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_LB_LOCK: u32 = 0x4F03C44;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_LB_RSVD: u32 = 0x4F03C48;
+
+pub const mmPCIE_VDEC0_BRDG_CTRL_AXUSER_DEC_LB_OVRD: u32 = 0x4F03C4C;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

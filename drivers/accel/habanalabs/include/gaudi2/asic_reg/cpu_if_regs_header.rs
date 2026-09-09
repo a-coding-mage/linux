@@ -1,0 +1,777 @@
+/* SPDX-License-Identifier: GPL-2.0
+// 
+// Copyright 2016-2020 HabanaLabs, Ltd.
+// All Rights Reserved.
+// 
+// /
+
+// **********************************
+// * This is an auto-generated file **
+// *       DO NOT EDIT BELOW        **
+// ***********************************/
+
+
+/*
+// ****************************************
+//   CPU_IF
+//   (Prototype: CPU_IF)
+// ****************************************
+// /
+
+pub const mmCPU_IF_ARUSER_OVR: u32 = 0x4CC1104u32;
+
+pub const mmCPU_IF_ARUSER_OVR_EN: u32 = 0x4CC1108u32;
+
+pub const mmCPU_IF_AWUSER_OVR: u32 = 0x4CC110Cu32;
+
+pub const mmCPU_IF_AWUSER_OVR_EN: u32 = 0x4CC1110u32;
+
+pub const mmCPU_IF_ARUSER_MSB_OVR: u32 = 0x4CC1114u32;
+
+pub const mmCPU_IF_AWUSER_MSB_OVR: u32 = 0x4CC1120u32;
+
+pub const mmCPU_IF_AXCACHE_OVR: u32 = 0x4CC1128u32;
+
+pub const mmCPU_IF_LOCK_OVR: u32 = 0x4CC112Cu32;
+
+pub const mmCPU_IF_PROT_OVR: u32 = 0x4CC1130u32;
+
+pub const mmCPU_IF_MAX_OUTSTANDING: u32 = 0x4CC1134u32;
+
+pub const mmCPU_IF_EARLY_BRESP_EN: u32 = 0x4CC1138u32;
+
+pub const mmCPU_IF_FORCE_RSP_OK: u32 = 0x4CC113Cu32;
+
+pub const mmCPU_IF_CPU_SEI_INTR_STS: u32 = 0x4CC1140u32;
+
+pub const mmCPU_IF_CPU_SEI_INTR_CLR: u32 = 0x4CC1144u32;
+
+pub const mmCPU_IF_CPU_SEI_INTR_MASK: u32 = 0x4CC1148u32;
+
+pub const mmCPU_IF_AXI_SPLIT_NO_WR_INFLIGHT: u32 = 0x4CC114Cu32;
+
+pub const mmCPU_IF_AXI_SPLIT_SEI_INTR_ID: u32 = 0x4CC1150u32;
+
+pub const mmCPU_IF_TOTAL_WR_CNT: u32 = 0x4CC1154u32;
+
+pub const mmCPU_IF_INFLIGHT_WR_CNT: u32 = 0x4CC1158u32;
+
+pub const mmCPU_IF_TOTAL_RD_CNT: u32 = 0x4CC115Cu32;
+
+pub const mmCPU_IF_INFLIGHT_RD_CNT: u32 = 0x4CC1160u32;
+
+pub const mmCPU_IF_SRAM_MSB_ADDR: u32 = 0x4CC1164u32;
+
+pub const mmCPU_IF_CFG_MSB_ADDR: u32 = 0x4CC1168u32;
+
+pub const mmCPU_IF_HBM_MSB_ADDR: u32 = 0x4CC116Cu32;
+
+pub const mmCPU_IF_PCIE_MSB_ADDR: u32 = 0x4CC1170u32;
+
+pub const mmCPU_IF_KMD_HW_DIRTY_STATUS: u32 = 0x4CC1174u32;
+
+pub const mmCPU_IF_MSTR_IF_E2E_FORCE_BP: u32 = 0x4CC1188u32;
+
+pub const mmCPU_IF_MSTR_IF_E2E_GRCFL_CLR: u32 = 0x4CC118Cu32;
+
+pub const mmCPU_IF_LBW_TERMINATE_AWADDR_ERR: u32 = 0x4CC11A0u32;
+
+pub const mmCPU_IF_LBW_TERMINATE_ARADDR_ERR: u32 = 0x4CC11A4u32;
+
+pub const mmCPU_IF_CFG_LBW_TERMINATE_BRESP: u32 = 0x4CC11A8u32;
+
+pub const mmCPU_IF_CFG_LBW_TERMINATE_RRESP: u32 = 0x4CC11ACu32;
+
+pub const mmCPU_IF_PF_PQ_PI: u32 = 0x4CC1200u32;
+
+pub const mmCPU_IF_PQ_BASE_ADDR_LOW: u32 = 0x4CC1204u32;
+
+pub const mmCPU_IF_PQ_BASE_ADDR_HIGH: u32 = 0x4CC1208u32;
+
+pub const mmCPU_IF_PQ_LENGTH: u32 = 0x4CC120Cu32;
+
+pub const mmCPU_IF_CQ_BASE_ADDR_LOW: u32 = 0x4CC1210u32;
+
+pub const mmCPU_IF_CQ_BASE_ADDR_HIGH: u32 = 0x4CC1214u32;
+
+pub const mmCPU_IF_CQ_LENGTH: u32 = 0x4CC1218u32;
+
+pub const mmCPU_IF_EQ_BASE_ADDR_LOW: u32 = 0x4CC1220u32;
+
+pub const mmCPU_IF_EQ_BASE_ADDR_HIGH: u32 = 0x4CC1224u32;
+
+pub const mmCPU_IF_EQ_LENGTH: u32 = 0x4CC1228u32;
+
+pub const mmCPU_IF_EQ_RD_OFFS: u32 = 0x4CC122Cu32;
+
+pub const mmCPU_IF_QUEUE_INIT: u32 = 0x4CC1230u32;
+
+pub const mmCPU_IF_TPC_SERR_INTR_STS: u32 = 0x4CC1300u32;
+
+pub const mmCPU_IF_TPC_SERR_INTR_CLR: u32 = 0x4CC1304u32;
+
+pub const mmCPU_IF_TPC_SERR_INTR_MASK: u32 = 0x4CC1308u32;
+
+pub const mmCPU_IF_TPC_DERR_INTR_STS: u32 = 0x4CC1310u32;
+
+pub const mmCPU_IF_TPC_DERR_INTR_CLR: u32 = 0x4CC1314u32;
+
+pub const mmCPU_IF_TPC_DERR_INTR_MASK: u32 = 0x4CC1318u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_STS_0: u32 = 0x4CC1320u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_STS_1: u32 = 0x4CC1324u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_STS_2: u32 = 0x4CC1328u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_STS_3: u32 = 0x4CC132Cu32;
+
+pub const mmCPU_IF_MME_SERR_INTR_CLR_0: u32 = 0x4CC1330u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_CLR_1: u32 = 0x4CC1334u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_CLR_2: u32 = 0x4CC1338u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_CLR_3: u32 = 0x4CC133Cu32;
+
+pub const mmCPU_IF_MME_SERR_INTR_MASK_0: u32 = 0x4CC1340u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_MASK_1: u32 = 0x4CC1344u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_MASK_2: u32 = 0x4CC1348u32;
+
+pub const mmCPU_IF_MME_SERR_INTR_MASK_3: u32 = 0x4CC134Cu32;
+
+pub const mmCPU_IF_MME_DERR_INTR_STS_0: u32 = 0x4CC1350u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_STS_1: u32 = 0x4CC1354u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_STS_2: u32 = 0x4CC1358u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_STS_3: u32 = 0x4CC135Cu32;
+
+pub const mmCPU_IF_MME_DERR_INTR_CLR_0: u32 = 0x4CC1360u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_CLR_1: u32 = 0x4CC1364u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_CLR_2: u32 = 0x4CC1368u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_CLR_3: u32 = 0x4CC136Cu32;
+
+pub const mmCPU_IF_MME_DERR_INTR_MASK_0: u32 = 0x4CC1370u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_MASK_1: u32 = 0x4CC1374u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_MASK_2: u32 = 0x4CC1378u32;
+
+pub const mmCPU_IF_MME_DERR_INTR_MASK_3: u32 = 0x4CC137Cu32;
+
+pub const mmCPU_IF_HDMA_SERR_INTR_STS: u32 = 0x4CC1380u32;
+
+pub const mmCPU_IF_HDMA_SERR_INTR_CLR: u32 = 0x4CC1384u32;
+
+pub const mmCPU_IF_HDMA_SERR_INTR_MASK: u32 = 0x4CC1388u32;
+
+pub const mmCPU_IF_HDMA_DERR_INTR_STS: u32 = 0x4CC1390u32;
+
+pub const mmCPU_IF_HDMA_DERR_INTR_CLR: u32 = 0x4CC1394u32;
+
+pub const mmCPU_IF_HDMA_DERR_INTR_MASK: u32 = 0x4CC1398u32;
+
+pub const mmCPU_IF_PDMA_SERR_INTR_STS: u32 = 0x4CC13A0u32;
+
+pub const mmCPU_IF_PDMA_SERR_INTR_CLR: u32 = 0x4CC13A4u32;
+
+pub const mmCPU_IF_PDMA_SERR_INTR_MASK: u32 = 0x4CC13A8u32;
+
+pub const mmCPU_IF_PDMA_DERR_INTR_STS: u32 = 0x4CC13B0u32;
+
+pub const mmCPU_IF_PDMA_DERR_INTR_CLR: u32 = 0x4CC13B4u32;
+
+pub const mmCPU_IF_PDMA_DERR_INTR_MASK: u32 = 0x4CC13B8u32;
+
+pub const mmCPU_IF_SRAM_SERR_INTR_STS: u32 = 0x4CC13C0u32;
+
+pub const mmCPU_IF_SRAM_SERR_INTR_CLR: u32 = 0x4CC13C4u32;
+
+pub const mmCPU_IF_SRAM_SERR_INTR_MASK: u32 = 0x4CC13C8u32;
+
+pub const mmCPU_IF_SRAM_DERR_INTR_STS: u32 = 0x4CC13D0u32;
+
+pub const mmCPU_IF_SRAM_DERR_INTR_CLR: u32 = 0x4CC13D4u32;
+
+pub const mmCPU_IF_SRAM_DERR_INTR_MASK: u32 = 0x4CC13D8u32;
+
+pub const mmCPU_IF_HBM_SERR_INTR_STS: u32 = 0x4CC13E0u32;
+
+pub const mmCPU_IF_HBM_SERR_INTR_CLR: u32 = 0x4CC13E4u32;
+
+pub const mmCPU_IF_HBM_SERR_INTR_MASK: u32 = 0x4CC13E8u32;
+
+pub const mmCPU_IF_HBM_DERR_INTR_STS: u32 = 0x4CC13F0u32;
+
+pub const mmCPU_IF_HBM_DERR_INTR_CLR: u32 = 0x4CC13F4u32;
+
+pub const mmCPU_IF_HBM_DERR_INTR_MASK: u32 = 0x4CC13F8u32;
+
+pub const mmCPU_IF_HMMU_SERR_INTR_STS: u32 = 0x4CC1400u32;
+
+pub const mmCPU_IF_HMMU_SERR_INTR_CLR: u32 = 0x4CC1404u32;
+
+pub const mmCPU_IF_HMMU_SERR_INTR_MASK: u32 = 0x4CC1408u32;
+
+pub const mmCPU_IF_HMMU_DERR_INTR_STS: u32 = 0x4CC1410u32;
+
+pub const mmCPU_IF_HMMU_DERR_INTR_CLR: u32 = 0x4CC1414u32;
+
+pub const mmCPU_IF_HMMU_DERR_INTR_MASK: u32 = 0x4CC1418u32;
+
+pub const mmCPU_IF_DEC_SERR_INTR_STS: u32 = 0x4CC1420u32;
+
+pub const mmCPU_IF_DEC_SERR_INTR_CLR: u32 = 0x4CC1424u32;
+
+pub const mmCPU_IF_DEC_SERR_INTR_MASK: u32 = 0x4CC1428u32;
+
+pub const mmCPU_IF_DEC_DERR_INTR_STS: u32 = 0x4CC1430u32;
+
+pub const mmCPU_IF_DEC_DERR_INTR_CLR: u32 = 0x4CC1434u32;
+
+pub const mmCPU_IF_DEC_DERR_INTR_MASK: u32 = 0x4CC1438u32;
+
+pub const mmCPU_IF_NIC_SERR_INTR_STS: u32 = 0x4CC1440u32;
+
+pub const mmCPU_IF_NIC_SERR_INTR_CLR: u32 = 0x4CC1444u32;
+
+pub const mmCPU_IF_NIC_SERR_INTR_MASK: u32 = 0x4CC1448u32;
+
+pub const mmCPU_IF_NIC_DERR_INTR_STS: u32 = 0x4CC1450u32;
+
+pub const mmCPU_IF_NIC_DERR_INTR_CLR: u32 = 0x4CC1454u32;
+
+pub const mmCPU_IF_NIC_DERR_INTR_MASK: u32 = 0x4CC1458u32;
+
+pub const mmCPU_IF_SYNC_MNGR_SERR_INTR_STS: u32 = 0x4CC1460u32;
+
+pub const mmCPU_IF_SYNC_MNGR_SERR_INTR_CLR: u32 = 0x4CC1464u32;
+
+pub const mmCPU_IF_SYNC_MNGR_SERR_INTR_MASK: u32 = 0x4CC1468u32;
+
+pub const mmCPU_IF_SYNC_MNGR_DERR_INTR_STS: u32 = 0x4CC1470u32;
+
+pub const mmCPU_IF_SYNC_MNGR_DERR_INTR_CLR: u32 = 0x4CC1474u32;
+
+pub const mmCPU_IF_SYNC_MNGR_DERR_INTR_MASK: u32 = 0x4CC1478u32;
+
+pub const mmCPU_IF_HIF_SERR_INTR_STS: u32 = 0x4CC1480u32;
+
+pub const mmCPU_IF_HIF_SERR_INTR_CLR: u32 = 0x4CC1484u32;
+
+pub const mmCPU_IF_HIF_SERR_INTR_MASK: u32 = 0x4CC1488u32;
+
+pub const mmCPU_IF_HIF_DERR_INTR_STS: u32 = 0x4CC1490u32;
+
+pub const mmCPU_IF_HIF_DERR_INTR_CLR: u32 = 0x4CC1494u32;
+
+pub const mmCPU_IF_HIF_DERR_INTR_MASK: u32 = 0x4CC1498u32;
+
+pub const mmCPU_IF_XBAR_SERR_INTR_STS: u32 = 0x4CC14A0u32;
+
+pub const mmCPU_IF_XBAR_SERR_INTR_CLR: u32 = 0x4CC14A4u32;
+
+pub const mmCPU_IF_XBAR_SERR_INTR_MASK: u32 = 0x4CC14A8u32;
+
+pub const mmCPU_IF_XBAR_DERR_INTR_STS: u32 = 0x4CC14B0u32;
+
+pub const mmCPU_IF_XBAR_DERR_INTR_CLR: u32 = 0x4CC14B4u32;
+
+pub const mmCPU_IF_XBAR_DERR_INTR_MASK: u32 = 0x4CC14B8u32;
+
+pub const mmCPU_IF_TPC_SEI_INTR_STS: u32 = 0x4CC14C0u32;
+
+pub const mmCPU_IF_TPC_SEI_INTR_CLR: u32 = 0x4CC14C4u32;
+
+pub const mmCPU_IF_TPC_SEI_INTR_MASK: u32 = 0x4CC14C8u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_STS_0: u32 = 0x4CC14D0u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_STS_1: u32 = 0x4CC14D4u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_STS_2: u32 = 0x4CC14D8u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_STS_3: u32 = 0x4CC14DCu32;
+
+pub const mmCPU_IF_MME_SEI_INTR_CLR_0: u32 = 0x4CC14E0u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_CLR_1: u32 = 0x4CC14E4u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_CLR_2: u32 = 0x4CC14E8u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_CLR_3: u32 = 0x4CC14ECu32;
+
+pub const mmCPU_IF_MME_SEI_INTR_MASK_0: u32 = 0x4CC14F0u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_MASK_1: u32 = 0x4CC14F4u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_MASK_2: u32 = 0x4CC14F8u32;
+
+pub const mmCPU_IF_MME_SEI_INTR_MASK_3: u32 = 0x4CC14FCu32;
+
+pub const mmCPU_IF_PLL_LSB_SEI_INTR_STS: u32 = 0x4CC1500u32;
+
+pub const mmCPU_IF_PLL_LSB_SEI_INTR_CLR: u32 = 0x4CC1504u32;
+
+pub const mmCPU_IF_PLL_LSB_SEI_INTR_MASK: u32 = 0x4CC1508u32;
+
+pub const mmCPU_IF_PLL_MSB_SEI_INTR_STS: u32 = 0x4CC1510u32;
+
+pub const mmCPU_IF_PLL_MSB_SEI_INTR_CLR: u32 = 0x4CC1514u32;
+
+pub const mmCPU_IF_PLL_MSB_SEI_INTR_MASK: u32 = 0x4CC1518u32;
+
+pub const mmCPU_IF_HMMU_SEI_INTR_STS: u32 = 0x4CC1520u32;
+
+pub const mmCPU_IF_HMMU_SEI_INTR_CLR: u32 = 0x4CC1524u32;
+
+pub const mmCPU_IF_HMMU_SEI_INTR_MASK: u32 = 0x4CC1528u32;
+
+pub const mmCPU_IF_HDMA_SEI_INTR_STS: u32 = 0x4CC1530u32;
+
+pub const mmCPU_IF_HDMA_SEI_INTR_CLR: u32 = 0x4CC1534u32;
+
+pub const mmCPU_IF_HDMA_SEI_INTR_MASK: u32 = 0x4CC1538u32;
+
+pub const mmCPU_IF_PDMA_SEI_INTR_STS: u32 = 0x4CC1540u32;
+
+pub const mmCPU_IF_PDMA_SEI_INTR_CLR: u32 = 0x4CC1544u32;
+
+pub const mmCPU_IF_PDMA_SEI_INTR_MASK: u32 = 0x4CC1548u32;
+
+pub const mmCPU_IF_HBM_SEI_INTR_STS: u32 = 0x4CC1550u32;
+
+pub const mmCPU_IF_HBM_SEI_INTR_CLR: u32 = 0x4CC1554u32;
+
+pub const mmCPU_IF_HBM_SEI_INTR_MASK: u32 = 0x4CC1558u32;
+
+pub const mmCPU_IF_DEC_SEI_INTR_STS: u32 = 0x4CC1560u32;
+
+pub const mmCPU_IF_DEC_SEI_INTR_CLR: u32 = 0x4CC1564u32;
+
+pub const mmCPU_IF_DEC_SEI_INTR_MASK: u32 = 0x4CC1568u32;
+
+pub const mmCPU_IF_HIF_SEI_INTR_STS: u32 = 0x4CC1570u32;
+
+pub const mmCPU_IF_HIF_SEI_INTR_CLR: u32 = 0x4CC1574u32;
+
+pub const mmCPU_IF_HIF_SEI_INTR_MASK: u32 = 0x4CC1578u32;
+
+pub const mmCPU_IF_SYNC_MNGR_SEI_INTR_STS: u32 = 0x4CC1580u32;
+
+pub const mmCPU_IF_SYNC_MNGR_SEI_INTR_CLR: u32 = 0x4CC1584u32;
+
+pub const mmCPU_IF_SYNC_MNGR_SEI_INTR_MASK: u32 = 0x4CC1588u32;
+
+pub const mmCPU_IF_NIC_SEI_INTR_STS: u32 = 0x4CC1590u32;
+
+pub const mmCPU_IF_NIC_SEI_INTR_CLR: u32 = 0x4CC1594u32;
+
+pub const mmCPU_IF_NIC_SEI_INTR_MASK: u32 = 0x4CC1598u32;
+
+pub const mmCPU_IF_PCIE_SPI_INTR_STS: u32 = 0x4CC1600u32;
+
+pub const mmCPU_IF_PCIE_SPI_INTR_CLR: u32 = 0x4CC1604u32;
+
+pub const mmCPU_IF_PCIE_SPI_INTR_MASK: u32 = 0x4CC1608u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_STS_0: u32 = 0x4CC1610u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_STS_1: u32 = 0x4CC1614u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_STS_2: u32 = 0x4CC1618u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_STS_3: u32 = 0x4CC161Cu32;
+
+pub const mmCPU_IF_MME_SPI_INTR_CLR_0: u32 = 0x4CC1620u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_CLR_1: u32 = 0x4CC1624u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_CLR_2: u32 = 0x4CC1628u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_CLR_3: u32 = 0x4CC162Cu32;
+
+pub const mmCPU_IF_MME_SPI_INTR_MASK_0: u32 = 0x4CC1630u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_MASK_1: u32 = 0x4CC1634u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_MASK_2: u32 = 0x4CC1638u32;
+
+pub const mmCPU_IF_MME_SPI_INTR_MASK_3: u32 = 0x4CC163Cu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_0: u32 = 0x4CC1640u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_1: u32 = 0x4CC1644u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_2: u32 = 0x4CC1648u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_3: u32 = 0x4CC164Cu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_4: u32 = 0x4CC1650u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_5: u32 = 0x4CC1654u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_6: u32 = 0x4CC1658u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_7: u32 = 0x4CC165Cu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_8: u32 = 0x4CC1660u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_9: u32 = 0x4CC1664u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_10: u32 = 0x4CC1668u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_11: u32 = 0x4CC166Cu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_12: u32 = 0x4CC1670u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_13: u32 = 0x4CC1674u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_14: u32 = 0x4CC1678u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_STS_15: u32 = 0x4CC167Cu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_0: u32 = 0x4CC1680u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_1: u32 = 0x4CC1684u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_2: u32 = 0x4CC1688u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_3: u32 = 0x4CC168Cu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_4: u32 = 0x4CC1690u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_5: u32 = 0x4CC1694u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_6: u32 = 0x4CC1698u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_7: u32 = 0x4CC169Cu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_8: u32 = 0x4CC16A0u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_9: u32 = 0x4CC16A4u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_10: u32 = 0x4CC16A8u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_11: u32 = 0x4CC16ACu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_12: u32 = 0x4CC16B0u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_13: u32 = 0x4CC16B4u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_14: u32 = 0x4CC16B8u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_CLR_15: u32 = 0x4CC16BCu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_0: u32 = 0x4CC16C0u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_1: u32 = 0x4CC16C4u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_2: u32 = 0x4CC16C8u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_3: u32 = 0x4CC16CCu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_4: u32 = 0x4CC16D0u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_5: u32 = 0x4CC16D4u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_6: u32 = 0x4CC16D8u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_7: u32 = 0x4CC16DCu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_8: u32 = 0x4CC16E0u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_9: u32 = 0x4CC16E4u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_10: u32 = 0x4CC16E8u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_11: u32 = 0x4CC16ECu32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_12: u32 = 0x4CC16F0u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_13: u32 = 0x4CC16F4u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_14: u32 = 0x4CC16F8u32;
+
+pub const mmCPU_IF_HMMU_SPI_INTR_MASK_15: u32 = 0x4CC16FCu32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_0: u32 = 0x4CC1700u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_1: u32 = 0x4CC1704u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_2: u32 = 0x4CC1708u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_3: u32 = 0x4CC170Cu32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_4: u32 = 0x4CC1710u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_5: u32 = 0x4CC1714u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_6: u32 = 0x4CC1718u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_7: u32 = 0x4CC171Cu32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_8: u32 = 0x4CC1720u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_STS_9: u32 = 0x4CC1724u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_0: u32 = 0x4CC1730u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_1: u32 = 0x4CC1734u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_2: u32 = 0x4CC1738u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_3: u32 = 0x4CC173Cu32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_4: u32 = 0x4CC1740u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_5: u32 = 0x4CC1744u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_6: u32 = 0x4CC1748u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_7: u32 = 0x4CC174Cu32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_8: u32 = 0x4CC1750u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_CLR_9: u32 = 0x4CC1754u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_0: u32 = 0x4CC1760u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_1: u32 = 0x4CC1764u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_2: u32 = 0x4CC1768u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_3: u32 = 0x4CC176Cu32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_4: u32 = 0x4CC1770u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_5: u32 = 0x4CC1774u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_6: u32 = 0x4CC1778u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_7: u32 = 0x4CC177Cu32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_8: u32 = 0x4CC1780u32;
+
+pub const mmCPU_IF_DEC_SPI_INTR_MASK_9: u32 = 0x4CC1784u32;
+
+pub const mmCPU_IF_HIF_SPI_INTR_STS: u32 = 0x4CC17A0u32;
+
+pub const mmCPU_IF_HIF_SPI_INTR_CLR: u32 = 0x4CC17A4u32;
+
+pub const mmCPU_IF_HIF_SPI_INTR_MASK: u32 = 0x4CC17A8u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_0: u32 = 0x4CC17B0u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_1: u32 = 0x4CC17B4u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_2: u32 = 0x4CC17B8u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_3: u32 = 0x4CC17BCu32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_4: u32 = 0x4CC17C0u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_5: u32 = 0x4CC17C4u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_6: u32 = 0x4CC17C8u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_7: u32 = 0x4CC17CCu32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_8: u32 = 0x4CC17D0u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_9: u32 = 0x4CC17D4u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_10: u32 = 0x4CC17D8u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_STS_11: u32 = 0x4CC17DCu32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_0: u32 = 0x4CC17E0u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_1: u32 = 0x4CC17E4u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_2: u32 = 0x4CC17E8u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_3: u32 = 0x4CC17ECu32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_4: u32 = 0x4CC17F0u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_5: u32 = 0x4CC17F4u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_6: u32 = 0x4CC17F8u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_7: u32 = 0x4CC17FCu32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_8: u32 = 0x4CC1800u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_9: u32 = 0x4CC1804u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_10: u32 = 0x4CC1808u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_CLR_11: u32 = 0x4CC180Cu32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_0: u32 = 0x4CC1810u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_1: u32 = 0x4CC1814u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_2: u32 = 0x4CC1818u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_3: u32 = 0x4CC181Cu32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_4: u32 = 0x4CC1820u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_5: u32 = 0x4CC1824u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_6: u32 = 0x4CC1828u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_7: u32 = 0x4CC182Cu32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_8: u32 = 0x4CC1830u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_9: u32 = 0x4CC1834u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_10: u32 = 0x4CC1838u32;
+
+pub const mmCPU_IF_NIC_SPI_INTR_MASK_11: u32 = 0x4CC183Cu32;
+
+pub const mmCPU_IF_DEC_ECO_INTR_STS: u32 = 0x4CC1840u32;
+
+pub const mmCPU_IF_DEC_ECO_INTR_CLR: u32 = 0x4CC1844u32;
+
+pub const mmCPU_IF_DEC_ECO_INTR_MASK: u32 = 0x4CC1848u32;
+
+pub const mmCPU_IF_HIF_ECO_INTR_STS: u32 = 0x4CC1850u32;
+
+pub const mmCPU_IF_HIF_ECO_INTR_CLR: u32 = 0x4CC1854u32;
+
+pub const mmCPU_IF_HIF_ECO_INTR_MASK: u32 = 0x4CC1858u32;
+
+pub const mmCPU_IF_HMMU_ECO_INTR_STS: u32 = 0x4CC1860u32;
+
+pub const mmCPU_IF_HMMU_ECO_INTR_CLR: u32 = 0x4CC1864u32;
+
+pub const mmCPU_IF_HMMU_ECO_INTR_MASK: u32 = 0x4CC1868u32;
+
+pub const mmCPU_IF_NIC_ECO_INTR_STS: u32 = 0x4CC1870u32;
+
+pub const mmCPU_IF_NIC_ECO_INTR_CLR: u32 = 0x4CC1874u32;
+
+pub const mmCPU_IF_NIC_ECO_INTR_MASK: u32 = 0x4CC1878u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_0: u32 = 0x4CC1900u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_1: u32 = 0x4CC1904u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_2: u32 = 0x4CC1908u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_3: u32 = 0x4CC190Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_4: u32 = 0x4CC1910u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_5: u32 = 0x4CC1914u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_6: u32 = 0x4CC1918u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_7: u32 = 0x4CC191Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_8: u32 = 0x4CC1920u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_9: u32 = 0x4CC1924u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_10: u32 = 0x4CC1928u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_11: u32 = 0x4CC192Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_12: u32 = 0x4CC1930u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_13: u32 = 0x4CC1934u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_14: u32 = 0x4CC1938u32;
+
+pub const mmCPU_IF_MSI_X_INTR_STS_15: u32 = 0x4CC193Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_0: u32 = 0x4CC1940u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_1: u32 = 0x4CC1944u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_2: u32 = 0x4CC1948u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_3: u32 = 0x4CC194Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_4: u32 = 0x4CC1950u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_5: u32 = 0x4CC1954u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_6: u32 = 0x4CC1958u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_7: u32 = 0x4CC195Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_8: u32 = 0x4CC1960u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_9: u32 = 0x4CC1964u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_10: u32 = 0x4CC1968u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_11: u32 = 0x4CC196Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_12: u32 = 0x4CC1970u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_13: u32 = 0x4CC1974u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_14: u32 = 0x4CC1978u32;
+
+pub const mmCPU_IF_MSI_X_INTR_CLR_15: u32 = 0x4CC197Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_0: u32 = 0x4CC1980u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_1: u32 = 0x4CC1984u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_2: u32 = 0x4CC1988u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_3: u32 = 0x4CC198Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_4: u32 = 0x4CC1990u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_5: u32 = 0x4CC1994u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_6: u32 = 0x4CC1998u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_7: u32 = 0x4CC199Cu32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_8: u32 = 0x4CC19A0u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_9: u32 = 0x4CC19A4u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_10: u32 = 0x4CC19A8u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_11: u32 = 0x4CC19ACu32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_12: u32 = 0x4CC19B0u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_13: u32 = 0x4CC19B4u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_14: u32 = 0x4CC19B8u32;
+
+pub const mmCPU_IF_MSI_X_INTR_MASK_15: u32 = 0x4CC19BCu32;
+
+pub const mmCPU_IF_MSI_X_BUSY_INTR_STS: u32 = 0x4CC19C0u32;
+
+pub const mmCPU_IF_MSI_X_BUSY_INTR_CLR: u32 = 0x4CC19C4u32;
+
+pub const mmCPU_IF_MSI_X_BUSY_INTR_MASK: u32 = 0x4CC19C8u32;
+
+pub const mmCPU_IF_MSI_X_GEN_ADDR: u32 = 0x4CC19D0u32;
+
+pub const mmCPU_IF_MSI_X_GEN_DATA: u32 = 0x4CC19D4u32;
+
+pub const mmCPU_IF_MSI_X_GEN_AWPROT: u32 = 0x4CC19D8u32;
+
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

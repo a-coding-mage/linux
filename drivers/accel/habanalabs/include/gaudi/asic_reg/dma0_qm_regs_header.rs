@@ -1,0 +1,841 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2018 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2018 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+pub const ASIC_REG_DMA0_QM_REGS_H_: u32 = ;
+
+/*
+ *****************************************
+ *   DMA0_QM (Prototype: QMAN)
+ *****************************************
+ */
+
+pub const mmDMA0_QM_GLBL_CFG0: u32 = 0x508000;
+
+pub const mmDMA0_QM_GLBL_CFG1: u32 = 0x508004;
+
+pub const mmDMA0_QM_GLBL_PROT: u32 = 0x508008;
+
+pub const mmDMA0_QM_GLBL_ERR_CFG: u32 = 0x50800C;
+
+pub const mmDMA0_QM_GLBL_SECURE_PROPS_0: u32 = 0x508010;
+
+pub const mmDMA0_QM_GLBL_SECURE_PROPS_1: u32 = 0x508014;
+
+pub const mmDMA0_QM_GLBL_SECURE_PROPS_2: u32 = 0x508018;
+
+pub const mmDMA0_QM_GLBL_SECURE_PROPS_3: u32 = 0x50801C;
+
+pub const mmDMA0_QM_GLBL_SECURE_PROPS_4: u32 = 0x508020;
+
+pub const mmDMA0_QM_GLBL_NON_SECURE_PROPS_0: u32 = 0x508024;
+
+pub const mmDMA0_QM_GLBL_NON_SECURE_PROPS_1: u32 = 0x508028;
+
+pub const mmDMA0_QM_GLBL_NON_SECURE_PROPS_2: u32 = 0x50802C;
+
+pub const mmDMA0_QM_GLBL_NON_SECURE_PROPS_3: u32 = 0x508030;
+
+pub const mmDMA0_QM_GLBL_NON_SECURE_PROPS_4: u32 = 0x508034;
+
+pub const mmDMA0_QM_GLBL_STS0: u32 = 0x508038;
+
+pub const mmDMA0_QM_GLBL_STS1_0: u32 = 0x508040;
+
+pub const mmDMA0_QM_GLBL_STS1_1: u32 = 0x508044;
+
+pub const mmDMA0_QM_GLBL_STS1_2: u32 = 0x508048;
+
+pub const mmDMA0_QM_GLBL_STS1_3: u32 = 0x50804C;
+
+pub const mmDMA0_QM_GLBL_STS1_4: u32 = 0x508050;
+
+pub const mmDMA0_QM_GLBL_MSG_EN_0: u32 = 0x508054;
+
+pub const mmDMA0_QM_GLBL_MSG_EN_1: u32 = 0x508058;
+
+pub const mmDMA0_QM_GLBL_MSG_EN_2: u32 = 0x50805C;
+
+pub const mmDMA0_QM_GLBL_MSG_EN_3: u32 = 0x508060;
+
+pub const mmDMA0_QM_GLBL_MSG_EN_4: u32 = 0x508068;
+
+pub const mmDMA0_QM_PQ_BASE_LO_0: u32 = 0x508070;
+
+pub const mmDMA0_QM_PQ_BASE_LO_1: u32 = 0x508074;
+
+pub const mmDMA0_QM_PQ_BASE_LO_2: u32 = 0x508078;
+
+pub const mmDMA0_QM_PQ_BASE_LO_3: u32 = 0x50807C;
+
+pub const mmDMA0_QM_PQ_BASE_HI_0: u32 = 0x508080;
+
+pub const mmDMA0_QM_PQ_BASE_HI_1: u32 = 0x508084;
+
+pub const mmDMA0_QM_PQ_BASE_HI_2: u32 = 0x508088;
+
+pub const mmDMA0_QM_PQ_BASE_HI_3: u32 = 0x50808C;
+
+pub const mmDMA0_QM_PQ_SIZE_0: u32 = 0x508090;
+
+pub const mmDMA0_QM_PQ_SIZE_1: u32 = 0x508094;
+
+pub const mmDMA0_QM_PQ_SIZE_2: u32 = 0x508098;
+
+pub const mmDMA0_QM_PQ_SIZE_3: u32 = 0x50809C;
+
+pub const mmDMA0_QM_PQ_PI_0: u32 = 0x5080A0;
+
+pub const mmDMA0_QM_PQ_PI_1: u32 = 0x5080A4;
+
+pub const mmDMA0_QM_PQ_PI_2: u32 = 0x5080A8;
+
+pub const mmDMA0_QM_PQ_PI_3: u32 = 0x5080AC;
+
+pub const mmDMA0_QM_PQ_CI_0: u32 = 0x5080B0;
+
+pub const mmDMA0_QM_PQ_CI_1: u32 = 0x5080B4;
+
+pub const mmDMA0_QM_PQ_CI_2: u32 = 0x5080B8;
+
+pub const mmDMA0_QM_PQ_CI_3: u32 = 0x5080BC;
+
+pub const mmDMA0_QM_PQ_CFG0_0: u32 = 0x5080C0;
+
+pub const mmDMA0_QM_PQ_CFG0_1: u32 = 0x5080C4;
+
+pub const mmDMA0_QM_PQ_CFG0_2: u32 = 0x5080C8;
+
+pub const mmDMA0_QM_PQ_CFG0_3: u32 = 0x5080CC;
+
+pub const mmDMA0_QM_PQ_CFG1_0: u32 = 0x5080D0;
+
+pub const mmDMA0_QM_PQ_CFG1_1: u32 = 0x5080D4;
+
+pub const mmDMA0_QM_PQ_CFG1_2: u32 = 0x5080D8;
+
+pub const mmDMA0_QM_PQ_CFG1_3: u32 = 0x5080DC;
+
+pub const mmDMA0_QM_PQ_ARUSER_31_11_0: u32 = 0x5080E0;
+
+pub const mmDMA0_QM_PQ_ARUSER_31_11_1: u32 = 0x5080E4;
+
+pub const mmDMA0_QM_PQ_ARUSER_31_11_2: u32 = 0x5080E8;
+
+pub const mmDMA0_QM_PQ_ARUSER_31_11_3: u32 = 0x5080EC;
+
+pub const mmDMA0_QM_PQ_STS0_0: u32 = 0x5080F0;
+
+pub const mmDMA0_QM_PQ_STS0_1: u32 = 0x5080F4;
+
+pub const mmDMA0_QM_PQ_STS0_2: u32 = 0x5080F8;
+
+pub const mmDMA0_QM_PQ_STS0_3: u32 = 0x5080FC;
+
+pub const mmDMA0_QM_PQ_STS1_0: u32 = 0x508100;
+
+pub const mmDMA0_QM_PQ_STS1_1: u32 = 0x508104;
+
+pub const mmDMA0_QM_PQ_STS1_2: u32 = 0x508108;
+
+pub const mmDMA0_QM_PQ_STS1_3: u32 = 0x50810C;
+
+pub const mmDMA0_QM_CQ_CFG0_0: u32 = 0x508110;
+
+pub const mmDMA0_QM_CQ_CFG0_1: u32 = 0x508114;
+
+pub const mmDMA0_QM_CQ_CFG0_2: u32 = 0x508118;
+
+pub const mmDMA0_QM_CQ_CFG0_3: u32 = 0x50811C;
+
+pub const mmDMA0_QM_CQ_CFG0_4: u32 = 0x508120;
+
+pub const mmDMA0_QM_CQ_CFG1_0: u32 = 0x508124;
+
+pub const mmDMA0_QM_CQ_CFG1_1: u32 = 0x508128;
+
+pub const mmDMA0_QM_CQ_CFG1_2: u32 = 0x50812C;
+
+pub const mmDMA0_QM_CQ_CFG1_3: u32 = 0x508130;
+
+pub const mmDMA0_QM_CQ_CFG1_4: u32 = 0x508134;
+
+pub const mmDMA0_QM_CQ_ARUSER_31_11_0: u32 = 0x508138;
+
+pub const mmDMA0_QM_CQ_ARUSER_31_11_1: u32 = 0x50813C;
+
+pub const mmDMA0_QM_CQ_ARUSER_31_11_2: u32 = 0x508140;
+
+pub const mmDMA0_QM_CQ_ARUSER_31_11_3: u32 = 0x508144;
+
+pub const mmDMA0_QM_CQ_ARUSER_31_11_4: u32 = 0x508148;
+
+pub const mmDMA0_QM_CQ_STS0_0: u32 = 0x50814C;
+
+pub const mmDMA0_QM_CQ_STS0_1: u32 = 0x508150;
+
+pub const mmDMA0_QM_CQ_STS0_2: u32 = 0x508154;
+
+pub const mmDMA0_QM_CQ_STS0_3: u32 = 0x508158;
+
+pub const mmDMA0_QM_CQ_STS0_4: u32 = 0x50815C;
+
+pub const mmDMA0_QM_CQ_STS1_0: u32 = 0x508160;
+
+pub const mmDMA0_QM_CQ_STS1_1: u32 = 0x508164;
+
+pub const mmDMA0_QM_CQ_STS1_2: u32 = 0x508168;
+
+pub const mmDMA0_QM_CQ_STS1_3: u32 = 0x50816C;
+
+pub const mmDMA0_QM_CQ_STS1_4: u32 = 0x508170;
+
+pub const mmDMA0_QM_CQ_PTR_LO_0: u32 = 0x508174;
+
+pub const mmDMA0_QM_CQ_PTR_HI_0: u32 = 0x508178;
+
+pub const mmDMA0_QM_CQ_TSIZE_0: u32 = 0x50817C;
+
+pub const mmDMA0_QM_CQ_CTL_0: u32 = 0x508180;
+
+pub const mmDMA0_QM_CQ_PTR_LO_1: u32 = 0x508184;
+
+pub const mmDMA0_QM_CQ_PTR_HI_1: u32 = 0x508188;
+
+pub const mmDMA0_QM_CQ_TSIZE_1: u32 = 0x50818C;
+
+pub const mmDMA0_QM_CQ_CTL_1: u32 = 0x508190;
+
+pub const mmDMA0_QM_CQ_PTR_LO_2: u32 = 0x508194;
+
+pub const mmDMA0_QM_CQ_PTR_HI_2: u32 = 0x508198;
+
+pub const mmDMA0_QM_CQ_TSIZE_2: u32 = 0x50819C;
+
+pub const mmDMA0_QM_CQ_CTL_2: u32 = 0x5081A0;
+
+pub const mmDMA0_QM_CQ_PTR_LO_3: u32 = 0x5081A4;
+
+pub const mmDMA0_QM_CQ_PTR_HI_3: u32 = 0x5081A8;
+
+pub const mmDMA0_QM_CQ_TSIZE_3: u32 = 0x5081AC;
+
+pub const mmDMA0_QM_CQ_CTL_3: u32 = 0x5081B0;
+
+pub const mmDMA0_QM_CQ_PTR_LO_4: u32 = 0x5081B4;
+
+pub const mmDMA0_QM_CQ_PTR_HI_4: u32 = 0x5081B8;
+
+pub const mmDMA0_QM_CQ_TSIZE_4: u32 = 0x5081BC;
+
+pub const mmDMA0_QM_CQ_CTL_4: u32 = 0x5081C0;
+
+pub const mmDMA0_QM_CQ_PTR_LO_STS_0: u32 = 0x5081C4;
+
+pub const mmDMA0_QM_CQ_PTR_LO_STS_1: u32 = 0x5081C8;
+
+pub const mmDMA0_QM_CQ_PTR_LO_STS_2: u32 = 0x5081CC;
+
+pub const mmDMA0_QM_CQ_PTR_LO_STS_3: u32 = 0x5081D0;
+
+pub const mmDMA0_QM_CQ_PTR_LO_STS_4: u32 = 0x5081D4;
+
+pub const mmDMA0_QM_CQ_PTR_HI_STS_0: u32 = 0x5081D8;
+
+pub const mmDMA0_QM_CQ_PTR_HI_STS_1: u32 = 0x5081DC;
+
+pub const mmDMA0_QM_CQ_PTR_HI_STS_2: u32 = 0x5081E0;
+
+pub const mmDMA0_QM_CQ_PTR_HI_STS_3: u32 = 0x5081E4;
+
+pub const mmDMA0_QM_CQ_PTR_HI_STS_4: u32 = 0x5081E8;
+
+pub const mmDMA0_QM_CQ_TSIZE_STS_0: u32 = 0x5081EC;
+
+pub const mmDMA0_QM_CQ_TSIZE_STS_1: u32 = 0x5081F0;
+
+pub const mmDMA0_QM_CQ_TSIZE_STS_2: u32 = 0x5081F4;
+
+pub const mmDMA0_QM_CQ_TSIZE_STS_3: u32 = 0x5081F8;
+
+pub const mmDMA0_QM_CQ_TSIZE_STS_4: u32 = 0x5081FC;
+
+pub const mmDMA0_QM_CQ_CTL_STS_0: u32 = 0x508200;
+
+pub const mmDMA0_QM_CQ_CTL_STS_1: u32 = 0x508204;
+
+pub const mmDMA0_QM_CQ_CTL_STS_2: u32 = 0x508208;
+
+pub const mmDMA0_QM_CQ_CTL_STS_3: u32 = 0x50820C;
+
+pub const mmDMA0_QM_CQ_CTL_STS_4: u32 = 0x508210;
+
+pub const mmDMA0_QM_CQ_IFIFO_CNT_0: u32 = 0x508214;
+
+pub const mmDMA0_QM_CQ_IFIFO_CNT_1: u32 = 0x508218;
+
+pub const mmDMA0_QM_CQ_IFIFO_CNT_2: u32 = 0x50821C;
+
+pub const mmDMA0_QM_CQ_IFIFO_CNT_3: u32 = 0x508220;
+
+pub const mmDMA0_QM_CQ_IFIFO_CNT_4: u32 = 0x508224;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_LO_0: u32 = 0x508228;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_LO_1: u32 = 0x50822C;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_LO_2: u32 = 0x508230;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_LO_3: u32 = 0x508234;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_LO_4: u32 = 0x508238;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_HI_0: u32 = 0x50823C;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_HI_1: u32 = 0x508240;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_HI_2: u32 = 0x508244;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_HI_3: u32 = 0x508248;
+
+pub const mmDMA0_QM_CP_MSG_BASE0_ADDR_HI_4: u32 = 0x50824C;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_LO_0: u32 = 0x508250;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_LO_1: u32 = 0x508254;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_LO_2: u32 = 0x508258;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_LO_3: u32 = 0x50825C;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_LO_4: u32 = 0x508260;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_HI_0: u32 = 0x508264;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_HI_1: u32 = 0x508268;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_HI_2: u32 = 0x50826C;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_HI_3: u32 = 0x508270;
+
+pub const mmDMA0_QM_CP_MSG_BASE1_ADDR_HI_4: u32 = 0x508274;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_0: u32 = 0x508278;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_1: u32 = 0x50827C;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_2: u32 = 0x508280;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_3: u32 = 0x508284;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_LO_4: u32 = 0x508288;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_HI_0: u32 = 0x50828C;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_HI_1: u32 = 0x508290;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_HI_2: u32 = 0x508294;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_HI_3: u32 = 0x508298;
+
+pub const mmDMA0_QM_CP_MSG_BASE2_ADDR_HI_4: u32 = 0x50829C;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_LO_0: u32 = 0x5082A0;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_LO_1: u32 = 0x5082A4;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_LO_2: u32 = 0x5082A8;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_LO_3: u32 = 0x5082AC;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_LO_4: u32 = 0x5082B0;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_HI_0: u32 = 0x5082B4;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_HI_1: u32 = 0x5082B8;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_HI_2: u32 = 0x5082BC;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_HI_3: u32 = 0x5082C0;
+
+pub const mmDMA0_QM_CP_MSG_BASE3_ADDR_HI_4: u32 = 0x5082C4;
+
+pub const mmDMA0_QM_CP_LDMA_TSIZE_OFFSET_0: u32 = 0x5082C8;
+
+pub const mmDMA0_QM_CP_LDMA_TSIZE_OFFSET_1: u32 = 0x5082CC;
+
+pub const mmDMA0_QM_CP_LDMA_TSIZE_OFFSET_2: u32 = 0x5082D0;
+
+pub const mmDMA0_QM_CP_LDMA_TSIZE_OFFSET_3: u32 = 0x5082D4;
+
+pub const mmDMA0_QM_CP_LDMA_TSIZE_OFFSET_4: u32 = 0x5082D8;
+
+pub const mmDMA0_QM_CP_LDMA_SRC_BASE_LO_OFFSET_0: u32 = 0x5082E0;
+
+pub const mmDMA0_QM_CP_LDMA_SRC_BASE_LO_OFFSET_1: u32 = 0x5082E4;
+
+pub const mmDMA0_QM_CP_LDMA_SRC_BASE_LO_OFFSET_2: u32 = 0x5082E8;
+
+pub const mmDMA0_QM_CP_LDMA_SRC_BASE_LO_OFFSET_3: u32 = 0x5082EC;
+
+pub const mmDMA0_QM_CP_LDMA_SRC_BASE_LO_OFFSET_4: u32 = 0x5082F0;
+
+pub const mmDMA0_QM_CP_LDMA_DST_BASE_LO_OFFSET_0: u32 = 0x5082F4;
+
+pub const mmDMA0_QM_CP_LDMA_DST_BASE_LO_OFFSET_1: u32 = 0x5082F8;
+
+pub const mmDMA0_QM_CP_LDMA_DST_BASE_LO_OFFSET_2: u32 = 0x5082FC;
+
+pub const mmDMA0_QM_CP_LDMA_DST_BASE_LO_OFFSET_3: u32 = 0x508300;
+
+pub const mmDMA0_QM_CP_LDMA_DST_BASE_LO_OFFSET_4: u32 = 0x508304;
+
+pub const mmDMA0_QM_CP_FENCE0_RDATA_0: u32 = 0x508308;
+
+pub const mmDMA0_QM_CP_FENCE0_RDATA_1: u32 = 0x50830C;
+
+pub const mmDMA0_QM_CP_FENCE0_RDATA_2: u32 = 0x508310;
+
+pub const mmDMA0_QM_CP_FENCE0_RDATA_3: u32 = 0x508314;
+
+pub const mmDMA0_QM_CP_FENCE0_RDATA_4: u32 = 0x508318;
+
+pub const mmDMA0_QM_CP_FENCE1_RDATA_0: u32 = 0x50831C;
+
+pub const mmDMA0_QM_CP_FENCE1_RDATA_1: u32 = 0x508320;
+
+pub const mmDMA0_QM_CP_FENCE1_RDATA_2: u32 = 0x508324;
+
+pub const mmDMA0_QM_CP_FENCE1_RDATA_3: u32 = 0x508328;
+
+pub const mmDMA0_QM_CP_FENCE1_RDATA_4: u32 = 0x50832C;
+
+pub const mmDMA0_QM_CP_FENCE2_RDATA_0: u32 = 0x508330;
+
+pub const mmDMA0_QM_CP_FENCE2_RDATA_1: u32 = 0x508334;
+
+pub const mmDMA0_QM_CP_FENCE2_RDATA_2: u32 = 0x508338;
+
+pub const mmDMA0_QM_CP_FENCE2_RDATA_3: u32 = 0x50833C;
+
+pub const mmDMA0_QM_CP_FENCE2_RDATA_4: u32 = 0x508340;
+
+pub const mmDMA0_QM_CP_FENCE3_RDATA_0: u32 = 0x508344;
+
+pub const mmDMA0_QM_CP_FENCE3_RDATA_1: u32 = 0x508348;
+
+pub const mmDMA0_QM_CP_FENCE3_RDATA_2: u32 = 0x50834C;
+
+pub const mmDMA0_QM_CP_FENCE3_RDATA_3: u32 = 0x508350;
+
+pub const mmDMA0_QM_CP_FENCE3_RDATA_4: u32 = 0x508354;
+
+pub const mmDMA0_QM_CP_FENCE0_CNT_0: u32 = 0x508358;
+
+pub const mmDMA0_QM_CP_FENCE0_CNT_1: u32 = 0x50835C;
+
+pub const mmDMA0_QM_CP_FENCE0_CNT_2: u32 = 0x508360;
+
+pub const mmDMA0_QM_CP_FENCE0_CNT_3: u32 = 0x508364;
+
+pub const mmDMA0_QM_CP_FENCE0_CNT_4: u32 = 0x508368;
+
+pub const mmDMA0_QM_CP_FENCE1_CNT_0: u32 = 0x50836C;
+
+pub const mmDMA0_QM_CP_FENCE1_CNT_1: u32 = 0x508370;
+
+pub const mmDMA0_QM_CP_FENCE1_CNT_2: u32 = 0x508374;
+
+pub const mmDMA0_QM_CP_FENCE1_CNT_3: u32 = 0x508378;
+
+pub const mmDMA0_QM_CP_FENCE1_CNT_4: u32 = 0x50837C;
+
+pub const mmDMA0_QM_CP_FENCE2_CNT_0: u32 = 0x508380;
+
+pub const mmDMA0_QM_CP_FENCE2_CNT_1: u32 = 0x508384;
+
+pub const mmDMA0_QM_CP_FENCE2_CNT_2: u32 = 0x508388;
+
+pub const mmDMA0_QM_CP_FENCE2_CNT_3: u32 = 0x50838C;
+
+pub const mmDMA0_QM_CP_FENCE2_CNT_4: u32 = 0x508390;
+
+pub const mmDMA0_QM_CP_FENCE3_CNT_0: u32 = 0x508394;
+
+pub const mmDMA0_QM_CP_FENCE3_CNT_1: u32 = 0x508398;
+
+pub const mmDMA0_QM_CP_FENCE3_CNT_2: u32 = 0x50839C;
+
+pub const mmDMA0_QM_CP_FENCE3_CNT_3: u32 = 0x5083A0;
+
+pub const mmDMA0_QM_CP_FENCE3_CNT_4: u32 = 0x5083A4;
+
+pub const mmDMA0_QM_CP_STS_0: u32 = 0x5083A8;
+
+pub const mmDMA0_QM_CP_STS_1: u32 = 0x5083AC;
+
+pub const mmDMA0_QM_CP_STS_2: u32 = 0x5083B0;
+
+pub const mmDMA0_QM_CP_STS_3: u32 = 0x5083B4;
+
+pub const mmDMA0_QM_CP_STS_4: u32 = 0x5083B8;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_LO_0: u32 = 0x5083BC;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_LO_1: u32 = 0x5083C0;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_LO_2: u32 = 0x5083C4;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_LO_3: u32 = 0x5083C8;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_LO_4: u32 = 0x5083CC;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_HI_0: u32 = 0x5083D0;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_HI_1: u32 = 0x5083D4;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_HI_2: u32 = 0x5083D8;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_HI_3: u32 = 0x5083DC;
+
+pub const mmDMA0_QM_CP_CURRENT_INST_HI_4: u32 = 0x5083E0;
+
+pub const mmDMA0_QM_CP_BARRIER_CFG_0: u32 = 0x5083F4;
+
+pub const mmDMA0_QM_CP_BARRIER_CFG_1: u32 = 0x5083F8;
+
+pub const mmDMA0_QM_CP_BARRIER_CFG_2: u32 = 0x5083FC;
+
+pub const mmDMA0_QM_CP_BARRIER_CFG_3: u32 = 0x508400;
+
+pub const mmDMA0_QM_CP_BARRIER_CFG_4: u32 = 0x508404;
+
+pub const mmDMA0_QM_CP_DBG_0_0: u32 = 0x508408;
+
+pub const mmDMA0_QM_CP_DBG_0_1: u32 = 0x50840C;
+
+pub const mmDMA0_QM_CP_DBG_0_2: u32 = 0x508410;
+
+pub const mmDMA0_QM_CP_DBG_0_3: u32 = 0x508414;
+
+pub const mmDMA0_QM_CP_DBG_0_4: u32 = 0x508418;
+
+pub const mmDMA0_QM_CP_ARUSER_31_11_0: u32 = 0x50841C;
+
+pub const mmDMA0_QM_CP_ARUSER_31_11_1: u32 = 0x508420;
+
+pub const mmDMA0_QM_CP_ARUSER_31_11_2: u32 = 0x508424;
+
+pub const mmDMA0_QM_CP_ARUSER_31_11_3: u32 = 0x508428;
+
+pub const mmDMA0_QM_CP_ARUSER_31_11_4: u32 = 0x50842C;
+
+pub const mmDMA0_QM_CP_AWUSER_31_11_0: u32 = 0x508430;
+
+pub const mmDMA0_QM_CP_AWUSER_31_11_1: u32 = 0x508434;
+
+pub const mmDMA0_QM_CP_AWUSER_31_11_2: u32 = 0x508438;
+
+pub const mmDMA0_QM_CP_AWUSER_31_11_3: u32 = 0x50843C;
+
+pub const mmDMA0_QM_CP_AWUSER_31_11_4: u32 = 0x508440;
+
+pub const mmDMA0_QM_ARB_CFG_0: u32 = 0x508A00;
+
+pub const mmDMA0_QM_ARB_CHOISE_Q_PUSH: u32 = 0x508A04;
+
+pub const mmDMA0_QM_ARB_WRR_WEIGHT_0: u32 = 0x508A08;
+
+pub const mmDMA0_QM_ARB_WRR_WEIGHT_1: u32 = 0x508A0C;
+
+pub const mmDMA0_QM_ARB_WRR_WEIGHT_2: u32 = 0x508A10;
+
+pub const mmDMA0_QM_ARB_WRR_WEIGHT_3: u32 = 0x508A14;
+
+pub const mmDMA0_QM_ARB_CFG_1: u32 = 0x508A18;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_0: u32 = 0x508A20;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_1: u32 = 0x508A24;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_2: u32 = 0x508A28;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_3: u32 = 0x508A2C;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_4: u32 = 0x508A30;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_5: u32 = 0x508A34;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_6: u32 = 0x508A38;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_7: u32 = 0x508A3C;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_8: u32 = 0x508A40;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_9: u32 = 0x508A44;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_10: u32 = 0x508A48;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_11: u32 = 0x508A4C;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_12: u32 = 0x508A50;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_13: u32 = 0x508A54;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_14: u32 = 0x508A58;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_15: u32 = 0x508A5C;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_16: u32 = 0x508A60;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_17: u32 = 0x508A64;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_18: u32 = 0x508A68;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_19: u32 = 0x508A6C;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_20: u32 = 0x508A70;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_21: u32 = 0x508A74;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_22: u32 = 0x508A78;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_23: u32 = 0x508A7C;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_24: u32 = 0x508A80;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_25: u32 = 0x508A84;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_26: u32 = 0x508A88;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_27: u32 = 0x508A8C;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_28: u32 = 0x508A90;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_29: u32 = 0x508A94;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_30: u32 = 0x508A98;
+
+pub const mmDMA0_QM_ARB_MST_AVAIL_CRED_31: u32 = 0x508A9C;
+
+pub const mmDMA0_QM_ARB_MST_CRED_INC: u32 = 0x508AA0;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_0: u32 = 0x508AA4;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_1: u32 = 0x508AA8;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_2: u32 = 0x508AAC;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_3: u32 = 0x508AB0;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_4: u32 = 0x508AB4;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_5: u32 = 0x508AB8;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_6: u32 = 0x508ABC;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_7: u32 = 0x508AC0;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_8: u32 = 0x508AC4;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_9: u32 = 0x508AC8;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_10: u32 = 0x508ACC;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_11: u32 = 0x508AD0;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_12: u32 = 0x508AD4;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_13: u32 = 0x508AD8;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_14: u32 = 0x508ADC;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_15: u32 = 0x508AE0;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_16: u32 = 0x508AE4;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_17: u32 = 0x508AE8;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_18: u32 = 0x508AEC;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_19: u32 = 0x508AF0;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_20: u32 = 0x508AF4;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_21: u32 = 0x508AF8;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_22: u32 = 0x508AFC;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_23: u32 = 0x508B00;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_24: u32 = 0x508B04;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_25: u32 = 0x508B08;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_26: u32 = 0x508B0C;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_27: u32 = 0x508B10;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_28: u32 = 0x508B14;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_29: u32 = 0x508B18;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_30: u32 = 0x508B1C;
+
+pub const mmDMA0_QM_ARB_MST_CHOISE_PUSH_OFST_31: u32 = 0x508B20;
+
+pub const mmDMA0_QM_ARB_SLV_MASTER_INC_CRED_OFST: u32 = 0x508B28;
+
+pub const mmDMA0_QM_ARB_MST_SLAVE_EN: u32 = 0x508B2C;
+
+pub const mmDMA0_QM_ARB_MST_QUIET_PER: u32 = 0x508B34;
+
+pub const mmDMA0_QM_ARB_SLV_CHOISE_WDT: u32 = 0x508B38;
+
+pub const mmDMA0_QM_ARB_SLV_ID: u32 = 0x508B3C;
+
+pub const mmDMA0_QM_ARB_MSG_MAX_INFLIGHT: u32 = 0x508B44;
+
+pub const mmDMA0_QM_ARB_MSG_AWUSER_31_11: u32 = 0x508B48;
+
+pub const mmDMA0_QM_ARB_MSG_AWUSER_SEC_PROP: u32 = 0x508B4C;
+
+pub const mmDMA0_QM_ARB_MSG_AWUSER_NON_SEC_PROP: u32 = 0x508B50;
+
+pub const mmDMA0_QM_ARB_BASE_LO: u32 = 0x508B54;
+
+pub const mmDMA0_QM_ARB_BASE_HI: u32 = 0x508B58;
+
+pub const mmDMA0_QM_ARB_STATE_STS: u32 = 0x508B80;
+
+pub const mmDMA0_QM_ARB_CHOISE_FULLNESS_STS: u32 = 0x508B84;
+
+pub const mmDMA0_QM_ARB_MSG_STS: u32 = 0x508B88;
+
+pub const mmDMA0_QM_ARB_SLV_CHOISE_Q_HEAD: u32 = 0x508B8C;
+
+pub const mmDMA0_QM_ARB_ERR_CAUSE: u32 = 0x508B9C;
+
+pub const mmDMA0_QM_ARB_ERR_MSG_EN: u32 = 0x508BA0;
+
+pub const mmDMA0_QM_ARB_ERR_STS_DRP: u32 = 0x508BA8;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_0: u32 = 0x508BB0;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_1: u32 = 0x508BB4;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_2: u32 = 0x508BB8;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_3: u32 = 0x508BBC;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_4: u32 = 0x508BC0;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_5: u32 = 0x508BC4;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_6: u32 = 0x508BC8;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_7: u32 = 0x508BCC;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_8: u32 = 0x508BD0;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_9: u32 = 0x508BD4;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_10: u32 = 0x508BD8;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_11: u32 = 0x508BDC;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_12: u32 = 0x508BE0;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_13: u32 = 0x508BE4;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_14: u32 = 0x508BE8;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_15: u32 = 0x508BEC;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_16: u32 = 0x508BF0;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_17: u32 = 0x508BF4;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_18: u32 = 0x508BF8;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_19: u32 = 0x508BFC;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_20: u32 = 0x508C00;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_21: u32 = 0x508C04;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_22: u32 = 0x508C08;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_23: u32 = 0x508C0C;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_24: u32 = 0x508C10;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_25: u32 = 0x508C14;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_26: u32 = 0x508C18;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_27: u32 = 0x508C1C;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_28: u32 = 0x508C20;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_29: u32 = 0x508C24;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_30: u32 = 0x508C28;
+
+pub const mmDMA0_QM_ARB_MST_CRED_STS_31: u32 = 0x508C2C;
+
+pub const mmDMA0_QM_CGM_CFG: u32 = 0x508C70;
+
+pub const mmDMA0_QM_CGM_STS: u32 = 0x508C74;
+
+pub const mmDMA0_QM_CGM_CFG1: u32 = 0x508C78;
+
+pub const mmDMA0_QM_LOCAL_RANGE_BASE: u32 = 0x508C80;
+
+pub const mmDMA0_QM_LOCAL_RANGE_SIZE: u32 = 0x508C84;
+
+pub const mmDMA0_QM_CSMR_STRICT_PRIO_CFG: u32 = 0x508C90;
+
+pub const mmDMA0_QM_HBW_RD_RATE_LIM_CFG_1: u32 = 0x508C94;
+
+pub const mmDMA0_QM_LBW_WR_RATE_LIM_CFG_0: u32 = 0x508C98;
+
+pub const mmDMA0_QM_LBW_WR_RATE_LIM_CFG_1: u32 = 0x508C9C;
+
+pub const mmDMA0_QM_HBW_RD_RATE_LIM_CFG_0: u32 = 0x508CA0;
+
+pub const mmDMA0_QM_GLBL_AXCACHE: u32 = 0x508CA4;
+
+pub const mmDMA0_QM_IND_GW_APB_CFG: u32 = 0x508CB0;
+
+pub const mmDMA0_QM_IND_GW_APB_WDATA: u32 = 0x508CB4;
+
+pub const mmDMA0_QM_IND_GW_APB_RDATA: u32 = 0x508CB8;
+
+pub const mmDMA0_QM_IND_GW_APB_STATUS: u32 = 0x508CBC;
+
+pub const mmDMA0_QM_GLBL_ERR_ADDR_LO: u32 = 0x508CD0;
+
+pub const mmDMA0_QM_GLBL_ERR_ADDR_HI: u32 = 0x508CD4;
+
+pub const mmDMA0_QM_GLBL_ERR_WDATA: u32 = 0x508CD8;
+
+pub const mmDMA0_QM_GLBL_MEM_INIT_BUSY: u32 = 0x508D00;
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

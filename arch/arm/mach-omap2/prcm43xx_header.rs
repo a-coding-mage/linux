@@ -1,0 +1,62 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * AM43x PRCM defines
+ *
+ * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com/
+ */
+
+pub const AM43XX_PRM_PARTITION: u32 = 1;
+pub const AM43XX_CM_PARTITION: u32 = 1;
+
+/* PRM instances */
+pub const AM43XX_PRM_OCP_SOCKET_INST: u32 = 0x0000;
+pub const AM43XX_PRM_MPU_INST: u32 = 0x0300;
+pub const AM43XX_PRM_GFX_INST: u32 = 0x0400;
+pub const AM43XX_PRM_RTC_INST: u32 = 0x0500;
+pub const AM43XX_PRM_TAMPER_INST: u32 = 0x0600;
+pub const AM43XX_PRM_CEFUSE_INST: u32 = 0x0700;
+pub const AM43XX_PRM_PER_INST: u32 = 0x0800;
+pub const AM43XX_PRM_WKUP_INST: u32 = 0x2000;
+pub const AM43XX_PRM_DEVICE_INST: u32 = 0x4000;
+
+/* PRM_IRQ offsets */
+pub const AM43XX_PRM_IRQSTATUS_MPU_OFFSET: u32 = 0x0004;
+pub const AM43XX_PRM_IRQENABLE_MPU_OFFSET: u32 = 0x0008;
+
+/* Other PRM offsets */
+pub const AM43XX_PRM_IO_PMCTRL_OFFSET: u32 = 0x0024;
+
+/* CM instances */
+pub const AM43XX_CM_WKUP_INST: u32 = 0x2800;
+pub const AM43XX_CM_MPU_INST: u32 = 0x8300;
+pub const AM43XX_CM_GFX_INST: u32 = 0x8400;
+pub const AM43XX_CM_RTC_INST: u32 = 0x8500;
+pub const AM43XX_CM_TAMPER_INST: u32 = 0x8600;
+pub const AM43XX_CM_CEFUSE_INST: u32 = 0x8700;
+pub const AM43XX_CM_PER_INST: u32 = 0x8800;
+
+/* CD offsets */
+pub const AM43XX_CM_WKUP_L3_AON_CDOFFS: u32 = 0x0000;
+pub const AM43XX_CM_WKUP_L3S_TSC_CDOFFS: u32 = 0x0100;
+pub const AM43XX_CM_WKUP_L4_WKUP_AON_CDOFFS: u32 = 0x0200;
+pub const AM43XX_CM_WKUP_WKUP_CDOFFS: u32 = 0x0300;
+pub const AM43XX_CM_MPU_MPU_CDOFFS: u32 = 0x0000;
+pub const AM43XX_CM_GFX_GFX_L3_CDOFFS: u32 = 0x0000;
+pub const AM43XX_CM_RTC_RTC_CDOFFS: u32 = 0x0000;
+pub const AM43XX_CM_TAMPER_TAMPER_CDOFFS: u32 = 0x0000;
+pub const AM43XX_CM_CEFUSE_CEFUSE_CDOFFS: u32 = 0x0000;
+pub const AM43XX_CM_PER_L3_CDOFFS: u32 = 0x0000;
+pub const AM43XX_CM_PER_L3S_CDOFFS: u32 = 0x0200;
+pub const AM43XX_CM_PER_ICSS_CDOFFS: u32 = 0x0300;
+pub const AM43XX_CM_PER_L4LS_CDOFFS: u32 = 0x0400;
+pub const AM43XX_CM_PER_EMIF_CDOFFS: u32 = 0x0700;
+pub const AM43XX_CM_PER_LCDC_CDOFFS: u32 = 0x0800;
+pub const AM43XX_CM_PER_DSS_CDOFFS: u32 = 0x0a00;
+pub const AM43XX_CM_PER_CPSW_CDOFFS: u32 = 0x0b00;
+pub const AM43XX_CM_PER_OCPWP_L3_CDOFFS: u32 = 0x0c00;
+
+/* CLK CTRL offsets */
+pub const AM43XX_CM_MPU_MPU_CLKCTRL_OFFSET: u32 = 0x0020;
+pub const AM43XX_CM_PER_EMIF_CLKCTRL_OFFSET: u32 = 0x0720;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

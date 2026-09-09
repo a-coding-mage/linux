@@ -1,0 +1,125 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Xilinx Zynq MPSoC Firmware layer
+ *
+ *  Copyright (C) 2014-2018 Xilinx, Inc.
+ *
+ */
+
+// Translated from xlnx-zynqmp-clk.h.
+
+pub const IOPLL: i32 = 0;
+pub const RPLL: i32 = 1;
+pub const APLL: i32 = 2;
+pub const DPLL: i32 = 3;
+pub const VPLL: i32 = 4;
+pub const IOPLL_TO_FPD: i32 = 5;
+pub const RPLL_TO_FPD: i32 = 6;
+pub const APLL_TO_LPD: i32 = 7;
+pub const DPLL_TO_LPD: i32 = 8;
+pub const VPLL_TO_LPD: i32 = 9;
+pub const ACPU: i32 = 10;
+pub const ACPU_HALF: i32 = 11;
+pub const DBF_FPD: i32 = 12;
+pub const DBF_LPD: i32 = 13;
+pub const DBG_TRACE: i32 = 14;
+pub const DBG_TSTMP: i32 = 15;
+pub const DP_VIDEO_REF: i32 = 16;
+pub const DP_AUDIO_REF: i32 = 17;
+pub const DP_STC_REF: i32 = 18;
+pub const GDMA_REF: i32 = 19;
+pub const DPDMA_REF: i32 = 20;
+pub const DDR_REF: i32 = 21;
+pub const SATA_REF: i32 = 22;
+pub const PCIE_REF: i32 = 23;
+pub const GPU_REF: i32 = 24;
+pub const GPU_PP0_REF: i32 = 25;
+pub const GPU_PP1_REF: i32 = 26;
+pub const TOPSW_MAIN: i32 = 27;
+pub const TOPSW_LSBUS: i32 = 28;
+pub const GTGREF0_REF: i32 = 29;
+pub const LPD_SWITCH: i32 = 30;
+pub const LPD_LSBUS: i32 = 31;
+pub const USB0_BUS_REF: i32 = 32;
+pub const USB1_BUS_REF: i32 = 33;
+pub const USB3_DUAL_REF: i32 = 34;
+pub const USB0: i32 = 35;
+pub const USB1: i32 = 36;
+pub const CPU_R5: i32 = 37;
+pub const CPU_R5_CORE: i32 = 38;
+pub const CSU_SPB: i32 = 39;
+pub const CSU_PLL: i32 = 40;
+pub const PCAP: i32 = 41;
+pub const IOU_SWITCH: i32 = 42;
+pub const GEM_TSU_REF: i32 = 43;
+pub const GEM_TSU: i32 = 44;
+pub const GEM0_TX: i32 = 45;
+pub const GEM1_TX: i32 = 46;
+pub const GEM2_TX: i32 = 47;
+pub const GEM3_TX: i32 = 48;
+pub const GEM0_RX: i32 = 49;
+pub const GEM1_RX: i32 = 50;
+pub const GEM2_RX: i32 = 51;
+pub const GEM3_RX: i32 = 52;
+pub const QSPI_REF: i32 = 53;
+pub const SDIO0_REF: i32 = 54;
+pub const SDIO1_REF: i32 = 55;
+pub const UART0_REF: i32 = 56;
+pub const UART1_REF: i32 = 57;
+pub const SPI0_REF: i32 = 58;
+pub const SPI1_REF: i32 = 59;
+pub const NAND_REF: i32 = 60;
+pub const I2C0_REF: i32 = 61;
+pub const I2C1_REF: i32 = 62;
+pub const CAN0_REF: i32 = 63;
+pub const CAN1_REF: i32 = 64;
+pub const CAN0: i32 = 65;
+pub const CAN1: i32 = 66;
+pub const DLL_REF: i32 = 67;
+pub const ADMA_REF: i32 = 68;
+pub const TIMESTAMP_REF: i32 = 69;
+pub const AMS_REF: i32 = 70;
+pub const PL0_REF: i32 = 71;
+pub const PL1_REF: i32 = 72;
+pub const PL2_REF: i32 = 73;
+pub const PL3_REF: i32 = 74;
+pub const WDT: i32 = 75;
+pub const IOPLL_INT: i32 = 76;
+pub const IOPLL_PRE_SRC: i32 = 77;
+pub const IOPLL_HALF: i32 = 78;
+pub const IOPLL_INT_MUX: i32 = 79;
+pub const IOPLL_POST_SRC: i32 = 80;
+pub const RPLL_INT: i32 = 81;
+pub const RPLL_PRE_SRC: i32 = 82;
+pub const RPLL_HALF: i32 = 83;
+pub const RPLL_INT_MUX: i32 = 84;
+pub const RPLL_POST_SRC: i32 = 85;
+pub const APLL_INT: i32 = 86;
+pub const APLL_PRE_SRC: i32 = 87;
+pub const APLL_HALF: i32 = 88;
+pub const APLL_INT_MUX: i32 = 89;
+pub const APLL_POST_SRC: i32 = 90;
+pub const DPLL_INT: i32 = 91;
+pub const DPLL_PRE_SRC: i32 = 92;
+pub const DPLL_HALF: i32 = 93;
+pub const DPLL_INT_MUX: i32 = 94;
+pub const DPLL_POST_SRC: i32 = 95;
+pub const VPLL_INT: i32 = 96;
+pub const VPLL_PRE_SRC: i32 = 97;
+pub const VPLL_HALF: i32 = 98;
+pub const VPLL_INT_MUX: i32 = 99;
+pub const VPLL_POST_SRC: i32 = 100;
+pub const CAN0_MIO: i32 = 101;
+pub const CAN1_MIO: i32 = 102;
+pub const ACPU_FULL: i32 = 103;
+pub const GEM0_REF: i32 = 104;
+pub const GEM1_REF: i32 = 105;
+pub const GEM2_REF: i32 = 106;
+pub const GEM3_REF: i32 = 107;
+pub const GEM0_REF_UNG: i32 = 108;
+pub const GEM1_REF_UNG: i32 = 109;
+pub const GEM2_REF_UNG: i32 = 110;
+pub const GEM3_REF_UNG: i32 = 111;
+pub const LPD_WDT: i32 = 112;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

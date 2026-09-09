@@ -1,0 +1,58 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2020 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+/*
+ *****************************************
+ *   ROT0_QM_AXUSER_NONSECURED
+ *   (Prototype: AXUSER)
+ *****************************************
+ */
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_ASID: u32 = 0x4E0AB80;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_MMU_BP: u32 = 0x4E0AB84;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_STRONG_ORDER: u32 = 0x4E0AB88;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_NO_SNOOP: u32 = 0x4E0AB8C;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_WR_REDUCTION: u32 = 0x4E0AB90;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_RD_ATOMIC: u32 = 0x4E0AB94;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_QOS: u32 = 0x4E0AB98;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_RSVD: u32 = 0x4E0AB9C;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_EMEM_CPAGE: u32 = 0x4E0ABA0;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_CORE: u32 = 0x4E0ABA4;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_E2E_COORD: u32 = 0x4E0ABA8;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_WR_OVRD_LO: u32 = 0x4E0ABB0;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_WR_OVRD_HI: u32 = 0x4E0ABB4;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_RD_OVRD_LO: u32 = 0x4E0ABB8;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_HB_RD_OVRD_HI: u32 = 0x4E0ABBC;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_LB_COORD: u32 = 0x4E0ABC0;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_LB_LOCK: u32 = 0x4E0ABC4;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_LB_RSVD: u32 = 0x4E0ABC8;
+
+pub const MMROT0_QM_AXUSER_NONSECURED_LB_OVRD: u32 = 0x4E0ABCC;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

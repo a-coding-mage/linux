@@ -1,0 +1,256 @@
+/*
+ * Xtensa processor core configuration information.
+ *
+ * This file is subject to the terms and conditions of version 2.1 of the GNU
+ * Lesser General Public License as published by the Free Software Foundation.
+ *
+ * Copyright (c) 1999-2009 Tensilica Inc.
+ */
+
+/* C header guards and preprocessor conditionals are represented by this Rust
+ * translation as ordinary items.  The privileged section is included here;
+ * define XTENSA_HAL_NON_PRIVILEGED_ONLY in the surrounding build if it must be
+ * excluded.
+ */
+
+/* Parameters useful for any code, user or privileged. */
+pub const XCHAL_HAVE_BE: u32 = 0;
+pub const XCHAL_HAVE_WINDOWED: u32 = 1;
+pub const XCHAL_NUM_AREGS: u32 = 32;
+pub const XCHAL_NUM_AREGS_LOG2: u32 = 5;
+pub const XCHAL_MAX_INSTRUCTION_SIZE: u32 = 8;
+pub const XCHAL_HAVE_DEBUG: u32 = 1;
+pub const XCHAL_HAVE_DENSITY: u32 = 1;
+pub const XCHAL_HAVE_LOOPS: u32 = 1;
+pub const XCHAL_HAVE_NSA: u32 = 1;
+pub const XCHAL_HAVE_MINMAX: u32 = 1;
+pub const XCHAL_HAVE_SEXT: u32 = 1;
+pub const XCHAL_HAVE_CLAMPS: u32 = 1;
+pub const XCHAL_HAVE_MUL16: u32 = 1;
+pub const XCHAL_HAVE_MUL32: u32 = 1;
+pub const XCHAL_HAVE_MUL32_HIGH: u32 = 0;
+pub const XCHAL_HAVE_DIV32: u32 = 0;
+pub const XCHAL_HAVE_L32R: u32 = 1;
+pub const XCHAL_HAVE_ABSOLUTE_LITERALS: u32 = 1;
+pub const XCHAL_HAVE_CONST16: u32 = 0;
+pub const XCHAL_HAVE_ADDX: u32 = 1;
+pub const XCHAL_HAVE_WIDE_BRANCHES: u32 = 0;
+pub const XCHAL_HAVE_PREDICTED_BRANCHES: u32 = 0;
+pub const XCHAL_HAVE_CALL4AND12: u32 = 1;
+pub const XCHAL_HAVE_ABS: u32 = 1;
+/* XCHAL_HAVE_POPC and XCHAL_HAVE_CRC are intentionally undefined in C. */
+pub const XCHAL_HAVE_RELEASE_SYNC: u32 = 1;
+pub const XCHAL_HAVE_S32C1I: u32 = 1;
+pub const XCHAL_HAVE_SPECULATION: u32 = 0;
+pub const XCHAL_HAVE_FULL_RESET: u32 = 1;
+pub const XCHAL_NUM_CONTEXTS: u32 = 1;
+pub const XCHAL_NUM_MISC_REGS: u32 = 2;
+pub const XCHAL_HAVE_TAP_MASTER: u32 = 0;
+pub const XCHAL_HAVE_PRID: u32 = 1;
+pub const XCHAL_HAVE_EXTERN_REGS: u32 = 1;
+pub const XCHAL_HAVE_MP_INTERRUPTS: u32 = 1;
+pub const XCHAL_HAVE_MP_RUNSTALL: u32 = 1;
+pub const XCHAL_HAVE_THREADPTR: u32 = 1;
+pub const XCHAL_HAVE_BOOLEANS: u32 = 1;
+pub const XCHAL_HAVE_CP: u32 = 1;
+pub const XCHAL_CP_MAXCFG: u32 = 2;
+pub const XCHAL_HAVE_MAC16: u32 = 0;
+pub const XCHAL_HAVE_VECTORFPU2005: u32 = 0;
+pub const XCHAL_HAVE_FP: u32 = 0;
+pub const XCHAL_HAVE_DFP: u32 = 0;
+pub const XCHAL_HAVE_DFP_accel: u32 = 0;
+pub const XCHAL_HAVE_VECTRA1: u32 = 0;
+pub const XCHAL_HAVE_VECTRALX: u32 = 0;
+pub const XCHAL_HAVE_HIFIPRO: u32 = 0;
+pub const XCHAL_HAVE_HIFI2: u32 = 1;
+pub const XCHAL_HAVE_CONNXD2: u32 = 0;
+
+pub const XCHAL_NUM_WRITEBUFFER_ENTRIES: u32 = 8;
+pub const XCHAL_INST_FETCH_WIDTH: u32 = 8;
+pub const XCHAL_DATA_WIDTH: u32 = 8;
+pub const XCHAL_UNALIGNED_LOAD_EXCEPTION: u32 = 1;
+pub const XCHAL_UNALIGNED_STORE_EXCEPTION: u32 = 1;
+pub const XCHAL_UNALIGNED_LOAD_HW: u32 = 0;
+pub const XCHAL_UNALIGNED_STORE_HW: u32 = 0;
+pub const XCHAL_SW_VERSION: u32 = 800000;
+pub const XCHAL_CORE_ID: &str = "test_mmuhifi_c3";
+pub const XCHAL_CORE_DESCRIPTION: &str = "test_mmuhifi_c3";
+pub const XCHAL_BUILD_UNIQUE_ID: u32 = 0x00005A6A;
+pub const XCHAL_HW_CONFIGID0: u32 = 0xC1B3CBFE;
+pub const XCHAL_HW_CONFIGID1: u32 = 0x10405A6A;
+pub const XCHAL_HW_VERSION_NAME: &str = "LX3.0.0";
+pub const XCHAL_HW_VERSION_MAJOR: u32 = 2300;
+pub const XCHAL_HW_VERSION_MINOR: u32 = 0;
+pub const XCHAL_HW_VERSION: u32 = 230000;
+pub const XCHAL_HW_REL_LX3: u32 = 1;
+pub const XCHAL_HW_REL_LX3_0: u32 = 1;
+pub const XCHAL_HW_REL_LX3_0_0: u32 = 1;
+pub const XCHAL_HW_CONFIGID_RELIABLE: u32 = 1;
+pub const XCHAL_HW_MIN_VERSION_MAJOR: u32 = 2300;
+pub const XCHAL_HW_MIN_VERSION_MINOR: u32 = 0;
+pub const XCHAL_HW_MIN_VERSION: u32 = 230000;
+pub const XCHAL_HW_MAX_VERSION_MAJOR: u32 = 2300;
+pub const XCHAL_HW_MAX_VERSION_MINOR: u32 = 0;
+pub const XCHAL_HW_MAX_VERSION: u32 = 230000;
+
+pub const XCHAL_ICACHE_LINESIZE: u32 = 32;
+pub const XCHAL_DCACHE_LINESIZE: u32 = 32;
+pub const XCHAL_ICACHE_LINEWIDTH: u32 = 5;
+pub const XCHAL_DCACHE_LINEWIDTH: u32 = 5;
+pub const XCHAL_ICACHE_SIZE: u32 = 16384;
+pub const XCHAL_DCACHE_SIZE: u32 = 16384;
+pub const XCHAL_DCACHE_IS_WRITEBACK: u32 = 1;
+pub const XCHAL_DCACHE_IS_COHERENT: u32 = 1;
+
+/* Privileged configuration (C: !XTENSA_HAL_NON_PRIVILEGED_ONLY). */
+pub const XCHAL_HAVE_PIF: u32 = 1;
+pub const XCHAL_ICACHE_SETWIDTH: u32 = 8;
+pub const XCHAL_DCACHE_SETWIDTH: u32 = 8;
+pub const XCHAL_ICACHE_WAYS: u32 = 2;
+pub const XCHAL_DCACHE_WAYS: u32 = 2;
+pub const XCHAL_ICACHE_LINE_LOCKABLE: u32 = 0;
+pub const XCHAL_DCACHE_LINE_LOCKABLE: u32 = 0;
+pub const XCHAL_ICACHE_ECC_PARITY: u32 = 0;
+pub const XCHAL_DCACHE_ECC_PARITY: u32 = 0;
+pub const XCHAL_ICACHE_ACCESS_SIZE: u32 = 8;
+pub const XCHAL_DCACHE_ACCESS_SIZE: u32 = 8;
+pub const XCHAL_CA_BITS: u32 = 4;
+pub const XCHAL_NUM_INSTROM: u32 = 0;
+pub const XCHAL_NUM_INSTRAM: u32 = 0;
+pub const XCHAL_NUM_DATAROM: u32 = 0;
+pub const XCHAL_NUM_DATARAM: u32 = 0;
+pub const XCHAL_NUM_URAM: u32 = 0;
+pub const XCHAL_NUM_XLMI: u32 = 0;
+pub const XCHAL_HAVE_INTERRUPTS: u32 = 1;
+pub const XCHAL_HAVE_HIGHPRI_INTERRUPTS: u32 = 1;
+pub const XCHAL_HAVE_NMI: u32 = 0;
+pub const XCHAL_HAVE_CCOUNT: u32 = 1;
+pub const XCHAL_NUM_TIMERS: u32 = 2;
+pub const XCHAL_NUM_INTERRUPTS: u32 = 12;
+pub const XCHAL_NUM_INTERRUPTS_LOG2: u32 = 4;
+pub const XCHAL_NUM_EXTINTERRUPTS: u32 = 9;
+pub const XCHAL_NUM_INTLEVELS: u32 = 2;
+pub const XCHAL_EXCM_LEVEL: u32 = 1;
+pub const XCHAL_INTLEVEL1_MASK: u32 = 0x00000FFF;
+pub const XCHAL_INTLEVEL2_MASK: u32 = 0;
+pub const XCHAL_INTLEVEL3_MASK: u32 = 0;
+pub const XCHAL_INTLEVEL4_MASK: u32 = 0;
+pub const XCHAL_INTLEVEL5_MASK: u32 = 0;
+pub const XCHAL_INTLEVEL6_MASK: u32 = 0;
+pub const XCHAL_INTLEVEL7_MASK: u32 = 0;
+pub const XCHAL_INTLEVEL1_ANDBELOW_MASK: u32 = 0x00000FFF;
+pub const XCHAL_INTLEVEL2_ANDBELOW_MASK: u32 = 0x00000FFF;
+pub const XCHAL_INTLEVEL3_ANDBELOW_MASK: u32 = 0x00000FFF;
+pub const XCHAL_INTLEVEL4_ANDBELOW_MASK: u32 = 0x00000FFF;
+pub const XCHAL_INTLEVEL5_ANDBELOW_MASK: u32 = 0x00000FFF;
+pub const XCHAL_INTLEVEL6_ANDBELOW_MASK: u32 = 0x00000FFF;
+pub const XCHAL_INTLEVEL7_ANDBELOW_MASK: u32 = 0x00000FFF;
+
+pub const XCHAL_INT0_LEVEL: u32 = 1;
+pub const XCHAL_INT1_LEVEL: u32 = 1;
+pub const XCHAL_INT2_LEVEL: u32 = 1;
+pub const XCHAL_INT3_LEVEL: u32 = 1;
+pub const XCHAL_INT4_LEVEL: u32 = 1;
+pub const XCHAL_INT5_LEVEL: u32 = 1;
+pub const XCHAL_INT6_LEVEL: u32 = 1;
+pub const XCHAL_INT7_LEVEL: u32 = 1;
+pub const XCHAL_INT8_LEVEL: u32 = 1;
+pub const XCHAL_INT9_LEVEL: u32 = 1;
+pub const XCHAL_INT10_LEVEL: u32 = 1;
+pub const XCHAL_INT11_LEVEL: u32 = 1;
+pub const XCHAL_DEBUGLEVEL: u32 = 2;
+pub const XCHAL_HAVE_DEBUG_EXTERN_INT: u32 = 1;
+
+/* External dependency constants are intentionally referenced, not defined here. */
+pub const XCHAL_INT0_TYPE: u32 = XTHAL_INTTYPE_EXTERN_LEVEL;
+pub const XCHAL_INT1_TYPE: u32 = XTHAL_INTTYPE_EXTERN_LEVEL;
+pub const XCHAL_INT2_TYPE: u32 = XTHAL_INTTYPE_EXTERN_EDGE;
+pub const XCHAL_INT3_TYPE: u32 = XTHAL_INTTYPE_EXTERN_LEVEL;
+pub const XCHAL_INT4_TYPE: u32 = XTHAL_INTTYPE_EXTERN_LEVEL;
+pub const XCHAL_INT5_TYPE: u32 = XTHAL_INTTYPE_EXTERN_LEVEL;
+pub const XCHAL_INT6_TYPE: u32 = XTHAL_INTTYPE_TIMER;
+pub const XCHAL_INT7_TYPE: u32 = XTHAL_INTTYPE_SOFTWARE;
+pub const XCHAL_INT8_TYPE: u32 = XTHAL_INTTYPE_TIMER;
+pub const XCHAL_INT9_TYPE: u32 = XTHAL_INTTYPE_EXTERN_LEVEL;
+pub const XCHAL_INT10_TYPE: u32 = XTHAL_INTTYPE_EXTERN_LEVEL;
+pub const XCHAL_INT11_TYPE: u32 = XTHAL_INTTYPE_EXTERN_LEVEL;
+pub const XCHAL_INTTYPE_MASK_UNCONFIGURED: u32 = 0xFFFFF000;
+pub const XCHAL_INTTYPE_MASK_SOFTWARE: u32 = 0x00000080;
+pub const XCHAL_INTTYPE_MASK_EXTERN_EDGE: u32 = 0x00000004;
+pub const XCHAL_INTTYPE_MASK_EXTERN_LEVEL: u32 = 0x00000E3B;
+pub const XCHAL_INTTYPE_MASK_TIMER: u32 = 0x00000140;
+pub const XCHAL_INTTYPE_MASK_NMI: u32 = 0;
+pub const XCHAL_INTTYPE_MASK_WRITE_ERROR: u32 = 0;
+pub const XCHAL_TIMER0_INTERRUPT: u32 = 6;
+pub const XCHAL_TIMER1_INTERRUPT: u32 = 8;
+pub const XCHAL_TIMER2_INTERRUPT: u32 = XTHAL_TIMER_UNCONFIGURED;
+pub const XCHAL_TIMER3_INTERRUPT: u32 = XTHAL_TIMER_UNCONFIGURED;
+pub const XCHAL_EXTINT0_NUM: u32 = 0;
+pub const XCHAL_EXTINT1_NUM: u32 = 1;
+pub const XCHAL_EXTINT2_NUM: u32 = 2;
+pub const XCHAL_EXTINT3_NUM: u32 = 3;
+pub const XCHAL_EXTINT4_NUM: u32 = 4;
+pub const XCHAL_EXTINT5_NUM: u32 = 5;
+pub const XCHAL_EXTINT6_NUM: u32 = 9;
+pub const XCHAL_EXTINT7_NUM: u32 = 10;
+pub const XCHAL_EXTINT8_NUM: u32 = 11;
+
+pub const XCHAL_XEA_VERSION: u32 = 2;
+pub const XCHAL_HAVE_XEA1: u32 = 0;
+pub const XCHAL_HAVE_XEA2: u32 = 1;
+pub const XCHAL_HAVE_XEAX: u32 = 0;
+pub const XCHAL_HAVE_EXCEPTIONS: u32 = 1;
+pub const XCHAL_HAVE_MEM_ECC_PARITY: u32 = 0;
+pub const XCHAL_HAVE_VECTOR_SELECT: u32 = 1;
+pub const XCHAL_HAVE_VECBASE: u32 = 1;
+pub const XCHAL_VECBASE_RESET_VADDR: u32 = 0xD0000000;
+pub const XCHAL_VECBASE_RESET_PADDR: u32 = 0;
+pub const XCHAL_RESET_VECBASE_OVERLAP: u32 = 0;
+pub const XCHAL_RESET_VECTOR0_VADDR: u32 = 0xFE000000;
+pub const XCHAL_RESET_VECTOR0_PADDR: u32 = 0xFE000000;
+pub const XCHAL_RESET_VECTOR1_VADDR: u32 = 0xD8000500;
+pub const XCHAL_RESET_VECTOR1_PADDR: u32 = 0x00000500;
+pub const XCHAL_RESET_VECTOR_VADDR: u32 = 0xFE000000;
+pub const XCHAL_RESET_VECTOR_PADDR: u32 = 0xFE000000;
+pub const XCHAL_USER_VECOFS: u32 = 0x00000340;
+pub const XCHAL_USER_VECTOR_VADDR: u32 = 0xD0000340;
+pub const XCHAL_USER_VECTOR_PADDR: u32 = 0x00000340;
+pub const XCHAL_KERNEL_VECOFS: u32 = 0x00000300;
+pub const XCHAL_KERNEL_VECTOR_VADDR: u32 = 0xD0000300;
+pub const XCHAL_KERNEL_VECTOR_PADDR: u32 = 0x00000300;
+pub const XCHAL_DOUBLEEXC_VECOFS: u32 = 0x000003C0;
+pub const XCHAL_DOUBLEEXC_VECTOR_VADDR: u32 = 0xD00003C0;
+pub const XCHAL_DOUBLEEXC_VECTOR_PADDR: u32 = 0x000003C0;
+pub const XCHAL_WINDOW_OF4_VECOFS: u32 = 0;
+pub const XCHAL_WINDOW_UF4_VECOFS: u32 = 0x40;
+pub const XCHAL_WINDOW_OF8_VECOFS: u32 = 0x80;
+pub const XCHAL_WINDOW_UF8_VECOFS: u32 = 0xC0;
+pub const XCHAL_WINDOW_OF12_VECOFS: u32 = 0x100;
+pub const XCHAL_WINDOW_UF12_VECOFS: u32 = 0x140;
+pub const XCHAL_WINDOW_VECTORS_VADDR: u32 = 0xD0000000;
+pub const XCHAL_WINDOW_VECTORS_PADDR: u32 = 0;
+pub const XCHAL_INTLEVEL2_VECOFS: u32 = 0x280;
+pub const XCHAL_INTLEVEL2_VECTOR_VADDR: u32 = 0xD0000280;
+pub const XCHAL_INTLEVEL2_VECTOR_PADDR: u32 = 0x280;
+pub const XCHAL_DEBUG_VECOFS: u32 = XCHAL_INTLEVEL2_VECOFS;
+pub const XCHAL_DEBUG_VECTOR_VADDR: u32 = XCHAL_INTLEVEL2_VECTOR_VADDR;
+pub const XCHAL_DEBUG_VECTOR_PADDR: u32 = XCHAL_INTLEVEL2_VECTOR_PADDR;
+
+pub const XCHAL_HAVE_OCD: u32 = 1;
+pub const XCHAL_NUM_IBREAK: u32 = 0;
+pub const XCHAL_NUM_DBREAK: u32 = 0;
+pub const XCHAL_HAVE_OCD_DIR_ARRAY: u32 = 0;
+pub const XCHAL_HAVE_TLBS: u32 = 1;
+pub const XCHAL_HAVE_SPANNING_WAY: u32 = 0;
+pub const XCHAL_HAVE_IDENTITY_MAP: u32 = 0;
+pub const XCHAL_HAVE_CACHEATTR: u32 = 0;
+pub const XCHAL_HAVE_MIMIC_CACHEATTR: u32 = 0;
+pub const XCHAL_HAVE_XLT_CACHEATTR: u32 = 0;
+pub const XCHAL_HAVE_PTP_MMU: u32 = 1;
+pub const XCHAL_ITLB_ARF_ENTRIES_LOG2: u32 = 2;
+pub const XCHAL_DTLB_ARF_ENTRIES_LOG2: u32 = 2;
+pub const XCHAL_MMU_ASID_BITS: u32 = 8;
+pub const XCHAL_MMU_RINGS: u32 = 4;
+pub const XCHAL_MMU_RING_BITS: u32 = 2;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

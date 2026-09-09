@@ -1,0 +1,60 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2020 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+/*
+ *****************************************
+ *   DCORE0_TPC0_CFG_QM_TENSOR_0
+ *   (Prototype: TPC_TENSOR)
+ *****************************************
+ */
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_BASE_ADDR_LOW: u32 = 0x400B5DC;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_BASE_ADDR_HIGH: u32 = 0x400B5E0;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_PADDING_VALUE: u32 = 0x400B5E4;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_TENSOR_CONFIG: u32 = 0x400B5E8;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_0_SIZE: u32 = 0x400B5EC;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_0_STRIDE: u32 = 0x400B5F0;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_1_SIZE: u32 = 0x400B5F4;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_1_STRIDE: u32 = 0x400B5F8;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_2_SIZE: u32 = 0x400B5FC;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_2_STRIDE: u32 = 0x400B600;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_3_SIZE: u32 = 0x400B604;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_3_STRIDE: u32 = 0x400B608;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_4_SIZE: u32 = 0x400B60C;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_4_STRIDE: u32 = 0x400B610;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_PREF_STRIDE: u32 = 0x400B614;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_0_SIZE_STRIDE_HIGH: u32 = 0x400B618;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_1_SIZE_STRIDE_HIGH: u32 = 0x400B61C;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_2_SIZE_STRIDE_HIGH: u32 = 0x400B620;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_3_SIZE_STRIDE_HIGH: u32 = 0x400B624;
+
+pub const mmDCORE0_TPC0_CFG_QM_TENSOR_0_DIM_4_SIZE_STRIDE_HIGH: u32 = 0x400B628;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

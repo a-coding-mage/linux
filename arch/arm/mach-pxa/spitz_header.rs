@@ -1,0 +1,173 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Hardware specific definitions for SL-Cx000 series of PDAs
+ *
+ * Copyright (c) 2005 Alexander Wykes
+ * Copyright (c) 2005 Richard Purdie
+ *
+ * Based on Sharp's 2.4 kernel patches
+ */
+
+// Dependencies supplied by the surrounding translation unit: `irqs.h` and
+// `<linux/fb.h>`.
+
+/* Spitz/Akita GPIOs */
+pub const SPITZ_GPIO_KEY_INT: i32 = 0; /* Key Interrupt */
+pub const SPITZ_GPIO_RESET: i32 = 1;
+pub const SPITZ_GPIO_nSD_DETECT: i32 = 9;
+pub const SPITZ_GPIO_TP_INT: i32 = 11; /* Touch Panel interrupt */
+pub const SPITZ_GPIO_AK_INT: i32 = 13; /* Remote Control */
+pub const SPITZ_GPIO_ADS7846_CS: i32 = 14;
+pub const SPITZ_GPIO_SYNC: i32 = 16;
+pub const SPITZ_GPIO_MAX1111_CS: i32 = 20;
+pub const SPITZ_GPIO_FATAL_BAT: i32 = 21;
+pub const SPITZ_GPIO_HSYNC: i32 = 22;
+pub const SPITZ_GPIO_nSD_CLK: i32 = 32;
+pub const SPITZ_GPIO_USB_DEVICE: i32 = 35;
+pub const SPITZ_GPIO_USB_HOST: i32 = 37;
+pub const SPITZ_GPIO_USB_CONNECT: i32 = 41;
+pub const SPITZ_GPIO_LCDCON_CS: i32 = 53;
+pub const SPITZ_GPIO_nPCE: i32 = 54;
+pub const SPITZ_GPIO_nSD_WP: i32 = 81;
+pub const SPITZ_GPIO_ON_RESET: i32 = 89;
+pub const SPITZ_GPIO_BAT_COVER: i32 = 90;
+pub const SPITZ_GPIO_CF_CD: i32 = 94;
+pub const SPITZ_GPIO_ON_KEY: i32 = 95;
+pub const SPITZ_GPIO_SWA: i32 = 97;
+pub const SPITZ_GPIO_SWB: i32 = 96;
+pub const SPITZ_GPIO_CHRG_FULL: i32 = 101;
+pub const SPITZ_GPIO_CO: i32 = 101;
+pub const SPITZ_GPIO_CF_IRQ: i32 = 105;
+pub const SPITZ_GPIO_AC_IN: i32 = 115;
+pub const SPITZ_GPIO_HP_IN: i32 = 116;
+
+/* Spitz Only GPIOs */
+pub const SPITZ_GPIO_CF2_IRQ: i32 = 106; /* CF slot1 Ready */
+pub const SPITZ_GPIO_CF2_CD: i32 = 93;
+
+/* Spitz/Akita Keyboard Definitions */
+pub const SPITZ_KEY_STROBE_NUM: i32 = 11;
+pub const SPITZ_KEY_SENSE_NUM: i32 = 7;
+pub const SPITZ_GPIO_G0_STROBE_BIT: u32 = 0x0f800000;
+pub const SPITZ_GPIO_G1_STROBE_BIT: u32 = 0x00100000;
+pub const SPITZ_GPIO_G2_STROBE_BIT: u32 = 0x01000000;
+pub const SPITZ_GPIO_G3_STROBE_BIT: u32 = 0x00041880;
+pub const SPITZ_GPIO_G0_SENSE_BIT: u32 = 0x00021000;
+pub const SPITZ_GPIO_G1_SENSE_BIT: u32 = 0x000000d4;
+pub const SPITZ_GPIO_G2_SENSE_BIT: u32 = 0x08000000;
+pub const SPITZ_GPIO_G3_SENSE_BIT: u32 = 0x00000000;
+
+pub const SPITZ_GPIO_KEY_STROBE0: i32 = 88;
+pub const SPITZ_GPIO_KEY_STROBE1: i32 = 23;
+pub const SPITZ_GPIO_KEY_STROBE2: i32 = 24;
+pub const SPITZ_GPIO_KEY_STROBE3: i32 = 25;
+pub const SPITZ_GPIO_KEY_STROBE4: i32 = 26;
+pub const SPITZ_GPIO_KEY_STROBE5: i32 = 27;
+pub const SPITZ_GPIO_KEY_STROBE6: i32 = 52;
+pub const SPITZ_GPIO_KEY_STROBE7: i32 = 103;
+pub const SPITZ_GPIO_KEY_STROBE8: i32 = 107;
+pub const SPITZ_GPIO_KEY_STROBE9: i32 = 108;
+pub const SPITZ_GPIO_KEY_STROBE10: i32 = 114;
+
+pub const SPITZ_GPIO_KEY_SENSE0: i32 = 12;
+pub const SPITZ_GPIO_KEY_SENSE1: i32 = 17;
+pub const SPITZ_GPIO_KEY_SENSE2: i32 = 91;
+pub const SPITZ_GPIO_KEY_SENSE3: i32 = 34;
+pub const SPITZ_GPIO_KEY_SENSE4: i32 = 36;
+pub const SPITZ_GPIO_KEY_SENSE5: i32 = 38;
+pub const SPITZ_GPIO_KEY_SENSE6: i32 = 39;
+
+/* Spitz Scoop Device (No. 1) GPIOs */
+/* Suspend States in comments */
+pub const SPITZ_SCP_LED_GREEN: _ = SCOOP_GPCR_PA11; /* Keep */
+pub const SPITZ_SCP_JK_B: _ = SCOOP_GPCR_PA12; /* Keep */
+pub const SPITZ_SCP_CHRG_ON: _ = SCOOP_GPCR_PA13; /* Keep */
+pub const SPITZ_SCP_MUTE_L: _ = SCOOP_GPCR_PA14; /* Low */
+pub const SPITZ_SCP_MUTE_R: _ = SCOOP_GPCR_PA15; /* Low */
+pub const SPITZ_SCP_CF_POWER: _ = SCOOP_GPCR_PA16; /* Keep */
+pub const SPITZ_SCP_LED_ORANGE: _ = SCOOP_GPCR_PA17; /* Keep */
+pub const SPITZ_SCP_JK_A: _ = SCOOP_GPCR_PA18; /* Low */
+pub const SPITZ_SCP_ADC_TEMP_ON: _ = SCOOP_GPCR_PA19; /* Low */
+
+pub const SPITZ_SCP_IO_DIR: _ = SPITZ_SCP_JK_B | SPITZ_SCP_CHRG_ON | SPITZ_SCP_MUTE_L | SPITZ_SCP_MUTE_R | SPITZ_SCP_CF_POWER | SPITZ_SCP_JK_A | SPITZ_SCP_ADC_TEMP_ON;
+pub const SPITZ_SCP_IO_OUT: _ = SPITZ_SCP_CHRG_ON | SPITZ_SCP_MUTE_L | SPITZ_SCP_MUTE_R;
+pub const SPITZ_SCP_SUS_CLR: _ = SPITZ_SCP_MUTE_L | SPITZ_SCP_MUTE_R | SPITZ_SCP_JK_A | SPITZ_SCP_ADC_TEMP_ON;
+pub const SPITZ_SCP_SUS_SET: i32 = 0;
+
+pub const SPITZ_SCP_GPIO_BASE: _ = PXA_NR_BUILTIN_GPIO;
+pub const SPITZ_GPIO_LED_GREEN: _ = SPITZ_SCP_GPIO_BASE + 0;
+pub const SPITZ_GPIO_JK_B: _ = SPITZ_SCP_GPIO_BASE + 1;
+pub const SPITZ_GPIO_CHRG_ON: _ = SPITZ_SCP_GPIO_BASE + 2;
+pub const SPITZ_GPIO_MUTE_L: _ = SPITZ_SCP_GPIO_BASE + 3;
+pub const SPITZ_GPIO_MUTE_R: _ = SPITZ_SCP_GPIO_BASE + 4;
+pub const SPITZ_GPIO_CF_POWER: _ = SPITZ_SCP_GPIO_BASE + 5;
+pub const SPITZ_GPIO_LED_ORANGE: _ = SPITZ_SCP_GPIO_BASE + 6;
+pub const SPITZ_GPIO_JK_A: _ = SPITZ_SCP_GPIO_BASE + 7;
+pub const SPITZ_GPIO_ADC_TEMP_ON: _ = SPITZ_SCP_GPIO_BASE + 8;
+
+/* Spitz Scoop Device (No. 2) GPIOs */
+/* Suspend States in comments */
+pub const SPITZ_SCP2_IR_ON: _ = SCOOP_GPCR_PA11; /* High */
+pub const SPITZ_SCP2_AKIN_PULLUP: _ = SCOOP_GPCR_PA12; /* Keep */
+pub const SPITZ_SCP2_RESERVED_1: _ = SCOOP_GPCR_PA13; /* High */
+pub const SPITZ_SCP2_RESERVED_2: _ = SCOOP_GPCR_PA14; /* Low */
+pub const SPITZ_SCP2_RESERVED_3: _ = SCOOP_GPCR_PA15; /* Low */
+pub const SPITZ_SCP2_RESERVED_4: _ = SCOOP_GPCR_PA16; /* Low */
+pub const SPITZ_SCP2_BACKLIGHT_CONT: _ = SCOOP_GPCR_PA17; /* Low */
+pub const SPITZ_SCP2_BACKLIGHT_ON: _ = SCOOP_GPCR_PA18; /* Low */
+pub const SPITZ_SCP2_MIC_BIAS: _ = SCOOP_GPCR_PA19; /* Low */
+pub const SPITZ_SCP2_IO_DIR: _ = SPITZ_SCP2_AKIN_PULLUP | SPITZ_SCP2_RESERVED_1 | SPITZ_SCP2_RESERVED_2 | SPITZ_SCP2_RESERVED_3 | SPITZ_SCP2_RESERVED_4 | SPITZ_SCP2_BACKLIGHT_CONT | SPITZ_SCP2_BACKLIGHT_ON | SPITZ_SCP2_MIC_BIAS;
+pub const SPITZ_SCP2_IO_OUT: _ = SPITZ_SCP2_AKIN_PULLUP | SPITZ_SCP2_RESERVED_1;
+pub const SPITZ_SCP2_SUS_CLR: _ = SPITZ_SCP2_RESERVED_2 | SPITZ_SCP2_RESERVED_3 | SPITZ_SCP2_RESERVED_4 | SPITZ_SCP2_BACKLIGHT_CONT | SPITZ_SCP2_BACKLIGHT_ON | SPITZ_SCP2_MIC_BIAS;
+pub const SPITZ_SCP2_SUS_SET: _ = SPITZ_SCP2_IR_ON | SPITZ_SCP2_RESERVED_1;
+
+pub const SPITZ_SCP2_GPIO_BASE: _ = PXA_NR_BUILTIN_GPIO + 12;
+pub const SPITZ_GPIO_IR_ON: _ = SPITZ_SCP2_GPIO_BASE + 0;
+pub const SPITZ_GPIO_AKIN_PULLUP: _ = SPITZ_SCP2_GPIO_BASE + 1;
+pub const SPITZ_GPIO_RESERVED_1: _ = SPITZ_SCP2_GPIO_BASE + 2;
+pub const SPITZ_GPIO_RESERVED_2: _ = SPITZ_SCP2_GPIO_BASE + 3;
+pub const SPITZ_GPIO_RESERVED_3: _ = SPITZ_SCP2_GPIO_BASE + 4;
+pub const SPITZ_GPIO_RESERVED_4: _ = SPITZ_SCP2_GPIO_BASE + 5;
+pub const SPITZ_GPIO_BACKLIGHT_CONT: _ = SPITZ_SCP2_GPIO_BASE + 6;
+pub const SPITZ_GPIO_BACKLIGHT_ON: _ = SPITZ_SCP2_GPIO_BASE + 7;
+pub const SPITZ_GPIO_MIC_BIAS: _ = SPITZ_SCP2_GPIO_BASE + 8;
+
+/* Akita IO Expander GPIOs */
+pub const AKITA_IOEXP_GPIO_BASE: _ = PXA_NR_BUILTIN_GPIO + 12;
+pub const AKITA_GPIO_RESERVED_0: _ = AKITA_IOEXP_GPIO_BASE + 0;
+pub const AKITA_GPIO_RESERVED_1: _ = AKITA_IOEXP_GPIO_BASE + 1;
+pub const AKITA_GPIO_MIC_BIAS: _ = AKITA_IOEXP_GPIO_BASE + 2;
+pub const AKITA_GPIO_BACKLIGHT_ON: _ = AKITA_IOEXP_GPIO_BASE + 3;
+pub const AKITA_GPIO_BACKLIGHT_CONT: _ = AKITA_IOEXP_GPIO_BASE + 4;
+pub const AKITA_GPIO_AKIN_PULLUP: _ = AKITA_IOEXP_GPIO_BASE + 5;
+pub const AKITA_GPIO_IR_ON: _ = AKITA_IOEXP_GPIO_BASE + 6;
+pub const AKITA_GPIO_RESERVED_7: _ = AKITA_IOEXP_GPIO_BASE + 7;
+
+/* Spitz IRQ Definitions */
+pub const SPITZ_IRQ_GPIO_KEY_INT: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_KEY_INT);
+pub const SPITZ_IRQ_GPIO_AC_IN: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_AC_IN);
+pub const SPITZ_IRQ_GPIO_AK_INT: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_AK_INT);
+pub const SPITZ_IRQ_GPIO_HP_IN: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_HP_IN);
+pub const SPITZ_IRQ_GPIO_TP_INT: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_TP_INT);
+pub const SPITZ_IRQ_GPIO_SYNC: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_SYNC);
+pub const SPITZ_IRQ_GPIO_ON_KEY: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_ON_KEY);
+pub const SPITZ_IRQ_GPIO_SWA: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_SWA);
+pub const SPITZ_IRQ_GPIO_SWB: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_SWB);
+pub const SPITZ_IRQ_GPIO_BAT_COVER: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_BAT_COVER);
+pub const SPITZ_IRQ_GPIO_FATAL_BAT: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_FATAL_BAT);
+pub const SPITZ_IRQ_GPIO_CO: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_CO);
+pub const SPITZ_IRQ_GPIO_CF_IRQ: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_CF_IRQ);
+pub const SPITZ_IRQ_GPIO_CF_CD: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_CF_CD);
+pub const SPITZ_IRQ_GPIO_CF2_IRQ: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_CF2_IRQ);
+pub const SPITZ_IRQ_GPIO_nSD_INT: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_nSD_INT);
+pub const SPITZ_IRQ_GPIO_nSD_DETECT: _ = PXA_GPIO_TO_IRQ(SPITZ_GPIO_nSD_DETECT);
+
+/*
+ * Shared data structures
+ */
+extern "C" {
+    pub static mut spitzssp_device: platform_device;
+    pub static mut spitz_pm_machinfo: sharpsl_charger_machinfo;
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

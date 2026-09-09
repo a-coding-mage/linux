@@ -1,0 +1,833 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2018 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+
+/*
+ *****************************************
+ *   TPC5_QM (Prototype: QMAN)
+ *****************************************
+ */
+
+pub const mmTPC5_QM_GLBL_CFG0: u32 = 0xF48000;
+
+pub const mmTPC5_QM_GLBL_CFG1: u32 = 0xF48004;
+
+pub const mmTPC5_QM_GLBL_PROT: u32 = 0xF48008;
+
+pub const mmTPC5_QM_GLBL_ERR_CFG: u32 = 0xF4800C;
+
+pub const mmTPC5_QM_GLBL_SECURE_PROPS_0: u32 = 0xF48010;
+
+pub const mmTPC5_QM_GLBL_SECURE_PROPS_1: u32 = 0xF48014;
+
+pub const mmTPC5_QM_GLBL_SECURE_PROPS_2: u32 = 0xF48018;
+
+pub const mmTPC5_QM_GLBL_SECURE_PROPS_3: u32 = 0xF4801C;
+
+pub const mmTPC5_QM_GLBL_SECURE_PROPS_4: u32 = 0xF48020;
+
+pub const mmTPC5_QM_GLBL_NON_SECURE_PROPS_0: u32 = 0xF48024;
+
+pub const mmTPC5_QM_GLBL_NON_SECURE_PROPS_1: u32 = 0xF48028;
+
+pub const mmTPC5_QM_GLBL_NON_SECURE_PROPS_2: u32 = 0xF4802C;
+
+pub const mmTPC5_QM_GLBL_NON_SECURE_PROPS_3: u32 = 0xF48030;
+
+pub const mmTPC5_QM_GLBL_NON_SECURE_PROPS_4: u32 = 0xF48034;
+
+pub const mmTPC5_QM_GLBL_STS0: u32 = 0xF48038;
+
+pub const mmTPC5_QM_GLBL_STS1_0: u32 = 0xF48040;
+
+pub const mmTPC5_QM_GLBL_STS1_1: u32 = 0xF48044;
+
+pub const mmTPC5_QM_GLBL_STS1_2: u32 = 0xF48048;
+
+pub const mmTPC5_QM_GLBL_STS1_3: u32 = 0xF4804C;
+
+pub const mmTPC5_QM_GLBL_STS1_4: u32 = 0xF48050;
+
+pub const mmTPC5_QM_GLBL_MSG_EN_0: u32 = 0xF48054;
+
+pub const mmTPC5_QM_GLBL_MSG_EN_1: u32 = 0xF48058;
+
+pub const mmTPC5_QM_GLBL_MSG_EN_2: u32 = 0xF4805C;
+
+pub const mmTPC5_QM_GLBL_MSG_EN_3: u32 = 0xF48060;
+
+pub const mmTPC5_QM_GLBL_MSG_EN_4: u32 = 0xF48068;
+
+pub const mmTPC5_QM_PQ_BASE_LO_0: u32 = 0xF48070;
+
+pub const mmTPC5_QM_PQ_BASE_LO_1: u32 = 0xF48074;
+
+pub const mmTPC5_QM_PQ_BASE_LO_2: u32 = 0xF48078;
+
+pub const mmTPC5_QM_PQ_BASE_LO_3: u32 = 0xF4807C;
+
+pub const mmTPC5_QM_PQ_BASE_HI_0: u32 = 0xF48080;
+
+pub const mmTPC5_QM_PQ_BASE_HI_1: u32 = 0xF48084;
+
+pub const mmTPC5_QM_PQ_BASE_HI_2: u32 = 0xF48088;
+
+pub const mmTPC5_QM_PQ_BASE_HI_3: u32 = 0xF4808C;
+
+pub const mmTPC5_QM_PQ_SIZE_0: u32 = 0xF48090;
+
+pub const mmTPC5_QM_PQ_SIZE_1: u32 = 0xF48094;
+
+pub const mmTPC5_QM_PQ_SIZE_2: u32 = 0xF48098;
+
+pub const mmTPC5_QM_PQ_SIZE_3: u32 = 0xF4809C;
+
+pub const mmTPC5_QM_PQ_PI_0: u32 = 0xF480A0;
+
+pub const mmTPC5_QM_PQ_PI_1: u32 = 0xF480A4;
+
+pub const mmTPC5_QM_PQ_PI_2: u32 = 0xF480A8;
+
+pub const mmTPC5_QM_PQ_PI_3: u32 = 0xF480AC;
+
+pub const mmTPC5_QM_PQ_CI_0: u32 = 0xF480B0;
+
+pub const mmTPC5_QM_PQ_CI_1: u32 = 0xF480B4;
+
+pub const mmTPC5_QM_PQ_CI_2: u32 = 0xF480B8;
+
+pub const mmTPC5_QM_PQ_CI_3: u32 = 0xF480BC;
+
+pub const mmTPC5_QM_PQ_CFG0_0: u32 = 0xF480C0;
+
+pub const mmTPC5_QM_PQ_CFG0_1: u32 = 0xF480C4;
+
+pub const mmTPC5_QM_PQ_CFG0_2: u32 = 0xF480C8;
+
+pub const mmTPC5_QM_PQ_CFG0_3: u32 = 0xF480CC;
+
+pub const mmTPC5_QM_PQ_CFG1_0: u32 = 0xF480D0;
+
+pub const mmTPC5_QM_PQ_CFG1_1: u32 = 0xF480D4;
+
+pub const mmTPC5_QM_PQ_CFG1_2: u32 = 0xF480D8;
+
+pub const mmTPC5_QM_PQ_CFG1_3: u32 = 0xF480DC;
+
+pub const mmTPC5_QM_PQ_ARUSER_31_11_0: u32 = 0xF480E0;
+
+pub const mmTPC5_QM_PQ_ARUSER_31_11_1: u32 = 0xF480E4;
+
+pub const mmTPC5_QM_PQ_ARUSER_31_11_2: u32 = 0xF480E8;
+
+pub const mmTPC5_QM_PQ_ARUSER_31_11_3: u32 = 0xF480EC;
+
+pub const mmTPC5_QM_PQ_STS0_0: u32 = 0xF480F0;
+
+pub const mmTPC5_QM_PQ_STS0_1: u32 = 0xF480F4;
+
+pub const mmTPC5_QM_PQ_STS0_2: u32 = 0xF480F8;
+
+pub const mmTPC5_QM_PQ_STS0_3: u32 = 0xF480FC;
+
+pub const mmTPC5_QM_PQ_STS1_0: u32 = 0xF48100;
+
+pub const mmTPC5_QM_PQ_STS1_1: u32 = 0xF48104;
+
+pub const mmTPC5_QM_PQ_STS1_2: u32 = 0xF48108;
+
+pub const mmTPC5_QM_PQ_STS1_3: u32 = 0xF4810C;
+
+pub const mmTPC5_QM_CQ_CFG0_0: u32 = 0xF48110;
+
+pub const mmTPC5_QM_CQ_CFG0_1: u32 = 0xF48114;
+
+pub const mmTPC5_QM_CQ_CFG0_2: u32 = 0xF48118;
+
+pub const mmTPC5_QM_CQ_CFG0_3: u32 = 0xF4811C;
+
+pub const mmTPC5_QM_CQ_CFG0_4: u32 = 0xF48120;
+
+pub const mmTPC5_QM_CQ_CFG1_0: u32 = 0xF48124;
+
+pub const mmTPC5_QM_CQ_CFG1_1: u32 = 0xF48128;
+
+pub const mmTPC5_QM_CQ_CFG1_2: u32 = 0xF4812C;
+
+pub const mmTPC5_QM_CQ_CFG1_3: u32 = 0xF48130;
+
+pub const mmTPC5_QM_CQ_CFG1_4: u32 = 0xF48134;
+
+pub const mmTPC5_QM_CQ_ARUSER_31_11_0: u32 = 0xF48138;
+
+pub const mmTPC5_QM_CQ_ARUSER_31_11_1: u32 = 0xF4813C;
+
+pub const mmTPC5_QM_CQ_ARUSER_31_11_2: u32 = 0xF48140;
+
+pub const mmTPC5_QM_CQ_ARUSER_31_11_3: u32 = 0xF48144;
+
+pub const mmTPC5_QM_CQ_ARUSER_31_11_4: u32 = 0xF48148;
+
+pub const mmTPC5_QM_CQ_STS0_0: u32 = 0xF4814C;
+
+pub const mmTPC5_QM_CQ_STS0_1: u32 = 0xF48150;
+
+pub const mmTPC5_QM_CQ_STS0_2: u32 = 0xF48154;
+
+pub const mmTPC5_QM_CQ_STS0_3: u32 = 0xF48158;
+
+pub const mmTPC5_QM_CQ_STS0_4: u32 = 0xF4815C;
+
+pub const mmTPC5_QM_CQ_STS1_0: u32 = 0xF48160;
+
+pub const mmTPC5_QM_CQ_STS1_1: u32 = 0xF48164;
+
+pub const mmTPC5_QM_CQ_STS1_2: u32 = 0xF48168;
+
+pub const mmTPC5_QM_CQ_STS1_3: u32 = 0xF4816C;
+
+pub const mmTPC5_QM_CQ_STS1_4: u32 = 0xF48170;
+
+pub const mmTPC5_QM_CQ_PTR_LO_0: u32 = 0xF48174;
+
+pub const mmTPC5_QM_CQ_PTR_HI_0: u32 = 0xF48178;
+
+pub const mmTPC5_QM_CQ_TSIZE_0: u32 = 0xF4817C;
+
+pub const mmTPC5_QM_CQ_CTL_0: u32 = 0xF48180;
+
+pub const mmTPC5_QM_CQ_PTR_LO_1: u32 = 0xF48184;
+
+pub const mmTPC5_QM_CQ_PTR_HI_1: u32 = 0xF48188;
+
+pub const mmTPC5_QM_CQ_TSIZE_1: u32 = 0xF4818C;
+
+pub const mmTPC5_QM_CQ_CTL_1: u32 = 0xF48190;
+
+pub const mmTPC5_QM_CQ_PTR_LO_2: u32 = 0xF48194;
+
+pub const mmTPC5_QM_CQ_PTR_HI_2: u32 = 0xF48198;
+
+pub const mmTPC5_QM_CQ_TSIZE_2: u32 = 0xF4819C;
+
+pub const mmTPC5_QM_CQ_CTL_2: u32 = 0xF481A0;
+
+pub const mmTPC5_QM_CQ_PTR_LO_3: u32 = 0xF481A4;
+
+pub const mmTPC5_QM_CQ_PTR_HI_3: u32 = 0xF481A8;
+
+pub const mmTPC5_QM_CQ_TSIZE_3: u32 = 0xF481AC;
+
+pub const mmTPC5_QM_CQ_CTL_3: u32 = 0xF481B0;
+
+pub const mmTPC5_QM_CQ_PTR_LO_4: u32 = 0xF481B4;
+
+pub const mmTPC5_QM_CQ_PTR_HI_4: u32 = 0xF481B8;
+
+pub const mmTPC5_QM_CQ_TSIZE_4: u32 = 0xF481BC;
+
+pub const mmTPC5_QM_CQ_CTL_4: u32 = 0xF481C0;
+
+pub const mmTPC5_QM_CQ_PTR_LO_STS_0: u32 = 0xF481C4;
+
+pub const mmTPC5_QM_CQ_PTR_LO_STS_1: u32 = 0xF481C8;
+
+pub const mmTPC5_QM_CQ_PTR_LO_STS_2: u32 = 0xF481CC;
+
+pub const mmTPC5_QM_CQ_PTR_LO_STS_3: u32 = 0xF481D0;
+
+pub const mmTPC5_QM_CQ_PTR_LO_STS_4: u32 = 0xF481D4;
+
+pub const mmTPC5_QM_CQ_PTR_HI_STS_0: u32 = 0xF481D8;
+
+pub const mmTPC5_QM_CQ_PTR_HI_STS_1: u32 = 0xF481DC;
+
+pub const mmTPC5_QM_CQ_PTR_HI_STS_2: u32 = 0xF481E0;
+
+pub const mmTPC5_QM_CQ_PTR_HI_STS_3: u32 = 0xF481E4;
+
+pub const mmTPC5_QM_CQ_PTR_HI_STS_4: u32 = 0xF481E8;
+
+pub const mmTPC5_QM_CQ_TSIZE_STS_0: u32 = 0xF481EC;
+
+pub const mmTPC5_QM_CQ_TSIZE_STS_1: u32 = 0xF481F0;
+
+pub const mmTPC5_QM_CQ_TSIZE_STS_2: u32 = 0xF481F4;
+
+pub const mmTPC5_QM_CQ_TSIZE_STS_3: u32 = 0xF481F8;
+
+pub const mmTPC5_QM_CQ_TSIZE_STS_4: u32 = 0xF481FC;
+
+pub const mmTPC5_QM_CQ_CTL_STS_0: u32 = 0xF48200;
+
+pub const mmTPC5_QM_CQ_CTL_STS_1: u32 = 0xF48204;
+
+pub const mmTPC5_QM_CQ_CTL_STS_2: u32 = 0xF48208;
+
+pub const mmTPC5_QM_CQ_CTL_STS_3: u32 = 0xF4820C;
+
+pub const mmTPC5_QM_CQ_CTL_STS_4: u32 = 0xF48210;
+
+pub const mmTPC5_QM_CQ_IFIFO_CNT_0: u32 = 0xF48214;
+
+pub const mmTPC5_QM_CQ_IFIFO_CNT_1: u32 = 0xF48218;
+
+pub const mmTPC5_QM_CQ_IFIFO_CNT_2: u32 = 0xF4821C;
+
+pub const mmTPC5_QM_CQ_IFIFO_CNT_3: u32 = 0xF48220;
+
+pub const mmTPC5_QM_CQ_IFIFO_CNT_4: u32 = 0xF48224;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_LO_0: u32 = 0xF48228;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_LO_1: u32 = 0xF4822C;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_LO_2: u32 = 0xF48230;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_LO_3: u32 = 0xF48234;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_LO_4: u32 = 0xF48238;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_HI_0: u32 = 0xF4823C;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_HI_1: u32 = 0xF48240;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_HI_2: u32 = 0xF48244;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_HI_3: u32 = 0xF48248;
+
+pub const mmTPC5_QM_CP_MSG_BASE0_ADDR_HI_4: u32 = 0xF4824C;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_LO_0: u32 = 0xF48250;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_LO_1: u32 = 0xF48254;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_LO_2: u32 = 0xF48258;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_LO_3: u32 = 0xF4825C;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_LO_4: u32 = 0xF48260;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_HI_0: u32 = 0xF48264;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_HI_1: u32 = 0xF48268;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_HI_2: u32 = 0xF4826C;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_HI_3: u32 = 0xF48270;
+
+pub const mmTPC5_QM_CP_MSG_BASE1_ADDR_HI_4: u32 = 0xF48274;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_0: u32 = 0xF48278;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_1: u32 = 0xF4827C;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_2: u32 = 0xF48280;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_3: u32 = 0xF48284;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_LO_4: u32 = 0xF48288;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_HI_0: u32 = 0xF4828C;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_HI_1: u32 = 0xF48290;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_HI_2: u32 = 0xF48294;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_HI_3: u32 = 0xF48298;
+
+pub const mmTPC5_QM_CP_MSG_BASE2_ADDR_HI_4: u32 = 0xF4829C;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_LO_0: u32 = 0xF482A0;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_LO_1: u32 = 0xF482A4;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_LO_2: u32 = 0xF482A8;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_LO_3: u32 = 0xF482AC;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_LO_4: u32 = 0xF482B0;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_HI_0: u32 = 0xF482B4;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_HI_1: u32 = 0xF482B8;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_HI_2: u32 = 0xF482BC;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_HI_3: u32 = 0xF482C0;
+
+pub const mmTPC5_QM_CP_MSG_BASE3_ADDR_HI_4: u32 = 0xF482C4;
+
+pub const mmTPC5_QM_CP_LDMA_TSIZE_OFFSET_0: u32 = 0xF482C8;
+
+pub const mmTPC5_QM_CP_LDMA_TSIZE_OFFSET_1: u32 = 0xF482CC;
+
+pub const mmTPC5_QM_CP_LDMA_TSIZE_OFFSET_2: u32 = 0xF482D0;
+
+pub const mmTPC5_QM_CP_LDMA_TSIZE_OFFSET_3: u32 = 0xF482D4;
+
+pub const mmTPC5_QM_CP_LDMA_TSIZE_OFFSET_4: u32 = 0xF482D8;
+
+pub const mmTPC5_QM_CP_LDMA_SRC_BASE_LO_OFFSET_0: u32 = 0xF482E0;
+
+pub const mmTPC5_QM_CP_LDMA_SRC_BASE_LO_OFFSET_1: u32 = 0xF482E4;
+
+pub const mmTPC5_QM_CP_LDMA_SRC_BASE_LO_OFFSET_2: u32 = 0xF482E8;
+
+pub const mmTPC5_QM_CP_LDMA_SRC_BASE_LO_OFFSET_3: u32 = 0xF482EC;
+
+pub const mmTPC5_QM_CP_LDMA_SRC_BASE_LO_OFFSET_4: u32 = 0xF482F0;
+
+pub const mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_0: u32 = 0xF482F4;
+
+pub const mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_1: u32 = 0xF482F8;
+
+pub const mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_2: u32 = 0xF482FC;
+
+pub const mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_3: u32 = 0xF48300;
+
+pub const mmTPC5_QM_CP_LDMA_DST_BASE_LO_OFFSET_4: u32 = 0xF48304;
+
+pub const mmTPC5_QM_CP_FENCE0_RDATA_0: u32 = 0xF48308;
+
+pub const mmTPC5_QM_CP_FENCE0_RDATA_1: u32 = 0xF4830C;
+
+pub const mmTPC5_QM_CP_FENCE0_RDATA_2: u32 = 0xF48310;
+
+pub const mmTPC5_QM_CP_FENCE0_RDATA_3: u32 = 0xF48314;
+
+pub const mmTPC5_QM_CP_FENCE0_RDATA_4: u32 = 0xF48318;
+
+pub const mmTPC5_QM_CP_FENCE1_RDATA_0: u32 = 0xF4831C;
+
+pub const mmTPC5_QM_CP_FENCE1_RDATA_1: u32 = 0xF48320;
+
+pub const mmTPC5_QM_CP_FENCE1_RDATA_2: u32 = 0xF48324;
+
+pub const mmTPC5_QM_CP_FENCE1_RDATA_3: u32 = 0xF48328;
+
+pub const mmTPC5_QM_CP_FENCE1_RDATA_4: u32 = 0xF4832C;
+
+pub const mmTPC5_QM_CP_FENCE2_RDATA_0: u32 = 0xF48330;
+
+pub const mmTPC5_QM_CP_FENCE2_RDATA_1: u32 = 0xF48334;
+
+pub const mmTPC5_QM_CP_FENCE2_RDATA_2: u32 = 0xF48338;
+
+pub const mmTPC5_QM_CP_FENCE2_RDATA_3: u32 = 0xF4833C;
+
+pub const mmTPC5_QM_CP_FENCE2_RDATA_4: u32 = 0xF48340;
+
+pub const mmTPC5_QM_CP_FENCE3_RDATA_0: u32 = 0xF48344;
+
+pub const mmTPC5_QM_CP_FENCE3_RDATA_1: u32 = 0xF48348;
+
+pub const mmTPC5_QM_CP_FENCE3_RDATA_2: u32 = 0xF4834C;
+
+pub const mmTPC5_QM_CP_FENCE3_RDATA_3: u32 = 0xF48350;
+
+pub const mmTPC5_QM_CP_FENCE3_RDATA_4: u32 = 0xF48354;
+
+pub const mmTPC5_QM_CP_FENCE0_CNT_0: u32 = 0xF48358;
+
+pub const mmTPC5_QM_CP_FENCE0_CNT_1: u32 = 0xF4835C;
+
+pub const mmTPC5_QM_CP_FENCE0_CNT_2: u32 = 0xF48360;
+
+pub const mmTPC5_QM_CP_FENCE0_CNT_3: u32 = 0xF48364;
+
+pub const mmTPC5_QM_CP_FENCE0_CNT_4: u32 = 0xF48368;
+
+pub const mmTPC5_QM_CP_FENCE1_CNT_0: u32 = 0xF4836C;
+
+pub const mmTPC5_QM_CP_FENCE1_CNT_1: u32 = 0xF48370;
+
+pub const mmTPC5_QM_CP_FENCE1_CNT_2: u32 = 0xF48374;
+
+pub const mmTPC5_QM_CP_FENCE1_CNT_3: u32 = 0xF48378;
+
+pub const mmTPC5_QM_CP_FENCE1_CNT_4: u32 = 0xF4837C;
+
+pub const mmTPC5_QM_CP_FENCE2_CNT_0: u32 = 0xF48380;
+
+pub const mmTPC5_QM_CP_FENCE2_CNT_1: u32 = 0xF48384;
+
+pub const mmTPC5_QM_CP_FENCE2_CNT_2: u32 = 0xF48388;
+
+pub const mmTPC5_QM_CP_FENCE2_CNT_3: u32 = 0xF4838C;
+
+pub const mmTPC5_QM_CP_FENCE2_CNT_4: u32 = 0xF48390;
+
+pub const mmTPC5_QM_CP_FENCE3_CNT_0: u32 = 0xF48394;
+
+pub const mmTPC5_QM_CP_FENCE3_CNT_1: u32 = 0xF48398;
+
+pub const mmTPC5_QM_CP_FENCE3_CNT_2: u32 = 0xF4839C;
+
+pub const mmTPC5_QM_CP_FENCE3_CNT_3: u32 = 0xF483A0;
+
+pub const mmTPC5_QM_CP_FENCE3_CNT_4: u32 = 0xF483A4;
+
+pub const mmTPC5_QM_CP_STS_0: u32 = 0xF483A8;
+
+pub const mmTPC5_QM_CP_STS_1: u32 = 0xF483AC;
+
+pub const mmTPC5_QM_CP_STS_2: u32 = 0xF483B0;
+
+pub const mmTPC5_QM_CP_STS_3: u32 = 0xF483B4;
+
+pub const mmTPC5_QM_CP_STS_4: u32 = 0xF483B8;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_LO_0: u32 = 0xF483BC;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_LO_1: u32 = 0xF483C0;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_LO_2: u32 = 0xF483C4;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_LO_3: u32 = 0xF483C8;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_LO_4: u32 = 0xF483CC;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_HI_0: u32 = 0xF483D0;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_HI_1: u32 = 0xF483D4;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_HI_2: u32 = 0xF483D8;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_HI_3: u32 = 0xF483DC;
+
+pub const mmTPC5_QM_CP_CURRENT_INST_HI_4: u32 = 0xF483E0;
+
+pub const mmTPC5_QM_CP_BARRIER_CFG_0: u32 = 0xF483F4;
+
+pub const mmTPC5_QM_CP_BARRIER_CFG_1: u32 = 0xF483F8;
+
+pub const mmTPC5_QM_CP_BARRIER_CFG_2: u32 = 0xF483FC;
+
+pub const mmTPC5_QM_CP_BARRIER_CFG_3: u32 = 0xF48400;
+
+pub const mmTPC5_QM_CP_BARRIER_CFG_4: u32 = 0xF48404;
+
+pub const mmTPC5_QM_CP_DBG_0_0: u32 = 0xF48408;
+
+pub const mmTPC5_QM_CP_DBG_0_1: u32 = 0xF4840C;
+
+pub const mmTPC5_QM_CP_DBG_0_2: u32 = 0xF48410;
+
+pub const mmTPC5_QM_CP_DBG_0_3: u32 = 0xF48414;
+
+pub const mmTPC5_QM_CP_DBG_0_4: u32 = 0xF48418;
+
+pub const mmTPC5_QM_CP_ARUSER_31_11_0: u32 = 0xF4841C;
+
+pub const mmTPC5_QM_CP_ARUSER_31_11_1: u32 = 0xF48420;
+
+pub const mmTPC5_QM_CP_ARUSER_31_11_2: u32 = 0xF48424;
+
+pub const mmTPC5_QM_CP_ARUSER_31_11_3: u32 = 0xF48428;
+
+pub const mmTPC5_QM_CP_ARUSER_31_11_4: u32 = 0xF4842C;
+
+pub const mmTPC5_QM_CP_AWUSER_31_11_0: u32 = 0xF48430;
+
+pub const mmTPC5_QM_CP_AWUSER_31_11_1: u32 = 0xF48434;
+
+pub const mmTPC5_QM_CP_AWUSER_31_11_2: u32 = 0xF48438;
+
+pub const mmTPC5_QM_CP_AWUSER_31_11_3: u32 = 0xF4843C;
+
+pub const mmTPC5_QM_CP_AWUSER_31_11_4: u32 = 0xF48440;
+
+pub const mmTPC5_QM_ARB_CFG_0: u32 = 0xF48A00;
+
+pub const mmTPC5_QM_ARB_CHOISE_Q_PUSH: u32 = 0xF48A04;
+
+pub const mmTPC5_QM_ARB_WRR_WEIGHT_0: u32 = 0xF48A08;
+
+pub const mmTPC5_QM_ARB_WRR_WEIGHT_1: u32 = 0xF48A0C;
+
+pub const mmTPC5_QM_ARB_WRR_WEIGHT_2: u32 = 0xF48A10;
+
+pub const mmTPC5_QM_ARB_WRR_WEIGHT_3: u32 = 0xF48A14;
+
+pub const mmTPC5_QM_ARB_CFG_1: u32 = 0xF48A18;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_0: u32 = 0xF48A20;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_1: u32 = 0xF48A24;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_2: u32 = 0xF48A28;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_3: u32 = 0xF48A2C;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_4: u32 = 0xF48A30;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_5: u32 = 0xF48A34;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_6: u32 = 0xF48A38;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_7: u32 = 0xF48A3C;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_8: u32 = 0xF48A40;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_9: u32 = 0xF48A44;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_10: u32 = 0xF48A48;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_11: u32 = 0xF48A4C;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_12: u32 = 0xF48A50;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_13: u32 = 0xF48A54;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_14: u32 = 0xF48A58;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_15: u32 = 0xF48A5C;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_16: u32 = 0xF48A60;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_17: u32 = 0xF48A64;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_18: u32 = 0xF48A68;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_19: u32 = 0xF48A6C;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_20: u32 = 0xF48A70;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_21: u32 = 0xF48A74;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_22: u32 = 0xF48A78;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_23: u32 = 0xF48A7C;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_24: u32 = 0xF48A80;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_25: u32 = 0xF48A84;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_26: u32 = 0xF48A88;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_27: u32 = 0xF48A8C;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_28: u32 = 0xF48A90;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_29: u32 = 0xF48A94;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_30: u32 = 0xF48A98;
+
+pub const mmTPC5_QM_ARB_MST_AVAIL_CRED_31: u32 = 0xF48A9C;
+
+pub const mmTPC5_QM_ARB_MST_CRED_INC: u32 = 0xF48AA0;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_0: u32 = 0xF48AA4;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_1: u32 = 0xF48AA8;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_2: u32 = 0xF48AAC;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_3: u32 = 0xF48AB0;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_4: u32 = 0xF48AB4;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_5: u32 = 0xF48AB8;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_6: u32 = 0xF48ABC;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_7: u32 = 0xF48AC0;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_8: u32 = 0xF48AC4;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_9: u32 = 0xF48AC8;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_10: u32 = 0xF48ACC;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_11: u32 = 0xF48AD0;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_12: u32 = 0xF48AD4;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_13: u32 = 0xF48AD8;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_14: u32 = 0xF48ADC;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_15: u32 = 0xF48AE0;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_16: u32 = 0xF48AE4;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_17: u32 = 0xF48AE8;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_18: u32 = 0xF48AEC;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_19: u32 = 0xF48AF0;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_20: u32 = 0xF48AF4;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_21: u32 = 0xF48AF8;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_22: u32 = 0xF48AFC;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_23: u32 = 0xF48B00;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_24: u32 = 0xF48B04;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_25: u32 = 0xF48B08;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_26: u32 = 0xF48B0C;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_27: u32 = 0xF48B10;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_28: u32 = 0xF48B14;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_29: u32 = 0xF48B18;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_30: u32 = 0xF48B1C;
+
+pub const mmTPC5_QM_ARB_MST_CHOISE_PUSH_OFST_31: u32 = 0xF48B20;
+
+pub const mmTPC5_QM_ARB_SLV_MASTER_INC_CRED_OFST: u32 = 0xF48B28;
+
+pub const mmTPC5_QM_ARB_MST_SLAVE_EN: u32 = 0xF48B2C;
+
+pub const mmTPC5_QM_ARB_MST_QUIET_PER: u32 = 0xF48B34;
+
+pub const mmTPC5_QM_ARB_SLV_CHOISE_WDT: u32 = 0xF48B38;
+
+pub const mmTPC5_QM_ARB_SLV_ID: u32 = 0xF48B3C;
+
+pub const mmTPC5_QM_ARB_MSG_MAX_INFLIGHT: u32 = 0xF48B44;
+
+pub const mmTPC5_QM_ARB_MSG_AWUSER_31_11: u32 = 0xF48B48;
+
+pub const mmTPC5_QM_ARB_MSG_AWUSER_SEC_PROP: u32 = 0xF48B4C;
+
+pub const mmTPC5_QM_ARB_MSG_AWUSER_NON_SEC_PROP: u32 = 0xF48B50;
+
+pub const mmTPC5_QM_ARB_BASE_LO: u32 = 0xF48B54;
+
+pub const mmTPC5_QM_ARB_BASE_HI: u32 = 0xF48B58;
+
+pub const mmTPC5_QM_ARB_STATE_STS: u32 = 0xF48B80;
+
+pub const mmTPC5_QM_ARB_CHOISE_FULLNESS_STS: u32 = 0xF48B84;
+
+pub const mmTPC5_QM_ARB_MSG_STS: u32 = 0xF48B88;
+
+pub const mmTPC5_QM_ARB_SLV_CHOISE_Q_HEAD: u32 = 0xF48B8C;
+
+pub const mmTPC5_QM_ARB_ERR_CAUSE: u32 = 0xF48B9C;
+
+pub const mmTPC5_QM_ARB_ERR_MSG_EN: u32 = 0xF48BA0;
+
+pub const mmTPC5_QM_ARB_ERR_STS_DRP: u32 = 0xF48BA8;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_0: u32 = 0xF48BB0;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_1: u32 = 0xF48BB4;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_2: u32 = 0xF48BB8;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_3: u32 = 0xF48BBC;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_4: u32 = 0xF48BC0;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_5: u32 = 0xF48BC4;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_6: u32 = 0xF48BC8;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_7: u32 = 0xF48BCC;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_8: u32 = 0xF48BD0;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_9: u32 = 0xF48BD4;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_10: u32 = 0xF48BD8;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_11: u32 = 0xF48BDC;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_12: u32 = 0xF48BE0;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_13: u32 = 0xF48BE4;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_14: u32 = 0xF48BE8;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_15: u32 = 0xF48BEC;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_16: u32 = 0xF48BF0;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_17: u32 = 0xF48BF4;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_18: u32 = 0xF48BF8;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_19: u32 = 0xF48BFC;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_20: u32 = 0xF48C00;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_21: u32 = 0xF48C04;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_22: u32 = 0xF48C08;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_23: u32 = 0xF48C0C;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_24: u32 = 0xF48C10;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_25: u32 = 0xF48C14;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_26: u32 = 0xF48C18;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_27: u32 = 0xF48C1C;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_28: u32 = 0xF48C20;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_29: u32 = 0xF48C24;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_30: u32 = 0xF48C28;
+
+pub const mmTPC5_QM_ARB_MST_CRED_STS_31: u32 = 0xF48C2C;
+
+pub const mmTPC5_QM_CGM_CFG: u32 = 0xF48C70;
+
+pub const mmTPC5_QM_CGM_STS: u32 = 0xF48C74;
+
+pub const mmTPC5_QM_CGM_CFG1: u32 = 0xF48C78;
+
+pub const mmTPC5_QM_LOCAL_RANGE_BASE: u32 = 0xF48C80;
+
+pub const mmTPC5_QM_LOCAL_RANGE_SIZE: u32 = 0xF48C84;
+
+pub const mmTPC5_QM_CSMR_STRICT_PRIO_CFG: u32 = 0xF48C90;
+
+pub const mmTPC5_QM_HBW_RD_RATE_LIM_CFG_1: u32 = 0xF48C94;
+
+pub const mmTPC5_QM_LBW_WR_RATE_LIM_CFG_0: u32 = 0xF48C98;
+
+pub const mmTPC5_QM_LBW_WR_RATE_LIM_CFG_1: u32 = 0xF48C9C;
+
+pub const mmTPC5_QM_HBW_RD_RATE_LIM_CFG_0: u32 = 0xF48CA0;
+
+pub const mmTPC5_QM_GLBL_AXCACHE: u32 = 0xF48CA4;
+
+pub const mmTPC5_QM_IND_GW_APB_CFG: u32 = 0xF48CB0;
+
+pub const mmTPC5_QM_IND_GW_APB_WDATA: u32 = 0xF48CB4;
+
+pub const mmTPC5_QM_IND_GW_APB_RDATA: u32 = 0xF48CB8;
+
+pub const mmTPC5_QM_IND_GW_APB_STATUS: u32 = 0xF48CBC;
+
+pub const mmTPC5_QM_GLBL_ERR_ADDR_LO: u32 = 0xF48CD0;
+
+pub const mmTPC5_QM_GLBL_ERR_ADDR_HI: u32 = 0xF48CD4;
+
+pub const mmTPC5_QM_GLBL_ERR_WDATA: u32 = 0xF48CD8;
+
+pub const mmTPC5_QM_GLBL_MEM_INIT_BUSY: u32 = 0xF48D00;
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

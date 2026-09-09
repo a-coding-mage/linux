@@ -1,0 +1,130 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2018 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+// ************************************
+// ** This is an auto-generated file **
+// **       DO NOT EDIT BELOW        **
+// ************************************
+
+/*
+ *****************************************
+ *   PCIE_AUX (Prototype: PCIE_AUX)
+ *****************************************
+ */
+
+pub const mmPCIE_AUX_APB_TIMEOUT: u32 = 0xC07004;
+pub const mmPCIE_AUX_PHY_INIT: u32 = 0xC07100;
+pub const mmPCIE_AUX_LTR_MAX_LATENCY: u32 = 0xC07138;
+pub const mmPCIE_AUX_BAR0_START_L: u32 = 0xC07160;
+pub const mmPCIE_AUX_BAR0_START_H: u32 = 0xC07164;
+pub const mmPCIE_AUX_BAR1_START: u32 = 0xC07168;
+pub const mmPCIE_AUX_BAR2_START_L: u32 = 0xC0716C;
+pub const mmPCIE_AUX_BAR2_START_H: u32 = 0xC07170;
+pub const mmPCIE_AUX_BAR3_START: u32 = 0xC07174;
+pub const mmPCIE_AUX_BAR4_START_L: u32 = 0xC07178;
+pub const mmPCIE_AUX_BAR4_START_H: u32 = 0xC0717C;
+pub const mmPCIE_AUX_BAR5_START: u32 = 0xC07180;
+pub const mmPCIE_AUX_BAR0_LIMIT_L: u32 = 0xC07184;
+pub const mmPCIE_AUX_BAR0_LIMIT_H: u32 = 0xC07188;
+pub const mmPCIE_AUX_BAR1_LIMIT: u32 = 0xC0718C;
+pub const mmPCIE_AUX_BAR2_LIMIT_L: u32 = 0xC07190;
+pub const mmPCIE_AUX_BAR2_LIMIT_H: u32 = 0xC07194;
+pub const mmPCIE_AUX_BAR3_LIMIT: u32 = 0xC07198;
+pub const mmPCIE_AUX_BAR4_LIMIT_L: u32 = 0xC0719C;
+pub const mmPCIE_AUX_BAR4_LIMIT_H: u32 = 0xC07200;
+pub const mmPCIE_AUX_BAR5_LIMIT: u32 = 0xC07204;
+pub const mmPCIE_AUX_BUS_MASTER_EN: u32 = 0xC07208;
+pub const mmPCIE_AUX_MEM_SPACE_EN: u32 = 0xC0720C;
+pub const mmPCIE_AUX_MAX_RD_REQ_SIZE: u32 = 0xC07210;
+pub const mmPCIE_AUX_MAX_PAYLOAD_SIZE: u32 = 0xC07214;
+pub const mmPCIE_AUX_EXT_TAG_EN: u32 = 0xC07218;
+pub const mmPCIE_AUX_RCB: u32 = 0xC0721C;
+pub const mmPCIE_AUX_PM_NO_SOFT_RST: u32 = 0xC07220;
+pub const mmPCIE_AUX_PBUS_NUM: u32 = 0xC07224;
+pub const mmPCIE_AUX_PBUS_DEV_NUM: u32 = 0xC07228;
+pub const mmPCIE_AUX_NO_SNOOP_EN: u32 = 0xC0722C;
+pub const mmPCIE_AUX_RELAX_ORDER_EN: u32 = 0xC07230;
+pub const mmPCIE_AUX_HP_SLOT_CTRL_ACCESS: u32 = 0xC07234;
+pub const mmPCIE_AUX_DLL_STATE_CHGED_EN: u32 = 0xC07238;
+pub const mmPCIE_AUX_CMP_CPLED_INT_EN: u32 = 0xC0723C;
+pub const mmPCIE_AUX_HP_INT_EN: u32 = 0xC07340;
+pub const mmPCIE_AUX_PRE_DET_CHGEN_EN: u32 = 0xC07344;
+pub const mmPCIE_AUX_MRL_SENSOR_CHGED_EN: u32 = 0xC07348;
+pub const mmPCIE_AUX_PWR_FAULT_DET_EN: u32 = 0xC0734C;
+pub const mmPCIE_AUX_ATTEN_BUTTON_PRESSED_EN: u32 = 0xC07350;
+pub const mmPCIE_AUX_PF_FLR_ACTIVE: u32 = 0xC07360;
+pub const mmPCIE_AUX_PF_FLR_DONE: u32 = 0xC07364;
+pub const mmPCIE_AUX_FLR_INT: u32 = 0xC07390;
+pub const mmPCIE_AUX_LTR_M_EN: u32 = 0xC073B0;
+pub const mmPCIE_AUX_LTSSM_EN: u32 = 0xC07428;
+pub const mmPCIE_AUX_SYS_INTR: u32 = 0xC07440;
+pub const mmPCIE_AUX_INT_DISABLE: u32 = 0xC07444;
+pub const mmPCIE_AUX_SMLH_LINK_UP: u32 = 0xC07448;
+pub const mmPCIE_AUX_PM_CURR_STATE: u32 = 0xC07450;
+pub const mmPCIE_AUX_RDLH_LINK_UP: u32 = 0xC07458;
+pub const mmPCIE_AUX_BRDG_SLV_XFER_PENDING: u32 = 0xC0745C;
+pub const mmPCIE_AUX_BRDG_DBI_XFER_PENDING: u32 = 0xC07460;
+pub const mmPCIE_AUX_AUTO_SP_DIS: u32 = 0xC07478;
+pub const mmPCIE_AUX_DBI: u32 = 0xC07490;
+pub const mmPCIE_AUX_DBI_32: u32 = 0xC07494;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_0: u32 = 0xC074A4;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_1: u32 = 0xC074A8;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_2: u32 = 0xC074AC;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_3: u32 = 0xC074B0;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_4: u32 = 0xC074B4;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_5: u32 = 0xC074B8;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_6: u32 = 0xC074BC;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_7: u32 = 0xC074C0;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_8: u32 = 0xC074C4;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_9: u32 = 0xC074C8;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_10: u32 = 0xC074CC;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_11: u32 = 0xC074D0;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_12: u32 = 0xC074D4;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_13: u32 = 0xC074D8;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_14: u32 = 0xC074DC;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_15: u32 = 0xC074E0;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_16: u32 = 0xC074E4;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_17: u32 = 0xC074E8;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_18: u32 = 0xC074EC;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_19: u32 = 0xC074F0;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_20: u32 = 0xC074F4;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_21: u32 = 0xC074F8;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_22: u32 = 0xC074FC;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_23: u32 = 0xC07500;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_24: u32 = 0xC07504;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_25: u32 = 0xC07508;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_26: u32 = 0xC0750C;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_27: u32 = 0xC07510;
+pub const mmPCIE_AUX_DIAG_STATUS_BUS_28: u32 = 0xC07514;
+pub const mmPCIE_AUX_CDM_RAS_DES_EC_INFO_0: u32 = 0xC07640;
+pub const mmPCIE_AUX_CDM_RAS_DES_EC_INFO_1: u32 = 0xC07644;
+pub const mmPCIE_AUX_CDM_RAS_DES_EC_INFO_2: u32 = 0xC07648;
+pub const mmPCIE_AUX_CDM_RAS_DES_EC_INFO_3: u32 = 0xC0764C;
+pub const mmPCIE_AUX_CDM_RAS_DES_EC_INFO_4: u32 = 0xC07650;
+pub const mmPCIE_AUX_CDM_RAS_DES_EC_INFO_5: u32 = 0xC07654;
+pub const mmPCIE_AUX_CDM_RAS_DES_EC_INFO_6: u32 = 0xC07658;
+pub const mmPCIE_AUX_CDM_RAS_DES_EC_INFO_7: u32 = 0xC0765C;
+pub const mmPCIE_AUX_CDM_RAS_DES_SD_COMMON_0: u32 = 0xC07744;
+pub const mmPCIE_AUX_CDM_RAS_DES_SD_COMMON_1: u32 = 0xC07748;
+pub const mmPCIE_AUX_CDM_RAS_DES_SD_COMMON_2: u32 = 0xC0774C;
+pub const mmPCIE_AUX_APP_RAS_DES_TBA_CTRL: u32 = 0xC07774;
+pub const mmPCIE_AUX_PM_DSTATE: u32 = 0xC07840;
+pub const mmPCIE_AUX_PM_PME_EN: u32 = 0xC07844;
+pub const mmPCIE_AUX_PM_LINKST_IN_L0S: u32 = 0xC07848;
+pub const mmPCIE_AUX_PM_LINKST_IN_L1: u32 = 0xC0784C;
+pub const mmPCIE_AUX_PM_LINKST_IN_L2: u32 = 0xC07850;
+pub const mmPCIE_AUX_PM_LINKST_L2_EXIT: u32 = 0xC07854;
+pub const mmPCIE_AUX_PM_STATUS: u32 = 0xC07858;
+pub const mmPCIE_AUX_APP_READY_ENTER_L23: u32 = 0xC0785C;
+pub const mmPCIE_AUX_APP_XFER_PENDING: u32 = 0xC07860;
+pub const mmPCIE_AUX_APP_REQ_L1: u32 = 0xC07930;
+pub const mmPCIE_AUX_AUX_PM_EN: u32 = 0xC07934;
+pub const mmPCIE_AUX_APPS_PM_XMT_PME: u32 = 0xC07938;
+pub const mmPCIE_AUX_OUTBAND_PWRUP_CMD: u32 = 0xC07940;
+pub const mmPCIE_AUX_PERST: u32 = 0xC079B8;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

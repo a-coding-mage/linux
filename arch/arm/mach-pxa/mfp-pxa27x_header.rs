@@ -1,0 +1,453 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+/*
+ * NOTE:  for those special-function bidirectional GPIOs, as described
+ * in the "PXA27x Developer's Manual" Section 24.4.2.1, only its input
+ * alternative is preserved, the direction is actually selected by the
+ * specific controller, and this should work in most cases.
+ */
+
+// Dependency: declarations/macros from mfp-pxa2xx.h are supplied externally.
+
+/* Note: GPIO3/GPIO4 will be driven by Power I2C when PCFR/PI2C_EN
+ * bit is set, regardless of the GPIO configuration
+ */
+pub const GPIO3_GPIO: MfpConfig = MFP_CFG_IN(GPIO3, AF0);
+pub const GPIO4_GPIO: MfpConfig = MFP_CFG_IN(GPIO4, AF0);
+
+/* GPIO */
+pub const GPIO85_GPIO: MfpConfig = MFP_CFG_IN(GPIO85, AF0);
+pub const GPIO86_GPIO: MfpConfig = MFP_CFG_IN(GPIO86, AF0);
+pub const GPIO87_GPIO: MfpConfig = MFP_CFG_IN(GPIO87, AF0);
+pub const GPIO88_GPIO: MfpConfig = MFP_CFG_IN(GPIO88, AF0);
+pub const GPIO89_GPIO: MfpConfig = MFP_CFG_IN(GPIO89, AF0);
+pub const GPIO90_GPIO: MfpConfig = MFP_CFG_IN(GPIO90, AF0);
+pub const GPIO91_GPIO: MfpConfig = MFP_CFG_IN(GPIO91, AF0);
+pub const GPIO92_GPIO: MfpConfig = MFP_CFG_IN(GPIO92, AF0);
+pub const GPIO93_GPIO: MfpConfig = MFP_CFG_IN(GPIO93, AF0);
+pub const GPIO94_GPIO: MfpConfig = MFP_CFG_IN(GPIO94, AF0);
+pub const GPIO95_GPIO: MfpConfig = MFP_CFG_IN(GPIO95, AF0);
+pub const GPIO96_GPIO: MfpConfig = MFP_CFG_IN(GPIO96, AF0);
+pub const GPIO97_GPIO: MfpConfig = MFP_CFG_IN(GPIO97, AF0);
+pub const GPIO98_GPIO: MfpConfig = MFP_CFG_IN(GPIO98, AF0);
+pub const GPIO99_GPIO: MfpConfig = MFP_CFG_IN(GPIO99, AF0);
+pub const GPIO100_GPIO: MfpConfig = MFP_CFG_IN(GPIO100, AF0);
+pub const GPIO101_GPIO: MfpConfig = MFP_CFG_IN(GPIO101, AF0);
+pub const GPIO102_GPIO: MfpConfig = MFP_CFG_IN(GPIO102, AF0);
+pub const GPIO103_GPIO: MfpConfig = MFP_CFG_IN(GPIO103, AF0);
+pub const GPIO104_GPIO: MfpConfig = MFP_CFG_IN(GPIO104, AF0);
+pub const GPIO105_GPIO: MfpConfig = MFP_CFG_IN(GPIO105, AF0);
+pub const GPIO106_GPIO: MfpConfig = MFP_CFG_IN(GPIO106, AF0);
+pub const GPIO107_GPIO: MfpConfig = MFP_CFG_IN(GPIO107, AF0);
+pub const GPIO108_GPIO: MfpConfig = MFP_CFG_IN(GPIO108, AF0);
+pub const GPIO109_GPIO: MfpConfig = MFP_CFG_IN(GPIO109, AF0);
+pub const GPIO110_GPIO: MfpConfig = MFP_CFG_IN(GPIO110, AF0);
+pub const GPIO111_GPIO: MfpConfig = MFP_CFG_IN(GPIO111, AF0);
+pub const GPIO112_GPIO: MfpConfig = MFP_CFG_IN(GPIO112, AF0);
+pub const GPIO113_GPIO: MfpConfig = MFP_CFG_IN(GPIO113, AF0);
+pub const GPIO114_GPIO: MfpConfig = MFP_CFG_IN(GPIO114, AF0);
+pub const GPIO115_GPIO: MfpConfig = MFP_CFG_IN(GPIO115, AF0);
+pub const GPIO116_GPIO: MfpConfig = MFP_CFG_IN(GPIO116, AF0);
+pub const GPIO117_GPIO: MfpConfig = MFP_CFG_IN(GPIO117, AF0);
+pub const GPIO118_GPIO: MfpConfig = MFP_CFG_IN(GPIO118, AF0);
+pub const GPIO119_GPIO: MfpConfig = MFP_CFG_IN(GPIO119, AF0);
+pub const GPIO120_GPIO: MfpConfig = MFP_CFG_IN(GPIO120, AF0);
+
+/* Crystal and Clock Signals */
+pub const GPIO9_HZ_CLK: MfpConfig = MFP_CFG_OUT(GPIO9,  AF1, DRIVE_LOW);
+pub const GPIO10_HZ_CLK: MfpConfig = MFP_CFG_OUT(GPIO10, AF1, DRIVE_LOW);
+pub const GPIO11_48_MHz: MfpConfig = MFP_CFG_OUT(GPIO11, AF3, DRIVE_LOW);
+pub const GPIO12_48_MHz: MfpConfig = MFP_CFG_OUT(GPIO12, AF3, DRIVE_LOW);
+pub const GPIO13_CLK_EXT: MfpConfig = MFP_CFG_IN(GPIO13, AF1);
+
+/* OS Timer Signals */
+pub const GPIO11_EXT_SYNC_0: MfpConfig = MFP_CFG_IN(GPIO11, AF1);
+pub const GPIO12_EXT_SYNC_1: MfpConfig = MFP_CFG_IN(GPIO12, AF1);
+pub const GPIO9_CHOUT_0: MfpConfig = MFP_CFG_OUT(GPIO9,  AF3, DRIVE_LOW);
+pub const GPIO10_CHOUT_1: MfpConfig = MFP_CFG_OUT(GPIO10, AF3, DRIVE_LOW);
+pub const GPIO11_CHOUT_0: MfpConfig = MFP_CFG_OUT(GPIO11, AF1, DRIVE_LOW);
+pub const GPIO12_CHOUT_1: MfpConfig = MFP_CFG_OUT(GPIO12, AF1, DRIVE_LOW);
+
+/* SDRAM and Static Memory I/O Signals */
+pub const GPIO20_nSDCS_2: MfpConfig = MFP_CFG_OUT(GPIO20, AF1, DRIVE_HIGH);
+pub const GPIO21_nSDCS_3: MfpConfig = MFP_CFG_OUT(GPIO21, AF1, DRIVE_HIGH);
+pub const GPIO15_nCS_1: MfpConfig = MFP_CFG_OUT(GPIO15, AF2, DRIVE_HIGH);
+pub const GPIO78_nCS_2: MfpConfig = MFP_CFG_OUT(GPIO78, AF2, DRIVE_HIGH);
+pub const GPIO79_nCS_3: MfpConfig = MFP_CFG_OUT(GPIO79, AF2, DRIVE_HIGH);
+pub const GPIO80_nCS_4: MfpConfig = MFP_CFG_OUT(GPIO80, AF2, DRIVE_HIGH);
+pub const GPIO33_nCS_5: MfpConfig = MFP_CFG_OUT(GPIO33, AF2, DRIVE_HIGH);
+
+/* Miscellaneous I/O and DMA Signals */
+pub const GPIO21_DVAL_0: MfpConfig = MFP_CFG_OUT(GPIO21, AF2, DRIVE_HIGH);
+pub const GPIO116_DVAL_0: MfpConfig = MFP_CFG_OUT(GPIO116, AF1, DRIVE_HIGH);
+pub const GPIO33_DVAL_1: MfpConfig = MFP_CFG_OUT(GPIO33, AF1, DRIVE_HIGH);
+pub const GPIO96_DVAL_1: MfpConfig = MFP_CFG_OUT(GPIO96, AF2, DRIVE_HIGH);
+pub const GPIO18_RDY: MfpConfig = MFP_CFG_IN(GPIO18, AF1);
+pub const GPIO20_DREQ_0: MfpConfig = MFP_CFG_IN(GPIO20, AF1);
+pub const GPIO115_DREQ_0: MfpConfig = MFP_CFG_IN(GPIO115, AF1);
+pub const GPIO80_DREQ_1: MfpConfig = MFP_CFG_IN(GPIO80, AF1);
+pub const GPIO97_DREQ_1: MfpConfig = MFP_CFG_IN(GPIO97, AF2);
+pub const GPIO85_DREQ_2: MfpConfig = MFP_CFG_IN(GPIO85, AF2);
+pub const GPIO100_DREQ_2: MfpConfig = MFP_CFG_IN(GPIO100, AF2);
+
+/* Alternate Bus Master Mode I/O Signals */
+pub const GPIO20_MBREQ: MfpConfig = MFP_CFG_IN(GPIO20, AF2);
+pub const GPIO80_MBREQ: MfpConfig = MFP_CFG_IN(GPIO80, AF2);
+pub const GPIO96_MBREQ: MfpConfig = MFP_CFG_IN(GPIO96, AF2);
+pub const GPIO115_MBREQ: MfpConfig = MFP_CFG_IN(GPIO115, AF3);
+pub const GPIO21_MBGNT: MfpConfig = MFP_CFG_OUT(GPIO21, AF3, DRIVE_LOW);
+pub const GPIO33_MBGNT: MfpConfig = MFP_CFG_OUT(GPIO33, AF3, DRIVE_LOW);
+pub const GPIO97_MBGNT: MfpConfig = MFP_CFG_OUT(GPIO97, AF2, DRIVE_LOW);
+pub const GPIO116_MBGNT: MfpConfig = MFP_CFG_OUT(GPIO116, AF3, DRIVE_LOW);
+
+/* PC CARD */
+pub const GPIO15_nPCE_1: MfpConfig = MFP_CFG_OUT(GPIO15, AF1, DRIVE_HIGH);
+pub const GPIO85_nPCE_1: MfpConfig = MFP_CFG_OUT(GPIO85, AF1, DRIVE_HIGH);
+pub const GPIO86_nPCE_1: MfpConfig = MFP_CFG_OUT(GPIO86, AF1, DRIVE_HIGH);
+pub const GPIO102_nPCE_1: MfpConfig = MFP_CFG_OUT(GPIO102, AF1, DRIVE_HIGH);
+pub const GPIO54_nPCE_2: MfpConfig = MFP_CFG_OUT(GPIO54, AF2, DRIVE_HIGH);
+pub const GPIO78_nPCE_2: MfpConfig = MFP_CFG_OUT(GPIO78, AF1, DRIVE_HIGH);
+pub const GPIO87_nPCE_2: MfpConfig = MFP_CFG_IN(GPIO87, AF1);
+pub const GPIO55_nPREG: MfpConfig = MFP_CFG_OUT(GPIO55, AF2, DRIVE_HIGH);
+pub const GPIO50_nPIOR: MfpConfig = MFP_CFG_OUT(GPIO50, AF2, DRIVE_HIGH);
+pub const GPIO51_nPIOW: MfpConfig = MFP_CFG_OUT(GPIO51, AF2, DRIVE_HIGH);
+pub const GPIO49_nPWE: MfpConfig = MFP_CFG_OUT(GPIO49, AF2, DRIVE_HIGH);
+pub const GPIO48_nPOE: MfpConfig = MFP_CFG_OUT(GPIO48, AF2, DRIVE_HIGH);
+pub const GPIO57_nIOIS16: MfpConfig = MFP_CFG_IN(GPIO57, AF1);
+pub const GPIO56_nPWAIT: MfpConfig = MFP_CFG_IN(GPIO56, AF1);
+pub const GPIO79_PSKTSEL: MfpConfig = MFP_CFG_OUT(GPIO79, AF1, DRIVE_HIGH);
+pub const GPIO104_PSKTSEL: MfpConfig = MFP_CFG_OUT(GPIO104, AF1, DRIVE_HIGH);
+
+/* I2C */
+pub const GPIO117_I2C_SCL: MfpConfig = MFP_CFG_IN(GPIO117, AF1);
+pub const GPIO118_I2C_SDA: MfpConfig = MFP_CFG_IN(GPIO118, AF1);
+
+/* FFUART */
+pub const GPIO9_FFUART_CTS: MfpConfig = MFP_CFG_IN(GPIO9, AF3);
+pub const GPIO26_FFUART_CTS: MfpConfig = MFP_CFG_IN(GPIO26, AF3);
+pub const GPIO35_FFUART_CTS: MfpConfig = MFP_CFG_IN(GPIO35, AF1);
+pub const GPIO100_FFUART_CTS: MfpConfig = MFP_CFG_IN(GPIO100, AF3);
+pub const GPIO10_FFUART_DCD: MfpConfig = MFP_CFG_IN(GPIO10, AF1);
+pub const GPIO36_FFUART_DCD: MfpConfig = MFP_CFG_IN(GPIO36, AF1);
+pub const GPIO33_FFUART_DSR: MfpConfig = MFP_CFG_IN(GPIO33, AF2);
+pub const GPIO37_FFUART_DSR: MfpConfig = MFP_CFG_IN(GPIO37, AF1);
+pub const GPIO38_FFUART_RI: MfpConfig = MFP_CFG_IN(GPIO38, AF1);
+pub const GPIO89_FFUART_RI: MfpConfig = MFP_CFG_IN(GPIO89, AF3);
+pub const GPIO19_FFUART_RXD: MfpConfig = MFP_CFG_IN(GPIO19, AF3);
+pub const GPIO33_FFUART_RXD: MfpConfig = MFP_CFG_IN(GPIO33, AF1);
+pub const GPIO34_FFUART_RXD: MfpConfig = MFP_CFG_IN(GPIO34, AF1);
+pub const GPIO41_FFUART_RXD: MfpConfig = MFP_CFG_IN(GPIO41, AF1);
+pub const GPIO53_FFUART_RXD: MfpConfig = MFP_CFG_IN(GPIO53, AF1);
+pub const GPIO85_FFUART_RXD: MfpConfig = MFP_CFG_IN(GPIO85, AF1);
+pub const GPIO96_FFUART_RXD: MfpConfig = MFP_CFG_IN(GPIO96, AF3);
+pub const GPIO102_FFUART_RXD: MfpConfig = MFP_CFG_IN(GPIO102, AF3);
+pub const GPIO16_FFUART_TXD: MfpConfig = MFP_CFG_OUT(GPIO16, AF3, DRIVE_HIGH);
+pub const GPIO37_FFUART_TXD: MfpConfig = MFP_CFG_OUT(GPIO37, AF3, DRIVE_HIGH);
+pub const GPIO39_FFUART_TXD: MfpConfig = MFP_CFG_OUT(GPIO39, AF2, DRIVE_HIGH);
+pub const GPIO83_FFUART_TXD: MfpConfig = MFP_CFG_OUT(GPIO83, AF2, DRIVE_HIGH);
+pub const GPIO99_FFUART_TXD: MfpConfig = MFP_CFG_OUT(GPIO99, AF3, DRIVE_HIGH);
+pub const GPIO27_FFUART_RTS: MfpConfig = MFP_CFG_OUT(GPIO27, AF3, DRIVE_HIGH);
+pub const GPIO41_FFUART_RTS: MfpConfig = MFP_CFG_OUT(GPIO41, AF2, DRIVE_HIGH);
+pub const GPIO83_FFUART_RTS: MfpConfig = MFP_CFG_OUT(GPIO83, AF3, DRIVE_HIGH);
+pub const GPIO98_FFUART_RTS: MfpConfig = MFP_CFG_OUT(GPIO98, AF3, DRIVE_HIGH);
+pub const GPIO40_FFUART_DTR: MfpConfig = MFP_CFG_OUT(GPIO40, AF2, DRIVE_HIGH);
+pub const GPIO82_FFUART_DTR: MfpConfig = MFP_CFG_OUT(GPIO82, AF3, DRIVE_HIGH);
+
+/* BTUART */
+pub const GPIO44_BTUART_CTS: MfpConfig = MFP_CFG_IN(GPIO44, AF1);
+pub const GPIO42_BTUART_RXD: MfpConfig = MFP_CFG_IN(GPIO42, AF1);
+pub const GPIO45_BTUART_RTS: MfpConfig = MFP_CFG_OUT(GPIO45, AF2, DRIVE_HIGH);
+pub const GPIO45_BTUART_RTS_LPM_LOW: MfpConfig = MFP_CFG_OUT(GPIO45, AF2, DRIVE_LOW);
+pub const GPIO43_BTUART_TXD: MfpConfig = MFP_CFG_OUT(GPIO43, AF2, DRIVE_HIGH);
+pub const GPIO43_BTUART_TXD_LPM_LOW: MfpConfig = MFP_CFG_OUT(GPIO43, AF2, DRIVE_LOW);
+
+/* STUART */
+pub const GPIO46_STUART_RXD: MfpConfig = MFP_CFG_IN(GPIO46, AF2);
+pub const GPIO47_STUART_TXD: MfpConfig = MFP_CFG_OUT(GPIO47, AF1, DRIVE_HIGH);
+
+/* FICP */
+pub const GPIO42_FICP_RXD: MfpConfig = MFP_CFG_IN(GPIO42, AF2);
+pub const GPIO46_FICP_RXD: MfpConfig = MFP_CFG_IN(GPIO46, AF1);
+pub const GPIO43_FICP_TXD: MfpConfig = MFP_CFG_OUT(GPIO43, AF1, DRIVE_HIGH);
+pub const GPIO47_FICP_TXD: MfpConfig = MFP_CFG_OUT(GPIO47, AF2, DRIVE_HIGH);
+
+/* PWM 0/1/2/3 */
+pub const GPIO11_PWM2_OUT: MfpConfig = MFP_CFG_OUT(GPIO11, AF2, DRIVE_LOW);
+pub const GPIO12_PWM3_OUT: MfpConfig = MFP_CFG_OUT(GPIO12, AF2, DRIVE_LOW);
+pub const GPIO16_PWM0_OUT: MfpConfig = MFP_CFG_OUT(GPIO16, AF2, DRIVE_LOW);
+pub const GPIO17_PWM1_OUT: MfpConfig = MFP_CFG_OUT(GPIO17, AF2, DRIVE_LOW);
+pub const GPIO38_PWM1_OUT: MfpConfig = MFP_CFG_OUT(GPIO38, AF3, DRIVE_LOW);
+pub const GPIO46_PWM2_OUT: MfpConfig = MFP_CFG_OUT(GPIO46, AF2, DRIVE_LOW);
+pub const GPIO47_PWM3_OUT: MfpConfig = MFP_CFG_OUT(GPIO47, AF3, DRIVE_LOW);
+pub const GPIO79_PWM2_OUT: MfpConfig = MFP_CFG_OUT(GPIO79, AF3, DRIVE_LOW);
+pub const GPIO80_PWM3_OUT: MfpConfig = MFP_CFG_OUT(GPIO80, AF3, DRIVE_LOW);
+pub const GPIO115_PWM1_OUT: MfpConfig = MFP_CFG_OUT(GPIO115, AF3, DRIVE_LOW);
+
+/* AC97 */
+pub const GPIO31_AC97_SYNC: MfpConfig = MFP_CFG_OUT(GPIO31, AF2, DRIVE_LOW);
+pub const GPIO94_AC97_SYNC: MfpConfig = MFP_CFG_OUT(GPIO94, AF1, DRIVE_LOW);
+pub const GPIO30_AC97_SDATA_OUT: MfpConfig = MFP_CFG_OUT(GPIO30, AF2, DRIVE_LOW);
+pub const GPIO93_AC97_SDATA_OUT: MfpConfig = MFP_CFG_OUT(GPIO93, AF1, DRIVE_LOW);
+pub const GPIO45_AC97_SYSCLK: MfpConfig = MFP_CFG_OUT(GPIO45, AF1, DRIVE_LOW);
+pub const GPIO89_AC97_SYSCLK: MfpConfig = MFP_CFG_OUT(GPIO89, AF1, DRIVE_LOW);
+pub const GPIO98_AC97_SYSCLK: MfpConfig = MFP_CFG_OUT(GPIO98, AF1, DRIVE_LOW);
+pub const GPIO95_AC97_nRESET: MfpConfig = MFP_CFG_OUT(GPIO95, AF1, DRIVE_LOW);
+pub const GPIO113_AC97_nRESET: MfpConfig = MFP_CFG_OUT(GPIO113, AF2, DRIVE_LOW);
+pub const GPIO28_AC97_BITCLK: MfpConfig = MFP_CFG_IN(GPIO28, AF1);
+pub const GPIO29_AC97_SDATA_IN_0: MfpConfig = MFP_CFG_IN(GPIO29, AF1);
+pub const GPIO116_AC97_SDATA_IN_0: MfpConfig = MFP_CFG_IN(GPIO116, AF2);
+pub const GPIO99_AC97_SDATA_IN_1: MfpConfig = MFP_CFG_IN(GPIO99, AF2);
+
+/* I2S */
+pub const GPIO28_I2S_BITCLK_IN: MfpConfig = MFP_CFG_IN(GPIO28, AF2);
+pub const GPIO28_I2S_BITCLK_OUT: MfpConfig = MFP_CFG_OUT(GPIO28, AF1, DRIVE_LOW);
+pub const GPIO29_I2S_SDATA_IN: MfpConfig = MFP_CFG_IN(GPIO29, AF2);
+pub const GPIO30_I2S_SDATA_OUT: MfpConfig = MFP_CFG_OUT(GPIO30, AF1, DRIVE_LOW);
+pub const GPIO31_I2S_SYNC: MfpConfig = MFP_CFG_OUT(GPIO31, AF1, DRIVE_LOW);
+pub const GPIO113_I2S_SYSCLK: MfpConfig = MFP_CFG_OUT(GPIO113, AF1, DRIVE_LOW);
+
+/* SSP 1 */
+pub const GPIO23_SSP1_SCLK_IN: MfpConfig = MFP_CFG_IN(GPIO23, AF2);
+pub const GPIO23_SSP1_SCLK: MfpConfig = MFP_CFG_OUT(GPIO23, AF2, DRIVE_LOW);
+pub const GPIO29_SSP1_SCLK: MfpConfig = MFP_CFG_IN(GPIO29, AF3);
+pub const GPIO27_SSP1_SYSCLK: MfpConfig = MFP_CFG_OUT(GPIO27, AF1, DRIVE_LOW);
+pub const GPIO53_SSP1_SYSCLK: MfpConfig = MFP_CFG_OUT(GPIO53, AF3, DRIVE_LOW);
+pub const GPIO24_SSP1_SFRM: MfpConfig = MFP_CFG_IN(GPIO24, AF2);
+pub const GPIO28_SSP1_SFRM: MfpConfig = MFP_CFG_IN(GPIO28, AF3);
+pub const GPIO25_SSP1_TXD: MfpConfig = MFP_CFG_OUT(GPIO25, AF2, DRIVE_LOW);
+pub const GPIO57_SSP1_TXD: MfpConfig = MFP_CFG_OUT(GPIO57, AF3, DRIVE_LOW);
+pub const GPIO26_SSP1_RXD: MfpConfig = MFP_CFG_IN(GPIO26, AF1);
+pub const GPIO27_SSP1_SCLKEN: MfpConfig = MFP_CFG_IN(GPIO27, AF2);
+
+/* SSP 2 */
+pub const GPIO19_SSP2_SCLK: MfpConfig = MFP_CFG_IN(GPIO19, AF1);
+pub const GPIO22_SSP2_SCLK: MfpConfig = MFP_CFG_IN(GPIO22, AF3);
+pub const GPIO29_SSP2_SCLK: MfpConfig = MFP_CFG_OUT(GPIO29, AF3, DRIVE_LOW);
+pub const GPIO36_SSP2_SCLK: MfpConfig = MFP_CFG_IN(GPIO36, AF2);
+pub const GPIO50_SSP2_SCLK: MfpConfig = MFP_CFG_IN(GPIO50, AF3);
+pub const GPIO22_SSP2_SYSCLK: MfpConfig = MFP_CFG_OUT(GPIO22, AF2, DRIVE_LOW);
+pub const GPIO14_SSP2_SFRM: MfpConfig = MFP_CFG_IN(GPIO14, AF2);
+pub const GPIO37_SSP2_SFRM: MfpConfig = MFP_CFG_IN(GPIO37, AF2);
+pub const GPIO87_SSP2_SFRM: MfpConfig = MFP_CFG_OUT(GPIO87, AF3, DRIVE_LOW);
+pub const GPIO88_SSP2_SFRM: MfpConfig = MFP_CFG_IN(GPIO88, AF3);
+pub const GPIO13_SSP2_TXD: MfpConfig = MFP_CFG_OUT(GPIO13, AF1, DRIVE_LOW);
+pub const GPIO38_SSP2_TXD: MfpConfig = MFP_CFG_OUT(GPIO38, AF2, DRIVE_LOW);
+pub const GPIO87_SSP2_TXD: MfpConfig = MFP_CFG_OUT(GPIO87, AF1, DRIVE_LOW);
+pub const GPIO89_SSP2_TXD: MfpConfig = MFP_CFG_OUT(GPIO89, AF3, DRIVE_LOW);
+pub const GPIO11_SSP2_RXD: MfpConfig = MFP_CFG_IN(GPIO11, AF2);
+pub const GPIO29_SSP2_RXD: MfpConfig = MFP_CFG_OUT(GPIO29, AF1, DRIVE_LOW);
+pub const GPIO40_SSP2_RXD: MfpConfig = MFP_CFG_IN(GPIO40, AF1);
+pub const GPIO86_SSP2_RXD: MfpConfig = MFP_CFG_IN(GPIO86, AF1);
+pub const GPIO88_SSP2_RXD: MfpConfig = MFP_CFG_IN(GPIO88, AF2);
+pub const GPIO22_SSP2_EXTCLK: MfpConfig = MFP_CFG_IN(GPIO22, AF1);
+pub const GPIO27_SSP2_EXTCLK: MfpConfig = MFP_CFG_IN(GPIO27, AF1);
+pub const GPIO22_SSP2_SCLKEN: MfpConfig = MFP_CFG_IN(GPIO22, AF2);
+pub const GPIO23_SSP2_SCLKEN: MfpConfig = MFP_CFG_IN(GPIO23, AF2);
+
+/* SSP 3 */
+pub const GPIO34_SSP3_SCLK: MfpConfig = MFP_CFG_IN(GPIO34, AF3);
+pub const GPIO40_SSP3_SCLK: MfpConfig = MFP_CFG_OUT(GPIO40, AF3, DRIVE_LOW);
+pub const GPIO52_SSP3_SCLK: MfpConfig = MFP_CFG_IN(GPIO52, AF2);
+pub const GPIO84_SSP3_SCLK: MfpConfig = MFP_CFG_IN(GPIO84, AF1);
+pub const GPIO45_SSP3_SYSCLK: MfpConfig = MFP_CFG_OUT(GPIO45, AF3, DRIVE_LOW);
+pub const GPIO35_SSP3_SFRM: MfpConfig = MFP_CFG_IN(GPIO35, AF3);
+pub const GPIO39_SSP3_SFRM: MfpConfig = MFP_CFG_IN(GPIO39, AF3);
+pub const GPIO83_SSP3_SFRM: MfpConfig = MFP_CFG_IN(GPIO83, AF1);
+pub const GPIO35_SSP3_TXD: MfpConfig = MFP_CFG_OUT(GPIO35, AF3, DRIVE_LOW);
+pub const GPIO38_SSP3_TXD: MfpConfig = MFP_CFG_OUT(GPIO38, AF1, DRIVE_LOW);
+pub const GPIO81_SSP3_TXD: MfpConfig = MFP_CFG_OUT(GPIO81, AF1, DRIVE_LOW);
+pub const GPIO41_SSP3_RXD: MfpConfig = MFP_CFG_IN(GPIO41, AF3);
+pub const GPIO82_SSP3_RXD: MfpConfig = MFP_CFG_IN(GPIO82, AF1);
+pub const GPIO89_SSP3_RXD: MfpConfig = MFP_CFG_IN(GPIO89, AF1);
+
+/* MMC */
+pub const GPIO32_MMC_CLK: MfpConfig = MFP_CFG_OUT(GPIO32, AF2, DRIVE_LOW);
+pub const GPIO92_MMC_DAT_0: MfpConfig = MFP_CFG_IN(GPIO92, AF1);
+pub const GPIO109_MMC_DAT_1: MfpConfig = MFP_CFG_IN(GPIO109, AF1);
+pub const GPIO110_MMC_DAT_2: MfpConfig = MFP_CFG_IN(GPIO110, AF1);
+pub const GPIO111_MMC_DAT_3: MfpConfig = MFP_CFG_IN(GPIO111, AF1);
+pub const GPIO112_MMC_CMD: MfpConfig = MFP_CFG_IN(GPIO112, AF1);
+
+/* LCD */
+pub const GPIO58_LCD_LDD_0: MfpConfig = MFP_CFG_OUT(GPIO58, AF2, DRIVE_LOW);
+pub const GPIO59_LCD_LDD_1: MfpConfig = MFP_CFG_OUT(GPIO59, AF2, DRIVE_LOW);
+pub const GPIO60_LCD_LDD_2: MfpConfig = MFP_CFG_OUT(GPIO60, AF2, DRIVE_LOW);
+pub const GPIO61_LCD_LDD_3: MfpConfig = MFP_CFG_OUT(GPIO61, AF2, DRIVE_LOW);
+pub const GPIO62_LCD_LDD_4: MfpConfig = MFP_CFG_OUT(GPIO62, AF2, DRIVE_LOW);
+pub const GPIO63_LCD_LDD_5: MfpConfig = MFP_CFG_OUT(GPIO63, AF2, DRIVE_LOW);
+pub const GPIO64_LCD_LDD_6: MfpConfig = MFP_CFG_OUT(GPIO64, AF2, DRIVE_LOW);
+pub const GPIO65_LCD_LDD_7: MfpConfig = MFP_CFG_OUT(GPIO65, AF2, DRIVE_LOW);
+pub const GPIO66_LCD_LDD_8: MfpConfig = MFP_CFG_OUT(GPIO66, AF2, DRIVE_LOW);
+pub const GPIO67_LCD_LDD_9: MfpConfig = MFP_CFG_OUT(GPIO67, AF2, DRIVE_LOW);
+pub const GPIO68_LCD_LDD_10: MfpConfig = MFP_CFG_OUT(GPIO68, AF2, DRIVE_LOW);
+pub const GPIO69_LCD_LDD_11: MfpConfig = MFP_CFG_OUT(GPIO69, AF2, DRIVE_LOW);
+pub const GPIO70_LCD_LDD_12: MfpConfig = MFP_CFG_OUT(GPIO70, AF2, DRIVE_LOW);
+pub const GPIO71_LCD_LDD_13: MfpConfig = MFP_CFG_OUT(GPIO71, AF2, DRIVE_LOW);
+pub const GPIO72_LCD_LDD_14: MfpConfig = MFP_CFG_OUT(GPIO72, AF2, DRIVE_LOW);
+pub const GPIO73_LCD_LDD_15: MfpConfig = MFP_CFG_OUT(GPIO73, AF2, DRIVE_LOW);
+pub const GPIO86_LCD_LDD_16: MfpConfig = MFP_CFG_OUT(GPIO86, AF2, DRIVE_LOW);
+pub const GPIO87_LCD_LDD_17: MfpConfig = MFP_CFG_OUT(GPIO87, AF2, DRIVE_LOW);
+pub const GPIO74_LCD_FCLK: MfpConfig = MFP_CFG_OUT(GPIO74, AF2, DRIVE_LOW);
+pub const GPIO75_LCD_LCLK: MfpConfig = MFP_CFG_OUT(GPIO75, AF2, DRIVE_LOW);
+pub const GPIO76_LCD_PCLK: MfpConfig = MFP_CFG_OUT(GPIO76, AF2, DRIVE_LOW);
+pub const GPIO77_LCD_BIAS: MfpConfig = MFP_CFG_OUT(GPIO77, AF2, DRIVE_LOW);
+pub const GPIO14_LCD_VSYNC: MfpConfig = MFP_CFG_IN(GPIO14, AF1);
+pub const GPIO19_LCD_CS: MfpConfig = MFP_CFG_OUT(GPIO19, AF2, DRIVE_LOW);
+
+/* Keypad */
+pub const GPIO93_KP_DKIN_0: MfpConfig = MFP_CFG_IN(GPIO93, AF1);
+pub const GPIO94_KP_DKIN_1: MfpConfig = MFP_CFG_IN(GPIO94, AF1);
+pub const GPIO95_KP_DKIN_2: MfpConfig = MFP_CFG_IN(GPIO95, AF1);
+pub const GPIO96_KP_DKIN_3: MfpConfig = MFP_CFG_IN(GPIO96, AF1);
+pub const GPIO97_KP_DKIN_4: MfpConfig = MFP_CFG_IN(GPIO97, AF1);
+pub const GPIO98_KP_DKIN_5: MfpConfig = MFP_CFG_IN(GPIO98, AF1);
+pub const GPIO99_KP_DKIN_6: MfpConfig = MFP_CFG_IN(GPIO99, AF1);
+pub const GPIO13_KP_KDIN_7: MfpConfig = MFP_CFG_IN(GPIO13, AF2);
+pub const GPIO100_KP_MKIN_0: MfpConfig = MFP_CFG_IN(GPIO100, AF1);
+pub const GPIO101_KP_MKIN_1: MfpConfig = MFP_CFG_IN(GPIO101, AF1);
+pub const GPIO102_KP_MKIN_2: MfpConfig = MFP_CFG_IN(GPIO102, AF1);
+pub const GPIO34_KP_MKIN_3: MfpConfig = MFP_CFG_IN(GPIO34, AF2);
+pub const GPIO37_KP_MKIN_3: MfpConfig = MFP_CFG_IN(GPIO37, AF3);
+pub const GPIO97_KP_MKIN_3: MfpConfig = MFP_CFG_IN(GPIO97, AF3);
+pub const GPIO98_KP_MKIN_4: MfpConfig = MFP_CFG_IN(GPIO98, AF3);
+pub const GPIO38_KP_MKIN_4: MfpConfig = MFP_CFG_IN(GPIO38, AF2);
+pub const GPIO39_KP_MKIN_4: MfpConfig = MFP_CFG_IN(GPIO39, AF1);
+pub const GPIO16_KP_MKIN_5: MfpConfig = MFP_CFG_IN(GPIO16, AF1);
+pub const GPIO90_KP_MKIN_5: MfpConfig = MFP_CFG_IN(GPIO90, AF1);
+pub const GPIO99_KP_MKIN_5: MfpConfig = MFP_CFG_IN(GPIO99, AF3);
+pub const GPIO17_KP_MKIN_6: MfpConfig = MFP_CFG_IN(GPIO17, AF1);
+pub const GPIO91_KP_MKIN_6: MfpConfig = MFP_CFG_IN(GPIO91, AF1);
+pub const GPIO95_KP_MKIN_6: MfpConfig = MFP_CFG_IN(GPIO95, AF3);
+pub const GPIO13_KP_MKIN_7: MfpConfig = MFP_CFG_IN(GPIO13, AF3);
+pub const GPIO36_KP_MKIN_7: MfpConfig = MFP_CFG_IN(GPIO36, AF3);
+pub const GPIO103_KP_MKOUT_0: MfpConfig = MFP_CFG_OUT(GPIO103, AF2, DRIVE_HIGH);
+pub const GPIO104_KP_MKOUT_1: MfpConfig = MFP_CFG_OUT(GPIO104, AF2, DRIVE_HIGH);
+pub const GPIO105_KP_MKOUT_2: MfpConfig = MFP_CFG_OUT(GPIO105, AF2, DRIVE_HIGH);
+pub const GPIO106_KP_MKOUT_3: MfpConfig = MFP_CFG_OUT(GPIO106, AF2, DRIVE_HIGH);
+pub const GPIO107_KP_MKOUT_4: MfpConfig = MFP_CFG_OUT(GPIO107, AF2, DRIVE_HIGH);
+pub const GPIO108_KP_MKOUT_5: MfpConfig = MFP_CFG_OUT(GPIO108, AF2, DRIVE_HIGH);
+pub const GPIO35_KP_MKOUT_6: MfpConfig = MFP_CFG_OUT(GPIO35, AF2, DRIVE_HIGH);
+pub const GPIO22_KP_MKOUT_7: MfpConfig = MFP_CFG_OUT(GPIO22, AF1, DRIVE_HIGH);
+pub const GPIO40_KP_MKOUT_6: MfpConfig = MFP_CFG_OUT(GPIO40, AF1, DRIVE_HIGH);
+pub const GPIO41_KP_MKOUT_7: MfpConfig = MFP_CFG_OUT(GPIO41, AF1, DRIVE_HIGH);
+pub const GPIO96_KP_MKOUT_6: MfpConfig = MFP_CFG_OUT(GPIO96, AF3, DRIVE_HIGH);
+
+/* USB P3 */
+pub const GPIO10_USB_P3_5: MfpConfig = MFP_CFG_IN(GPIO10, AF3);
+pub const GPIO11_USB_P3_1: MfpConfig = MFP_CFG_IN(GPIO11, AF3);
+pub const GPIO30_USB_P3_2: MfpConfig = MFP_CFG_OUT(GPIO30, AF3, DRIVE_LOW);
+pub const GPIO31_USB_P3_6: MfpConfig = MFP_CFG_OUT(GPIO31, AF3, DRIVE_LOW);
+pub const GPIO56_USB_P3_4: MfpConfig = MFP_CFG_OUT(GPIO56, AF1, DRIVE_LOW);
+pub const GPIO86_USB_P3_5: MfpConfig = MFP_CFG_IN(GPIO86, AF3);
+pub const GPIO87_USB_P3_1: MfpConfig = MFP_CFG_IN(GPIO87, AF3);
+pub const GPIO90_USB_P3_5: MfpConfig = MFP_CFG_IN(GPIO90, AF2);
+pub const GPIO91_USB_P3_1: MfpConfig = MFP_CFG_IN(GPIO91, AF2);
+pub const GPIO113_USB_P3_3: MfpConfig = MFP_CFG_IN(GPIO113, AF3);
+
+/* USB P2 */
+pub const GPIO34_USB_P2_2: MfpConfig = MFP_CFG_OUT(GPIO34, AF1, DRIVE_LOW);
+pub const GPIO35_USB_P2_1: MfpConfig = MFP_CFG_IN(GPIO35, AF2);
+pub const GPIO36_USB_P2_4: MfpConfig = MFP_CFG_OUT(GPIO36, AF1, DRIVE_LOW);
+pub const GPIO37_USB_P2_8: MfpConfig = MFP_CFG_OUT(GPIO37, AF1, DRIVE_LOW);
+pub const GPIO38_USB_P2_3: MfpConfig = MFP_CFG_IN(GPIO38, AF3);
+pub const GPIO39_USB_P2_6: MfpConfig = MFP_CFG_OUT(GPIO39, AF1, DRIVE_LOW);
+pub const GPIO40_USB_P2_5: MfpConfig = MFP_CFG_IN(GPIO40, AF3);
+pub const GPIO41_USB_P2_7: MfpConfig = MFP_CFG_IN(GPIO41, AF2);
+pub const GPIO53_USB_P2_3: MfpConfig = MFP_CFG_IN(GPIO53, AF2);
+
+/* USB Host Port 1/2 */
+pub const GPIO88_USBH1_PWR: MfpConfig = MFP_CFG_IN(GPIO88, AF1);
+pub const GPIO89_USBH1_PEN: MfpConfig = MFP_CFG_OUT(GPIO89, AF2, DRIVE_LOW);
+pub const GPIO119_USBH2_PWR: MfpConfig = MFP_CFG_IN(GPIO119, AF1);
+pub const GPIO120_USBH2_PEN: MfpConfig = MFP_CFG_OUT(GPIO120, AF2, DRIVE_LOW);
+
+/* QCI - default to Master Mode: CIF_FV/CIF_LV Direction In */
+pub const GPIO115_CIF_DD_3: MfpConfig = MFP_CFG_IN(GPIO115, AF2);
+pub const GPIO116_CIF_DD_2: MfpConfig = MFP_CFG_IN(GPIO116, AF1);
+pub const GPIO12_CIF_DD_7: MfpConfig = MFP_CFG_IN(GPIO12, AF2);
+pub const GPIO17_CIF_DD_6: MfpConfig = MFP_CFG_IN(GPIO17, AF2);
+pub const GPIO23_CIF_MCLK: MfpConfig = MFP_CFG_OUT(GPIO23, AF1, DRIVE_LOW);
+pub const GPIO24_CIF_FV: MfpConfig = MFP_CFG_IN(GPIO24, AF1);
+pub const GPIO25_CIF_LV: MfpConfig = MFP_CFG_IN(GPIO25, AF1);
+pub const GPIO26_CIF_PCLK: MfpConfig = MFP_CFG_IN(GPIO26, AF2);
+pub const GPIO27_CIF_DD_0: MfpConfig = MFP_CFG_IN(GPIO27, AF3);
+pub const GPIO42_CIF_MCLK: MfpConfig = MFP_CFG_OUT(GPIO42, AF3, DRIVE_LOW);
+pub const GPIO43_CIF_FV: MfpConfig = MFP_CFG_IN(GPIO43, AF3);
+pub const GPIO44_CIF_LV: MfpConfig = MFP_CFG_IN(GPIO44, AF3);
+pub const GPIO45_CIF_PCLK: MfpConfig = MFP_CFG_IN(GPIO45, AF3);
+pub const GPIO47_CIF_DD_0: MfpConfig = MFP_CFG_IN(GPIO47, AF1);
+pub const GPIO48_CIF_DD_5: MfpConfig = MFP_CFG_IN(GPIO48, AF1);
+pub const GPIO50_CIF_DD_3: MfpConfig = MFP_CFG_IN(GPIO50, AF1);
+pub const GPIO51_CIF_DD_2: MfpConfig = MFP_CFG_IN(GPIO51, AF1);
+pub const GPIO52_CIF_DD_4: MfpConfig = MFP_CFG_IN(GPIO52, AF1);
+pub const GPIO53_CIF_MCLK: MfpConfig = MFP_CFG_OUT(GPIO53, AF2, DRIVE_LOW);
+pub const GPIO54_CIF_PCLK: MfpConfig = MFP_CFG_IN(GPIO54, AF3);
+pub const GPIO55_CIF_DD_1: MfpConfig = MFP_CFG_IN(GPIO55, AF1);
+pub const GPIO81_CIF_DD_0: MfpConfig = MFP_CFG_IN(GPIO81, AF2);
+pub const GPIO82_CIF_DD_5: MfpConfig = MFP_CFG_IN(GPIO82, AF3);
+pub const GPIO83_CIF_DD_4: MfpConfig = MFP_CFG_IN(GPIO83, AF3);
+pub const GPIO84_CIF_FV: MfpConfig = MFP_CFG_IN(GPIO84, AF3);
+pub const GPIO85_CIF_LV: MfpConfig = MFP_CFG_IN(GPIO85, AF3);
+pub const GPIO90_CIF_DD_4: MfpConfig = MFP_CFG_IN(GPIO90, AF3);
+pub const GPIO91_CIF_DD_5: MfpConfig = MFP_CFG_IN(GPIO91, AF3);
+pub const GPIO93_CIF_DD_6: MfpConfig = MFP_CFG_IN(GPIO93, AF2);
+pub const GPIO94_CIF_DD_5: MfpConfig = MFP_CFG_IN(GPIO94, AF2);
+pub const GPIO95_CIF_DD_4: MfpConfig = MFP_CFG_IN(GPIO95, AF2);
+pub const GPIO98_CIF_DD_0: MfpConfig = MFP_CFG_IN(GPIO98, AF2);
+pub const GPIO103_CIF_DD_3: MfpConfig = MFP_CFG_IN(GPIO103, AF1);
+pub const GPIO104_CIF_DD_2: MfpConfig = MFP_CFG_IN(GPIO104, AF1);
+pub const GPIO105_CIF_DD_1: MfpConfig = MFP_CFG_IN(GPIO105, AF1);
+pub const GPIO106_CIF_DD_9: MfpConfig = MFP_CFG_IN(GPIO106, AF1);
+pub const GPIO107_CIF_DD_8: MfpConfig = MFP_CFG_IN(GPIO107, AF1);
+pub const GPIO108_CIF_DD_7: MfpConfig = MFP_CFG_IN(GPIO108, AF1);
+pub const GPIO114_CIF_DD_1: MfpConfig = MFP_CFG_IN(GPIO114, AF1);
+
+/* Universal Subscriber ID Interface */
+pub const GPIO114_UVS0: MfpConfig = MFP_CFG_OUT(GPIO114, AF2, DRIVE_LOW);
+pub const GPIO115_nUVS1: MfpConfig = MFP_CFG_OUT(GPIO115, AF2, DRIVE_LOW);
+pub const GPIO116_nUVS2: MfpConfig = MFP_CFG_OUT(GPIO116, AF2, DRIVE_LOW);
+pub const GPIO14_UCLK: MfpConfig = MFP_CFG_OUT(GPIO14, AF3, DRIVE_LOW);
+pub const GPIO91_UCLK: MfpConfig = MFP_CFG_OUT(GPIO91, AF2, DRIVE_LOW);
+pub const GPIO19_nURST: MfpConfig = MFP_CFG_OUT(GPIO19, AF3, DRIVE_LOW);
+pub const GPIO90_nURST: MfpConfig = MFP_CFG_OUT(GPIO90, AF2, DRIVE_LOW);
+pub const GPIO116_UDET: MfpConfig = MFP_CFG_IN(GPIO116, AF3);
+pub const GPIO114_UEN: MfpConfig = MFP_CFG_OUT(GPIO114, AF1, DRIVE_LOW);
+pub const GPIO115_UEN: MfpConfig = MFP_CFG_OUT(GPIO115, AF1, DRIVE_LOW);
+
+/* Mobile Scalable Link (MSL) Interface */
+pub const GPIO81_BB_OB_DAT_0: MfpConfig = MFP_CFG_OUT(GPIO81, AF2, DRIVE_LOW);
+pub const GPIO48_BB_OB_DAT_1: MfpConfig = MFP_CFG_OUT(GPIO48, AF1, DRIVE_LOW);
+pub const GPIO50_BB_OB_DAT_2: MfpConfig = MFP_CFG_OUT(GPIO50, AF1, DRIVE_LOW);
+pub const GPIO51_BB_OB_DAT_3: MfpConfig = MFP_CFG_OUT(GPIO51, AF1, DRIVE_LOW);
+pub const GPIO52_BB_OB_CLK: MfpConfig = MFP_CFG_OUT(GPIO52, AF1, DRIVE_LOW);
+pub const GPIO53_BB_OB_STB: MfpConfig = MFP_CFG_OUT(GPIO53, AF1, DRIVE_LOW);
+pub const GPIO54_BB_OB_WAIT: MfpConfig = MFP_CFG_IN(GPIO54, AF2);
+pub const GPIO82_BB_IB_DAT_0: MfpConfig = MFP_CFG_IN(GPIO82, AF2);
+pub const GPIO55_BB_IB_DAT_1: MfpConfig = MFP_CFG_IN(GPIO55, AF2);
+pub const GPIO56_BB_IB_DAT_2: MfpConfig = MFP_CFG_IN(GPIO56, AF2);
+pub const GPIO57_BB_IB_DAT_3: MfpConfig = MFP_CFG_IN(GPIO57, AF2);
+pub const GPIO83_BB_IB_CLK: MfpConfig = MFP_CFG_IN(GPIO83, AF2);
+pub const GPIO84_BB_IB_STB: MfpConfig = MFP_CFG_IN(GPIO84, AF2);
+pub const GPIO85_BB_IB_WAIT: MfpConfig = MFP_CFG_OUT(GPIO85, AF2, DRIVE_LOW);
+
+/* Memory Stick Host Controller */
+pub const GPIO92_MSBS: MfpConfig = MFP_CFG_OUT(GPIO92, AF2, DRIVE_LOW);
+pub const GPIO109_MSSDIO: MfpConfig = MFP_CFG_IN(GPIO109, AF2);
+pub const GPIO112_nMSINS: MfpConfig = MFP_CFG_IN(GPIO112, AF2);
+pub const GPIO32_MSSCLK: MfpConfig = MFP_CFG_OUT(GPIO32, AF1, DRIVE_LOW);
+
+/* commonly used pin configurations */
+#[macro_export]
+macro_rules! GPIOxx_LCD_16BPP { () => { GPIO58_LCD_LDD_0, GPIO59_LCD_LDD_1, GPIO60_LCD_LDD_2, GPIO61_LCD_LDD_3, GPIO62_LCD_LDD_4, GPIO63_LCD_LDD_5, GPIO64_LCD_LDD_6, GPIO65_LCD_LDD_7, GPIO66_LCD_LDD_8, GPIO67_LCD_LDD_9, GPIO68_LCD_LDD_10, GPIO69_LCD_LDD_11, GPIO70_LCD_LDD_12, GPIO71_LCD_LDD_13, GPIO72_LCD_LDD_14, GPIO73_LCD_LDD_15 } }
+#[macro_export]
+macro_rules! GPIOxx_LCD_TFT_16BPP { () => { GPIOxx_LCD_16BPP, GPIO74_LCD_FCLK, GPIO75_LCD_LCLK, GPIO76_LCD_PCLK, GPIO77_LCD_BIAS } }
+/* these enable a work-around for a hw bug in pxa27x during ac97 warm reset */
+pub const GPIO113_AC97_nRESET_GPIO_HIGH: MfpConfig = MFP_CFG_OUT(GPIO113, AF0, DEFAULT);
+pub const GPIO95_AC97_nRESET_GPIO_HIGH: MfpConfig = MFP_CFG_OUT(GPIO95, AF0, DEFAULT);
+
+extern "C" {
+    pub fn keypad_set_wake(on: core::ffi::c_uint) -> core::ffi::c_int;
+}
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

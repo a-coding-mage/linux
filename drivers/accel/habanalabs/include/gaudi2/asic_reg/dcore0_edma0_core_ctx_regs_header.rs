@@ -1,0 +1,92 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2020 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+/*
+ *****************************************
+ *   DCORE0_EDMA0_CORE_CTX
+ *   (Prototype: DMA_CORE_CTX)
+ *****************************************
+ */
+
+pub const mmDCORE0_EDMA0_CORE_CTX_RATE_LIM_TKN: u32 = 0x41CB860;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_PWRLP: u32 = 0x41CB864;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_TE_NUMROWS: u32 = 0x41CB868;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_IDX: u32 = 0x41CB86C;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_IDX_INC: u32 = 0x41CB870;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_CTRL: u32 = 0x41CB874;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_0: u32 = 0x41CB878;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_1: u32 = 0x41CB87C;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_STRIDE_1: u32 = 0x41CB880;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_2: u32 = 0x41CB884;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_STRIDE_2: u32 = 0x41CB888;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_3: u32 = 0x41CB88C;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_STRIDE_3: u32 = 0x41CB890;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_TSIZE_4: u32 = 0x41CB894;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_STRIDE_4: u32 = 0x41CB898;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_1: u32 = 0x41CB89C;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_STRIDE_1: u32 = 0x41CB8A0;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_2: u32 = 0x41CB8A4;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_STRIDE_2: u32 = 0x41CB8A8;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_3: u32 = 0x41CB8AC;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_STRIDE_3: u32 = 0x41CB8B0;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_4: u32 = 0x41CB8B4;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_STRIDE_4: u32 = 0x41CB8B8;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_WR_COMP_ADDR_HI: u32 = 0x41CB8BC;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_WR_COMP_ADDR_LO: u32 = 0x41CB8C0;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_WR_COMP_WDATA: u32 = 0x41CB8C4;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_OFFSET_LO: u32 = 0x41CB8C8;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_OFFSET_HI: u32 = 0x41CB8CC;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_OFFSET_LO: u32 = 0x41CB8D0;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_OFFSET_HI: u32 = 0x41CB8D4;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_BASE_LO: u32 = 0x41CB8D8;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_SRC_BASE_HI: u32 = 0x41CB8DC;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_BASE_LO: u32 = 0x41CB8E0;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_BASE_HI: u32 = 0x41CB8E4;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_DST_TSIZE_0: u32 = 0x41CB8E8;
+
+pub const mmDCORE0_EDMA0_CORE_CTX_COMMIT: u32 = 0x41CB8EC;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

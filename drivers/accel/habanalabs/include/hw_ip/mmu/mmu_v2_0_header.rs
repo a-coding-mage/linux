@@ -1,0 +1,48 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2019 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+pub const HOP0_MASK_4K: u64 = 0xFE00000000000000u64;
+pub const HOP1_MASK_4K: u64 = 0x01FF000000000000u64;
+pub const HOP2_MASK_4K: u64 = 0x0000FF8000000000u64;
+pub const HOP3_MASK_4K: u64 = 0x0000007FC0000000u64;
+pub const HOP4_MASK_4K: u64 = 0x000000003FE00000u64;
+pub const HOP5_MASK_4K: u64 = 0x00000000001FF000u64;
+
+pub const HOP0_MASK_64K: u64 = 0xFF00000000000000u64;
+pub const HOP1_MASK_64K: u64 = 0x00FF000000000000u64;
+pub const HOP2_MASK_64K: u64 = 0x0000FF0000000000u64;
+pub const HOP3_MASK_64K: u64 = 0x000000FF00000000u64;
+pub const HOP4_MASK_64K: u64 = 0x00000000FF000000u64;
+pub const HOP5_MASK_64K: u64 = 0x0000000000FF0000u64;
+
+pub const HOP0_SHIFT_4K: u32 = 57;
+pub const HOP1_SHIFT_4K: u32 = 48;
+pub const HOP2_SHIFT_4K: u32 = 39;
+pub const HOP3_SHIFT_4K: u32 = 30;
+pub const HOP4_SHIFT_4K: u32 = 21;
+pub const HOP5_SHIFT_4K: u32 = 12;
+
+pub const HOP0_SHIFT_64K: u32 = 56;
+pub const HOP1_SHIFT_64K: u32 = 48;
+pub const HOP2_SHIFT_64K: u32 = 40;
+pub const HOP3_SHIFT_64K: u32 = 32;
+pub const HOP4_SHIFT_64K: u32 = 24;
+pub const HOP5_SHIFT_64K: u32 = 16;
+
+pub const DHOP0_MASK: u64 = HOP0_MASK_4K;
+pub const DHOP1_MASK: u64 = HOP1_MASK_4K;
+pub const DHOP2_MASK: u64 = HOP2_MASK_4K;
+pub const DHOP3_MASK: u64 = HOP3_MASK_4K;
+pub const DHOP4_MASK: u64 = 0x000003C000000u64;
+
+pub const DHOP0_SHIFT: u32 = HOP0_SHIFT_4K;
+pub const DHOP1_SHIFT: u32 = HOP1_SHIFT_4K;
+pub const DHOP2_SHIFT: u32 = HOP2_SHIFT_4K;
+pub const DHOP3_SHIFT: u32 = HOP3_SHIFT_4K;
+pub const DHOP4_SHIFT: u32 = 26;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

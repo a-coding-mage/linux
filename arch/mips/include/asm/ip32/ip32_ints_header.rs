@@ -1,0 +1,102 @@
+/*
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License.  See the file "COPYING" in the main directory of this archive
+ * for more details.
+ *
+ * Copyright (C) 2000 Harald Koerfgen
+ */
+
+// Dependency supplied by the surrounding platform bindings:
+// use asm::irq::MIPS_CPU_IRQ_BASE;
+
+/*
+ * This list reflects the assignment of interrupt numbers to
+ * interrupting events.  Order is fairly irrelevant to handling
+ * priority.  This differs from irix.
+ *
+ * The C enum is represented as integer constants so that the aliased
+ * CRIME_SYSCORERR_IRQ value remains expressible in Rust.
+ */
+
+/* CPU interrupts are 0 ... 7 */
+pub const CRIME_IRQ_BASE: i32 = MIPS_CPU_IRQ_BASE + 8;
+
+/* MACE */
+pub const MACE_VID_IN1_IRQ: i32 = CRIME_IRQ_BASE;
+pub const MACE_VID_IN2_IRQ: i32 = MACE_VID_IN1_IRQ + 1;
+pub const MACE_VID_OUT_IRQ: i32 = MACE_VID_IN2_IRQ + 1;
+pub const MACE_ETHERNET_IRQ: i32 = MACE_VID_OUT_IRQ + 1;
+/* SUPERIO, MISC, and AUDIO are MACEISA */
+pub const __MACE_SUPERIO: i32 = MACE_ETHERNET_IRQ + 1;
+pub const __MACE_MISC: i32 = __MACE_SUPERIO + 1;
+pub const __MACE_AUDIO: i32 = __MACE_MISC + 1;
+pub const MACE_PCI_BRIDGE_IRQ: i32 = __MACE_AUDIO + 1;
+
+/* MACEPCI */
+pub const MACEPCI_SCSI0_IRQ: i32 = MACE_PCI_BRIDGE_IRQ + 1;
+pub const MACEPCI_SCSI1_IRQ: i32 = MACEPCI_SCSI0_IRQ + 1;
+pub const MACEPCI_SLOT0_IRQ: i32 = MACEPCI_SCSI1_IRQ + 1;
+pub const MACEPCI_SLOT1_IRQ: i32 = MACEPCI_SLOT0_IRQ + 1;
+pub const MACEPCI_SLOT2_IRQ: i32 = MACEPCI_SLOT1_IRQ + 1;
+pub const MACEPCI_SHARED0_IRQ: i32 = MACEPCI_SLOT2_IRQ + 1;
+pub const MACEPCI_SHARED1_IRQ: i32 = MACEPCI_SHARED0_IRQ + 1;
+pub const MACEPCI_SHARED2_IRQ: i32 = MACEPCI_SHARED1_IRQ + 1;
+
+/* CRIME */
+pub const CRIME_GBE0_IRQ: i32 = MACEPCI_SHARED2_IRQ + 1;
+pub const CRIME_GBE1_IRQ: i32 = CRIME_GBE0_IRQ + 1;
+pub const CRIME_GBE2_IRQ: i32 = CRIME_GBE1_IRQ + 1;
+pub const CRIME_GBE3_IRQ: i32 = CRIME_GBE2_IRQ + 1;
+pub const CRIME_CPUERR_IRQ: i32 = CRIME_GBE3_IRQ + 1;
+pub const CRIME_MEMERR_IRQ: i32 = CRIME_CPUERR_IRQ + 1;
+pub const CRIME_RE_EMPTY_E_IRQ: i32 = CRIME_MEMERR_IRQ + 1;
+pub const CRIME_RE_FULL_E_IRQ: i32 = CRIME_RE_EMPTY_E_IRQ + 1;
+pub const CRIME_RE_IDLE_E_IRQ: i32 = CRIME_RE_FULL_E_IRQ + 1;
+pub const CRIME_RE_EMPTY_L_IRQ: i32 = CRIME_RE_IDLE_E_IRQ + 1;
+pub const CRIME_RE_FULL_L_IRQ: i32 = CRIME_RE_EMPTY_L_IRQ + 1;
+pub const CRIME_RE_IDLE_L_IRQ: i32 = CRIME_RE_FULL_L_IRQ + 1;
+pub const CRIME_SOFT0_IRQ: i32 = CRIME_RE_IDLE_L_IRQ + 1;
+pub const CRIME_SOFT1_IRQ: i32 = CRIME_SOFT0_IRQ + 1;
+pub const CRIME_SOFT2_IRQ: i32 = CRIME_SOFT1_IRQ + 1;
+pub const CRIME_SYSCORERR_IRQ: i32 = CRIME_SOFT2_IRQ;
+pub const CRIME_VICE_IRQ: i32 = CRIME_SOFT2_IRQ + 1;
+
+/* MACEISA */
+pub const MACEISA_AUDIO_SW_IRQ: i32 = CRIME_VICE_IRQ + 1;
+pub const MACEISA_AUDIO_SC_IRQ: i32 = MACEISA_AUDIO_SW_IRQ + 1;
+pub const MACEISA_AUDIO1_DMAT_IRQ: i32 = MACEISA_AUDIO_SC_IRQ + 1;
+pub const MACEISA_AUDIO1_OF_IRQ: i32 = MACEISA_AUDIO1_DMAT_IRQ + 1;
+pub const MACEISA_AUDIO2_DMAT_IRQ: i32 = MACEISA_AUDIO1_OF_IRQ + 1;
+pub const MACEISA_AUDIO2_MERR_IRQ: i32 = MACEISA_AUDIO2_DMAT_IRQ + 1;
+pub const MACEISA_AUDIO3_DMAT_IRQ: i32 = MACEISA_AUDIO2_MERR_IRQ + 1;
+pub const MACEISA_AUDIO3_MERR_IRQ: i32 = MACEISA_AUDIO3_DMAT_IRQ + 1;
+pub const MACEISA_RTC_IRQ: i32 = MACEISA_AUDIO3_MERR_IRQ + 1;
+pub const MACEISA_KEYB_IRQ: i32 = MACEISA_RTC_IRQ + 1;
+/* MACEISA_KEYB_POLL is not an IRQ */
+pub const __MACEISA_KEYB_POLL: i32 = MACEISA_KEYB_IRQ + 1;
+pub const MACEISA_MOUSE_IRQ: i32 = __MACEISA_KEYB_POLL + 1;
+/* MACEISA_MOUSE_POLL is not an IRQ */
+pub const __MACEISA_MOUSE_POLL: i32 = MACEISA_MOUSE_IRQ + 1;
+pub const MACEISA_TIMER0_IRQ: i32 = __MACEISA_MOUSE_POLL + 1;
+pub const MACEISA_TIMER1_IRQ: i32 = MACEISA_TIMER0_IRQ + 1;
+pub const MACEISA_TIMER2_IRQ: i32 = MACEISA_TIMER1_IRQ + 1;
+pub const MACEISA_PARALLEL_IRQ: i32 = MACEISA_TIMER2_IRQ + 1;
+pub const MACEISA_PAR_CTXA_IRQ: i32 = MACEISA_PARALLEL_IRQ + 1;
+pub const MACEISA_PAR_CTXB_IRQ: i32 = MACEISA_PAR_CTXA_IRQ + 1;
+pub const MACEISA_PAR_MERR_IRQ: i32 = MACEISA_PAR_CTXB_IRQ + 1;
+pub const MACEISA_SERIAL1_IRQ: i32 = MACEISA_PAR_MERR_IRQ + 1;
+pub const MACEISA_SERIAL1_TDMAT_IRQ: i32 = MACEISA_SERIAL1_IRQ + 1;
+pub const MACEISA_SERIAL1_TDMAPR_IRQ: i32 = MACEISA_SERIAL1_TDMAT_IRQ + 1;
+pub const MACEISA_SERIAL1_TDMAME_IRQ: i32 = MACEISA_SERIAL1_TDMAPR_IRQ + 1;
+pub const MACEISA_SERIAL1_RDMAT_IRQ: i32 = MACEISA_SERIAL1_TDMAME_IRQ + 1;
+pub const MACEISA_SERIAL1_RDMAOR_IRQ: i32 = MACEISA_SERIAL1_RDMAT_IRQ + 1;
+pub const MACEISA_SERIAL2_IRQ: i32 = MACEISA_SERIAL1_RDMAOR_IRQ + 1;
+pub const MACEISA_SERIAL2_TDMAT_IRQ: i32 = MACEISA_SERIAL2_IRQ + 1;
+pub const MACEISA_SERIAL2_TDMAPR_IRQ: i32 = MACEISA_SERIAL2_TDMAT_IRQ + 1;
+pub const MACEISA_SERIAL2_TDMAME_IRQ: i32 = MACEISA_SERIAL2_TDMAPR_IRQ + 1;
+pub const MACEISA_SERIAL2_RDMAT_IRQ: i32 = MACEISA_SERIAL2_TDMAME_IRQ + 1;
+pub const MACEISA_SERIAL2_RDMAOR_IRQ: i32 = MACEISA_SERIAL2_RDMAT_IRQ + 1;
+
+pub const IP32_IRQ_MAX: i32 = MACEISA_SERIAL2_RDMAOR_IRQ;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

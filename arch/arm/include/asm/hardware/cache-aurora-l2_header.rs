@@ -1,0 +1,83 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * AURORA shared L2 cache controller support
+ *
+ * Copyright (C) 2012 Marvell
+ *
+ * Yehuda Yitschak <yehuday@marvell.com>
+ * Gregory CLEMENT <gregory.clement@free-electrons.com>
+ */
+
+pub const AURORA_SYNC_REG: u32 = 0x700;
+pub const AURORA_RANGE_BASE_ADDR_REG: u32 = 0x720;
+pub const AURORA_FLUSH_PHY_ADDR_REG: u32 = 0x7f0;
+pub const AURORA_INVAL_RANGE_REG: u32 = 0x774;
+pub const AURORA_CLEAN_RANGE_REG: u32 = 0x7b4;
+pub const AURORA_FLUSH_RANGE_REG: u32 = 0x7f4;
+
+pub const AURORA_ACR_REPLACEMENT_OFFSET: u32 = 27;
+pub const AURORA_ACR_REPLACEMENT_MASK: u32 = 0x3 << AURORA_ACR_REPLACEMENT_OFFSET;
+pub const AURORA_ACR_REPLACEMENT_TYPE_WAYRR: u32 = 0 << AURORA_ACR_REPLACEMENT_OFFSET;
+pub const AURORA_ACR_REPLACEMENT_TYPE_LFSR: u32 = 1 << AURORA_ACR_REPLACEMENT_OFFSET;
+pub const AURORA_ACR_REPLACEMENT_TYPE_SEMIPLRU: u32 = 3 << AURORA_ACR_REPLACEMENT_OFFSET;
+
+pub const AURORA_ACR_PARITY_EN: u32 = 1 << 21;
+pub const AURORA_ACR_ECC_EN: u32 = 1 << 20;
+
+pub const AURORA_ACR_FORCE_WRITE_POLICY_OFFSET: u32 = 0;
+pub const AURORA_ACR_FORCE_WRITE_POLICY_MASK: u32 =
+    0x3 << AURORA_ACR_FORCE_WRITE_POLICY_OFFSET;
+pub const AURORA_ACR_FORCE_WRITE_POLICY_DIS: u32 =
+    0 << AURORA_ACR_FORCE_WRITE_POLICY_OFFSET;
+pub const AURORA_ACR_FORCE_WRITE_BACK_POLICY: u32 =
+    1 << AURORA_ACR_FORCE_WRITE_POLICY_OFFSET;
+pub const AURORA_ACR_FORCE_WRITE_THRO_POLICY: u32 =
+    2 << AURORA_ACR_FORCE_WRITE_POLICY_OFFSET;
+
+pub const AURORA_ERR_CNT_REG: u32 = 0x600;
+pub const AURORA_ERR_ATTR_CAP_REG: u32 = 0x608;
+pub const AURORA_ERR_ADDR_CAP_REG: u32 = 0x60c;
+pub const AURORA_ERR_WAY_CAP_REG: u32 = 0x610;
+pub const AURORA_ERR_INJECT_CTL_REG: u32 = 0x614;
+pub const AURORA_ERR_INJECT_MASK_REG: u32 = 0x618;
+
+pub const AURORA_ERR_CNT_CLR_OFFSET: u32 = 31;
+pub const AURORA_ERR_CNT_CLR: u32 = 0x1 << AURORA_ERR_CNT_CLR_OFFSET;
+pub const AURORA_ERR_CNT_UE_OFFSET: u32 = 16;
+pub const AURORA_ERR_CNT_UE_MASK: u32 = 0x7fff << AURORA_ERR_CNT_UE_OFFSET;
+pub const AURORA_ERR_CNT_CE_OFFSET: u32 = 0;
+pub const AURORA_ERR_CNT_CE_MASK: u32 = 0xffff << AURORA_ERR_CNT_CE_OFFSET;
+
+pub const AURORA_ERR_ATTR_SRC_OFF: u32 = 16;
+pub const AURORA_ERR_ATTR_SRC_MSK: u32 = 0x7 << AURORA_ERR_ATTR_SRC_OFF;
+pub const AURORA_ERR_ATTR_TXN_OFF: u32 = 12;
+pub const AURORA_ERR_ATTR_TXN_MSK: u32 = 0xf << AURORA_ERR_ATTR_TXN_OFF;
+pub const AURORA_ERR_ATTR_ERR_OFF: u32 = 8;
+pub const AURORA_ERR_ATTR_ERR_MSK: u32 = 0x3 << AURORA_ERR_ATTR_ERR_OFF;
+pub const AURORA_ERR_ATTR_CAP_VALID_OFF: u32 = 0;
+pub const AURORA_ERR_ATTR_CAP_VALID: u32 = 0x1 << AURORA_ERR_ATTR_CAP_VALID_OFF;
+
+pub const AURORA_ERR_ADDR_CAP_ADDR_MASK: u32 = 0xffffffe0;
+
+pub const AURORA_ERR_WAY_IDX_OFF: u32 = 8;
+pub const AURORA_ERR_WAY_IDX_MSK: u32 = 0xfff << AURORA_ERR_WAY_IDX_OFF;
+pub const AURORA_ERR_WAY_CAP_WAY_OFFSET: u32 = 1;
+pub const AURORA_ERR_WAY_CAP_WAY_MASK: u32 = 0xf << AURORA_ERR_WAY_CAP_WAY_OFFSET;
+
+pub const AURORA_ERR_INJECT_CTL_ADDR_MASK: u32 = 0xfffffff0;
+pub const AURORA_ERR_INJECT_CTL_EN_MASK: u32 = 0x3;
+pub const AURORA_ERR_INJECT_CTL_EN_PARITY: u32 = 0x2;
+pub const AURORA_ERR_INJECT_CTL_EN_ECC: u32 = 0x1;
+
+pub const AURORA_MAX_RANGE_SIZE: u32 = 1024;
+
+pub const AURORA_WAY_SIZE_SHIFT: u32 = 2;
+
+pub const AURORA_CTRL_FW: u32 = 0x100;
+
+/* chose a number outside L2X0_CACHE_ID_PART_MASK to be sure to make
+ * the distinction between a number coming from hardware and a number
+ * coming from the device tree */
+pub const AURORA_CACHE_ID: u32 = 0x100;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

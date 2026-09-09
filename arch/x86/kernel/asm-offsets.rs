@@ -1,0 +1,122 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Generate definitions needed by assembly language modules.
+ * This code generates raw asm output which is post-processed to extract
+ * and format the required data.
+ */
+
+// C headers and COMPILE_OFFSETS build configuration are supplied externally.
+// The CONFIG_* conditions below preserve the source build-time intent.
+
+#[allow(dead_code)]
+unsafe fn common() {
+    OFFSET!(CPUINFO_x86, cpuinfo_x86, x86);
+    OFFSET!(CPUINFO_x86_vendor, cpuinfo_x86, x86_vendor);
+    OFFSET!(CPUINFO_x86_model, cpuinfo_x86, x86_model);
+    OFFSET!(CPUINFO_x86_stepping, cpuinfo_x86, x86_stepping);
+    OFFSET!(CPUINFO_cpuid_level, cpuinfo_x86, cpuid_level);
+    OFFSET!(CPUINFO_x86_capability, cpuinfo_x86, x86_capability);
+    OFFSET!(CPUINFO_x86_vendor_id, cpuinfo_x86, x86_vendor_id);
+
+    BLANK!();
+    OFFSET!(TASK_threadsp, task_struct, thread.sp);
+    // Preserved condition: CONFIG_STACKPROTECTOR.
+    #[cfg(CONFIG_STACKPROTECTOR)]
+    OFFSET!(TASK_stack_canary, task_struct, stack_canary);
+
+    BLANK!();
+    OFFSET!(pbe_address, pbe, address);
+    OFFSET!(pbe_orig_address, pbe, orig_address);
+    OFFSET!(pbe_next, pbe, next);
+
+    // Preserved condition: CONFIG_X86_32 || CONFIG_IA32_EMULATION.
+    #[cfg(any(CONFIG_X86_32, CONFIG_IA32_EMULATION))]
+    {
+        BLANK!();
+        OFFSET!(IA32_SIGCONTEXT_ax, sigcontext_32, ax);
+        OFFSET!(IA32_SIGCONTEXT_bx, sigcontext_32, bx);
+        OFFSET!(IA32_SIGCONTEXT_cx, sigcontext_32, cx);
+        OFFSET!(IA32_SIGCONTEXT_dx, sigcontext_32, dx);
+        OFFSET!(IA32_SIGCONTEXT_si, sigcontext_32, si);
+        OFFSET!(IA32_SIGCONTEXT_di, sigcontext_32, di);
+        OFFSET!(IA32_SIGCONTEXT_bp, sigcontext_32, bp);
+        OFFSET!(IA32_SIGCONTEXT_sp, sigcontext_32, sp);
+        OFFSET!(IA32_SIGCONTEXT_ip, sigcontext_32, ip);
+        OFFSET!(IA32_SIGCONTEXT_es, sigcontext_32, es);
+        OFFSET!(IA32_SIGCONTEXT_cs, sigcontext_32, cs);
+        OFFSET!(IA32_SIGCONTEXT_ss, sigcontext_32, ss);
+        OFFSET!(IA32_SIGCONTEXT_ds, sigcontext_32, ds);
+        OFFSET!(IA32_SIGCONTEXT_flags, sigcontext_32, flags);
+
+        BLANK!();
+        OFFSET!(IA32_SIGFRAME_sigcontext, sigframe_ia32, sc);
+        OFFSET!(IA32_RT_SIGFRAME_sigcontext, rt_sigframe_ia32, uc.uc_mcontext);
+    }
+
+    // Preserved condition: CONFIG_XEN.
+    #[cfg(CONFIG_XEN)]
+    {
+        BLANK!();
+        OFFSET!(XEN_vcpu_info_mask, vcpu_info, evtchn_upcall_mask);
+        OFFSET!(XEN_vcpu_info_pending, vcpu_info, evtchn_upcall_pending);
+        OFFSET!(XEN_vcpu_info_arch_cr2, vcpu_info, arch.cr2);
+    }
+
+    BLANK!();
+    OFFSET!(TDX_MODULE_rcx, tdx_module_args, rcx);
+    OFFSET!(TDX_MODULE_rdx, tdx_module_args, rdx);
+    OFFSET!(TDX_MODULE_r8, tdx_module_args, r8);
+    OFFSET!(TDX_MODULE_r9, tdx_module_args, r9);
+    OFFSET!(TDX_MODULE_r10, tdx_module_args, r10);
+    OFFSET!(TDX_MODULE_r11, tdx_module_args, r11);
+    OFFSET!(TDX_MODULE_r12, tdx_module_args, r12);
+    OFFSET!(TDX_MODULE_r13, tdx_module_args, r13);
+    OFFSET!(TDX_MODULE_r14, tdx_module_args, r14);
+    OFFSET!(TDX_MODULE_r15, tdx_module_args, r15);
+    OFFSET!(TDX_MODULE_rbx, tdx_module_args, rbx);
+    OFFSET!(TDX_MODULE_rdi, tdx_module_args, rdi);
+    OFFSET!(TDX_MODULE_rsi, tdx_module_args, rsi);
+
+    BLANK!();
+    OFFSET!(BP_scratch, boot_params, scratch);
+    OFFSET!(BP_secure_boot, boot_params, secure_boot);
+    OFFSET!(BP_loadflags, boot_params, hdr.loadflags);
+    OFFSET!(BP_hardware_subarch, boot_params, hdr.hardware_subarch);
+    OFFSET!(BP_version, boot_params, hdr.version);
+    OFFSET!(BP_kernel_alignment, boot_params, hdr.kernel_alignment);
+    OFFSET!(BP_init_size, boot_params, hdr.init_size);
+    OFFSET!(BP_pref_address, boot_params, hdr.pref_address);
+
+    BLANK!();
+    DEFINE!(PTREGS_SIZE, core::mem::size_of::<pt_regs>());
+    OFFSET!(C_PTREGS_SIZE, pt_regs, orig_ax);
+
+    /* TLB state for the entry code */
+    OFFSET!(TLB_STATE_user_pcid_flush_mask, tlb_state, user_pcid_flush_mask);
+
+    /* Layout info for cpu_entry_area */
+    OFFSET!(CPU_ENTRY_AREA_entry_stack, cpu_entry_area, entry_stack_page);
+    DEFINE!(SIZEOF_entry_stack, core::mem::size_of::<entry_stack>());
+    DEFINE!(MASK_entry_stack, !(core::mem::size_of::<entry_stack>() - 1));
+
+    /* Offset for fields in tss_struct */
+    OFFSET!(TSS_sp0, tss_struct, x86_tss.sp0);
+    OFFSET!(TSS_sp1, tss_struct, x86_tss.sp1);
+    OFFSET!(TSS_sp2, tss_struct, x86_tss.sp2);
+
+    // Preserved condition: IS_ENABLED(CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64).
+    #[cfg(CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64)]
+    {
+        /* Offset for fields in aria_ctx */
+        BLANK!();
+        OFFSET!(ARIA_CTX_enc_key, aria_ctx, enc_key);
+        OFFSET!(ARIA_CTX_dec_key, aria_ctx, dec_key);
+        OFFSET!(ARIA_CTX_rounds, aria_ctx, rounds);
+    }
+
+    BLANK!();
+    DEFINE!(ALT_INSTR_SIZE, core::mem::size_of::<alt_instr>());
+    DEFINE!(EXTABLE_SIZE, core::mem::size_of::<exception_table_entry>());
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

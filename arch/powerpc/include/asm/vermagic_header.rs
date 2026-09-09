@@ -1,0 +1,31 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+// CONFIG_ARCH_USING_PATCHABLE_FUNCTION_ENTRY, CONFIG_MPROFILE_KERNEL, and
+// CONFIG_RELOCATABLE are build-time configuration conditions from the C header.
+#[cfg(CONFIG_ARCH_USING_PATCHABLE_FUNCTION_ENTRY)]
+pub const MODULE_ARCH_VERMAGIC_FTRACE: &str = "patchable-function-entry ";
+
+#[cfg(all(
+    not(CONFIG_ARCH_USING_PATCHABLE_FUNCTION_ENTRY),
+    CONFIG_MPROFILE_KERNEL
+))]
+pub const MODULE_ARCH_VERMAGIC_FTRACE: &str = "mprofile-kernel ";
+
+#[cfg(all(
+    not(CONFIG_ARCH_USING_PATCHABLE_FUNCTION_ENTRY),
+    not(CONFIG_MPROFILE_KERNEL)
+))]
+pub const MODULE_ARCH_VERMAGIC_FTRACE: &str = "";
+
+#[cfg(CONFIG_RELOCATABLE)]
+pub const MODULE_ARCH_VERMAGIC_RELOCATABLE: &str = "relocatable ";
+
+#[cfg(not(CONFIG_RELOCATABLE))]
+pub const MODULE_ARCH_VERMAGIC_RELOCATABLE: &str = "";
+
+pub const MODULE_ARCH_VERMAGIC: &str = concat!(
+    MODULE_ARCH_VERMAGIC_FTRACE,
+    MODULE_ARCH_VERMAGIC_RELOCATABLE,
+);
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

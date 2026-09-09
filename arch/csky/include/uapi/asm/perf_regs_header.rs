@@ -1,0 +1,66 @@
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
+/* Index of struct pt_regs */
+#[repr(u32)]
+pub enum perf_event_csky_regs {
+    PERF_REG_CSKY_TLS,
+    PERF_REG_CSKY_LR,
+    PERF_REG_CSKY_PC,
+    PERF_REG_CSKY_SR,
+    PERF_REG_CSKY_SP,
+    PERF_REG_CSKY_ORIG_A0,
+    PERF_REG_CSKY_A0,
+    PERF_REG_CSKY_A1,
+    PERF_REG_CSKY_A2,
+    PERF_REG_CSKY_A3,
+    PERF_REG_CSKY_REGS0,
+    PERF_REG_CSKY_REGS1,
+    PERF_REG_CSKY_REGS2,
+    PERF_REG_CSKY_REGS3,
+    PERF_REG_CSKY_REGS4,
+    PERF_REG_CSKY_REGS5,
+    PERF_REG_CSKY_REGS6,
+    PERF_REG_CSKY_REGS7,
+    PERF_REG_CSKY_REGS8,
+    PERF_REG_CSKY_REGS9,
+    /* C preprocessor condition: defined(__CSKYABIV2__) */
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS0,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS1,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS2,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS3,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS4,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS5,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS6,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS7,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS8,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS9,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS10,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS11,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS12,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS13,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_EXREGS14,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_HI,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_LO,
+    #[cfg(__CSKYABIV2__)]
+    PERF_REG_CSKY_DCSR,
+    PERF_REG_CSKY_MAX,
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

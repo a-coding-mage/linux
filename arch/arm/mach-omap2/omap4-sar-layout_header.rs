@@ -1,0 +1,57 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * omap4-sar-layout.h: OMAP4 SAR RAM layout header file
+ *
+ * Copyright (C) 2011 Texas Instruments, Inc.
+ *	Santosh Shilimkar <santosh.shilimkar@ti.com>
+ */
+
+/*
+ * SAR BANK offsets from base address OMAP44XX/54XX_SAR_RAM_BASE
+ */
+pub const SAR_BANK1_OFFSET: u32 = 0x0000;
+pub const SAR_BANK2_OFFSET: u32 = 0x1000;
+pub const SAR_BANK3_OFFSET: u32 = 0x2000;
+pub const SAR_BANK4_OFFSET: u32 = 0x3000;
+
+/* Scratch pad memory offsets from SAR_BANK1 */
+pub const SCU_OFFSET0: u32 = 0xfe4;
+pub const SCU_OFFSET1: u32 = 0xfe8;
+pub const OMAP_TYPE_OFFSET: u32 = 0xfec;
+pub const L2X0_SAVE_OFFSET0: u32 = 0xff0;
+pub const L2X0_SAVE_OFFSET1: u32 = 0xff4;
+pub const L2X0_AUXCTRL_OFFSET: u32 = 0xff8;
+pub const L2X0_PREFETCH_CTRL_OFFSET: u32 = 0xffc;
+
+/* CPUx Wakeup Non-Secure Physical Address offsets in SAR_BANK1 */
+pub const CPU0_WAKEUP_NS_PA_ADDR_OFFSET: u32 = 0xa04;
+pub const CPU1_WAKEUP_NS_PA_ADDR_OFFSET: u32 = 0xa08;
+pub const OMAP5_CPU0_WAKEUP_NS_PA_ADDR_OFFSET: u32 = 0xe00;
+pub const OMAP5_CPU1_WAKEUP_NS_PA_ADDR_OFFSET: u32 = 0xe04;
+
+pub const SAR_BACKUP_STATUS_OFFSET: u32 = SAR_BANK3_OFFSET + 0x500;
+pub const SAR_SECURE_RAM_SIZE_OFFSET: u32 = SAR_BANK3_OFFSET + 0x504;
+pub const SAR_SECRAM_SAVED_AT_OFFSET: u32 = SAR_BANK3_OFFSET + 0x508;
+
+/* WakeUpGen save restore offset from OMAP44XX_SAR_RAM_BASE */
+pub const WAKEUPGENENB_OFFSET_CPU0: u32 = SAR_BANK3_OFFSET + 0x684;
+pub const WAKEUPGENENB_SECURE_OFFSET_CPU0: u32 = SAR_BANK3_OFFSET + 0x694;
+pub const WAKEUPGENENB_OFFSET_CPU1: u32 = SAR_BANK3_OFFSET + 0x6a4;
+pub const WAKEUPGENENB_SECURE_OFFSET_CPU1: u32 = SAR_BANK3_OFFSET + 0x6b4;
+pub const AUXCOREBOOT0_OFFSET: u32 = SAR_BANK3_OFFSET + 0x6c4;
+pub const AUXCOREBOOT1_OFFSET: u32 = SAR_BANK3_OFFSET + 0x6c8;
+pub const PTMSYNCREQ_MASK_OFFSET: u32 = SAR_BANK3_OFFSET + 0x6cc;
+pub const PTMSYNCREQ_EN_OFFSET: u32 = SAR_BANK3_OFFSET + 0x6d0;
+pub const SAR_BACKUP_STATUS_WAKEUPGEN: u32 = 0x10;
+
+/* WakeUpGen save restore offset from OMAP54XX_SAR_RAM_BASE */
+pub const OMAP5_WAKEUPGENENB_OFFSET_CPU0: u32 = SAR_BANK3_OFFSET + 0x9dc;
+pub const OMAP5_WAKEUPGENENB_SECURE_OFFSET_CPU0: u32 = SAR_BANK3_OFFSET + 0x9f0;
+pub const OMAP5_WAKEUPGENENB_OFFSET_CPU1: u32 = SAR_BANK3_OFFSET + 0xa04;
+pub const OMAP5_WAKEUPGENENB_SECURE_OFFSET_CPU1: u32 = SAR_BANK3_OFFSET + 0xa18;
+pub const OMAP5_AUXCOREBOOT0_OFFSET: u32 = SAR_BANK3_OFFSET + 0xa2c;
+pub const OMAP5_AUXCOREBOOT1_OFFSET: u32 = SAR_BANK3_OFFSET + 0x930;
+pub const OMAP5_AMBA_IF_MODE_OFFSET: u32 = SAR_BANK3_OFFSET + 0xa34;
+pub const OMAP5_SAR_BACKUP_STATUS_OFFSET: u32 = SAR_BANK3_OFFSET + 0x800;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

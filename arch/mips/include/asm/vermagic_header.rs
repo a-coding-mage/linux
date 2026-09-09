@@ -1,0 +1,88 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+// The following cfg branches preserve the source header's build-time processor
+// selection and its error for unsupported configurations.
+#[cfg(CONFIG_CPU_BMIPS)]
+pub const MODULE_PROC_FAMILY: &str = "BMIPS ";
+#[cfg(CONFIG_CPU_MIPS32_R1)]
+pub const MODULE_PROC_FAMILY: &str = "MIPS32_R1 ";
+#[cfg(CONFIG_CPU_MIPS32_R2)]
+pub const MODULE_PROC_FAMILY: &str = "MIPS32_R2 ";
+#[cfg(CONFIG_CPU_MIPS32_R5)]
+pub const MODULE_PROC_FAMILY: &str = "MIPS32_R5 ";
+#[cfg(CONFIG_CPU_MIPS32_R6)]
+pub const MODULE_PROC_FAMILY: &str = "MIPS32_R6 ";
+#[cfg(CONFIG_CPU_MIPS64_R1)]
+pub const MODULE_PROC_FAMILY: &str = "MIPS64_R1 ";
+#[cfg(CONFIG_CPU_MIPS64_R2)]
+pub const MODULE_PROC_FAMILY: &str = "MIPS64_R2 ";
+#[cfg(CONFIG_CPU_MIPS64_R5)]
+pub const MODULE_PROC_FAMILY: &str = "MIPS64_R5 ";
+#[cfg(CONFIG_CPU_MIPS64_R6)]
+pub const MODULE_PROC_FAMILY: &str = "MIPS64_R6 ";
+#[cfg(CONFIG_CPU_R3000)]
+pub const MODULE_PROC_FAMILY: &str = "R3000 ";
+#[cfg(CONFIG_CPU_R4300)]
+pub const MODULE_PROC_FAMILY: &str = "R4300 ";
+#[cfg(CONFIG_CPU_R4X00)]
+pub const MODULE_PROC_FAMILY: &str = "R4X00 ";
+#[cfg(CONFIG_CPU_TX49XX)]
+pub const MODULE_PROC_FAMILY: &str = "TX49XX ";
+#[cfg(CONFIG_CPU_R5000)]
+pub const MODULE_PROC_FAMILY: &str = "R5000 ";
+#[cfg(CONFIG_CPU_R5500)]
+pub const MODULE_PROC_FAMILY: &str = "R5500 ";
+#[cfg(CONFIG_CPU_NEVADA)]
+pub const MODULE_PROC_FAMILY: &str = "NEVADA ";
+#[cfg(CONFIG_CPU_R10000)]
+pub const MODULE_PROC_FAMILY: &str = "R10000 ";
+#[cfg(CONFIG_CPU_RM7000)]
+pub const MODULE_PROC_FAMILY: &str = "RM7000 ";
+#[cfg(CONFIG_CPU_SB1)]
+pub const MODULE_PROC_FAMILY: &str = "SB1 ";
+#[cfg(CONFIG_CPU_LOONGSON32)]
+pub const MODULE_PROC_FAMILY: &str = "LOONGSON32 ";
+#[cfg(CONFIG_CPU_LOONGSON2EF)]
+pub const MODULE_PROC_FAMILY: &str = "LOONGSON2EF ";
+#[cfg(CONFIG_CPU_LOONGSON64)]
+pub const MODULE_PROC_FAMILY: &str = "LOONGSON64 ";
+#[cfg(CONFIG_CPU_CAVIUM_OCTEON)]
+pub const MODULE_PROC_FAMILY: &str = "OCTEON ";
+#[cfg(CONFIG_CPU_P5600)]
+pub const MODULE_PROC_FAMILY: &str = "P5600 ";
+#[cfg(not(any(
+    CONFIG_CPU_BMIPS,
+    CONFIG_CPU_MIPS32_R1,
+    CONFIG_CPU_MIPS32_R2,
+    CONFIG_CPU_MIPS32_R5,
+    CONFIG_CPU_MIPS32_R6,
+    CONFIG_CPU_MIPS64_R1,
+    CONFIG_CPU_MIPS64_R2,
+    CONFIG_CPU_MIPS64_R5,
+    CONFIG_CPU_MIPS64_R6,
+    CONFIG_CPU_R3000,
+    CONFIG_CPU_R4300,
+    CONFIG_CPU_R4X00,
+    CONFIG_CPU_TX49XX,
+    CONFIG_CPU_R5000,
+    CONFIG_CPU_R5500,
+    CONFIG_CPU_NEVADA,
+    CONFIG_CPU_R10000,
+    CONFIG_CPU_RM7000,
+    CONFIG_CPU_SB1,
+    CONFIG_CPU_LOONGSON32,
+    CONFIG_CPU_LOONGSON2EF,
+    CONFIG_CPU_LOONGSON64,
+    CONFIG_CPU_CAVIUM_OCTEON,
+    CONFIG_CPU_P5600,
+))]
+compile_error!("MODULE_PROC_FAMILY undefined for your processor configuration");
+
+#[cfg(CONFIG_32BIT)]
+pub const MODULE_KERNEL_TYPE: &str = "32BIT ";
+#[cfg(CONFIG_64BIT)]
+pub const MODULE_KERNEL_TYPE: &str = "64BIT ";
+
+pub const MODULE_ARCH_VERMAGIC: &str = concat!(MODULE_PROC_FAMILY, MODULE_KERNEL_TYPE);
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

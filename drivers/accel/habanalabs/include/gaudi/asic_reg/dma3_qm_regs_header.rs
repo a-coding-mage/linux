@@ -1,0 +1,834 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2018 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/***********************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+
+/*
+ *****************************************
+ *   DMA3_QM (Prototype: QMAN)
+ *****************************************
+ */
+
+pub const mmDMA3_QM_GLBL_CFG0: u32 = 0x568000;
+
+pub const mmDMA3_QM_GLBL_CFG1: u32 = 0x568004;
+
+pub const mmDMA3_QM_GLBL_PROT: u32 = 0x568008;
+
+pub const mmDMA3_QM_GLBL_ERR_CFG: u32 = 0x56800C;
+
+pub const mmDMA3_QM_GLBL_SECURE_PROPS_0: u32 = 0x568010;
+
+pub const mmDMA3_QM_GLBL_SECURE_PROPS_1: u32 = 0x568014;
+
+pub const mmDMA3_QM_GLBL_SECURE_PROPS_2: u32 = 0x568018;
+
+pub const mmDMA3_QM_GLBL_SECURE_PROPS_3: u32 = 0x56801C;
+
+pub const mmDMA3_QM_GLBL_SECURE_PROPS_4: u32 = 0x568020;
+
+pub const mmDMA3_QM_GLBL_NON_SECURE_PROPS_0: u32 = 0x568024;
+
+pub const mmDMA3_QM_GLBL_NON_SECURE_PROPS_1: u32 = 0x568028;
+
+pub const mmDMA3_QM_GLBL_NON_SECURE_PROPS_2: u32 = 0x56802C;
+
+pub const mmDMA3_QM_GLBL_NON_SECURE_PROPS_3: u32 = 0x568030;
+
+pub const mmDMA3_QM_GLBL_NON_SECURE_PROPS_4: u32 = 0x568034;
+
+pub const mmDMA3_QM_GLBL_STS0: u32 = 0x568038;
+
+pub const mmDMA3_QM_GLBL_STS1_0: u32 = 0x568040;
+
+pub const mmDMA3_QM_GLBL_STS1_1: u32 = 0x568044;
+
+pub const mmDMA3_QM_GLBL_STS1_2: u32 = 0x568048;
+
+pub const mmDMA3_QM_GLBL_STS1_3: u32 = 0x56804C;
+
+pub const mmDMA3_QM_GLBL_STS1_4: u32 = 0x568050;
+
+pub const mmDMA3_QM_GLBL_MSG_EN_0: u32 = 0x568054;
+
+pub const mmDMA3_QM_GLBL_MSG_EN_1: u32 = 0x568058;
+
+pub const mmDMA3_QM_GLBL_MSG_EN_2: u32 = 0x56805C;
+
+pub const mmDMA3_QM_GLBL_MSG_EN_3: u32 = 0x568060;
+
+pub const mmDMA3_QM_GLBL_MSG_EN_4: u32 = 0x568068;
+
+pub const mmDMA3_QM_PQ_BASE_LO_0: u32 = 0x568070;
+
+pub const mmDMA3_QM_PQ_BASE_LO_1: u32 = 0x568074;
+
+pub const mmDMA3_QM_PQ_BASE_LO_2: u32 = 0x568078;
+
+pub const mmDMA3_QM_PQ_BASE_LO_3: u32 = 0x56807C;
+
+pub const mmDMA3_QM_PQ_BASE_HI_0: u32 = 0x568080;
+
+pub const mmDMA3_QM_PQ_BASE_HI_1: u32 = 0x568084;
+
+pub const mmDMA3_QM_PQ_BASE_HI_2: u32 = 0x568088;
+
+pub const mmDMA3_QM_PQ_BASE_HI_3: u32 = 0x56808C;
+
+pub const mmDMA3_QM_PQ_SIZE_0: u32 = 0x568090;
+
+pub const mmDMA3_QM_PQ_SIZE_1: u32 = 0x568094;
+
+pub const mmDMA3_QM_PQ_SIZE_2: u32 = 0x568098;
+
+pub const mmDMA3_QM_PQ_SIZE_3: u32 = 0x56809C;
+
+pub const mmDMA3_QM_PQ_PI_0: u32 = 0x5680A0;
+
+pub const mmDMA3_QM_PQ_PI_1: u32 = 0x5680A4;
+
+pub const mmDMA3_QM_PQ_PI_2: u32 = 0x5680A8;
+
+pub const mmDMA3_QM_PQ_PI_3: u32 = 0x5680AC;
+
+pub const mmDMA3_QM_PQ_CI_0: u32 = 0x5680B0;
+
+pub const mmDMA3_QM_PQ_CI_1: u32 = 0x5680B4;
+
+pub const mmDMA3_QM_PQ_CI_2: u32 = 0x5680B8;
+
+pub const mmDMA3_QM_PQ_CI_3: u32 = 0x5680BC;
+
+pub const mmDMA3_QM_PQ_CFG0_0: u32 = 0x5680C0;
+
+pub const mmDMA3_QM_PQ_CFG0_1: u32 = 0x5680C4;
+
+pub const mmDMA3_QM_PQ_CFG0_2: u32 = 0x5680C8;
+
+pub const mmDMA3_QM_PQ_CFG0_3: u32 = 0x5680CC;
+
+pub const mmDMA3_QM_PQ_CFG1_0: u32 = 0x5680D0;
+
+pub const mmDMA3_QM_PQ_CFG1_1: u32 = 0x5680D4;
+
+pub const mmDMA3_QM_PQ_CFG1_2: u32 = 0x5680D8;
+
+pub const mmDMA3_QM_PQ_CFG1_3: u32 = 0x5680DC;
+
+pub const mmDMA3_QM_PQ_ARUSER_31_11_0: u32 = 0x5680E0;
+
+pub const mmDMA3_QM_PQ_ARUSER_31_11_1: u32 = 0x5680E4;
+
+pub const mmDMA3_QM_PQ_ARUSER_31_11_2: u32 = 0x5680E8;
+
+pub const mmDMA3_QM_PQ_ARUSER_31_11_3: u32 = 0x5680EC;
+
+pub const mmDMA3_QM_PQ_STS0_0: u32 = 0x5680F0;
+
+pub const mmDMA3_QM_PQ_STS0_1: u32 = 0x5680F4;
+
+pub const mmDMA3_QM_PQ_STS0_2: u32 = 0x5680F8;
+
+pub const mmDMA3_QM_PQ_STS0_3: u32 = 0x5680FC;
+
+pub const mmDMA3_QM_PQ_STS1_0: u32 = 0x568100;
+
+pub const mmDMA3_QM_PQ_STS1_1: u32 = 0x568104;
+
+pub const mmDMA3_QM_PQ_STS1_2: u32 = 0x568108;
+
+pub const mmDMA3_QM_PQ_STS1_3: u32 = 0x56810C;
+
+pub const mmDMA3_QM_CQ_CFG0_0: u32 = 0x568110;
+
+pub const mmDMA3_QM_CQ_CFG0_1: u32 = 0x568114;
+
+pub const mmDMA3_QM_CQ_CFG0_2: u32 = 0x568118;
+
+pub const mmDMA3_QM_CQ_CFG0_3: u32 = 0x56811C;
+
+pub const mmDMA3_QM_CQ_CFG0_4: u32 = 0x568120;
+
+pub const mmDMA3_QM_CQ_CFG1_0: u32 = 0x568124;
+
+pub const mmDMA3_QM_CQ_CFG1_1: u32 = 0x568128;
+
+pub const mmDMA3_QM_CQ_CFG1_2: u32 = 0x56812C;
+
+pub const mmDMA3_QM_CQ_CFG1_3: u32 = 0x568130;
+
+pub const mmDMA3_QM_CQ_CFG1_4: u32 = 0x568134;
+
+pub const mmDMA3_QM_CQ_ARUSER_31_11_0: u32 = 0x568138;
+
+pub const mmDMA3_QM_CQ_ARUSER_31_11_1: u32 = 0x56813C;
+
+pub const mmDMA3_QM_CQ_ARUSER_31_11_2: u32 = 0x568140;
+
+pub const mmDMA3_QM_CQ_ARUSER_31_11_3: u32 = 0x568144;
+
+pub const mmDMA3_QM_CQ_ARUSER_31_11_4: u32 = 0x568148;
+
+pub const mmDMA3_QM_CQ_STS0_0: u32 = 0x56814C;
+
+pub const mmDMA3_QM_CQ_STS0_1: u32 = 0x568150;
+
+pub const mmDMA3_QM_CQ_STS0_2: u32 = 0x568154;
+
+pub const mmDMA3_QM_CQ_STS0_3: u32 = 0x568158;
+
+pub const mmDMA3_QM_CQ_STS0_4: u32 = 0x56815C;
+
+pub const mmDMA3_QM_CQ_STS1_0: u32 = 0x568160;
+
+pub const mmDMA3_QM_CQ_STS1_1: u32 = 0x568164;
+
+pub const mmDMA3_QM_CQ_STS1_2: u32 = 0x568168;
+
+pub const mmDMA3_QM_CQ_STS1_3: u32 = 0x56816C;
+
+pub const mmDMA3_QM_CQ_STS1_4: u32 = 0x568170;
+
+pub const mmDMA3_QM_CQ_PTR_LO_0: u32 = 0x568174;
+
+pub const mmDMA3_QM_CQ_PTR_HI_0: u32 = 0x568178;
+
+pub const mmDMA3_QM_CQ_TSIZE_0: u32 = 0x56817C;
+
+pub const mmDMA3_QM_CQ_CTL_0: u32 = 0x568180;
+
+pub const mmDMA3_QM_CQ_PTR_LO_1: u32 = 0x568184;
+
+pub const mmDMA3_QM_CQ_PTR_HI_1: u32 = 0x568188;
+
+pub const mmDMA3_QM_CQ_TSIZE_1: u32 = 0x56818C;
+
+pub const mmDMA3_QM_CQ_CTL_1: u32 = 0x568190;
+
+pub const mmDMA3_QM_CQ_PTR_LO_2: u32 = 0x568194;
+
+pub const mmDMA3_QM_CQ_PTR_HI_2: u32 = 0x568198;
+
+pub const mmDMA3_QM_CQ_TSIZE_2: u32 = 0x56819C;
+
+pub const mmDMA3_QM_CQ_CTL_2: u32 = 0x5681A0;
+
+pub const mmDMA3_QM_CQ_PTR_LO_3: u32 = 0x5681A4;
+
+pub const mmDMA3_QM_CQ_PTR_HI_3: u32 = 0x5681A8;
+
+pub const mmDMA3_QM_CQ_TSIZE_3: u32 = 0x5681AC;
+
+pub const mmDMA3_QM_CQ_CTL_3: u32 = 0x5681B0;
+
+pub const mmDMA3_QM_CQ_PTR_LO_4: u32 = 0x5681B4;
+
+pub const mmDMA3_QM_CQ_PTR_HI_4: u32 = 0x5681B8;
+
+pub const mmDMA3_QM_CQ_TSIZE_4: u32 = 0x5681BC;
+
+pub const mmDMA3_QM_CQ_CTL_4: u32 = 0x5681C0;
+
+pub const mmDMA3_QM_CQ_PTR_LO_STS_0: u32 = 0x5681C4;
+
+pub const mmDMA3_QM_CQ_PTR_LO_STS_1: u32 = 0x5681C8;
+
+pub const mmDMA3_QM_CQ_PTR_LO_STS_2: u32 = 0x5681CC;
+
+pub const mmDMA3_QM_CQ_PTR_LO_STS_3: u32 = 0x5681D0;
+
+pub const mmDMA3_QM_CQ_PTR_LO_STS_4: u32 = 0x5681D4;
+
+pub const mmDMA3_QM_CQ_PTR_HI_STS_0: u32 = 0x5681D8;
+
+pub const mmDMA3_QM_CQ_PTR_HI_STS_1: u32 = 0x5681DC;
+
+pub const mmDMA3_QM_CQ_PTR_HI_STS_2: u32 = 0x5681E0;
+
+pub const mmDMA3_QM_CQ_PTR_HI_STS_3: u32 = 0x5681E4;
+
+pub const mmDMA3_QM_CQ_PTR_HI_STS_4: u32 = 0x5681E8;
+
+pub const mmDMA3_QM_CQ_TSIZE_STS_0: u32 = 0x5681EC;
+
+pub const mmDMA3_QM_CQ_TSIZE_STS_1: u32 = 0x5681F0;
+
+pub const mmDMA3_QM_CQ_TSIZE_STS_2: u32 = 0x5681F4;
+
+pub const mmDMA3_QM_CQ_TSIZE_STS_3: u32 = 0x5681F8;
+
+pub const mmDMA3_QM_CQ_TSIZE_STS_4: u32 = 0x5681FC;
+
+pub const mmDMA3_QM_CQ_CTL_STS_0: u32 = 0x568200;
+
+pub const mmDMA3_QM_CQ_CTL_STS_1: u32 = 0x568204;
+
+pub const mmDMA3_QM_CQ_CTL_STS_2: u32 = 0x568208;
+
+pub const mmDMA3_QM_CQ_CTL_STS_3: u32 = 0x56820C;
+
+pub const mmDMA3_QM_CQ_CTL_STS_4: u32 = 0x568210;
+
+pub const mmDMA3_QM_CQ_IFIFO_CNT_0: u32 = 0x568214;
+
+pub const mmDMA3_QM_CQ_IFIFO_CNT_1: u32 = 0x568218;
+
+pub const mmDMA3_QM_CQ_IFIFO_CNT_2: u32 = 0x56821C;
+
+pub const mmDMA3_QM_CQ_IFIFO_CNT_3: u32 = 0x568220;
+
+pub const mmDMA3_QM_CQ_IFIFO_CNT_4: u32 = 0x568224;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_LO_0: u32 = 0x568228;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_LO_1: u32 = 0x56822C;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_LO_2: u32 = 0x568230;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_LO_3: u32 = 0x568234;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_LO_4: u32 = 0x568238;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_HI_0: u32 = 0x56823C;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_HI_1: u32 = 0x568240;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_HI_2: u32 = 0x568244;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_HI_3: u32 = 0x568248;
+
+pub const mmDMA3_QM_CP_MSG_BASE0_ADDR_HI_4: u32 = 0x56824C;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_LO_0: u32 = 0x568250;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_LO_1: u32 = 0x568254;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_LO_2: u32 = 0x568258;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_LO_3: u32 = 0x56825C;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_LO_4: u32 = 0x568260;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_HI_0: u32 = 0x568264;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_HI_1: u32 = 0x568268;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_HI_2: u32 = 0x56826C;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_HI_3: u32 = 0x568270;
+
+pub const mmDMA3_QM_CP_MSG_BASE1_ADDR_HI_4: u32 = 0x568274;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_0: u32 = 0x568278;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_1: u32 = 0x56827C;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_2: u32 = 0x568280;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_3: u32 = 0x568284;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_LO_4: u32 = 0x568288;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_HI_0: u32 = 0x56828C;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_HI_1: u32 = 0x568290;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_HI_2: u32 = 0x568294;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_HI_3: u32 = 0x568298;
+
+pub const mmDMA3_QM_CP_MSG_BASE2_ADDR_HI_4: u32 = 0x56829C;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_LO_0: u32 = 0x5682A0;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_LO_1: u32 = 0x5682A4;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_LO_2: u32 = 0x5682A8;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_LO_3: u32 = 0x5682AC;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_LO_4: u32 = 0x5682B0;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_HI_0: u32 = 0x5682B4;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_HI_1: u32 = 0x5682B8;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_HI_2: u32 = 0x5682BC;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_HI_3: u32 = 0x5682C0;
+
+pub const mmDMA3_QM_CP_MSG_BASE3_ADDR_HI_4: u32 = 0x5682C4;
+
+pub const mmDMA3_QM_CP_LDMA_TSIZE_OFFSET_0: u32 = 0x5682C8;
+
+pub const mmDMA3_QM_CP_LDMA_TSIZE_OFFSET_1: u32 = 0x5682CC;
+
+pub const mmDMA3_QM_CP_LDMA_TSIZE_OFFSET_2: u32 = 0x5682D0;
+
+pub const mmDMA3_QM_CP_LDMA_TSIZE_OFFSET_3: u32 = 0x5682D4;
+
+pub const mmDMA3_QM_CP_LDMA_TSIZE_OFFSET_4: u32 = 0x5682D8;
+
+pub const mmDMA3_QM_CP_LDMA_SRC_BASE_LO_OFFSET_0: u32 = 0x5682E0;
+
+pub const mmDMA3_QM_CP_LDMA_SRC_BASE_LO_OFFSET_1: u32 = 0x5682E4;
+
+pub const mmDMA3_QM_CP_LDMA_SRC_BASE_LO_OFFSET_2: u32 = 0x5682E8;
+
+pub const mmDMA3_QM_CP_LDMA_SRC_BASE_LO_OFFSET_3: u32 = 0x5682EC;
+
+pub const mmDMA3_QM_CP_LDMA_SRC_BASE_LO_OFFSET_4: u32 = 0x5682F0;
+
+pub const mmDMA3_QM_CP_LDMA_DST_BASE_LO_OFFSET_0: u32 = 0x5682F4;
+
+pub const mmDMA3_QM_CP_LDMA_DST_BASE_LO_OFFSET_1: u32 = 0x5682F8;
+
+pub const mmDMA3_QM_CP_LDMA_DST_BASE_LO_OFFSET_2: u32 = 0x5682FC;
+
+pub const mmDMA3_QM_CP_LDMA_DST_BASE_LO_OFFSET_3: u32 = 0x568300;
+
+pub const mmDMA3_QM_CP_LDMA_DST_BASE_LO_OFFSET_4: u32 = 0x568304;
+
+pub const mmDMA3_QM_CP_FENCE0_RDATA_0: u32 = 0x568308;
+
+pub const mmDMA3_QM_CP_FENCE0_RDATA_1: u32 = 0x56830C;
+
+pub const mmDMA3_QM_CP_FENCE0_RDATA_2: u32 = 0x568310;
+
+pub const mmDMA3_QM_CP_FENCE0_RDATA_3: u32 = 0x568314;
+
+pub const mmDMA3_QM_CP_FENCE0_RDATA_4: u32 = 0x568318;
+
+pub const mmDMA3_QM_CP_FENCE1_RDATA_0: u32 = 0x56831C;
+
+pub const mmDMA3_QM_CP_FENCE1_RDATA_1: u32 = 0x568320;
+
+pub const mmDMA3_QM_CP_FENCE1_RDATA_2: u32 = 0x568324;
+
+pub const mmDMA3_QM_CP_FENCE1_RDATA_3: u32 = 0x568328;
+
+pub const mmDMA3_QM_CP_FENCE1_RDATA_4: u32 = 0x56832C;
+
+pub const mmDMA3_QM_CP_FENCE2_RDATA_0: u32 = 0x568330;
+
+pub const mmDMA3_QM_CP_FENCE2_RDATA_1: u32 = 0x568334;
+
+pub const mmDMA3_QM_CP_FENCE2_RDATA_2: u32 = 0x568338;
+
+pub const mmDMA3_QM_CP_FENCE2_RDATA_3: u32 = 0x56833C;
+
+pub const mmDMA3_QM_CP_FENCE2_RDATA_4: u32 = 0x568340;
+
+pub const mmDMA3_QM_CP_FENCE3_RDATA_0: u32 = 0x568344;
+
+pub const mmDMA3_QM_CP_FENCE3_RDATA_1: u32 = 0x568348;
+
+pub const mmDMA3_QM_CP_FENCE3_RDATA_2: u32 = 0x56834C;
+
+pub const mmDMA3_QM_CP_FENCE3_RDATA_3: u32 = 0x568350;
+
+pub const mmDMA3_QM_CP_FENCE3_RDATA_4: u32 = 0x568354;
+
+pub const mmDMA3_QM_CP_FENCE0_CNT_0: u32 = 0x568358;
+
+pub const mmDMA3_QM_CP_FENCE0_CNT_1: u32 = 0x56835C;
+
+pub const mmDMA3_QM_CP_FENCE0_CNT_2: u32 = 0x568360;
+
+pub const mmDMA3_QM_CP_FENCE0_CNT_3: u32 = 0x568364;
+
+pub const mmDMA3_QM_CP_FENCE0_CNT_4: u32 = 0x568368;
+
+pub const mmDMA3_QM_CP_FENCE1_CNT_0: u32 = 0x56836C;
+
+pub const mmDMA3_QM_CP_FENCE1_CNT_1: u32 = 0x568370;
+
+pub const mmDMA3_QM_CP_FENCE1_CNT_2: u32 = 0x568374;
+
+pub const mmDMA3_QM_CP_FENCE1_CNT_3: u32 = 0x568378;
+
+pub const mmDMA3_QM_CP_FENCE1_CNT_4: u32 = 0x56837C;
+
+pub const mmDMA3_QM_CP_FENCE2_CNT_0: u32 = 0x568380;
+
+pub const mmDMA3_QM_CP_FENCE2_CNT_1: u32 = 0x568384;
+
+pub const mmDMA3_QM_CP_FENCE2_CNT_2: u32 = 0x568388;
+
+pub const mmDMA3_QM_CP_FENCE2_CNT_3: u32 = 0x56838C;
+
+pub const mmDMA3_QM_CP_FENCE2_CNT_4: u32 = 0x568390;
+
+pub const mmDMA3_QM_CP_FENCE3_CNT_0: u32 = 0x568394;
+
+pub const mmDMA3_QM_CP_FENCE3_CNT_1: u32 = 0x568398;
+
+pub const mmDMA3_QM_CP_FENCE3_CNT_2: u32 = 0x56839C;
+
+pub const mmDMA3_QM_CP_FENCE3_CNT_3: u32 = 0x5683A0;
+
+pub const mmDMA3_QM_CP_FENCE3_CNT_4: u32 = 0x5683A4;
+
+pub const mmDMA3_QM_CP_STS_0: u32 = 0x5683A8;
+
+pub const mmDMA3_QM_CP_STS_1: u32 = 0x5683AC;
+
+pub const mmDMA3_QM_CP_STS_2: u32 = 0x5683B0;
+
+pub const mmDMA3_QM_CP_STS_3: u32 = 0x5683B4;
+
+pub const mmDMA3_QM_CP_STS_4: u32 = 0x5683B8;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_LO_0: u32 = 0x5683BC;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_LO_1: u32 = 0x5683C0;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_LO_2: u32 = 0x5683C4;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_LO_3: u32 = 0x5683C8;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_LO_4: u32 = 0x5683CC;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_HI_0: u32 = 0x5683D0;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_HI_1: u32 = 0x5683D4;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_HI_2: u32 = 0x5683D8;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_HI_3: u32 = 0x5683DC;
+
+pub const mmDMA3_QM_CP_CURRENT_INST_HI_4: u32 = 0x5683E0;
+
+pub const mmDMA3_QM_CP_BARRIER_CFG_0: u32 = 0x5683F4;
+
+pub const mmDMA3_QM_CP_BARRIER_CFG_1: u32 = 0x5683F8;
+
+pub const mmDMA3_QM_CP_BARRIER_CFG_2: u32 = 0x5683FC;
+
+pub const mmDMA3_QM_CP_BARRIER_CFG_3: u32 = 0x568400;
+
+pub const mmDMA3_QM_CP_BARRIER_CFG_4: u32 = 0x568404;
+
+pub const mmDMA3_QM_CP_DBG_0_0: u32 = 0x568408;
+
+pub const mmDMA3_QM_CP_DBG_0_1: u32 = 0x56840C;
+
+pub const mmDMA3_QM_CP_DBG_0_2: u32 = 0x568410;
+
+pub const mmDMA3_QM_CP_DBG_0_3: u32 = 0x568414;
+
+pub const mmDMA3_QM_CP_DBG_0_4: u32 = 0x568418;
+
+pub const mmDMA3_QM_CP_ARUSER_31_11_0: u32 = 0x56841C;
+
+pub const mmDMA3_QM_CP_ARUSER_31_11_1: u32 = 0x568420;
+
+pub const mmDMA3_QM_CP_ARUSER_31_11_2: u32 = 0x568424;
+
+pub const mmDMA3_QM_CP_ARUSER_31_11_3: u32 = 0x568428;
+
+pub const mmDMA3_QM_CP_ARUSER_31_11_4: u32 = 0x56842C;
+
+pub const mmDMA3_QM_CP_AWUSER_31_11_0: u32 = 0x568430;
+
+pub const mmDMA3_QM_CP_AWUSER_31_11_1: u32 = 0x568434;
+
+pub const mmDMA3_QM_CP_AWUSER_31_11_2: u32 = 0x568438;
+
+pub const mmDMA3_QM_CP_AWUSER_31_11_3: u32 = 0x56843C;
+
+pub const mmDMA3_QM_CP_AWUSER_31_11_4: u32 = 0x568440;
+
+pub const mmDMA3_QM_ARB_CFG_0: u32 = 0x568A00;
+
+pub const mmDMA3_QM_ARB_CHOISE_Q_PUSH: u32 = 0x568A04;
+
+pub const mmDMA3_QM_ARB_WRR_WEIGHT_0: u32 = 0x568A08;
+
+pub const mmDMA3_QM_ARB_WRR_WEIGHT_1: u32 = 0x568A0C;
+
+pub const mmDMA3_QM_ARB_WRR_WEIGHT_2: u32 = 0x568A10;
+
+pub const mmDMA3_QM_ARB_WRR_WEIGHT_3: u32 = 0x568A14;
+
+pub const mmDMA3_QM_ARB_CFG_1: u32 = 0x568A18;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_0: u32 = 0x568A20;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_1: u32 = 0x568A24;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_2: u32 = 0x568A28;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_3: u32 = 0x568A2C;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_4: u32 = 0x568A30;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_5: u32 = 0x568A34;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_6: u32 = 0x568A38;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_7: u32 = 0x568A3C;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_8: u32 = 0x568A40;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_9: u32 = 0x568A44;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_10: u32 = 0x568A48;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_11: u32 = 0x568A4C;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_12: u32 = 0x568A50;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_13: u32 = 0x568A54;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_14: u32 = 0x568A58;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_15: u32 = 0x568A5C;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_16: u32 = 0x568A60;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_17: u32 = 0x568A64;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_18: u32 = 0x568A68;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_19: u32 = 0x568A6C;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_20: u32 = 0x568A70;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_21: u32 = 0x568A74;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_22: u32 = 0x568A78;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_23: u32 = 0x568A7C;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_24: u32 = 0x568A80;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_25: u32 = 0x568A84;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_26: u32 = 0x568A88;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_27: u32 = 0x568A8C;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_28: u32 = 0x568A90;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_29: u32 = 0x568A94;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_30: u32 = 0x568A98;
+
+pub const mmDMA3_QM_ARB_MST_AVAIL_CRED_31: u32 = 0x568A9C;
+
+pub const mmDMA3_QM_ARB_MST_CRED_INC: u32 = 0x568AA0;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_0: u32 = 0x568AA4;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_1: u32 = 0x568AA8;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_2: u32 = 0x568AAC;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_3: u32 = 0x568AB0;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_4: u32 = 0x568AB4;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_5: u32 = 0x568AB8;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_6: u32 = 0x568ABC;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_7: u32 = 0x568AC0;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_8: u32 = 0x568AC4;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_9: u32 = 0x568AC8;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_10: u32 = 0x568ACC;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_11: u32 = 0x568AD0;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_12: u32 = 0x568AD4;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_13: u32 = 0x568AD8;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_14: u32 = 0x568ADC;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_15: u32 = 0x568AE0;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_16: u32 = 0x568AE4;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_17: u32 = 0x568AE8;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_18: u32 = 0x568AEC;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_19: u32 = 0x568AF0;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_20: u32 = 0x568AF4;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_21: u32 = 0x568AF8;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_22: u32 = 0x568AFC;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_23: u32 = 0x568B00;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_24: u32 = 0x568B04;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_25: u32 = 0x568B08;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_26: u32 = 0x568B0C;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_27: u32 = 0x568B10;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_28: u32 = 0x568B14;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_29: u32 = 0x568B18;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_30: u32 = 0x568B1C;
+
+pub const mmDMA3_QM_ARB_MST_CHOISE_PUSH_OFST_31: u32 = 0x568B20;
+
+pub const mmDMA3_QM_ARB_SLV_MASTER_INC_CRED_OFST: u32 = 0x568B28;
+
+pub const mmDMA3_QM_ARB_MST_SLAVE_EN: u32 = 0x568B2C;
+
+pub const mmDMA3_QM_ARB_MST_QUIET_PER: u32 = 0x568B34;
+
+pub const mmDMA3_QM_ARB_SLV_CHOISE_WDT: u32 = 0x568B38;
+
+pub const mmDMA3_QM_ARB_SLV_ID: u32 = 0x568B3C;
+
+pub const mmDMA3_QM_ARB_MSG_MAX_INFLIGHT: u32 = 0x568B44;
+
+pub const mmDMA3_QM_ARB_MSG_AWUSER_31_11: u32 = 0x568B48;
+
+pub const mmDMA3_QM_ARB_MSG_AWUSER_SEC_PROP: u32 = 0x568B4C;
+
+pub const mmDMA3_QM_ARB_MSG_AWUSER_NON_SEC_PROP: u32 = 0x568B50;
+
+pub const mmDMA3_QM_ARB_BASE_LO: u32 = 0x568B54;
+
+pub const mmDMA3_QM_ARB_BASE_HI: u32 = 0x568B58;
+
+pub const mmDMA3_QM_ARB_STATE_STS: u32 = 0x568B80;
+
+pub const mmDMA3_QM_ARB_CHOISE_FULLNESS_STS: u32 = 0x568B84;
+
+pub const mmDMA3_QM_ARB_MSG_STS: u32 = 0x568B88;
+
+pub const mmDMA3_QM_ARB_SLV_CHOISE_Q_HEAD: u32 = 0x568B8C;
+
+pub const mmDMA3_QM_ARB_ERR_CAUSE: u32 = 0x568B9C;
+
+pub const mmDMA3_QM_ARB_ERR_MSG_EN: u32 = 0x568BA0;
+
+pub const mmDMA3_QM_ARB_ERR_STS_DRP: u32 = 0x568BA8;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_0: u32 = 0x568BB0;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_1: u32 = 0x568BB4;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_2: u32 = 0x568BB8;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_3: u32 = 0x568BBC;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_4: u32 = 0x568BC0;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_5: u32 = 0x568BC4;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_6: u32 = 0x568BC8;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_7: u32 = 0x568BCC;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_8: u32 = 0x568BD0;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_9: u32 = 0x568BD4;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_10: u32 = 0x568BD8;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_11: u32 = 0x568BDC;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_12: u32 = 0x568BE0;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_13: u32 = 0x568BE4;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_14: u32 = 0x568BE8;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_15: u32 = 0x568BEC;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_16: u32 = 0x568BF0;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_17: u32 = 0x568BF4;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_18: u32 = 0x568BF8;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_19: u32 = 0x568BFC;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_20: u32 = 0x568C00;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_21: u32 = 0x568C04;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_22: u32 = 0x568C08;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_23: u32 = 0x568C0C;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_24: u32 = 0x568C10;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_25: u32 = 0x568C14;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_26: u32 = 0x568C18;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_27: u32 = 0x568C1C;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_28: u32 = 0x568C20;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_29: u32 = 0x568C24;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_30: u32 = 0x568C28;
+
+pub const mmDMA3_QM_ARB_MST_CRED_STS_31: u32 = 0x568C2C;
+
+pub const mmDMA3_QM_CGM_CFG: u32 = 0x568C70;
+
+pub const mmDMA3_QM_CGM_STS: u32 = 0x568C74;
+
+pub const mmDMA3_QM_CGM_CFG1: u32 = 0x568C78;
+
+pub const mmDMA3_QM_LOCAL_RANGE_BASE: u32 = 0x568C80;
+
+pub const mmDMA3_QM_LOCAL_RANGE_SIZE: u32 = 0x568C84;
+
+pub const mmDMA3_QM_CSMR_STRICT_PRIO_CFG: u32 = 0x568C90;
+
+pub const mmDMA3_QM_HBW_RD_RATE_LIM_CFG_1: u32 = 0x568C94;
+
+pub const mmDMA3_QM_LBW_WR_RATE_LIM_CFG_0: u32 = 0x568C98;
+
+pub const mmDMA3_QM_LBW_WR_RATE_LIM_CFG_1: u32 = 0x568C9C;
+
+pub const mmDMA3_QM_HBW_RD_RATE_LIM_CFG_0: u32 = 0x568CA0;
+
+pub const mmDMA3_QM_GLBL_AXCACHE: u32 = 0x568CA4;
+
+pub const mmDMA3_QM_IND_GW_APB_CFG: u32 = 0x568CB0;
+
+pub const mmDMA3_QM_IND_GW_APB_WDATA: u32 = 0x568CB4;
+
+pub const mmDMA3_QM_IND_GW_APB_RDATA: u32 = 0x568CB8;
+
+pub const mmDMA3_QM_IND_GW_APB_STATUS: u32 = 0x568CBC;
+
+pub const mmDMA3_QM_GLBL_ERR_ADDR_LO: u32 = 0x568CD0;
+
+pub const mmDMA3_QM_GLBL_ERR_ADDR_HI: u32 = 0x568CD4;
+
+pub const mmDMA3_QM_GLBL_ERR_WDATA: u32 = 0x568CD8;
+
+pub const mmDMA3_QM_GLBL_MEM_INIT_BUSY: u32 = 0x568D00;
+
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

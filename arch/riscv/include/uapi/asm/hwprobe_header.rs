@@ -1,0 +1,128 @@
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+/*
+ * Copyright 2023-2024 Rivos, Inc
+ */
+
+// Dependency intent from the original header: <linux/types.h>, <linux/const.h>.
+
+/*
+ * Interface for probing hardware capabilities from userspace, see
+ * Documentation/arch/riscv/hwprobe.rst for more information.
+ */
+#[repr(C)]
+pub struct riscv_hwprobe {
+    pub key: i64,
+    pub value: u64,
+}
+
+pub const RISCV_HWPROBE_KEY_MVENDORID: i64 = 0;
+pub const RISCV_HWPROBE_KEY_MARCHID: i64 = 1;
+pub const RISCV_HWPROBE_KEY_MIMPID: i64 = 2;
+pub const RISCV_HWPROBE_KEY_BASE_BEHAVIOR: i64 = 3;
+pub const RISCV_HWPROBE_BASE_BEHAVIOR_IMA: u64 = 1u64 << 0;
+pub const RISCV_HWPROBE_KEY_IMA_EXT_0: i64 = 4;
+pub const RISCV_HWPROBE_IMA_FD: u64 = 1u64 << 0;
+pub const RISCV_HWPROBE_IMA_C: u64 = 1u64 << 1;
+pub const RISCV_HWPROBE_IMA_V: u64 = 1u64 << 2;
+pub const RISCV_HWPROBE_EXT_ZBA: u64 = 1u64 << 3;
+pub const RISCV_HWPROBE_EXT_ZBB: u64 = 1u64 << 4;
+pub const RISCV_HWPROBE_EXT_ZBS: u64 = 1u64 << 5;
+pub const RISCV_HWPROBE_EXT_ZICBOZ: u64 = 1u64 << 6;
+pub const RISCV_HWPROBE_EXT_ZBC: u64 = 1u64 << 7;
+pub const RISCV_HWPROBE_EXT_ZBKB: u64 = 1u64 << 8;
+pub const RISCV_HWPROBE_EXT_ZBKC: u64 = 1u64 << 9;
+pub const RISCV_HWPROBE_EXT_ZBKX: u64 = 1u64 << 10;
+pub const RISCV_HWPROBE_EXT_ZKND: u64 = 1u64 << 11;
+pub const RISCV_HWPROBE_EXT_ZKNE: u64 = 1u64 << 12;
+pub const RISCV_HWPROBE_EXT_ZKNH: u64 = 1u64 << 13;
+pub const RISCV_HWPROBE_EXT_ZKSED: u64 = 1u64 << 14;
+pub const RISCV_HWPROBE_EXT_ZKSH: u64 = 1u64 << 15;
+pub const RISCV_HWPROBE_EXT_ZKT: u64 = 1u64 << 16;
+pub const RISCV_HWPROBE_EXT_ZVBB: u64 = 1u64 << 17;
+pub const RISCV_HWPROBE_EXT_ZVBC: u64 = 1u64 << 18;
+pub const RISCV_HWPROBE_EXT_ZVKB: u64 = 1u64 << 19;
+pub const RISCV_HWPROBE_EXT_ZVKG: u64 = 1u64 << 20;
+pub const RISCV_HWPROBE_EXT_ZVKNED: u64 = 1u64 << 21;
+pub const RISCV_HWPROBE_EXT_ZVKNHA: u64 = 1u64 << 22;
+pub const RISCV_HWPROBE_EXT_ZVKNHB: u64 = 1u64 << 23;
+pub const RISCV_HWPROBE_EXT_ZVKSED: u64 = 1u64 << 24;
+pub const RISCV_HWPROBE_EXT_ZVKSH: u64 = 1u64 << 25;
+pub const RISCV_HWPROBE_EXT_ZVKT: u64 = 1u64 << 26;
+pub const RISCV_HWPROBE_EXT_ZFH: u64 = 1u64 << 27;
+pub const RISCV_HWPROBE_EXT_ZFHMIN: u64 = 1u64 << 28;
+pub const RISCV_HWPROBE_EXT_ZIHINTNTL: u64 = 1u64 << 29;
+pub const RISCV_HWPROBE_EXT_ZVFH: u64 = 1u64 << 30;
+pub const RISCV_HWPROBE_EXT_ZVFHMIN: u64 = 1u64 << 31;
+pub const RISCV_HWPROBE_EXT_ZFA: u64 = 1u64 << 32;
+pub const RISCV_HWPROBE_EXT_ZTSO: u64 = 1u64 << 33;
+pub const RISCV_HWPROBE_EXT_ZACAS: u64 = 1u64 << 34;
+pub const RISCV_HWPROBE_EXT_ZICOND: u64 = 1u64 << 35;
+pub const RISCV_HWPROBE_EXT_ZIHINTPAUSE: u64 = 1u64 << 36;
+pub const RISCV_HWPROBE_EXT_ZVE32X: u64 = 1u64 << 37;
+pub const RISCV_HWPROBE_EXT_ZVE32F: u64 = 1u64 << 38;
+pub const RISCV_HWPROBE_EXT_ZVE64X: u64 = 1u64 << 39;
+pub const RISCV_HWPROBE_EXT_ZVE64F: u64 = 1u64 << 40;
+pub const RISCV_HWPROBE_EXT_ZVE64D: u64 = 1u64 << 41;
+pub const RISCV_HWPROBE_EXT_ZIMOP: u64 = 1u64 << 42;
+pub const RISCV_HWPROBE_EXT_ZCA: u64 = 1u64 << 43;
+pub const RISCV_HWPROBE_EXT_ZCB: u64 = 1u64 << 44;
+pub const RISCV_HWPROBE_EXT_ZCD: u64 = 1u64 << 45;
+pub const RISCV_HWPROBE_EXT_ZCF: u64 = 1u64 << 46;
+pub const RISCV_HWPROBE_EXT_ZCMOP: u64 = 1u64 << 47;
+pub const RISCV_HWPROBE_EXT_ZAWRS: u64 = 1u64 << 48;
+pub const RISCV_HWPROBE_EXT_SUPM: u64 = 1u64 << 49;
+pub const RISCV_HWPROBE_EXT_ZICNTR: u64 = 1u64 << 50;
+pub const RISCV_HWPROBE_EXT_ZIHPM: u64 = 1u64 << 51;
+pub const RISCV_HWPROBE_EXT_ZFBFMIN: u64 = 1u64 << 52;
+pub const RISCV_HWPROBE_EXT_ZVFBFMIN: u64 = 1u64 << 53;
+pub const RISCV_HWPROBE_EXT_ZVFBFWMA: u64 = 1u64 << 54;
+pub const RISCV_HWPROBE_EXT_ZICBOM: u64 = 1u64 << 55;
+pub const RISCV_HWPROBE_EXT_ZAAMO: u64 = 1u64 << 56;
+pub const RISCV_HWPROBE_EXT_ZALRSC: u64 = 1u64 << 57;
+pub const RISCV_HWPROBE_EXT_ZABHA: u64 = 1u64 << 58;
+pub const RISCV_HWPROBE_EXT_ZALASR: u64 = 1u64 << 59;
+pub const RISCV_HWPROBE_EXT_ZICBOP: u64 = 1u64 << 60;
+pub const RISCV_HWPROBE_EXT_ZILSD: u64 = 1u64 << 61;
+pub const RISCV_HWPROBE_EXT_ZCLSD: u64 = 1u64 << 62;
+pub const RISCV_HWPROBE_EXT_ZICFILP: u64 = 1u64 << 63;
+
+pub const RISCV_HWPROBE_KEY_CPUPERF_0: i64 = 5;
+pub const RISCV_HWPROBE_MISALIGNED_UNKNOWN: u64 = 0;
+pub const RISCV_HWPROBE_MISALIGNED_EMULATED: u64 = 1;
+pub const RISCV_HWPROBE_MISALIGNED_SLOW: u64 = 2;
+pub const RISCV_HWPROBE_MISALIGNED_FAST: u64 = 3;
+pub const RISCV_HWPROBE_MISALIGNED_UNSUPPORTED: u64 = 4;
+pub const RISCV_HWPROBE_MISALIGNED_MASK: u64 = 7;
+pub const RISCV_HWPROBE_KEY_ZICBOZ_BLOCK_SIZE: i64 = 6;
+pub const RISCV_HWPROBE_KEY_HIGHEST_VIRT_ADDRESS: i64 = 7;
+pub const RISCV_HWPROBE_KEY_TIME_CSR_FREQ: i64 = 8;
+pub const RISCV_HWPROBE_KEY_MISALIGNED_SCALAR_PERF: i64 = 9;
+pub const RISCV_HWPROBE_MISALIGNED_SCALAR_UNKNOWN: u64 = 0;
+pub const RISCV_HWPROBE_MISALIGNED_SCALAR_EMULATED: u64 = 1;
+pub const RISCV_HWPROBE_MISALIGNED_SCALAR_SLOW: u64 = 2;
+pub const RISCV_HWPROBE_MISALIGNED_SCALAR_FAST: u64 = 3;
+pub const RISCV_HWPROBE_MISALIGNED_SCALAR_UNSUPPORTED: u64 = 4;
+pub const RISCV_HWPROBE_KEY_MISALIGNED_VECTOR_PERF: i64 = 10;
+pub const RISCV_HWPROBE_MISALIGNED_VECTOR_UNKNOWN: u64 = 0;
+pub const RISCV_HWPROBE_MISALIGNED_VECTOR_SLOW: u64 = 2;
+pub const RISCV_HWPROBE_MISALIGNED_VECTOR_FAST: u64 = 3;
+pub const RISCV_HWPROBE_MISALIGNED_VECTOR_UNSUPPORTED: u64 = 4;
+pub const RISCV_HWPROBE_KEY_VENDOR_EXT_THEAD_0: i64 = 11;
+pub const RISCV_HWPROBE_KEY_ZICBOM_BLOCK_SIZE: i64 = 12;
+pub const RISCV_HWPROBE_KEY_VENDOR_EXT_SIFIVE_0: i64 = 13;
+pub const RISCV_HWPROBE_KEY_VENDOR_EXT_MIPS_0: i64 = 14;
+pub const RISCV_HWPROBE_KEY_ZICBOP_BLOCK_SIZE: i64 = 15;
+pub const RISCV_HWPROBE_KEY_IMA_EXT_1: i64 = 16;
+pub const RISCV_HWPROBE_EXT_ZICFISS: u64 = 1u64 << 0;
+pub const RISCV_HWPROBE_EXT_ZICCLSM: u64 = 1u64 << 1;
+pub const RISCV_HWPROBE_EXT_ZICCAMOA: u64 = 1u64 << 2;
+pub const RISCV_HWPROBE_EXT_ZICCIF: u64 = 1u64 << 3;
+pub const RISCV_HWPROBE_EXT_ZICCRSE: u64 = 1u64 << 4;
+pub const RISCV_HWPROBE_EXT_ZA64RS: u64 = 1u64 << 5;
+
+/* Increase RISCV_HWPROBE_MAX_KEY when adding items. */
+
+/* Flags */
+pub const RISCV_HWPROBE_WHICH_CPUS: u64 = 1u64 << 0;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

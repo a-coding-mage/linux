@@ -1,0 +1,294 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Values of the PRId register used to match various MIPS CPU types. */
+
+pub const PRID_OPT_MASK: u32 = 0xff000000;
+pub const PRID_COMP_MASK: u32 = 0xff0000;
+pub const PRID_COMP_LEGACY: u32 = 0x000000;
+pub const PRID_COMP_MIPS: u32 = 0x010000;
+pub const PRID_COMP_BROADCOM: u32 = 0x020000;
+pub const PRID_COMP_ALCHEMY: u32 = 0x030000;
+pub const PRID_COMP_SIBYTE: u32 = 0x040000;
+pub const PRID_COMP_SANDCRAFT: u32 = 0x050000;
+pub const PRID_COMP_NXP: u32 = 0x060000;
+pub const PRID_COMP_TOSHIBA: u32 = 0x070000;
+pub const PRID_COMP_LSI: u32 = 0x080000;
+pub const PRID_COMP_LEXRA: u32 = 0x0b0000;
+pub const PRID_COMP_NETLOGIC: u32 = 0x0c0000;
+pub const PRID_COMP_CAVIUM: u32 = 0x0d0000;
+pub const PRID_COMP_LOONGSON: u32 = 0x140000;
+pub const PRID_COMP_INGENIC_13: u32 = 0x130000;
+pub const PRID_COMP_INGENIC_D0: u32 = 0xd00000;
+pub const PRID_COMP_INGENIC_D1: u32 = 0xd10000;
+pub const PRID_COMP_INGENIC_E1: u32 = 0xe10000;
+
+pub const PRID_IMP_MASK: u32 = 0xff00;
+pub const PRID_IMP_R2000: u32 = 0x0100;
+pub const PRID_IMP_AU1_REV1: u32 = 0x0100;
+pub const PRID_IMP_AU1_REV2: u32 = 0x0200;
+pub const PRID_IMP_R3000: u32 = 0x0200;
+pub const PRID_IMP_R6000: u32 = 0x0300;
+pub const PRID_IMP_R4000: u32 = 0x0400;
+pub const PRID_IMP_R6000A: u32 = 0x0600;
+pub const PRID_IMP_R10000: u32 = 0x0900;
+pub const PRID_IMP_R4300: u32 = 0x0b00;
+pub const PRID_IMP_VR41XX: u32 = 0x0c00;
+pub const PRID_IMP_R12000: u32 = 0x0e00;
+pub const PRID_IMP_R14000: u32 = 0x0f00;
+pub const PRID_IMP_R8000: u32 = 0x1000;
+pub const PRID_IMP_PR4450: u32 = 0x1200;
+pub const PRID_IMP_R4600: u32 = 0x2000;
+pub const PRID_IMP_R4700: u32 = 0x2100;
+pub const PRID_IMP_TX39: u32 = 0x2200;
+pub const PRID_IMP_R4640: u32 = 0x2200;
+pub const PRID_IMP_R4650: u32 = 0x2200;
+pub const PRID_IMP_R5000: u32 = 0x2300;
+pub const PRID_IMP_TX49: u32 = 0x2d00;
+pub const PRID_IMP_SONIC: u32 = 0x2400;
+pub const PRID_IMP_MAGIC: u32 = 0x2500;
+pub const PRID_IMP_RM7000: u32 = 0x2700;
+pub const PRID_IMP_NEVADA: u32 = 0x2800;
+pub const PRID_IMP_RM9000: u32 = 0x3400;
+pub const PRID_IMP_LOONGSON_32: u32 = 0x4200;
+pub const PRID_IMP_R5432: u32 = 0x5400;
+pub const PRID_IMP_R5500: u32 = 0x5500;
+pub const PRID_IMP_LOONGSON_64R: u32 = 0x6100;
+pub const PRID_IMP_LOONGSON_64C: u32 = 0x6300;
+pub const PRID_IMP_LOONGSON_64G: u32 = 0xc000;
+pub const PRID_IMP_UNKNOWN: u32 = 0xff00;
+
+pub const PRID_IMP_QEMU_GENERIC: u32 = 0x0000;
+pub const PRID_IMP_4KC: u32 = 0x8000;
+pub const PRID_IMP_5KC: u32 = 0x8100;
+pub const PRID_IMP_20KC: u32 = 0x8200;
+pub const PRID_IMP_4KEC: u32 = 0x8400;
+pub const PRID_IMP_4KSC: u32 = 0x8600;
+pub const PRID_IMP_25KF: u32 = 0x8800;
+pub const PRID_IMP_5KE: u32 = 0x8900;
+pub const PRID_IMP_4KECR2: u32 = 0x9000;
+pub const PRID_IMP_4KEMPR2: u32 = 0x9100;
+pub const PRID_IMP_4KSD: u32 = 0x9200;
+pub const PRID_IMP_24K: u32 = 0x9300;
+pub const PRID_IMP_34K: u32 = 0x9500;
+pub const PRID_IMP_24KE: u32 = 0x9600;
+pub const PRID_IMP_74K: u32 = 0x9700;
+pub const PRID_IMP_1004K: u32 = 0x9900;
+pub const PRID_IMP_1074K: u32 = 0x9a00;
+pub const PRID_IMP_M14KC: u32 = 0x9c00;
+pub const PRID_IMP_M14KEC: u32 = 0x9e00;
+pub const PRID_IMP_INTERAPTIV_UP: u32 = 0xa000;
+pub const PRID_IMP_INTERAPTIV_MP: u32 = 0xa100;
+pub const PRID_IMP_PROAPTIV_UP: u32 = 0xa200;
+pub const PRID_IMP_PROAPTIV_MP: u32 = 0xa300;
+pub const PRID_IMP_P6600: u32 = 0xa400;
+pub const PRID_IMP_M5150: u32 = 0xa700;
+pub const PRID_IMP_P5600: u32 = 0xa800;
+pub const PRID_IMP_I6400: u32 = 0xa900;
+pub const PRID_IMP_M6250: u32 = 0xab00;
+pub const PRID_IMP_I6500: u32 = 0xb000;
+
+pub const PRID_IMP_SB1: u32 = 0x0100;
+pub const PRID_IMP_SB1A: u32 = 0x1100;
+pub const PRID_IMP_SR71000: u32 = 0x0400;
+pub const PRID_IMP_BMIPS32_REV4: u32 = 0x4000;
+pub const PRID_IMP_BMIPS32_REV8: u32 = 0x8000;
+pub const PRID_IMP_BMIPS3300: u32 = 0x9000;
+pub const PRID_IMP_BMIPS3300_ALT: u32 = 0x9100;
+pub const PRID_IMP_BMIPS3300_BUG: u32 = 0x0000;
+pub const PRID_IMP_BMIPS43XX: u32 = 0xa000;
+pub const PRID_IMP_BMIPS5000: u32 = 0x5a00;
+pub const PRID_IMP_BMIPS5200: u32 = 0x5b00;
+pub const PRID_REV_BMIPS4380_LO: u32 = 0x0040;
+pub const PRID_REV_BMIPS4380_HI: u32 = 0x006f;
+
+pub const PRID_IMP_CAVIUM_CN38XX: u32 = 0x0000;
+pub const PRID_IMP_CAVIUM_CN31XX: u32 = 0x0100;
+pub const PRID_IMP_CAVIUM_CN30XX: u32 = 0x0200;
+pub const PRID_IMP_CAVIUM_CN58XX: u32 = 0x0300;
+pub const PRID_IMP_CAVIUM_CN56XX: u32 = 0x0400;
+pub const PRID_IMP_CAVIUM_CN50XX: u32 = 0x0600;
+pub const PRID_IMP_CAVIUM_CN52XX: u32 = 0x0700;
+pub const PRID_IMP_CAVIUM_CN63XX: u32 = 0x9000;
+pub const PRID_IMP_CAVIUM_CN68XX: u32 = 0x9100;
+pub const PRID_IMP_CAVIUM_CN66XX: u32 = 0x9200;
+pub const PRID_IMP_CAVIUM_CN61XX: u32 = 0x9300;
+pub const PRID_IMP_CAVIUM_CNF71XX: u32 = 0x9400;
+pub const PRID_IMP_CAVIUM_CN78XX: u32 = 0x9500;
+pub const PRID_IMP_CAVIUM_CN70XX: u32 = 0x9600;
+pub const PRID_IMP_CAVIUM_CN73XX: u32 = 0x9700;
+pub const PRID_IMP_CAVIUM_CNF75XX: u32 = 0x9800;
+pub const PRID_IMP_XBURST_REV1: u32 = 0x0200;
+pub const PRID_IMP_XBURST_REV2: u32 = 0x0100;
+pub const PRID_IMP_XBURST2: u32 = 0x2000;
+
+pub const PRID_IMP_NETLOGIC_XLR732: u32 = 0x0000;
+pub const PRID_IMP_NETLOGIC_XLR716: u32 = 0x0200;
+pub const PRID_IMP_NETLOGIC_XLR532: u32 = 0x0900;
+pub const PRID_IMP_NETLOGIC_XLR308: u32 = 0x0600;
+pub const PRID_IMP_NETLOGIC_XLR532C: u32 = 0x0800;
+pub const PRID_IMP_NETLOGIC_XLR516C: u32 = 0x0a00;
+pub const PRID_IMP_NETLOGIC_XLR508C: u32 = 0x0b00;
+pub const PRID_IMP_NETLOGIC_XLR308C: u32 = 0x0f00;
+pub const PRID_IMP_NETLOGIC_XLS608: u32 = 0x8000;
+pub const PRID_IMP_NETLOGIC_XLS408: u32 = 0x8800;
+pub const PRID_IMP_NETLOGIC_XLS404: u32 = 0x8c00;
+pub const PRID_IMP_NETLOGIC_XLS208: u32 = 0x8e00;
+pub const PRID_IMP_NETLOGIC_XLS204: u32 = 0x8f00;
+pub const PRID_IMP_NETLOGIC_XLS108: u32 = 0xce00;
+pub const PRID_IMP_NETLOGIC_XLS104: u32 = 0xcf00;
+pub const PRID_IMP_NETLOGIC_XLS616B: u32 = 0x4000;
+pub const PRID_IMP_NETLOGIC_XLS608B: u32 = 0x4a00;
+pub const PRID_IMP_NETLOGIC_XLS416B: u32 = 0x4400;
+pub const PRID_IMP_NETLOGIC_XLS412B: u32 = 0x4c00;
+pub const PRID_IMP_NETLOGIC_XLS408B: u32 = 0x4e00;
+pub const PRID_IMP_NETLOGIC_XLS404B: u32 = 0x4f00;
+pub const PRID_IMP_NETLOGIC_AU13XX: u32 = 0x8000;
+pub const PRID_IMP_NETLOGIC_XLP8XX: u32 = 0x1000;
+pub const PRID_IMP_NETLOGIC_XLP3XX: u32 = 0x1100;
+pub const PRID_IMP_NETLOGIC_XLP2XX: u32 = 0x1200;
+pub const PRID_IMP_NETLOGIC_XLP9XX: u32 = 0x1500;
+pub const PRID_IMP_NETLOGIC_XLP5XX: u32 = 0x1300;
+
+pub const PRID_REV_MASK: u32 = 0x00ff;
+pub const PRID_REV_TX4927: u32 = 0x0022;
+pub const PRID_REV_TX4937: u32 = 0x0030;
+pub const PRID_REV_R4400: u32 = 0x0040;
+pub const PRID_REV_R3000A: u32 = 0x0030;
+pub const PRID_REV_R3000: u32 = 0x0020;
+pub const PRID_REV_R2000A: u32 = 0x0010;
+pub const PRID_REV_TX3912: u32 = 0x0010;
+pub const PRID_REV_TX3922: u32 = 0x0030;
+pub const PRID_REV_TX3927: u32 = 0x0040;
+pub const PRID_REV_VR4111: u32 = 0x0050;
+pub const PRID_REV_VR4181: u32 = 0x0050;
+pub const PRID_REV_VR4121: u32 = 0x0060;
+pub const PRID_REV_VR4122: u32 = 0x0070;
+pub const PRID_REV_VR4181A: u32 = 0x0070;
+pub const PRID_REV_VR4130: u32 = 0x0080;
+pub const PRID_REV_34K_V1_0_2: u32 = 0x0022;
+pub const PRID_REV_LOONGSON1: u32 = 0x0020;
+pub const PRID_REV_LOONGSON2E: u32 = 0x0002;
+pub const PRID_REV_LOONGSON2F: u32 = 0x0003;
+pub const PRID_REV_LOONGSON2K_R1_0: u32 = 0x0000;
+pub const PRID_REV_LOONGSON2K_R1_1: u32 = 0x0001;
+pub const PRID_REV_LOONGSON2K_R1_2: u32 = 0x0002;
+pub const PRID_REV_LOONGSON2K_R1_3: u32 = 0x0003;
+pub const PRID_REV_LOONGSON3A_R1: u32 = 0x0005;
+pub const PRID_REV_LOONGSON3B_R1: u32 = 0x0006;
+pub const PRID_REV_LOONGSON3B_R2: u32 = 0x0007;
+pub const PRID_REV_LOONGSON3A_R2_0: u32 = 0x0008;
+pub const PRID_REV_LOONGSON3A_R3_0: u32 = 0x0009;
+pub const PRID_REV_LOONGSON3A_R2_1: u32 = 0x000c;
+pub const PRID_REV_LOONGSON3A_R3_1: u32 = 0x000d;
+
+pub const fn PRID_REV_ENCODE_44(ver: u32, rev: u32) -> u32 { (ver << 4) | rev }
+pub const fn PRID_REV_ENCODE_332(ver: u32, rev: u32, patch: u32) -> u32 { (ver << 5) | (rev << 2) | patch }
+
+pub const FPIR_IMP_MASK: u32 = 0xff00;
+pub const FPIR_IMP_NONE: u32 = 0x0000;
+
+#[repr(C)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum cpu_type_enum {
+    CPU_UNKNOWN,
+    CPU_R2000, CPU_R3000, CPU_R3000A, CPU_R3041, CPU_R3051, CPU_R3052, CPU_R3081, CPU_R3081E,
+    CPU_R4000PC, CPU_R4000SC, CPU_R4000MC, CPU_R4200, CPU_R4300, CPU_R4310, CPU_R4400PC, CPU_R4400SC, CPU_R4400MC, CPU_R4600, CPU_R4640, CPU_R4650, CPU_R4700, CPU_R5000, CPU_R5500, CPU_NEVADA, CPU_R10000, CPU_R12000, CPU_R14000, CPU_R16000, CPU_RM7000, CPU_SR71000, CPU_TX49XX,
+    CPU_4KC, CPU_4KEC, CPU_4KSC, CPU_24K, CPU_34K, CPU_1004K, CPU_74K, CPU_ALCHEMY, CPU_PR4450, CPU_BMIPS32, CPU_BMIPS3300, CPU_BMIPS4350, CPU_BMIPS4380, CPU_BMIPS5000, CPU_XBURST, CPU_LOONGSON32, CPU_M14KC, CPU_M14KEC, CPU_INTERAPTIV, CPU_P5600, CPU_PROAPTIV, CPU_1074K, CPU_M5150, CPU_I6400, CPU_P6600, CPU_M6250,
+    CPU_5KC, CPU_5KE, CPU_20KC, CPU_25KF, CPU_SB1, CPU_SB1A, CPU_LOONGSON2EF, CPU_LOONGSON64, CPU_CAVIUM_OCTEON, CPU_CAVIUM_OCTEON_PLUS, CPU_CAVIUM_OCTEON2, CPU_CAVIUM_OCTEON3, CPU_I6500,
+    CPU_QEMU_GENERIC, CPU_LAST,
+}
+
+pub const MIPS_CPU_ISA_II: u32 = 0x00000001;
+pub const MIPS_CPU_ISA_III: u32 = 0x00000002;
+pub const MIPS_CPU_ISA_IV: u32 = 0x00000004;
+pub const MIPS_CPU_ISA_V: u32 = 0x00000008;
+pub const MIPS_CPU_ISA_M32R1: u32 = 0x00000010;
+pub const MIPS_CPU_ISA_M32R2: u32 = 0x00000020;
+pub const MIPS_CPU_ISA_M64R1: u32 = 0x00000040;
+pub const MIPS_CPU_ISA_M64R2: u32 = 0x00000080;
+pub const MIPS_CPU_ISA_M32R5: u32 = 0x00000100;
+pub const MIPS_CPU_ISA_M64R5: u32 = 0x00000200;
+pub const MIPS_CPU_ISA_M32R6: u32 = 0x00000400;
+pub const MIPS_CPU_ISA_M64R6: u32 = 0x00000800;
+pub const MIPS_CPU_ISA_32BIT: u32 = MIPS_CPU_ISA_II | MIPS_CPU_ISA_M32R1 | MIPS_CPU_ISA_M32R2 | MIPS_CPU_ISA_M32R5 | MIPS_CPU_ISA_M32R6;
+pub const MIPS_CPU_ISA_64BIT: u32 = MIPS_CPU_ISA_III | MIPS_CPU_ISA_IV | MIPS_CPU_ISA_V | MIPS_CPU_ISA_M64R1 | MIPS_CPU_ISA_M64R2 | MIPS_CPU_ISA_M64R5 | MIPS_CPU_ISA_M64R6;
+
+/* CPU option encodings. */
+pub const MIPS_CPU_TLB: u64 = 1u64 << 0;
+pub const MIPS_CPU_4KEX: u64 = 1u64 << 1;
+pub const MIPS_CPU_3K_CACHE: u64 = 1u64 << 2;
+pub const MIPS_CPU_4K_CACHE: u64 = 1u64 << 3;
+pub const MIPS_CPU_FPU: u64 = 1u64 << 5;
+pub const MIPS_CPU_32FPR: u64 = 1u64 << 6;
+pub const MIPS_CPU_COUNTER: u64 = 1u64 << 7;
+pub const MIPS_CPU_WATCH: u64 = 1u64 << 8;
+pub const MIPS_CPU_DIVEC: u64 = 1u64 << 9;
+pub const MIPS_CPU_VCE: u64 = 1u64 << 10;
+pub const MIPS_CPU_CACHE_CDEX_P: u64 = 1u64 << 11;
+pub const MIPS_CPU_CACHE_CDEX_S: u64 = 1u64 << 12;
+pub const MIPS_CPU_MCHECK: u64 = 1u64 << 13;
+pub const MIPS_CPU_EJTAG: u64 = 1u64 << 14;
+pub const MIPS_CPU_NOFPUEX: u64 = 1u64 << 15;
+pub const MIPS_CPU_LLSC: u64 = 1u64 << 16;
+pub const MIPS_CPU_INCLUSIVE_CACHES: u64 = 1u64 << 17;
+pub const MIPS_CPU_PREFETCH: u64 = 1u64 << 18;
+pub const MIPS_CPU_VINT: u64 = 1u64 << 19;
+pub const MIPS_CPU_VEIC: u64 = 1u64 << 20;
+pub const MIPS_CPU_ULRI: u64 = 1u64 << 21;
+pub const MIPS_CPU_PCI: u64 = 1u64 << 22;
+pub const MIPS_CPU_RIXI: u64 = 1u64 << 23;
+pub const MIPS_CPU_MICROMIPS: u64 = 1u64 << 24;
+pub const MIPS_CPU_TLBINV: u64 = 1u64 << 25;
+pub const MIPS_CPU_SEGMENTS: u64 = 1u64 << 26;
+pub const MIPS_CPU_EVA: u64 = 1u64 << 27;
+pub const MIPS_CPU_HTW: u64 = 1u64 << 28;
+pub const MIPS_CPU_RIXIEX: u64 = 1u64 << 29;
+pub const MIPS_CPU_MAAR: u64 = 1u64 << 30;
+pub const MIPS_CPU_FRE: u64 = 1u64 << 31;
+pub const MIPS_CPU_RW_LLB: u64 = 1u64 << 32;
+pub const MIPS_CPU_LPA: u64 = 1u64 << 33;
+pub const MIPS_CPU_CDMM: u64 = 1u64 << 34;
+pub const MIPS_CPU_SP: u64 = 1u64 << 36;
+pub const MIPS_CPU_FTLB: u64 = 1u64 << 37;
+pub const MIPS_CPU_NAN_LEGACY: u64 = 1u64 << 38;
+pub const MIPS_CPU_NAN_2008: u64 = 1u64 << 39;
+pub const MIPS_CPU_VP: u64 = 1u64 << 40;
+pub const MIPS_CPU_LDPTE: u64 = 1u64 << 41;
+pub const MIPS_CPU_MVH: u64 = 1u64 << 42;
+pub const MIPS_CPU_EBASE_WG: u64 = 1u64 << 43;
+pub const MIPS_CPU_BADINSTR: u64 = 1u64 << 44;
+pub const MIPS_CPU_BADINSTRP: u64 = 1u64 << 45;
+pub const MIPS_CPU_CTXTC: u64 = 1u64 << 46;
+pub const MIPS_CPU_PERF: u64 = 1u64 << 47;
+pub const MIPS_CPU_GUESTCTL0EXT: u64 = 1u64 << 48;
+pub const MIPS_CPU_GUESTCTL1: u64 = 1u64 << 49;
+pub const MIPS_CPU_GUESTCTL2: u64 = 1u64 << 50;
+pub const MIPS_CPU_GUESTID: u64 = 1u64 << 51;
+pub const MIPS_CPU_DRG: u64 = 1u64 << 52;
+pub const MIPS_CPU_UFR: u64 = 1u64 << 53;
+pub const MIPS_CPU_SHARED_FTLB_RAM: u64 = 1u64 << 54;
+pub const MIPS_CPU_SHARED_FTLB_ENTRIES: u64 = 1u64 << 55;
+pub const MIPS_CPU_MT_PER_TC_PERF_COUNTERS: u64 = 1u64 << 56;
+pub const MIPS_CPU_MMID: u64 = 1u64 << 57;
+pub const MIPS_CPU_MM_SYSAD: u64 = 1u64 << 58;
+pub const MIPS_CPU_MM_FULL: u64 = 1u64 << 59;
+pub const MIPS_CPU_MAC_2008_ONLY: u64 = 1u64 << 60;
+pub const MIPS_CPU_FTLBPAREX: u64 = 1u64 << 61;
+pub const MIPS_CPU_GSEXCEX: u64 = 1u64 << 62;
+
+pub const MIPS_ASE_MIPS16: u32 = 0x00000001;
+pub const MIPS_ASE_MDMX: u32 = 0x00000002;
+pub const MIPS_ASE_MIPS3D: u32 = 0x00000004;
+pub const MIPS_ASE_SMARTMIPS: u32 = 0x00000008;
+pub const MIPS_ASE_DSP: u32 = 0x00000010;
+pub const MIPS_ASE_MIPSMT: u32 = 0x00000020;
+pub const MIPS_ASE_DSP2P: u32 = 0x00000040;
+pub const MIPS_ASE_VZ: u32 = 0x00000080;
+pub const MIPS_ASE_MSA: u32 = 0x00000100;
+pub const MIPS_ASE_DSP3: u32 = 0x00000200;
+pub const MIPS_ASE_MIPS16E2: u32 = 0x00000400;
+pub const MIPS_ASE_LOONGSON_MMI: u32 = 0x00000800;
+pub const MIPS_ASE_LOONGSON_CAM: u32 = 0x00001000;
+pub const MIPS_ASE_LOONGSON_EXT: u32 = 0x00002000;
+pub const MIPS_ASE_LOONGSON_EXT2: u32 = 0x00004000;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

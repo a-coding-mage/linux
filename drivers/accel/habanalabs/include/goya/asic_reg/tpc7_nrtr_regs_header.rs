@@ -1,0 +1,122 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2018 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+/*
+ *****************************************
+ *   TPC7_NRTR (Prototype: IF_NRTR)
+ *****************************************
+ */
+
+pub const mmTPC7_NRTR_HBW_MAX_CRED: u32 = 0xFC0100;
+pub const mmTPC7_NRTR_LBW_MAX_CRED: u32 = 0xFC0120;
+pub const mmTPC7_NRTR_DBG_E_ARB: u32 = 0xFC0300;
+pub const mmTPC7_NRTR_DBG_W_ARB: u32 = 0xFC0304;
+pub const mmTPC7_NRTR_DBG_N_ARB: u32 = 0xFC0308;
+pub const mmTPC7_NRTR_DBG_S_ARB: u32 = 0xFC030C;
+pub const mmTPC7_NRTR_DBG_L_ARB: u32 = 0xFC0310;
+pub const mmTPC7_NRTR_DBG_E_ARB_MAX: u32 = 0xFC0320;
+pub const mmTPC7_NRTR_DBG_W_ARB_MAX: u32 = 0xFC0324;
+pub const mmTPC7_NRTR_DBG_N_ARB_MAX: u32 = 0xFC0328;
+pub const mmTPC7_NRTR_DBG_S_ARB_MAX: u32 = 0xFC032C;
+pub const mmTPC7_NRTR_DBG_L_ARB_MAX: u32 = 0xFC0330;
+pub const mmTPC7_NRTR_SPLIT_COEF_0: u32 = 0xFC0400;
+pub const mmTPC7_NRTR_SPLIT_COEF_1: u32 = 0xFC0404;
+pub const mmTPC7_NRTR_SPLIT_COEF_2: u32 = 0xFC0408;
+pub const mmTPC7_NRTR_SPLIT_COEF_3: u32 = 0xFC040C;
+pub const mmTPC7_NRTR_SPLIT_COEF_4: u32 = 0xFC0410;
+pub const mmTPC7_NRTR_SPLIT_COEF_5: u32 = 0xFC0414;
+pub const mmTPC7_NRTR_SPLIT_COEF_6: u32 = 0xFC0418;
+pub const mmTPC7_NRTR_SPLIT_COEF_7: u32 = 0xFC041C;
+pub const mmTPC7_NRTR_SPLIT_COEF_8: u32 = 0xFC0420;
+pub const mmTPC7_NRTR_SPLIT_COEF_9: u32 = 0xFC0424;
+pub const mmTPC7_NRTR_SPLIT_CFG: u32 = 0xFC0440;
+pub const mmTPC7_NRTR_SPLIT_RD_SAT: u32 = 0xFC0444;
+pub const mmTPC7_NRTR_SPLIT_RD_RST_TOKEN: u32 = 0xFC0448;
+pub const mmTPC7_NRTR_SPLIT_RD_TIMEOUT_0: u32 = 0xFC044C;
+pub const mmTPC7_NRTR_SPLIT_RD_TIMEOUT_1: u32 = 0xFC0450;
+pub const mmTPC7_NRTR_SPLIT_WR_SAT: u32 = 0xFC0454;
+pub const mmTPC7_NRTR_WPLIT_WR_TST_TOLEN: u32 = 0xFC0458;
+pub const mmTPC7_NRTR_SPLIT_WR_TIMEOUT_0: u32 = 0xFC045C;
+pub const mmTPC7_NRTR_SPLIT_WR_TIMEOUT_1: u32 = 0xFC0460;
+pub const mmTPC7_NRTR_HBW_RANGE_HIT: u32 = 0xFC0470;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_L_0: u32 = 0xFC0480;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_L_1: u32 = 0xFC0484;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_L_2: u32 = 0xFC0488;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_L_3: u32 = 0xFC048C;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_L_4: u32 = 0xFC0490;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_L_5: u32 = 0xFC0494;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_L_6: u32 = 0xFC0498;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_L_7: u32 = 0xFC049C;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_H_0: u32 = 0xFC04A0;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_H_1: u32 = 0xFC04A4;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_H_2: u32 = 0xFC04A8;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_H_3: u32 = 0xFC04AC;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_H_4: u32 = 0xFC04B0;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_H_5: u32 = 0xFC04B4;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_H_6: u32 = 0xFC04B8;
+pub const mmTPC7_NRTR_HBW_RANGE_MASK_H_7: u32 = 0xFC04BC;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_L_0: u32 = 0xFC04C0;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_L_1: u32 = 0xFC04C4;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_L_2: u32 = 0xFC04C8;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_L_3: u32 = 0xFC04CC;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_L_4: u32 = 0xFC04D0;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_L_5: u32 = 0xFC04D4;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_L_6: u32 = 0xFC04D8;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_L_7: u32 = 0xFC04DC;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_H_0: u32 = 0xFC04E0;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_H_1: u32 = 0xFC04E4;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_H_2: u32 = 0xFC04E8;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_H_3: u32 = 0xFC04EC;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_H_4: u32 = 0xFC04F0;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_H_5: u32 = 0xFC04F4;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_H_6: u32 = 0xFC04F8;
+pub const mmTPC7_NRTR_HBW_RANGE_BASE_H_7: u32 = 0xFC04FC;
+pub const mmTPC7_NRTR_LBW_RANGE_HIT: u32 = 0xFC0500;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_0: u32 = 0xFC0510;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_1: u32 = 0xFC0514;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_2: u32 = 0xFC0518;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_3: u32 = 0xFC051C;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_4: u32 = 0xFC0520;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_5: u32 = 0xFC0524;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_6: u32 = 0xFC0528;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_7: u32 = 0xFC052C;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_8: u32 = 0xFC0530;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_9: u32 = 0xFC0534;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_10: u32 = 0xFC0538;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_11: u32 = 0xFC053C;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_12: u32 = 0xFC0540;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_13: u32 = 0xFC0544;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_14: u32 = 0xFC0548;
+pub const mmTPC7_NRTR_LBW_RANGE_MASK_15: u32 = 0xFC054C;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_0: u32 = 0xFC0550;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_1: u32 = 0xFC0554;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_2: u32 = 0xFC0558;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_3: u32 = 0xFC055C;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_4: u32 = 0xFC0560;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_5: u32 = 0xFC0564;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_6: u32 = 0xFC0568;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_7: u32 = 0xFC056C;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_8: u32 = 0xFC0570;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_9: u32 = 0xFC0574;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_10: u32 = 0xFC0578;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_11: u32 = 0xFC057C;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_12: u32 = 0xFC0580;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_13: u32 = 0xFC0584;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_14: u32 = 0xFC0588;
+pub const mmTPC7_NRTR_LBW_RANGE_BASE_15: u32 = 0xFC058C;
+pub const mmTPC7_NRTR_RGLTR: u32 = 0xFC0590;
+pub const mmTPC7_NRTR_RGLTR_WR_RESULT: u32 = 0xFC0594;
+pub const mmTPC7_NRTR_RGLTR_RD_RESULT: u32 = 0xFC0598;
+pub const mmTPC7_NRTR_SCRAMB_EN: u32 = 0xFC0600;
+pub const mmTPC7_NRTR_NON_LIN_SCRAMB: u32 = 0xFC0604;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

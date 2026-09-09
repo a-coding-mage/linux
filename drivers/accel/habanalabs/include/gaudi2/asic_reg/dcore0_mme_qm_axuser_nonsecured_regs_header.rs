@@ -1,0 +1,58 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2020 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+/*
+ *****************************************
+ *   DCORE0_MME_QM_AXUSER_NONSECURED
+ *   (Prototype: AXUSER)
+ *****************************************
+ */
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_ASID: u32 = 0x40CAB80;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_MMU_BP: u32 = 0x40CAB84;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_STRONG_ORDER: u32 = 0x40CAB88;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_NO_SNOOP: u32 = 0x40CAB8C;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_WR_REDUCTION: u32 = 0x40CAB90;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_RD_ATOMIC: u32 = 0x40CAB94;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_QOS: u32 = 0x40CAB98;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_RSVD: u32 = 0x40CAB9C;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_EMEM_CPAGE: u32 = 0x40CABA0;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_CORE: u32 = 0x40CABA4;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_E2E_COORD: u32 = 0x40CABA8;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_WR_OVRD_LO: u32 = 0x40CABB0;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_WR_OVRD_HI: u32 = 0x40CABB4;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_RD_OVRD_LO: u32 = 0x40CABB8;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_HB_RD_OVRD_HI: u32 = 0x40CABBC;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_LB_COORD: u32 = 0x40CABC0;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_LB_LOCK: u32 = 0x40CABC4;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_LB_RSVD: u32 = 0x40CABC8;
+
+pub const mmDCORE0_MME_QM_AXUSER_NONSECURED_LB_OVRD: u32 = 0x40CABCC;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

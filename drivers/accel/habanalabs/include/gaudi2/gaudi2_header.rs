@@ -1,0 +1,111 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2020-2022 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+pub const SRAM_CFG_BAR_ID: u32 = 0;
+pub const MSIX_BAR_ID: u32 = 2;
+pub const DRAM_BAR_ID: u32 = 4;
+
+/* Refers to CFG_REGION_SIZE, BAR0_RSRVD_SIZE and SRAM_SIZE */
+pub const CFG_BAR_SIZE: u64 = 0x10000000;
+pub const MSIX_BAR_SIZE: u64 = 0x4000;
+
+pub const CFG_BASE: u64 = 0x1000007FF8000000;
+pub const CFG_SIZE: u64 = 0x8000000;
+pub const CFG_REGION_SIZE: u64 = 0xC000000;
+
+pub const STM_FLASH_BASE_ADDR: u64 = 0x1000007FF4000000;
+pub const STM_FLASH_ALIGNED_OFF: u64 = 0x4000000;
+pub const STM_FLASH_SIZE: u64 = 0x2000000;
+
+pub const SPI_FLASH_BASE_ADDR: u64 = 0x1000007FF6000000;
+pub const SPI_FLASH_SIZE: u64 = 0x1000000;
+
+pub const SCRATCHPAD_SRAM_ADDR: u64 = 0x1000007FF7FE0000;
+pub const SCRATCHPAD_SRAM_SIZE: u64 = 0x10000;
+
+pub const PCIE_FW_SRAM_ADDR: u64 = 0x1000007FF7FF0000;
+pub const PCIE_FW_SRAM_SIZE: u64 = 0x8000;
+
+pub const BAR0_RSRVD_BASE_ADDR: u64 = 0x1000FFFFFC000000;
+pub const BAR0_RSRVD_SIZE: u64 = 0x1000000;
+
+pub const SRAM_BASE_ADDR: u64 = 0x1000FFFFFD000000;
+pub const SRAM_SIZE: u64 = 0x3000000;
+
+pub const DRAM_PHYS_BASE: u64 = 0x1001000000000000;
+
+/* every hint address is masked accordingly */
+pub const DRAM_VA_HINT_MASK: u64 = 0xFFFFFFFFFFFF;
+
+pub const HOST_PHYS_BASE_0: u64 = 0x0000000000000000;
+pub const HOST_PHYS_SIZE_0: u64 = 0x0100000000000000;
+
+pub const HOST_PHYS_BASE_1: u64 = 0xFF00000000000000;
+pub const HOST_PHYS_SIZE_1: u64 = 0x0100000000000000;
+
+pub const RESERVED_VA_RANGE_FOR_ARC_ON_HBM_START: u64 = 0x1001500000000000;
+pub const RESERVED_VA_RANGE_FOR_ARC_ON_HBM_END: u64 = 0x10016FFFFFFFFFFF;
+
+pub const RESERVED_VA_FOR_VIRTUAL_MSIX_DOORBELL_START: u64 = 0xFFF077FFFFFF0000;
+pub const RESERVED_VA_FOR_VIRTUAL_MSIX_DOORBELL_END: u64 = 0xFFF077FFFFFFFFFF;
+
+pub const RESERVED_VA_RANGE_FOR_ARC_ON_HOST_START: u64 = 0xFFF0780000000000;
+pub const RESERVED_VA_RANGE_FOR_ARC_ON_HOST_END: u64 = 0xFFF07FFFFFFFFFFF;
+
+pub const RESERVED_VA_RANGE_FOR_ARC_ON_HOST_HPAGE_START: u64 = 0xFFF0F80000000000;
+pub const RESERVED_VA_RANGE_FOR_ARC_ON_HOST_HPAGE_END: u64 = 0xFFF0FFFFFFFFFFFF;
+
+pub const RESERVED_MSIX_UNEXPECTED_USER_ERROR_INTERRUPT: u32 = 127;
+pub const GAUDI2_MSIX_ENTRIES: u32 = 128;
+pub const QMAN_PQ_ENTRY_SIZE: u32 = 16;
+pub const MAX_ASID: u32 = 2;
+pub const NUM_ARC_CPUS: u32 = 69;
+
+/* Every ARC cpu in the system contains a single DCCM block
+ * except MME and Scheduler ARCs which contain 2 DCCM blocks
+ */
+pub const ARC_DCCM_BLOCK_SIZE: u32 = 0x8000;
+
+pub const NUM_OF_DCORES: u32 = 4;
+pub const NUM_OF_SFT: u32 = 4;
+pub const NUM_OF_PSOC_ARC: u32 = 2;
+pub const NUM_OF_SCHEDULER_ARC: u32 = 6;
+
+pub const NUM_OF_PQ_PER_QMAN: u32 = 4;
+pub const NUM_OF_CQ_PER_QMAN: u32 = 5;
+pub const NUM_OF_CP_PER_QMAN: u32 = 5;
+pub const NUM_OF_EDMA_PER_DCORE: u32 = 2;
+pub const NUM_OF_HIF_PER_DCORE: u32 = 4;
+pub const NUM_OF_PDMA: u32 = 2;
+pub const NUM_OF_TPC_PER_DCORE: u32 = 6;
+pub const NUM_DCORE0_TPC: u32 = 7;
+pub const NUM_DCORE1_TPC: u32 = NUM_OF_TPC_PER_DCORE;
+pub const NUM_DCORE2_TPC: u32 = NUM_OF_TPC_PER_DCORE;
+pub const NUM_DCORE3_TPC: u32 = NUM_OF_TPC_PER_DCORE;
+pub const NUM_OF_DEC_PER_DCORE: u32 = 2;
+pub const NUM_OF_ROT: u32 = 2;
+pub const NUM_OF_HMMU_PER_DCORE: u32 = 4;
+pub const NUM_OF_MME_PER_DCORE: u32 = 1;
+pub const NUM_OF_MME_SBTE_PER_DCORE: u32 = 5;
+pub const NUM_OF_MME_WB_PER_DCORE: u32 = 2;
+pub const NUM_OF_RTR_PER_DCORE: u32 = 8;
+pub const NUM_OF_VDEC_PER_DCORE: u32 = 2;
+pub const NUM_OF_IF_RTR_PER_SFT: u32 = 3;
+pub const NUM_OF_PCIE_VDEC: u32 = 2;
+pub const NUM_OF_ARC_FARMS_ARC: u32 = 4;
+pub const NUM_OF_XBAR: u32 = 4;
+
+pub const TPC_NUM_OF_KERNEL_TENSORS: u32 = 16;
+pub const TPC_NUM_OF_QM_TENSORS: u32 = 16;
+pub const MME_NUM_OF_LFSR_SEEDS: u32 = 256;
+pub const NIC_NUMBER_OF_MACROS: u32 = 12;
+pub const NIC_NUMBER_OF_QM_PER_MACRO: u32 = 2;
+pub const NIC_NUMBER_OF_ENGINES: u32 = NIC_NUMBER_OF_MACROS * 2;
+pub const NIC_MAX_NUMBER_OF_PORTS: u32 = NIC_NUMBER_OF_ENGINES * 2;
+pub const DEVICE_CACHE_LINE_SIZE: u32 = 128;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

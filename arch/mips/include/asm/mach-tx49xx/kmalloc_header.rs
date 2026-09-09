@@ -1,0 +1,8 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+// C header guard: __ASM_MACH_TX49XX_KMALLOC_H
+
+// #define ARCH_DMA_MINALIGN L1_CACHE_BYTES
+pub const ARCH_DMA_MINALIGN: usize = L1_CACHE_BYTES;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

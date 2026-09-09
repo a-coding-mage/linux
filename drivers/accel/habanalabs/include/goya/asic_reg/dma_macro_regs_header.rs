@@ -1,0 +1,101 @@
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright 2016-2018 HabanaLabs, Ltd.
+ * All Rights Reserved.
+ *
+ */
+
+/************************************
+ ** This is an auto-generated file **
+ **       DO NOT EDIT BELOW        **
+ ************************************/
+
+/*
+ *****************************************
+ *   DMA_MACRO (Prototype: DMA_MACRO)
+ *****************************************
+ */
+
+pub const mmDMA_MACRO_LBW_RANGE_HIT_BLOCK: u32 = 0x4B0000;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_0: u32 = 0x4B0004;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_1: u32 = 0x4B0008;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_2: u32 = 0x4B000C;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_3: u32 = 0x4B0010;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_4: u32 = 0x4B0014;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_5: u32 = 0x4B0018;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_6: u32 = 0x4B001C;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_7: u32 = 0x4B0020;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_8: u32 = 0x4B0024;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_9: u32 = 0x4B0028;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_10: u32 = 0x4B002C;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_11: u32 = 0x4B0030;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_12: u32 = 0x4B0034;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_13: u32 = 0x4B0038;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_14: u32 = 0x4B003C;
+pub const mmDMA_MACRO_LBW_RANGE_MASK_15: u32 = 0x4B0040;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_0: u32 = 0x4B0044;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_1: u32 = 0x4B0048;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_2: u32 = 0x4B004C;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_3: u32 = 0x4B0050;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_4: u32 = 0x4B0054;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_5: u32 = 0x4B0058;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_6: u32 = 0x4B005C;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_7: u32 = 0x4B0060;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_8: u32 = 0x4B0064;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_9: u32 = 0x4B0068;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_10: u32 = 0x4B006C;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_11: u32 = 0x4B0070;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_12: u32 = 0x4B0074;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_13: u32 = 0x4B0078;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_14: u32 = 0x4B007C;
+pub const mmDMA_MACRO_LBW_RANGE_BASE_15: u32 = 0x4B0080;
+pub const mmDMA_MACRO_HBW_RANGE_HIT_BLOCK: u32 = 0x4B0084;
+
+pub const mmDMA_MACRO_HBW_RANGE_MASK_49_32_0: u32 = 0x4B00A8;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_49_32_1: u32 = 0x4B00AC;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_49_32_2: u32 = 0x4B00B0;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_49_32_3: u32 = 0x4B00B4;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_49_32_4: u32 = 0x4B00B8;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_49_32_5: u32 = 0x4B00BC;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_49_32_6: u32 = 0x4B00C0;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_49_32_7: u32 = 0x4B00C4;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_31_0_0: u32 = 0x4B00C8;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_31_0_1: u32 = 0x4B00CC;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_31_0_2: u32 = 0x4B00D0;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_31_0_3: u32 = 0x4B00D4;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_31_0_4: u32 = 0x4B00D8;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_31_0_5: u32 = 0x4B00DC;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_31_0_6: u32 = 0x4B00E0;
+pub const mmDMA_MACRO_HBW_RANGE_MASK_31_0_7: u32 = 0x4B00E4;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_49_32_0: u32 = 0x4B00E8;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_49_32_1: u32 = 0x4B00EC;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_49_32_2: u32 = 0x4B00F0;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_49_32_3: u32 = 0x4B00F4;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_49_32_4: u32 = 0x4B00F8;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_49_32_5: u32 = 0x4B00FC;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_49_32_6: u32 = 0x4B0100;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_49_32_7: u32 = 0x4B0104;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_31_0_0: u32 = 0x4B0108;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_31_0_1: u32 = 0x4B010C;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_31_0_2: u32 = 0x4B0110;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_31_0_3: u32 = 0x4B0114;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_31_0_4: u32 = 0x4B0118;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_31_0_5: u32 = 0x4B011C;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_31_0_6: u32 = 0x4B0120;
+pub const mmDMA_MACRO_HBW_RANGE_BASE_31_0_7: u32 = 0x4B0124;
+
+pub const mmDMA_MACRO_WRITE_EN: u32 = 0x4B0128;
+pub const mmDMA_MACRO_WRITE_CREDIT: u32 = 0x4B012C;
+pub const mmDMA_MACRO_READ_EN: u32 = 0x4B0130;
+pub const mmDMA_MACRO_READ_CREDIT: u32 = 0x4B0134;
+pub const mmDMA_MACRO_SRAM_BUSY: u32 = 0x4B0138;
+pub const mmDMA_MACRO_RAZWI_LBW_WT_VLD: u32 = 0x4B013C;
+pub const mmDMA_MACRO_RAZWI_LBW_WT_ID: u32 = 0x4B0140;
+pub const mmDMA_MACRO_RAZWI_LBW_RD_VLD: u32 = 0x4B0144;
+pub const mmDMA_MACRO_RAZWI_LBW_RD_ID: u32 = 0x4B0148;
+pub const mmDMA_MACRO_RAZWI_HBW_WT_VLD: u32 = 0x4B014C;
+pub const mmDMA_MACRO_RAZWI_HBW_WT_ID: u32 = 0x4B0150;
+pub const mmDMA_MACRO_RAZWI_HBW_RD_VLD: u32 = 0x4B0154;
+pub const mmDMA_MACRO_RAZWI_HBW_RD_ID: u32 = 0x4B0158;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

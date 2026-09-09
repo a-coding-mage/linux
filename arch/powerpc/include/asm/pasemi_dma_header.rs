@@ -1,0 +1,56 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Hardware register layout and descriptor formats for the PA Semi DMA engine. */
+
+#[repr(C)]
+pub struct pasdma_status { pub rx_sta: [u64; 64], pub tx_sta: [u64; 20] }
+
+pub const PAS_DMA_CAP_TXCH: u32 = 0x44;
+pub const PAS_DMA_CAP_RXCH: u32 = 0x48;
+pub const PAS_DMA_CAP_IFI: u32 = 0x4c;
+pub const PAS_DMA_COM_TXCMD: u32 = 0x100;
+pub const PAS_DMA_COM_TXSTA: u32 = 0x104;
+pub const PAS_DMA_COM_RXCMD: u32 = 0x108;
+pub const PAS_DMA_COM_RXSTA: u32 = 0x10c;
+pub const PAS_DMA_COM_CFG: u32 = 0x114;
+pub const PAS_DMA_TXF_SFLG0: u32 = 0x140;
+pub const PAS_DMA_TXF_SFLG1: u32 = 0x144;
+pub const PAS_DMA_TXF_CFLG0: u32 = 0x148;
+pub const PAS_DMA_TXF_CFLG1: u32 = 0x14c;
+
+macro_rules! c { ($n:ident, $v:expr) => { pub const $n: u64 = $v; }; }
+macro_rules! reg { ($n:ident, $b:expr, $s:ident, $x:ident) => { #[inline] pub const fn $n($x: u64) -> u64 { ($b + $x * $s) as u64 } }; }
+macro_rules! field { ($n:ident, $m:expr, $s:expr) => { pub const $n: u64 = $m; pub const $s: u32 = $s; }; }
+
+c!(PAS_DMA_CAP_TXCH_TCHN_M,0x00ff0000); c!(PAS_DMA_CAP_TXCH_TCHN_S,16); c!(PAS_DMA_CAP_RXCH_RCHN_M,0x00ff0000); c!(PAS_DMA_CAP_RXCH_RCHN_S,16);
+c!(PAS_DMA_CAP_IFI_IOFF_M,0xff000000); c!(PAS_DMA_CAP_IFI_IOFF_S,24); c!(PAS_DMA_CAP_IFI_NIN_M,0x00ff0000); c!(PAS_DMA_CAP_IFI_NIN_S,16);
+c!(PAS_DMA_COM_TXCMD_EN,1); c!(PAS_DMA_COM_TXSTA_ACT,1); c!(PAS_DMA_COM_RXCMD_EN,1); c!(PAS_DMA_COM_RXSTA_ACT,1);
+
+pub const _PAS_DMA_RXINT_STRIDE:u64=0x20;
+reg!(PAS_DMA_RXINT_RCMDSTA,0x200,_PAS_DMA_RXINT_STRIDE,i); reg!(PAS_DMA_RXINT_CFG,0x204,_PAS_DMA_RXINT_STRIDE,i); reg!(PAS_DMA_RXINT_INCR,0x210,_PAS_DMA_RXINT_STRIDE,i); reg!(PAS_DMA_RXINT_BASEL,0x218,_PAS_DMA_RXINT_STRIDE,i); reg!(PAS_DMA_RXINT_BASEU,0x21c,_PAS_DMA_RXINT_STRIDE,i);
+c!(PAS_DMA_RXINT_RCMDSTA_EN,1);c!(PAS_DMA_RXINT_RCMDSTA_ST,2);c!(PAS_DMA_RXINT_RCMDSTA_MBT,8);c!(PAS_DMA_RXINT_RCMDSTA_MDR,0x10);c!(PAS_DMA_RXINT_RCMDSTA_MOO,0x20);c!(PAS_DMA_RXINT_RCMDSTA_MBP,0x40);c!(PAS_DMA_RXINT_RCMDSTA_BT,0x800);c!(PAS_DMA_RXINT_RCMDSTA_DR,0x1000);c!(PAS_DMA_RXINT_RCMDSTA_OO,0x2000);c!(PAS_DMA_RXINT_RCMDSTA_BP,0x4000);c!(PAS_DMA_RXINT_RCMDSTA_TB,0x8000);c!(PAS_DMA_RXINT_RCMDSTA_ACT,0x10000);c!(PAS_DMA_RXINT_RCMDSTA_DROPS_M,0xfffe0000);c!(PAS_DMA_RXINT_RCMDSTA_DROPS_S,17);
+c!(PAS_DMA_RXINT_CFG_RBP,0x80000000);c!(PAS_DMA_RXINT_CFG_ITRR,0x40000000);c!(PAS_DMA_RXINT_CFG_DHL_M,0x07000000);c!(PAS_DMA_RXINT_CFG_DHL_S,24);c!(PAS_DMA_RXINT_CFG_ITR,0x00400000);c!(PAS_DMA_RXINT_CFG_LW,0x00200000);c!(PAS_DMA_RXINT_CFG_L2,0x00100000);c!(PAS_DMA_RXINT_CFG_HEN,0x00080000);c!(PAS_DMA_RXINT_CFG_WIF,2);c!(PAS_DMA_RXINT_CFG_WIL,1);
+#[inline] pub const fn PAS_DMA_RXINT_CFG_DHL(x:u64)->u64{(x<<24)&0x07000000} #[inline] pub const fn PAS_DMA_RXINT_INCR_INCR(x:u64)->u64{x&0xffff} #[inline] pub const fn PAS_DMA_RXINT_BASEL_BRBL(x:u64)->u64{x&!0x3f} #[inline] pub const fn PAS_DMA_RXINT_BASEU_BRBH(x:u64)->u64{x&0xfff} pub const PAS_DMA_RXINT_BASEU_SIZ_M:u64=0x3fff0000;pub const PAS_DMA_RXINT_BASEU_SIZ_S:u32=16; #[inline]pub const fn PAS_DMA_RXINT_BASEU_SIZ(x:u64)->u64{(x<<16)&0x3fff0000}
+
+pub const _PAS_DMA_TXCHAN_STRIDE:u64=0x20; pub const _PAS_DMA_RXCHAN_STRIDE:u64=0x20;
+reg!(PAS_DMA_TXCHAN_TCMDSTA,0x300,_PAS_DMA_TXCHAN_STRIDE,c);reg!(PAS_DMA_TXCHAN_CFG,0x304,_PAS_DMA_TXCHAN_STRIDE,c);reg!(PAS_DMA_TXCHAN_INCR,0x310,_PAS_DMA_TXCHAN_STRIDE,c);reg!(PAS_DMA_TXCHAN_BASEL,0x318,_PAS_DMA_TXCHAN_STRIDE,c);reg!(PAS_DMA_TXCHAN_BASEU,0x31c,_PAS_DMA_TXCHAN_STRIDE,c);
+reg!(PAS_DMA_RXCHAN_CCMDSTA,0x800,_PAS_DMA_RXCHAN_STRIDE,c);reg!(PAS_DMA_RXCHAN_CFG,0x804,_PAS_DMA_RXCHAN_STRIDE,c);reg!(PAS_DMA_RXCHAN_INCR,0x810,_PAS_DMA_RXCHAN_STRIDE,c);reg!(PAS_DMA_RXCHAN_BASEL,0x818,_PAS_DMA_RXCHAN_STRIDE,c);reg!(PAS_DMA_RXCHAN_BASEU,0x81c,_PAS_DMA_RXCHAN_STRIDE,c);
+
+// Descriptor and status bit fields.
+c!(PAS_STATUS_PCNT_M,0xffff);c!(PAS_STATUS_DCNT_M,0xffff0000);c!(PAS_STATUS_BPCNT_M,0x0000ffff00000000);c!(PAS_STATUS_CAUSE_M,0xf000000000000000);c!(PAS_STATUS_TIMER,0x1000000000000000);c!(PAS_STATUS_ERROR,0x2000000000000000);c!(PAS_STATUS_SOFT,0x4000000000000000);c!(PAS_STATUS_INT,0x8000000000000000);
+c!(PAS_IOB_COM_PKTHDRCNT,0x120);c!(PAS_IOB_COM_PKTHDRCNT_PKTHDR1_M,0x0fff0000);c!(PAS_IOB_COM_PKTHDRCNT_PKTHDR0_M,0xfff);
+reg!(PAS_IOB_DMA_RXCH_CFG,0x1100,4,i);reg!(PAS_IOB_DMA_TXCH_CFG,0x1200,4,i);reg!(PAS_IOB_DMA_RXCH_STAT,0x1300,4,i);reg!(PAS_IOB_DMA_TXCH_STAT,0x1400,4,i);reg!(PAS_IOB_DMA_RXCH_RESET,0x1500,4,i);reg!(PAS_IOB_DMA_TXCH_RESET,0x1600,4,i);
+c!(PAS_IOB_DMA_RXCH_CFG_CNTTH_M,0xfff);c!(PAS_IOB_DMA_TXCH_CFG_CNTTH_M,0xfff);c!(PAS_IOB_DMA_RXCH_STAT_INTGEN,0x1000);c!(PAS_IOB_DMA_TXCH_STAT_INTGEN,0x1000);c!(PAS_IOB_DMA_RXCH_RESET_PCNT_M,0xffff0000);c!(PAS_IOB_DMA_TXCH_RESET_PCNT_M,0xffff0000);c!(PAS_IOB_DMA_RXCH_RESET_PCNTRST,0x20);c!(PAS_IOB_DMA_RXCH_RESET_DCNTRST,0x10);c!(PAS_IOB_DMA_RXCH_RESET_TINTC,8);c!(PAS_IOB_DMA_RXCH_RESET_DINTC,4);c!(PAS_IOB_DMA_RXCH_RESET_SINTC,2);c!(PAS_IOB_DMA_RXCH_RESET_PINTC,1);c!(PAS_IOB_DMA_TXCH_RESET_PCNTRST,0x20);c!(PAS_IOB_DMA_TXCH_RESET_DCNTRST,0x10);c!(PAS_IOB_DMA_TXCH_RESET_TINTC,8);c!(PAS_IOB_DMA_TXCH_RESET_DINTC,4);c!(PAS_IOB_DMA_TXCH_RESET_SINTC,2);c!(PAS_IOB_DMA_TXCH_RESET_PINTC,1);
+pub const PAS_DMA_COM_TIMEOUTCFG:u64=0x1700;pub const PAS_DMA_COM_TIMEOUTCFG_TCNT_M:u64=0xffffff;
+// The following constants preserve the descriptor bit layouts.
+c!(XCT_MACTX_T,0x8000000000000000);c!(XCT_MACTX_ST,0x4000000000000000);c!(XCT_MACTX_I,0x0800000000000000);c!(XCT_MACTX_O,0x0400000000000000);c!(XCT_MACTX_E,0x0200000000000000);c!(XCT_MACTX_VLAN_M,0x0180000000000000);c!(XCT_MACTX_CRC_M,0x0060000000000000);c!(XCT_MACTX_SS,0x0010000000000000);c!(XCT_MACTX_LLEN_M,0x00007fff00000000);c!(XCT_MACTX_IPH_M,0xf8000000);c!(XCT_MACTX_IPO_M,0x7c00000);c!(XCT_MACTX_CSUM_M,0x60);c!(XCT_MACTX_V6,0x10);c!(XCT_MACTX_C,4);c!(XCT_MACTX_AL2,2);
+c!(XCT_MACRX_T,0x8000000000000000);c!(XCT_MACRX_ST,0x4000000000000000);c!(XCT_MACRX_RR_M,0x3000000000000000);c!(XCT_MACRX_O,0x0400000000000000);c!(XCT_MACRX_E,0x0200000000000000);c!(XCT_MACRX_FF,0x0100000000000000);c!(XCT_MACRX_PF,0x0080000000000000);c!(XCT_MACRX_OB,0x0040000000000000);c!(XCT_MACRX_OD,0x0020000000000000);c!(XCT_MACRX_FS,0x0010000000000000);c!(XCT_MACRX_NB_M,0xfc00000000000);c!(XCT_MACRX_LLEN_M,0x3fff00000000);c!(XCT_MACRX_CRC,0x80000000);c!(XCT_MACRX_LEN_M,0x60000000);c!(XCT_MACRX_CAST_M,0x18000000);c!(XCT_MACRX_VLC_M,0x6000000);c!(XCT_MACRX_FM,0x1000000);c!(XCT_MACRX_HTY_M,0xc00000);c!(XCT_MACRX_IPP_M,0x3f0000);c!(XCT_MACRX_CSUM_M,0xffff);
+c!(XCT_PTR_T,0x8000000000000000);c!(XCT_PTR_LEN_M,0x7ffff00000000000);c!(XCT_PTR_ADDR_M,0xffffffffff);c!(XCT_RXB_LEN_M,0x0ffff00000000000);c!(XCT_RXB_ADDR_M,0xffffffffff);
+c!(XCT_COPY_T,0x8000000000000000);c!(XCT_COPY_ST,0x4000000000000000);c!(XCT_COPY_RR_M,0x3000000000000000);c!(XCT_COPY_I,0x0800000000000000);c!(XCT_COPY_O,0x0400000000000000);c!(XCT_COPY_E,0x0200000000000000);c!(XCT_COPY_STY_ZERO,0x01c0000000000000);c!(XCT_COPY_DTY_PREF,0x0038000000000000);c!(XCT_COPY_LLEN_M,0x0007ffff00000000);c!(XCT_COPY_SE,1);
+c!(XCT_FUN_T,0x8000000000000000);c!(XCT_FUN_ST,0x4000000000000000);c!(XCT_FUN_RR_M,0x3000000000000000);c!(XCT_FUN_I,0x0800000000000000);c!(XCT_FUN_O,0x0400000000000000);c!(XCT_FUN_E,0x0200000000000000);c!(XCT_FUN_FUN_M,0x01c0000000000000);c!(XCT_FUN_CRM_M,0x0038000000000000);c!(XCT_FUN_LLEN_M,0x0007ffff00000000);c!(XCT_FUN_SHL_M,0xf8000000);c!(XCT_FUN_CHL_M,0x7c00000);c!(XCT_FUN_HSZ_M,0x3c0000);c!(XCT_FUN_ALG_M,0x38000);c!(XCT_FUN_HP,0x4000);c!(XCT_FUN_BCM_M,0x3800);c!(XCT_FUN_BCP_M,0x600);c!(XCT_FUN_SIG_M,0x1f0);c!(XCT_FUN_A,8);c!(XCT_FUN_C,4);c!(XCT_FUN_AL2,2);c!(XCT_FUN_SE,1);
+c!(CTRL_CMD_T,0x8000000000000000);c!(CTRL_CMD_META_EVT,0x2000000000000000);c!(CTRL_CMD_O,0x0400000000000000);c!(CTRL_CMD_ETYPE_M,0x0038000000000000);c!(CTRL_CMD_REG_M,0x7f);
+
+#[repr(C)] pub struct pasemi_dmachan { pub chno:i32, pub chan_type:pasemi_dmachan_type, pub status:*mut u64, pub irq:i32, pub ring_size:u32, pub ring_dma:dma_addr_t, pub ring_virt:*mut u64, pub priv_:*mut core::ffi::c_void }
+#[repr(C)] #[derive(Copy,Clone)] pub enum pasemi_dmachan_type { RXCHAN=0, TXCHAN=1, TXCHAN_EVT0=0x1001, TXCHAN_EVT1=0x2001 }
+extern "C" { pub fn pasemi_read_iob_reg(reg:u32)->u32; pub fn pasemi_write_iob_reg(reg:u32,val:u32); pub fn pasemi_read_mac_reg(intf:i32,reg:u32)->u32; pub fn pasemi_write_mac_reg(intf:i32,reg:u32,val:u32); pub fn pasemi_read_dma_reg(reg:u32)->u32; pub fn pasemi_write_dma_reg(reg:u32,val:u32); pub fn pasemi_dma_alloc_chan(ty:pasemi_dmachan_type,total_size:i32,offset:i32)->*mut core::ffi::c_void; pub fn pasemi_dma_free_chan(chan:*mut pasemi_dmachan); pub fn pasemi_dma_start_chan(chan:*const pasemi_dmachan,cmdsta:u32); pub fn pasemi_dma_stop_chan(chan:*const pasemi_dmachan)->i32; pub fn pasemi_dma_alloc_ring(chan:*mut pasemi_dmachan,ring_size:i32)->i32; pub fn pasemi_dma_free_ring(chan:*mut pasemi_dmachan); pub fn pasemi_dma_alloc_buf(chan:*mut pasemi_dmachan,size:i32,handle:*mut dma_addr_t)->*mut core::ffi::c_void; pub fn pasemi_dma_free_buf(chan:*mut pasemi_dmachan,size:i32,handle:*mut dma_addr_t); pub fn pasemi_dma_alloc_flag()->i32; pub fn pasemi_dma_free_flag(flag:i32); pub fn pasemi_dma_set_flag(flag:i32); pub fn pasemi_dma_clear_flag(flag:i32); pub fn pasemi_dma_alloc_fun()->i32; pub fn pasemi_dma_free_fun(fun:i32); pub fn pasemi_dma_init()->i32; }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
