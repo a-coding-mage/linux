@@ -1,0 +1,18 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * tps6507x.h  --  Voltage regulation for the Texas Instruments TPS6507X
+ *
+ * Copyright (C) 2010 Texas Instruments, Inc.
+ */
+
+/**
+ * tps6507x_reg_platform_data - platform data for tps6507x
+ * @defdcdc_default: Defines whether DCDC high or the low register controls
+ *	output voltage by default. Valid for DCDC2 and DCDC3 outputs only.
+ */
+#[repr(C)]
+pub struct tps6507x_reg_platform_data {
+    pub defdcdc_default: bool,
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

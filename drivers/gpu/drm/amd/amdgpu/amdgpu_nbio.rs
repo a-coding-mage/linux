@@ -1,0 +1,104 @@
+/*
+ * Copyright (C) 2019  Advanced Micro Devices, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+pub unsafe fn amdgpu_nbio_ras_sw_init(adev: *mut amdgpu_device) -> i32 {
+    let ras: *mut amdgpu_nbio_ras;
+    let err: i32;
+
+    if (*adev).nbio.ras.is_null() {
+        return 0;
+    }
+
+    ras = (*adev).nbio.ras;
+    err = amdgpu_ras_register_ras_block(adev, &mut (*ras).ras_block);
+    if err != 0 {
+        dev_err((*adev).dev, "Failed to register pcie_bif ras block!\n");
+        return err;
+    }
+
+    strcpy((*ras).ras_block.ras_comm.name.as_mut_ptr(), b"pcie_bif\0".as_ptr());
+    (*ras).ras_block.ras_comm.block = AMDGPU_RAS_BLOCK__PCIE_BIF;
+    (*ras).ras_block.ras_comm.r#type = AMDGPU_RAS_ERROR__MULTI_UNCORRECTABLE;
+    (*adev).nbio.ras_if = &mut (*ras).ras_block.ras_comm;
+
+    0
+}
+
+pub unsafe fn amdgpu_nbio_get_pcie_replay_count(adev: *mut amdgpu_device) -> u64 {
+    if !(*adev).nbio.funcs.is_null()
+        && !(*(*adev).nbio.funcs).get_pcie_replay_count.is_none()
+    {
+        return ((*(*adev).nbio.funcs).get_pcie_replay_count.unwrap())(adev);
+    }
+
+    0
+}
+
+pub unsafe fn amdgpu_nbio_is_replay_cnt_supported(adev: *mut amdgpu_device) -> bool {
+    if amdgpu_sriov_vf(adev)
+        || (*adev).asic_funcs.is_null()
+        || (*(*adev).asic_funcs).get_pcie_replay_count.is_none()
+        || ((*adev).nbio.funcs.is_null()
+            || (*(*adev).nbio.funcs).get_pcie_replay_count.is_none())
+    {
+        return false;
+    }
+
+    true
+}
+
+pub unsafe fn amdgpu_nbio_ras_late_init(
+    adev: *mut amdgpu_device,
+    ras_block: *mut ras_common_if,
+) -> i32 {
+    let mut r: i32;
+    r = amdgpu_ras_block_late_init(adev, ras_block);
+    if r != 0 {
+        return r;
+    }
+
+    if amdgpu_ras_is_supported(adev, (*ras_block).block) {
+        r = amdgpu_irq_get(adev, &mut (*adev).nbio.ras_controller_irq, 0);
+        if r != 0 {
+            amdgpu_ras_block_late_fini(adev, ras_block);
+            return r;
+        }
+        r = amdgpu_irq_get(adev, &mut (*adev).nbio.ras_err_event_athub_irq, 0);
+        if r != 0 {
+            amdgpu_ras_block_late_fini(adev, ras_block);
+            return r;
+        }
+    }
+
+    0
+}
+
+pub unsafe fn amdgpu_nbio_program_aspm(adev: *mut amdgpu_device) {
+    if !amdgpu_device_should_use_aspm(adev) {
+        return;
+    }
+
+    if !(*(*adev).nbio.funcs).program_aspm.is_none() {
+        ((*(*adev).nbio.funcs).program_aspm.unwrap())(adev);
+    }
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

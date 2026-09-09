@@ -1,0 +1,166 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+/*
+ * Device Tree binding constants for AST2700 clock controller.
+ *
+ * Copyright (c) 2024 Aspeed Technology Inc.
+ */
+
+/* SOC0 clk */
+pub const SCU0_CLKIN: u32 = 0;
+pub const SCU0_CLK_24M: u32 = 1;
+pub const SCU0_CLK_192M: u32 = 2;
+pub const SCU0_CLK_UART: u32 = 3;
+pub const SCU0_CLK_UART_DIV13: u32 = 3;
+pub const SCU0_CLK_PSP: u32 = 4;
+pub const SCU0_CLK_HPLL: u32 = 5;
+pub const SCU0_CLK_HPLL_DIV2: u32 = 6;
+pub const SCU0_CLK_HPLL_DIV4: u32 = 7;
+pub const SCU0_CLK_HPLL_DIV_AHB: u32 = 8;
+pub const SCU0_CLK_DPLL: u32 = 9;
+pub const SCU0_CLK_MPLL: u32 = 10;
+pub const SCU0_CLK_MPLL_DIV2: u32 = 11;
+pub const SCU0_CLK_MPLL_DIV4: u32 = 12;
+pub const SCU0_CLK_MPLL_DIV8: u32 = 13;
+pub const SCU0_CLK_MPLL_DIV_AHB: u32 = 14;
+pub const SCU0_CLK_D0: u32 = 15;
+pub const SCU0_CLK_D1: u32 = 16;
+pub const SCU0_CLK_CRT0: u32 = 17;
+pub const SCU0_CLK_CRT1: u32 = 18;
+pub const SCU0_CLK_MPHY: u32 = 19;
+pub const SCU0_CLK_AXI0: u32 = 20;
+pub const SCU0_CLK_AXI1: u32 = 21;
+pub const SCU0_CLK_AHB: u32 = 22;
+pub const SCU0_CLK_APB: u32 = 23;
+pub const SCU0_CLK_UART4: u32 = 24;
+pub const SCU0_CLK_EMMCMUX: u32 = 25;
+pub const SCU0_CLK_EMMC: u32 = 26;
+pub const SCU0_CLK_U2PHY_CLK12M: u32 = 27;
+pub const SCU0_CLK_U2PHY_REFCLK: u32 = 28;
+
+/* SOC0 clk-gate */
+pub const SCU0_CLK_GATE_MCLK: u32 = 29;
+pub const SCU0_CLK_GATE_ECLK: u32 = 30;
+pub const SCU0_CLK_GATE_2DCLK: u32 = 31;
+pub const SCU0_CLK_GATE_VCLK: u32 = 32;
+pub const SCU0_CLK_GATE_BCLK: u32 = 33;
+pub const SCU0_CLK_GATE_VGA0CLK: u32 = 34;
+pub const SCU0_CLK_GATE_REFCLK: u32 = 35;
+pub const SCU0_CLK_GATE_PORTBUSB2CLK: u32 = 36;
+pub const SCU0_CLK_GATE_UHCICLK: u32 = 37;
+pub const SCU0_CLK_GATE_VGA1CLK: u32 = 38;
+pub const SCU0_CLK_GATE_DDRPHYCLK: u32 = 39;
+pub const SCU0_CLK_GATE_E2M0CLK: u32 = 40;
+pub const SCU0_CLK_GATE_HACCLK: u32 = 41;
+pub const SCU0_CLK_GATE_PORTAUSB2CLK: u32 = 42;
+pub const SCU0_CLK_GATE_UART4CLK: u32 = 43;
+pub const SCU0_CLK_GATE_SLICLK: u32 = 44;
+pub const SCU0_CLK_GATE_DACCLK: u32 = 45;
+pub const SCU0_CLK_GATE_DP: u32 = 46;
+pub const SCU0_CLK_GATE_E2M1CLK: u32 = 47;
+pub const SCU0_CLK_GATE_CRT0CLK: u32 = 48;
+pub const SCU0_CLK_GATE_CRT1CLK: u32 = 49;
+pub const SCU0_CLK_GATE_ECDSACLK: u32 = 50;
+pub const SCU0_CLK_GATE_RSACLK: u32 = 51;
+pub const SCU0_CLK_GATE_RVAS0CLK: u32 = 52;
+pub const SCU0_CLK_GATE_UFSCLK: u32 = 53;
+pub const SCU0_CLK_GATE_EMMCCLK: u32 = 54;
+pub const SCU0_CLK_GATE_RVAS1CLK: u32 = 55;
+pub const SCU0_CLK_U2PHY_REFCLKSRC: u32 = 56;
+pub const SCU0_CLK_AHBMUX: u32 = 57;
+pub const SCU0_CLK_MPHYSRC: u32 = 58;
+
+/* SOC1 clk */
+pub const SCU1_CLKIN: u32 = 0;
+pub const SCU1_CLK_HPLL: u32 = 1;
+pub const SCU1_CLK_APLL: u32 = 2;
+pub const SCU1_CLK_APLL_DIV2: u32 = 3;
+pub const SCU1_CLK_APLL_DIV4: u32 = 4;
+pub const SCU1_CLK_DPLL: u32 = 5;
+pub const SCU1_CLK_UXCLK: u32 = 6;
+pub const SCU1_CLK_HUXCLK: u32 = 7;
+pub const SCU1_CLK_UARTX: u32 = 8;
+pub const SCU1_CLK_HUARTX: u32 = 9;
+pub const SCU1_CLK_AHB: u32 = 10;
+pub const SCU1_CLK_APB: u32 = 11;
+pub const SCU1_CLK_UART0: u32 = 12;
+pub const SCU1_CLK_UART1: u32 = 13;
+pub const SCU1_CLK_UART2: u32 = 14;
+pub const SCU1_CLK_UART3: u32 = 15;
+pub const SCU1_CLK_UART5: u32 = 16;
+pub const SCU1_CLK_UART6: u32 = 17;
+pub const SCU1_CLK_UART7: u32 = 18;
+pub const SCU1_CLK_UART8: u32 = 19;
+pub const SCU1_CLK_UART9: u32 = 20;
+pub const SCU1_CLK_UART10: u32 = 21;
+pub const SCU1_CLK_UART11: u32 = 22;
+pub const SCU1_CLK_UART12: u32 = 23;
+pub const SCU1_CLK_UART13: u32 = 24;
+pub const SCU1_CLK_UART14: u32 = 25;
+pub const SCU1_CLK_APLL_DIVN: u32 = 26;
+pub const SCU1_CLK_SDMUX: u32 = 27;
+pub const SCU1_CLK_SDCLK: u32 = 28;
+pub const SCU1_CLK_RMII: u32 = 29;
+pub const SCU1_CLK_RGMII: u32 = 30;
+pub const SCU1_CLK_MACHCLK: u32 = 31;
+pub const SCU1_CLK_MAC0RCLK: u32 = 32;
+pub const SCU1_CLK_MAC1RCLK: u32 = 33;
+pub const SCU1_CLK_CAN: u32 = 34;
+
+/* SOC1 clk gate */
+pub const SCU1_CLK_GATE_LCLK0: u32 = 35;
+pub const SCU1_CLK_GATE_LCLK1: u32 = 36;
+pub const SCU1_CLK_GATE_ESPI0CLK: u32 = 37;
+pub const SCU1_CLK_GATE_ESPI1CLK: u32 = 38;
+pub const SCU1_CLK_GATE_SDCLK: u32 = 39;
+pub const SCU1_CLK_GATE_IPEREFCLK: u32 = 40;
+pub const SCU1_CLK_GATE_REFCLK: u32 = 41;
+pub const SCU1_CLK_GATE_LPCHCLK: u32 = 42;
+pub const SCU1_CLK_GATE_MAC0CLK: u32 = 43;
+pub const SCU1_CLK_GATE_MAC1CLK: u32 = 44;
+pub const SCU1_CLK_GATE_MAC2CLK: u32 = 45;
+pub const SCU1_CLK_GATE_UART0CLK: u32 = 46;
+pub const SCU1_CLK_GATE_UART1CLK: u32 = 47;
+pub const SCU1_CLK_GATE_UART2CLK: u32 = 48;
+pub const SCU1_CLK_GATE_UART3CLK: u32 = 49;
+pub const SCU1_CLK_GATE_I2CCLK: u32 = 50;
+pub const SCU1_CLK_GATE_I3C0CLK: u32 = 51;
+pub const SCU1_CLK_GATE_I3C1CLK: u32 = 52;
+pub const SCU1_CLK_GATE_I3C2CLK: u32 = 53;
+pub const SCU1_CLK_GATE_I3C3CLK: u32 = 54;
+pub const SCU1_CLK_GATE_I3C4CLK: u32 = 55;
+pub const SCU1_CLK_GATE_I3C5CLK: u32 = 56;
+pub const SCU1_CLK_GATE_I3C6CLK: u32 = 57;
+pub const SCU1_CLK_GATE_I3C7CLK: u32 = 58;
+pub const SCU1_CLK_GATE_I3C8CLK: u32 = 59;
+pub const SCU1_CLK_GATE_I3C9CLK: u32 = 60;
+pub const SCU1_CLK_GATE_I3C10CLK: u32 = 61;
+pub const SCU1_CLK_GATE_I3C11CLK: u32 = 62;
+pub const SCU1_CLK_GATE_I3C12CLK: u32 = 63;
+pub const SCU1_CLK_GATE_I3C13CLK: u32 = 64;
+pub const SCU1_CLK_GATE_I3C14CLK: u32 = 65;
+pub const SCU1_CLK_GATE_I3C15CLK: u32 = 66;
+pub const SCU1_CLK_GATE_UART5CLK: u32 = 67;
+pub const SCU1_CLK_GATE_UART6CLK: u32 = 68;
+pub const SCU1_CLK_GATE_UART7CLK: u32 = 69;
+pub const SCU1_CLK_GATE_UART8CLK: u32 = 70;
+pub const SCU1_CLK_GATE_UART9CLK: u32 = 71;
+pub const SCU1_CLK_GATE_UART10CLK: u32 = 72;
+pub const SCU1_CLK_GATE_UART11CLK: u32 = 73;
+pub const SCU1_CLK_GATE_UART12CLK: u32 = 74;
+pub const SCU1_CLK_GATE_FSICLK: u32 = 75;
+pub const SCU1_CLK_GATE_LTPIPHYCLK: u32 = 76;
+pub const SCU1_CLK_GATE_LTPICLK: u32 = 77;
+pub const SCU1_CLK_GATE_VGALCLK: u32 = 78;
+pub const SCU1_CLK_GATE_UHCICLK: u32 = 79;
+pub const SCU1_CLK_GATE_CANCLK: u32 = 80;
+pub const SCU1_CLK_GATE_PCICLK: u32 = 81;
+pub const SCU1_CLK_GATE_SLICLK: u32 = 82;
+pub const SCU1_CLK_GATE_E2MCLK: u32 = 83;
+pub const SCU1_CLK_GATE_PORTCUSB2CLK: u32 = 84;
+pub const SCU1_CLK_GATE_PORTDUSB2CLK: u32 = 85;
+pub const SCU1_CLK_GATE_LTPI1TXCLK: u32 = 86;
+pub const SCU1_CLK_I3C: u32 = 87;
+pub const SCU1_CLK_HPLL_DIV4: u32 = 88;
+pub const SCU1_CLK_PECI: u32 = 89;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

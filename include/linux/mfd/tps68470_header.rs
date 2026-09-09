@@ -1,0 +1,87 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright (C) 2017 Intel Corporation */
+/* Functions to access TPS68470 power management chip. */
+
+// Register addresses
+pub const TPS68470_REG_POSTDIV2: u8 = 0x06;
+pub const TPS68470_REG_BOOSTDIV: u8 = 0x07;
+pub const TPS68470_REG_BUCKDIV: u8 = 0x08;
+pub const TPS68470_REG_PLLSWR: u8 = 0x09;
+pub const TPS68470_REG_XTALDIV: u8 = 0x0A;
+pub const TPS68470_REG_PLLDIV: u8 = 0x0B;
+pub const TPS68470_REG_POSTDIV: u8 = 0x0C;
+pub const TPS68470_REG_PLLCTL: u8 = 0x0D;
+pub const TPS68470_REG_PLLCTL2: u8 = 0x0E;
+pub const TPS68470_REG_CLKCFG1: u8 = 0x0F;
+pub const TPS68470_REG_CLKCFG2: u8 = 0x10;
+pub const TPS68470_REG_GPCTL0A: u8 = 0x14;
+pub const TPS68470_REG_GPCTL0B: u8 = 0x15;
+pub const TPS68470_REG_GPCTL1A: u8 = 0x16;
+pub const TPS68470_REG_GPCTL1B: u8 = 0x17;
+pub const TPS68470_REG_GPCTL2A: u8 = 0x18;
+pub const TPS68470_REG_GPCTL2B: u8 = 0x19;
+pub const TPS68470_REG_GPCTL3A: u8 = 0x1A;
+pub const TPS68470_REG_GPCTL3B: u8 = 0x1B;
+pub const TPS68470_REG_GPCTL4A: u8 = 0x1C;
+pub const TPS68470_REG_GPCTL4B: u8 = 0x1D;
+pub const TPS68470_REG_GPCTL5A: u8 = 0x1E;
+pub const TPS68470_REG_GPCTL5B: u8 = 0x1F;
+pub const TPS68470_REG_GPCTL6A: u8 = 0x20;
+pub const TPS68470_REG_GPCTL6B: u8 = 0x21;
+pub const TPS68470_REG_SGPO: u8 = 0x22;
+pub const TPS68470_REG_GPDI: u8 = 0x26;
+pub const TPS68470_REG_GPDO: u8 = 0x27;
+pub const TPS68470_REG_VCMVAL: u8 = 0x3C;
+pub const TPS68470_REG_VAUX1VAL: u8 = 0x3D;
+pub const TPS68470_REG_VAUX2VAL: u8 = 0x3E;
+pub const TPS68470_REG_VIOVAL: u8 = 0x3F;
+pub const TPS68470_REG_VSIOVAL: u8 = 0x40;
+pub const TPS68470_REG_VAVAL: u8 = 0x41;
+pub const TPS68470_REG_VDVAL: u8 = 0x42;
+pub const TPS68470_REG_S_I2C_CTL: u8 = 0x43;
+pub const TPS68470_REG_VCMCTL: u8 = 0x44;
+pub const TPS68470_REG_VAUX1CTL: u8 = 0x45;
+pub const TPS68470_REG_VAUX2CTL: u8 = 0x46;
+pub const TPS68470_REG_VACTL: u8 = 0x47;
+pub const TPS68470_REG_VDCTL: u8 = 0x48;
+pub const TPS68470_REG_RESET: u8 = 0x50;
+pub const TPS68470_REG_REVID: u8 = 0xFF;
+pub const TPS68470_REG_MAX: u8 = TPS68470_REG_REVID;
+
+// Register field definitions
+pub const TPS68470_REG_RESET_MASK: u8 = 0xFF;
+pub const TPS68470_VAVAL_AVOLT_MASK: u8 = 0x7F;
+pub const TPS68470_VDVAL_DVOLT_MASK: u8 = 0x3F;
+pub const TPS68470_VCMVAL_VCVOLT_MASK: u8 = 0x7F;
+pub const TPS68470_VIOVAL_IOVOLT_MASK: u8 = 0x7F;
+pub const TPS68470_VSIOVAL_IOVOLT_MASK: u8 = 0x7F;
+pub const TPS68470_VAUX1VAL_AUX1VOLT_MASK: u8 = 0x7F;
+pub const TPS68470_VAUX2VAL_AUX2VOLT_MASK: u8 = 0x7F;
+pub const TPS68470_VACTL_EN_MASK: u8 = 0x01;
+pub const TPS68470_VDCTL_EN_MASK: u8 = 0x01;
+pub const TPS68470_VCMCTL_EN_MASK: u8 = 0x01;
+pub const TPS68470_S_I2C_CTL_EN_MASK: u8 = 0x03;
+pub const TPS68470_VAUX1CTL_EN_MASK: u8 = 0x01;
+pub const TPS68470_VAUX2CTL_EN_MASK: u8 = 0x01;
+pub const TPS68470_PLL_EN_MASK: u8 = 0x01;
+pub const TPS68470_CLKCFG1_MODE_A_MASK: u8 = 0x03;
+pub const TPS68470_CLKCFG1_MODE_B_MASK: u8 = 0x0C;
+pub const TPS68470_CLKCFG2_DRV_STR_2MA: u8 = 0x05;
+pub const TPS68470_PLL_OUTPUT_ENABLE: u8 = 0x02;
+pub const TPS68470_CLK_SRC_XTAL: u8 = 0x01;
+pub const TPS68470_PLLSWR_DEFAULT: u8 = 0x03;
+pub const TPS68470_OSC_EXT_CAP_DEFAULT: u8 = 0x05;
+pub const TPS68470_OUTPUT_A_SHIFT: u8 = 0x00;
+pub const TPS68470_OUTPUT_B_SHIFT: u8 = 0x02;
+pub const TPS68470_CLK_SRC_SHIFT: u8 = 0x07;
+pub const TPS68470_OSC_EXT_CAP_SHIFT: u8 = 0x04;
+
+pub const fn TPS68470_GPIO_CTL_REG_A(x: u8) -> u8 { TPS68470_REG_GPCTL0A + x * 2 }
+pub const fn TPS68470_GPIO_CTL_REG_B(x: u8) -> u8 { TPS68470_REG_GPCTL0B + x * 2 }
+pub const TPS68470_GPIO_MODE_MASK: u8 = 0x03;
+pub const TPS68470_GPIO_MODE_IN: u8 = 0;
+pub const TPS68470_GPIO_MODE_IN_PULLUP: u8 = 1;
+pub const TPS68470_GPIO_MODE_OUT_CMOS: u8 = 2;
+pub const TPS68470_GPIO_MODE_OUT_ODRAIN: u8 = 3;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

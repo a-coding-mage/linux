@@ -1,0 +1,55 @@
+/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
+/* Microsemi Ocelot Switch driver register definitions. */
+
+/* C's BIT/GENMASK helpers are expressed directly as u32 operations here. */
+macro_rules! bit { ($n:expr) => { 1u32 << $n }; }
+macro_rules! mask { ($hi:expr, $lo:expr) => { (((1u32 << ($hi + 1)) - 1) & !((1u32 << $lo) - 1)) }; }
+
+macro_rules! DEV_CLOCK_CFG_LINK_SPEED { ($x:expr) => { ($x) & 0x3 }; }
+pub const DEV_CLOCK_CFG_MAC_TX_RST: u32 = bit!(7); pub const DEV_CLOCK_CFG_MAC_RX_RST: u32 = bit!(6);
+pub const DEV_CLOCK_CFG_PCS_TX_RST: u32 = bit!(5); pub const DEV_CLOCK_CFG_PCS_RX_RST: u32 = bit!(4);
+pub const DEV_CLOCK_CFG_PORT_RST: u32 = bit!(3); pub const DEV_CLOCK_CFG_PHY_RST: u32 = bit!(2);
+pub const DEV_CLOCK_CFG_LINK_SPEED_M: u32 = 0x3;
+
+pub const DEV_PORT_MISC_FWD_ERROR_ENA:u32=bit!(4); pub const DEV_PORT_MISC_FWD_PAUSE_ENA:u32=bit!(3); pub const DEV_PORT_MISC_FWD_CTRL_ENA:u32=bit!(2); pub const DEV_PORT_MISC_DEV_LOOP_ENA:u32=bit!(1); pub const DEV_PORT_MISC_HDX_FAST_DIS:u32=bit!(0);
+pub const DEV_EEE_CFG_EEE_ENA:u32=bit!(22); pub const DEV_EEE_CFG_EEE_TIMER_AGE_M:u32=0x3f8000; pub const DEV_EEE_CFG_EEE_TIMER_WAKEUP_M:u32=0x7f00; pub const DEV_EEE_CFG_EEE_TIMER_HOLDOFF_M:u32=0xfe; pub const DEV_EEE_CFG_PORT_LPI:u32=bit!(0);
+macro_rules! DEV_EEE_CFG_EEE_TIMER_AGE {($x:expr)=>{(($x)<<15)&0x3f8000}} macro_rules! DEV_EEE_CFG_EEE_TIMER_AGE_X {($x:expr)=>{(($x)&0x3f8000)>>15}}
+macro_rules! DEV_EEE_CFG_EEE_TIMER_WAKEUP {($x:expr)=>{(($x)<<8)&0x7f00}} macro_rules! DEV_EEE_CFG_EEE_TIMER_WAKEUP_X {($x:expr)=>{(($x)&0x7f00)>>8}}
+macro_rules! DEV_EEE_CFG_EEE_TIMER_HOLDOFF {($x:expr)=>{(($x)<<1)&0xfe}} macro_rules! DEV_EEE_CFG_EEE_TIMER_HOLDOFF_X {($x:expr)=>{(($x)&0xfe)>>1}}
+
+pub const DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG_M:u32=0xff0; pub const DEV_PTP_PREDICT_CFG_PTP_PHASE_PREDICT_CFG_M:u32=0xf;
+macro_rules! DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG {($x:expr)=>{(($x)<<4)&0xff0}} macro_rules! DEV_PTP_PREDICT_CFG_PTP_PHY_PREDICT_CFG_X {($x:expr)=>{(($x)&0xff0)>>4}} macro_rules! DEV_PTP_PREDICT_CFG_PTP_PHASE_PREDICT_CFG {($x:expr)=>{($x)&0xf}}
+pub const DEV_MAC_ENA_CFG_RX_ENA:u32=bit!(4); pub const DEV_MAC_ENA_CFG_TX_ENA:u32=bit!(0); pub const DEV_MAC_MODE_CFG_FC_WORD_SYNC_ENA:u32=bit!(8); pub const DEV_MAC_MODE_CFG_GIGA_MODE_ENA:u32=bit!(4); pub const DEV_MAC_MODE_CFG_FDX_ENA:u32=bit!(0);
+pub const DEV_MAC_TAGS_CFG_TAG_ID_M:u32=0xffff0000; pub const DEV_MAC_TAGS_CFG_VLAN_LEN_AWR_ENA:u32=bit!(2); pub const DEV_MAC_TAGS_CFG_VLAN_DBL_AWR_ENA:u32=bit!(1); pub const DEV_MAC_TAGS_CFG_VLAN_AWR_ENA:u32=bit!(0);
+macro_rules! DEV_MAC_TAGS_CFG_TAG_ID {($x:expr)=>{(($x)<<16)&0xffff0000}} macro_rules! DEV_MAC_TAGS_CFG_TAG_ID_X {($x:expr)=>{(($x)&0xffff0000)>>16}}
+pub const DEV_MAC_ADV_CHK_CFG_LEN_DROP_ENA:u32=bit!(0); pub const DEV_MAC_IFG_CFG_RESTORE_OLD_IPG_CHECK:u32=bit!(17); pub const DEV_MAC_IFG_CFG_REDUCED_TX_IFG:u32=bit!(16); pub const DEV_MAC_IFG_CFG_TX_IFG_M:u32=0x1f00; pub const DEV_MAC_IFG_CFG_RX_IFG2_M:u32=0xf0; pub const DEV_MAC_IFG_CFG_RX_IFG1_M:u32=0xf;
+macro_rules! DEV_MAC_IFG_CFG_TX_IFG {($x:expr)=>{(($x)<<8)&0x1f00}} macro_rules! DEV_MAC_IFG_CFG_TX_IFG_X {($x:expr)=>{(($x)&0x1f00)>>8}} macro_rules! DEV_MAC_IFG_CFG_RX_IFG2 {($x:expr)=>{(($x)<<4)&0xf0}} macro_rules! DEV_MAC_IFG_CFG_RX_IFG2_X {($x:expr)=>{(($x)&0xf0)>>4}} macro_rules! DEV_MAC_IFG_CFG_RX_IFG1 {($x:expr)=>{($x)&0xf}}
+pub const DEV_MAC_HDX_CFG_BYPASS_COL_SYNC:u32=bit!(26); pub const DEV_MAC_HDX_CFG_OB_ENA:u32=bit!(25); pub const DEV_MAC_HDX_CFG_WEXC_DIS:u32=bit!(24); pub const DEV_MAC_HDX_CFG_SEED_M:u32=0xff0000; pub const DEV_MAC_HDX_CFG_SEED_LOAD:u32=bit!(12); pub const DEV_MAC_HDX_CFG_RETRY_AFTER_EXC_COL_ENA:u32=bit!(8); pub const DEV_MAC_HDX_CFG_LATE_COL_POS_M:u32=0x7f;
+macro_rules! DEV_MAC_HDX_CFG_SEED {($x:expr)=>{(($x)<<16)&0xff0000}} macro_rules! DEV_MAC_HDX_CFG_SEED_X {($x:expr)=>{(($x)&0xff0000)>>16}} macro_rules! DEV_MAC_HDX_CFG_LATE_COL_POS {($x:expr)=>{($x)&0x7f}}
+
+pub const DEV_MAC_DBG_CFG_TBI_MODE:u32=bit!(4); pub const DEV_MAC_DBG_CFG_IFG_CRS_EXT_CHK_ENA:u32=bit!(0);
+pub const DEV_MAC_STICKY_RX_IPG_SHRINK_STICKY:u32=bit!(9); pub const DEV_MAC_STICKY_RX_PREAM_SHRINK_STICKY:u32=bit!(8); pub const DEV_MAC_STICKY_RX_CARRIER_EXT_STICKY:u32=bit!(7); pub const DEV_MAC_STICKY_RX_CARRIER_EXT_ERR_STICKY:u32=bit!(6); pub const DEV_MAC_STICKY_RX_JUNK_STICKY:u32=bit!(5); pub const DEV_MAC_STICKY_TX_RETRANSMIT_STICKY:u32=bit!(4); pub const DEV_MAC_STICKY_TX_JAM_STICKY:u32=bit!(3); pub const DEV_MAC_STICKY_TX_FIFO_OFLW_STICKY:u32=bit!(2); pub const DEV_MAC_STICKY_TX_FRM_LEN_OVR_STICKY:u32=bit!(1); pub const DEV_MAC_STICKY_TX_ABORT_STICKY:u32=bit!(0);
+
+pub const DEV_MM_CONFIG_ENABLE_CONFIG_MM_RX_ENA:u32=bit!(0); pub const DEV_MM_CONFIG_ENABLE_CONFIG_MM_TX_ENA:u32=bit!(4); pub const DEV_MM_CONFIG_ENABLE_CONFIG_KEEP_S_AFTER_D:u32=bit!(8); pub const DEV_MM_CONFIG_VERIF_CONFIG_PRM_VERIFY_DIS:u32=bit!(0); pub const DEV_MM_CONFIG_VERIF_CONFIG_PRM_VERIFY_TIME_M:u32=0xff0; pub const DEV_MM_CONFIG_VERIF_CONFIG_VERIF_TIMER_UNITS_M:u32=0x3000;
+macro_rules! DEV_MM_CONFIG_VERIF_CONFIG_PRM_VERIFY_TIME {($x:expr)=>{(($x)<<4)&0xff0}} macro_rules! DEV_MM_CONFIG_VERIF_CONFIG_PRM_VERIFY_TIME_X {($x:expr)=>{(($x)&0xff0)>>4}} macro_rules! DEV_MM_CONFIG_VERIF_CONFIG_VERIF_TIMER_UNITS {($x:expr)=>{(($x)<<12)&0x3000}} macro_rules! DEV_MM_CONFIG_VERIF_CONFIG_VERIF_TIMER_UNITS_X {($x:expr)=>{(($x)&0x3000)>>12}}
+pub const DEV_MM_STAT_MM_STATUS_PRMPT_ACTIVE_STATUS:u32=bit!(0); pub const DEV_MM_STAT_MM_STATUS_PRMPT_ACTIVE_STICKY:u32=bit!(4); pub const DEV_MM_STAT_MM_STATUS_PRMPT_VERIFY_STATE_M:u32=0x700; pub const DEV_MM_STAT_MM_STATUS_UNEXP_RX_PFRM_STICKY:u32=bit!(12); pub const DEV_MM_STAT_MM_STATUS_UNEXP_TX_PFRM_STICKY:u32=bit!(16); pub const DEV_MM_STAT_MM_STATUS_MM_RX_FRAME_STATUS:u32=bit!(20); pub const DEV_MM_STAT_MM_STATUS_MM_TX_FRAME_STATUS:u32=bit!(24); pub const DEV_MM_STAT_MM_STATUS_MM_TX_PRMPT_STATUS:u32=bit!(28);
+macro_rules! DEV_MM_STAT_MM_STATUS_PRMPT_VERIFY_STATE {($x:expr)=>{(($x)<<8)&0x700}} macro_rules! DEV_MM_STAT_MM_STATUS_PRMPT_VERIFY_STATE_X {($x:expr)=>{(($x)&0x700)>>8}}
+
+pub const PCS1G_CFG_LINK_STATUS_TYPE:u32=bit!(4); pub const PCS1G_CFG_AN_LINK_CTRL_ENA:u32=bit!(1); pub const PCS1G_CFG_PCS_ENA:u32=bit!(0); pub const PCS1G_MODE_CFG_UNIDIR_MODE_ENA:u32=bit!(4); pub const PCS1G_MODE_CFG_SGMII_MODE_ENA:u32=bit!(0); pub const PCS1G_SD_CFG_SD_SEL:u32=bit!(8); pub const PCS1G_SD_CFG_SD_POL:u32=bit!(4); pub const PCS1G_SD_CFG_SD_ENA:u32=bit!(0);
+pub const PCS1G_ANEG_CFG_ADV_ABILITY_M:u32=0xffff0000; pub const PCS1G_ANEG_CFG_SW_RESOLVE_ENA:u32=bit!(8); pub const PCS1G_ANEG_CFG_ANEG_RESTART_ONE_SHOT:u32=bit!(1); pub const PCS1G_ANEG_CFG_ANEG_ENA:u32=bit!(0); pub const PCS1G_ANEG_NP_CFG_NP_TX_M:u32=0xffff0000; pub const PCS1G_ANEG_NP_CFG_NP_LOADED_ONE_SHOT:u32=bit!(0);
+macro_rules! PCS1G_ANEG_CFG_ADV_ABILITY {($x:expr)=>{(($x)<<16)&0xffff0000}} macro_rules! PCS1G_ANEG_CFG_ADV_ABILITY_X {($x:expr)=>{(($x)&0xffff0000)>>16}} macro_rules! PCS1G_ANEG_NP_CFG_NP_TX {($x:expr)=>{(($x)<<16)&0xffff0000}} macro_rules! PCS1G_ANEG_NP_CFG_NP_TX_X {($x:expr)=>{(($x)&0xffff0000)>>16}}
+pub const PCS1G_LB_CFG_RA_ENA:u32=bit!(4); pub const PCS1G_LB_CFG_GMII_PHY_LB_ENA:u32=bit!(1); pub const PCS1G_LB_CFG_TBI_HOST_LB_ENA:u32=bit!(0); pub const PCS1G_DBG_CFG_UDLT:u32=bit!(0); pub const PCS1G_CDET_CFG_CDET_ENA:u32=bit!(0); pub const PCS1G_ANEG_STATUS_LP_ADV_ABILITY_M:u32=0xffff0000; pub const PCS1G_ANEG_STATUS_PR:u32=bit!(4); pub const PCS1G_ANEG_STATUS_PAGE_RX_STICKY:u32=bit!(3); pub const PCS1G_ANEG_STATUS_ANEG_COMPLETE:u32=bit!(0);
+macro_rules! PCS1G_ANEG_STATUS_LP_ADV_ABILITY {($x:expr)=>{(($x)<<16)&0xffff0000}} macro_rules! PCS1G_ANEG_STATUS_LP_ADV_ABILITY_X {($x:expr)=>{(($x)&0xffff0000)>>16}}
+pub const PCS1G_LINK_STATUS_DELAY_VAR_M:u32=0xf000; pub const PCS1G_LINK_STATUS_SIGNAL_DETECT:u32=bit!(8); pub const PCS1G_LINK_STATUS_LINK_STATUS:u32=bit!(4); pub const PCS1G_LINK_STATUS_SYNC_STATUS:u32=bit!(0); pub const PCS1G_STICKY_LINK_DOWN_STICKY:u32=bit!(4); pub const PCS1G_STICKY_OUT_OF_SYNC_STICKY:u32=bit!(0);
+macro_rules! PCS1G_LINK_STATUS_DELAY_VAR {($x:expr)=>{(($x)<<12)&0xf000}} macro_rules! PCS1G_LINK_STATUS_DELAY_VAR_X {($x:expr)=>{(($x)&0xf000)>>12}}
+pub const PCS1G_LPI_CFG_QSGMII_MS_SEL:u32=bit!(20); pub const PCS1G_LPI_CFG_RX_LPI_OUT_DIS:u32=bit!(17); pub const PCS1G_LPI_CFG_LPI_TESTMODE:u32=bit!(16); pub const PCS1G_LPI_CFG_LPI_RX_WTIM_M:u32=0x30; pub const PCS1G_LPI_CFG_TX_ASSERT_LPIDLE:u32=bit!(0); pub const PCS1G_LPI_STATUS_RX_LPI_FAIL:u32=bit!(16); pub const PCS1G_LPI_STATUS_RX_LPI_EVENT_STICKY:u32=bit!(12); pub const PCS1G_LPI_STATUS_RX_QUIET:u32=bit!(9); pub const PCS1G_LPI_STATUS_RX_LPI_MODE:u32=bit!(8); pub const PCS1G_LPI_STATUS_TX_LPI_EVENT_STICKY:u32=bit!(4); pub const PCS1G_LPI_STATUS_TX_QUIET:u32=bit!(1); pub const PCS1G_LPI_STATUS_TX_LPI_MODE:u32=bit!(0);
+macro_rules! PCS1G_LPI_CFG_LPI_RX_WTIM {($x:expr)=>{(($x)<<4)&0x30}} macro_rules! PCS1G_LPI_CFG_LPI_RX_WTIM_X {($x:expr)=>{(($x)&0x30)>>4}}
+pub const PCS1G_TSTPAT_STATUS_JTP_ERR_CNT_M:u32=0xff00; pub const PCS1G_TSTPAT_STATUS_JTP_ERR:u32=bit!(4); pub const PCS1G_TSTPAT_STATUS_JTP_LOCK:u32=bit!(0);
+macro_rules! PCS1G_TSTPAT_STATUS_JTP_ERR_CNT {($x:expr)=>{(($x)<<8)&0xff00}} macro_rules! PCS1G_TSTPAT_STATUS_JTP_ERR_CNT_X {($x:expr)=>{(($x)&0xff00)>>8}}
+
+pub const DEV_PCS_FX100_CFG_SD_SEL:u32=bit!(26); pub const DEV_PCS_FX100_CFG_SD_POL:u32=bit!(25); pub const DEV_PCS_FX100_CFG_SD_ENA:u32=bit!(24); pub const DEV_PCS_FX100_CFG_LOOPBACK_ENA:u32=bit!(20); pub const DEV_PCS_FX100_CFG_SWAP_MII_ENA:u32=bit!(16); pub const DEV_PCS_FX100_CFG_RXBITSEL_M:u32=0xf000; pub const DEV_PCS_FX100_CFG_SIGDET_CFG_M:u32=0x600; pub const DEV_PCS_FX100_CFG_LINKHYST_TM_ENA:u32=bit!(8); pub const DEV_PCS_FX100_CFG_LINKHYSTTIMER_M:u32=0xf0; pub const DEV_PCS_FX100_CFG_UNIDIR_MODE_ENA:u32=bit!(3); pub const DEV_PCS_FX100_CFG_FEFCHK_ENA:u32=bit!(2); pub const DEV_PCS_FX100_CFG_FEFGEN_ENA:u32=bit!(1); pub const DEV_PCS_FX100_CFG_PCS_ENA:u32=bit!(0);
+macro_rules! DEV_PCS_FX100_CFG_RXBITSEL {($x:expr)=>{(($x)<<12)&0xf000}} macro_rules! DEV_PCS_FX100_CFG_RXBITSEL_X {($x:expr)=>{(($x)&0xf000)>>12}} macro_rules! DEV_PCS_FX100_CFG_SIGDET_CFG {($x:expr)=>{(($x)<<9)&0x600}} macro_rules! DEV_PCS_FX100_CFG_SIGDET_CFG_X {($x:expr)=>{(($x)&0x600)>>9}} macro_rules! DEV_PCS_FX100_CFG_LINKHYSTTIMER {($x:expr)=>{(($x)<<4)&0xf0}} macro_rules! DEV_PCS_FX100_CFG_LINKHYSTTIMER_X {($x:expr)=>{(($x)&0xf0)>>4}}
+pub const DEV_PCS_FX100_STATUS_EDGE_POS_PTP_M:u32=0xf00; pub const DEV_PCS_FX100_STATUS_PCS_ERROR_STICKY:u32=bit!(7); pub const DEV_PCS_FX100_STATUS_FEF_FOUND_STICKY:u32=bit!(6); pub const DEV_PCS_FX100_STATUS_SSD_ERROR_STICKY:u32=bit!(5); pub const DEV_PCS_FX100_STATUS_SYNC_LOST_STICKY:u32=bit!(4); pub const DEV_PCS_FX100_STATUS_FEF_STATUS:u32=bit!(2); pub const DEV_PCS_FX100_STATUS_SIGNAL_DETECT:u32=bit!(1); pub const DEV_PCS_FX100_STATUS_SYNC_STATUS:u32=bit!(0);
+macro_rules! DEV_PCS_FX100_STATUS_EDGE_POS_PTP {($x:expr)=>{(($x)<<8)&0xf00}} macro_rules! DEV_PCS_FX100_STATUS_EDGE_POS_PTP_X {($x:expr)=>{(($x)&0xf00)>>8}}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

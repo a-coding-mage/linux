@@ -1,0 +1,804 @@
+/* SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause */
+/*
+ * Copyright (c) 2025 MediaTek Inc.
+ *                    Guangjie Song <guangjie.song@mediatek.com>
+ * Copyright (c) 2025 Collabora Ltd.
+ *                    Laura Nao <laura.nao@collabora.com>
+ */
+
+
+/* CKSYS */
+pub const CLK_TOP_AXI: u32 = 0;
+pub const CLK_TOP_MEM_SUB: u32 = 1;
+pub const CLK_TOP_IO_NOC: u32 = 2;
+pub const CLK_TOP_P_AXI: u32 = 3;
+pub const CLK_TOP_UFS_PEXTP0_AXI: u32 = 4;
+pub const CLK_TOP_PEXTP1_USB_AXI: u32 = 5;
+pub const CLK_TOP_P_FMEM_SUB: u32 = 6;
+pub const CLK_TOP_PEXPT0_MEM_SUB: u32 = 7;
+pub const CLK_TOP_PEXTP1_USB_MEM_SUB: u32 = 8;
+pub const CLK_TOP_P_NOC: u32 = 9;
+pub const CLK_TOP_EMI_N: u32 = 10;
+pub const CLK_TOP_EMI_S: u32 = 11;
+pub const CLK_TOP_AP2CONN_HOST: u32 = 12;
+pub const CLK_TOP_ATB: u32 = 13;
+pub const CLK_TOP_CIRQ: u32 = 14;
+pub const CLK_TOP_PBUS_156M: u32 = 15;
+pub const CLK_TOP_EFUSE: u32 = 16;
+pub const CLK_TOP_MCL3GIC: u32 = 17;
+pub const CLK_TOP_MCINFRA: u32 = 18;
+pub const CLK_TOP_DSP: u32 = 19;
+pub const CLK_TOP_MFG_REF: u32 = 20;
+pub const CLK_TOP_MFG_EB: u32 = 21;
+pub const CLK_TOP_UART: u32 = 22;
+pub const CLK_TOP_SPI0_BCLK: u32 = 23;
+pub const CLK_TOP_SPI1_BCLK: u32 = 24;
+pub const CLK_TOP_SPI2_BCLK: u32 = 25;
+pub const CLK_TOP_SPI3_BCLK: u32 = 26;
+pub const CLK_TOP_SPI4_BCLK: u32 = 27;
+pub const CLK_TOP_SPI5_BCLK: u32 = 28;
+pub const CLK_TOP_SPI6_BCLK: u32 = 29;
+pub const CLK_TOP_SPI7_BCLK: u32 = 30;
+pub const CLK_TOP_MSDC30_1: u32 = 31;
+pub const CLK_TOP_MSDC30_2: u32 = 32;
+pub const CLK_TOP_DISP_PWM: u32 = 33;
+pub const CLK_TOP_USB_TOP_1P: u32 = 34;
+pub const CLK_TOP_USB_XHCI_1P: u32 = 35;
+pub const CLK_TOP_USB_FMCNT_P1: u32 = 36;
+pub const CLK_TOP_I2C_P: u32 = 37;
+pub const CLK_TOP_I2C_EAST: u32 = 38;
+pub const CLK_TOP_I2C_WEST: u32 = 39;
+pub const CLK_TOP_I2C_NORTH: u32 = 40;
+pub const CLK_TOP_AES_UFSFDE: u32 = 41;
+pub const CLK_TOP_UFS: u32 = 42;
+pub const CLK_TOP_AUD_1: u32 = 43;
+pub const CLK_TOP_AUD_2: u32 = 44;
+pub const CLK_TOP_ADSP: u32 = 45;
+pub const CLK_TOP_ADSP_UARTHUB_B: u32 = 46;
+pub const CLK_TOP_DPMAIF_MAIN: u32 = 47;
+pub const CLK_TOP_PWM: u32 = 48;
+pub const CLK_TOP_MCUPM: u32 = 49;
+pub const CLK_TOP_IPSEAST: u32 = 50;
+pub const CLK_TOP_TL: u32 = 51;
+pub const CLK_TOP_TL_P1: u32 = 52;
+pub const CLK_TOP_TL_P2: u32 = 53;
+pub const CLK_TOP_EMI_INTERFACE_546: u32 = 54;
+pub const CLK_TOP_SDF: u32 = 55;
+pub const CLK_TOP_UARTHUB_BCLK: u32 = 56;
+pub const CLK_TOP_DPSW_CMP_26M: u32 = 57;
+pub const CLK_TOP_SMAP: u32 = 58;
+pub const CLK_TOP_SSR_PKA: u32 = 59;
+pub const CLK_TOP_SSR_DMA: u32 = 60;
+pub const CLK_TOP_SSR_KDF: u32 = 61;
+pub const CLK_TOP_SSR_RNG: u32 = 62;
+pub const CLK_TOP_SPU0: u32 = 63;
+pub const CLK_TOP_SPU1: u32 = 64;
+pub const CLK_TOP_DXCC: u32 = 65;
+pub const CLK_TOP_APLL_I2SIN0: u32 = 66;
+pub const CLK_TOP_APLL_I2SIN1: u32 = 67;
+pub const CLK_TOP_APLL_I2SIN2: u32 = 68;
+pub const CLK_TOP_APLL_I2SIN3: u32 = 69;
+pub const CLK_TOP_APLL_I2SIN4: u32 = 70;
+pub const CLK_TOP_APLL_I2SIN6: u32 = 71;
+pub const CLK_TOP_APLL_I2SOUT0: u32 = 72;
+pub const CLK_TOP_APLL_I2SOUT1: u32 = 73;
+pub const CLK_TOP_APLL_I2SOUT2: u32 = 74;
+pub const CLK_TOP_APLL_I2SOUT3: u32 = 75;
+pub const CLK_TOP_APLL_I2SOUT4: u32 = 76;
+pub const CLK_TOP_APLL_I2SOUT6: u32 = 77;
+pub const CLK_TOP_APLL_FMI2S: u32 = 78;
+pub const CLK_TOP_APLL_TDMOUT: u32 = 79;
+pub const CLK_TOP_APLL12_DIV_TDMOUT_M: u32 = 80;
+pub const CLK_TOP_APLL12_DIV_TDMOUT_B: u32 = 81;
+pub const CLK_TOP_MAINPLL_D3: u32 = 82;
+pub const CLK_TOP_MAINPLL_D4: u32 = 83;
+pub const CLK_TOP_MAINPLL_D4_D2: u32 = 84;
+pub const CLK_TOP_MAINPLL_D4_D4: u32 = 85;
+pub const CLK_TOP_MAINPLL_D4_D8: u32 = 86;
+pub const CLK_TOP_MAINPLL_D5: u32 = 87;
+pub const CLK_TOP_MAINPLL_D5_D2: u32 = 88;
+pub const CLK_TOP_MAINPLL_D5_D4: u32 = 89;
+pub const CLK_TOP_MAINPLL_D5_D8: u32 = 90;
+pub const CLK_TOP_MAINPLL_D6: u32 = 91;
+pub const CLK_TOP_MAINPLL_D6_D2: u32 = 92;
+pub const CLK_TOP_MAINPLL_D7: u32 = 93;
+pub const CLK_TOP_MAINPLL_D7_D2: u32 = 94;
+pub const CLK_TOP_MAINPLL_D7_D4: u32 = 95;
+pub const CLK_TOP_MAINPLL_D7_D8: u32 = 96;
+pub const CLK_TOP_MAINPLL_D9: u32 = 97;
+pub const CLK_TOP_UNIVPLL_D4: u32 = 98;
+pub const CLK_TOP_UNIVPLL_D4_D2: u32 = 99;
+pub const CLK_TOP_UNIVPLL_D4_D4: u32 = 100;
+pub const CLK_TOP_UNIVPLL_D4_D8: u32 = 101;
+pub const CLK_TOP_UNIVPLL_D5: u32 = 102;
+pub const CLK_TOP_UNIVPLL_D5_D2: u32 = 103;
+pub const CLK_TOP_UNIVPLL_D5_D4: u32 = 104;
+pub const CLK_TOP_UNIVPLL_D6: u32 = 105;
+pub const CLK_TOP_UNIVPLL_D6_D2: u32 = 106;
+pub const CLK_TOP_UNIVPLL_D6_D4: u32 = 107;
+pub const CLK_TOP_UNIVPLL_D6_D8: u32 = 108;
+pub const CLK_TOP_UNIVPLL_D6_D16: u32 = 109;
+pub const CLK_TOP_UNIVPLL_192M: u32 = 110;
+pub const CLK_TOP_UNIVPLL_192M_D4: u32 = 111;
+pub const CLK_TOP_UNIVPLL_192M_D8: u32 = 112;
+pub const CLK_TOP_UNIVPLL_192M_D16: u32 = 113;
+pub const CLK_TOP_UNIVPLL_192M_D32: u32 = 114;
+pub const CLK_TOP_UNIVPLL_192M_D10: u32 = 115;
+pub const CLK_TOP_TVDPLL1_D2: u32 = 116;
+pub const CLK_TOP_MSDCPLL_D2: u32 = 117;
+pub const CLK_TOP_OSC_D2: u32 = 118;
+pub const CLK_TOP_OSC_D3: u32 = 119;
+pub const CLK_TOP_OSC_D4: u32 = 120;
+pub const CLK_TOP_OSC_D5: u32 = 121;
+pub const CLK_TOP_OSC_D7: u32 = 122;
+pub const CLK_TOP_OSC_D8: u32 = 123;
+pub const CLK_TOP_OSC_D10: u32 = 124;
+pub const CLK_TOP_OSC_D14: u32 = 125;
+pub const CLK_TOP_OSC_D20: u32 = 126;
+pub const CLK_TOP_OSC_D32: u32 = 127;
+pub const CLK_TOP_OSC_D40: u32 = 128;
+pub const CLK_TOP_SFLASH: u32 = 129;
+
+/* APMIXEDSYS */
+pub const CLK_APMIXED_MAINPLL: u32 = 0;
+pub const CLK_APMIXED_UNIVPLL: u32 = 1;
+pub const CLK_APMIXED_MSDCPLL: u32 = 2;
+pub const CLK_APMIXED_ADSPPLL: u32 = 3;
+pub const CLK_APMIXED_EMIPLL: u32 = 4;
+pub const CLK_APMIXED_EMIPLL2: u32 = 5;
+pub const CLK_APMIXED_NET1PLL: u32 = 6;
+pub const CLK_APMIXED_SGMIIPLL: u32 = 7;
+
+/* CKSYS_GP2 */
+pub const CLK_TOP2_SENINF0: u32 = 0;
+pub const CLK_TOP2_SENINF1: u32 = 1;
+pub const CLK_TOP2_SENINF2: u32 = 2;
+pub const CLK_TOP2_SENINF3: u32 = 3;
+pub const CLK_TOP2_SENINF4: u32 = 4;
+pub const CLK_TOP2_SENINF5: u32 = 5;
+pub const CLK_TOP2_IMG1: u32 = 6;
+pub const CLK_TOP2_IPE: u32 = 7;
+pub const CLK_TOP2_CAM: u32 = 8;
+pub const CLK_TOP2_CAMTM: u32 = 9;
+pub const CLK_TOP2_DPE: u32 = 10;
+pub const CLK_TOP2_VDEC: u32 = 11;
+pub const CLK_TOP2_CCUSYS: u32 = 12;
+pub const CLK_TOP2_CCUTM: u32 = 13;
+pub const CLK_TOP2_VENC: u32 = 14;
+pub const CLK_TOP2_DP1: u32 = 15;
+pub const CLK_TOP2_DP0: u32 = 16;
+pub const CLK_TOP2_DISP: u32 = 17;
+pub const CLK_TOP2_MDP: u32 = 18;
+pub const CLK_TOP2_MMINFRA: u32 = 19;
+pub const CLK_TOP2_MMINFRA_SNOC: u32 = 20;
+pub const CLK_TOP2_MMUP: u32 = 21;
+pub const CLK_TOP2_MMINFRA_AO: u32 = 22;
+pub const CLK_TOP2_MAINPLL2_D2: u32 = 23;
+pub const CLK_TOP2_MAINPLL2_D3: u32 = 24;
+pub const CLK_TOP2_MAINPLL2_D4: u32 = 25;
+pub const CLK_TOP2_MAINPLL2_D4_D2: u32 = 26;
+pub const CLK_TOP2_MAINPLL2_D4_D4: u32 = 27;
+pub const CLK_TOP2_MAINPLL2_D5: u32 = 28;
+pub const CLK_TOP2_MAINPLL2_D5_D2: u32 = 29;
+pub const CLK_TOP2_MAINPLL2_D6: u32 = 30;
+pub const CLK_TOP2_MAINPLL2_D6_D2: u32 = 31;
+pub const CLK_TOP2_MAINPLL2_D7: u32 = 32;
+pub const CLK_TOP2_MAINPLL2_D7_D2: u32 = 33;
+pub const CLK_TOP2_MAINPLL2_D9: u32 = 34;
+pub const CLK_TOP2_UNIVPLL2_D3: u32 = 35;
+pub const CLK_TOP2_UNIVPLL2_D4: u32 = 36;
+pub const CLK_TOP2_UNIVPLL2_D4_D2: u32 = 37;
+pub const CLK_TOP2_UNIVPLL2_D5: u32 = 38;
+pub const CLK_TOP2_UNIVPLL2_D5_D2: u32 = 39;
+pub const CLK_TOP2_UNIVPLL2_D6: u32 = 40;
+pub const CLK_TOP2_UNIVPLL2_D6_D2: u32 = 41;
+pub const CLK_TOP2_UNIVPLL2_D6_D4: u32 = 42;
+pub const CLK_TOP2_UNIVPLL2_D7: u32 = 43;
+pub const CLK_TOP2_IMGPLL_D2: u32 = 44;
+pub const CLK_TOP2_IMGPLL_D4: u32 = 45;
+pub const CLK_TOP2_IMGPLL_D5: u32 = 46;
+pub const CLK_TOP2_IMGPLL_D5_D2: u32 = 47;
+pub const CLK_TOP2_MMPLL2_D3: u32 = 48;
+pub const CLK_TOP2_MMPLL2_D4: u32 = 49;
+pub const CLK_TOP2_MMPLL2_D4_D2: u32 = 50;
+pub const CLK_TOP2_MMPLL2_D5: u32 = 51;
+pub const CLK_TOP2_MMPLL2_D5_D2: u32 = 52;
+pub const CLK_TOP2_MMPLL2_D6: u32 = 53;
+pub const CLK_TOP2_MMPLL2_D6_D2: u32 = 54;
+pub const CLK_TOP2_MMPLL2_D7: u32 = 55;
+pub const CLK_TOP2_MMPLL2_D9: u32 = 56;
+pub const CLK_TOP2_TVDPLL1_D4: u32 = 57;
+pub const CLK_TOP2_TVDPLL1_D8: u32 = 58;
+pub const CLK_TOP2_TVDPLL1_D16: u32 = 59;
+pub const CLK_TOP2_TVDPLL2_D2: u32 = 60;
+pub const CLK_TOP2_TVDPLL2_D4: u32 = 61;
+pub const CLK_TOP2_TVDPLL2_D8: u32 = 62;
+pub const CLK_TOP2_TVDPLL2_D16: u32 = 63;
+pub const CLK_TOP2_DVO: u32 = 64;
+pub const CLK_TOP2_DVO_FAVT: u32 = 65;
+pub const CLK_TOP2_TVDPLL3_D2: u32 = 66;
+pub const CLK_TOP2_TVDPLL3_D4: u32 = 67;
+pub const CLK_TOP2_TVDPLL3_D8: u32 = 68;
+pub const CLK_TOP2_TVDPLL3_D16: u32 = 69;
+
+/* APMIXEDSYS_GP2 */
+pub const CLK_APMIXED2_MAINPLL2: u32 = 0;
+pub const CLK_APMIXED2_UNIVPLL2: u32 = 1;
+pub const CLK_APMIXED2_MMPLL2: u32 = 2;
+pub const CLK_APMIXED2_IMGPLL: u32 = 3;
+pub const CLK_APMIXED2_TVDPLL1: u32 = 4;
+pub const CLK_APMIXED2_TVDPLL2: u32 = 5;
+pub const CLK_APMIXED2_TVDPLL3: u32 = 6;
+
+/* IMP_IIC_WRAP_E */
+pub const CLK_IMPE_I2C5: u32 = 0;
+
+/* IMP_IIC_WRAP_W */
+pub const CLK_IMPW_I2C0: u32 = 0;
+pub const CLK_IMPW_I2C3: u32 = 1;
+pub const CLK_IMPW_I2C6: u32 = 2;
+pub const CLK_IMPW_I2C10: u32 = 3;
+
+/* IMP_IIC_WRAP_N */
+pub const CLK_IMPN_I2C1: u32 = 0;
+pub const CLK_IMPN_I2C2: u32 = 1;
+pub const CLK_IMPN_I2C4: u32 = 2;
+pub const CLK_IMPN_I2C7: u32 = 3;
+pub const CLK_IMPN_I2C8: u32 = 4;
+pub const CLK_IMPN_I2C9: u32 = 5;
+
+/* IMP_IIC_WRAP_C */
+pub const CLK_IMPC_I2C11: u32 = 0;
+pub const CLK_IMPC_I2C12: u32 = 1;
+pub const CLK_IMPC_I2C13: u32 = 2;
+pub const CLK_IMPC_I2C14: u32 = 3;
+
+/* PERICFG_AO */
+pub const CLK_PERI_AO_UART0_BCLK: u32 = 0;
+pub const CLK_PERI_AO_UART1_BCLK: u32 = 1;
+pub const CLK_PERI_AO_UART2_BCLK: u32 = 2;
+pub const CLK_PERI_AO_UART3_BCLK: u32 = 3;
+pub const CLK_PERI_AO_UART4_BCLK: u32 = 4;
+pub const CLK_PERI_AO_UART5_BCLK: u32 = 5;
+pub const CLK_PERI_AO_PWM_X16W_HCLK: u32 = 6;
+pub const CLK_PERI_AO_PWM_X16W_BCLK: u32 = 7;
+pub const CLK_PERI_AO_PWM_PWM_BCLK0: u32 = 8;
+pub const CLK_PERI_AO_PWM_PWM_BCLK1: u32 = 9;
+pub const CLK_PERI_AO_PWM_PWM_BCLK2: u32 = 10;
+pub const CLK_PERI_AO_PWM_PWM_BCLK3: u32 = 11;
+pub const CLK_PERI_AO_SPI0_BCLK: u32 = 12;
+pub const CLK_PERI_AO_SPI1_BCLK: u32 = 13;
+pub const CLK_PERI_AO_SPI2_BCLK: u32 = 14;
+pub const CLK_PERI_AO_SPI3_BCLK: u32 = 15;
+pub const CLK_PERI_AO_SPI4_BCLK: u32 = 16;
+pub const CLK_PERI_AO_SPI5_BCLK: u32 = 17;
+pub const CLK_PERI_AO_SPI6_BCLK: u32 = 18;
+pub const CLK_PERI_AO_SPI7_BCLK: u32 = 19;
+pub const CLK_PERI_AO_AP_DMA_X32W_BCLK: u32 = 20;
+pub const CLK_PERI_AO_MSDC1_MSDC_SRC: u32 = 21;
+pub const CLK_PERI_AO_MSDC1_HCLK: u32 = 22;
+pub const CLK_PERI_AO_MSDC1_AXI: u32 = 23;
+pub const CLK_PERI_AO_MSDC1_HCLK_WRAP: u32 = 24;
+pub const CLK_PERI_AO_MSDC2_MSDC_SRC: u32 = 25;
+pub const CLK_PERI_AO_MSDC2_HCLK: u32 = 26;
+pub const CLK_PERI_AO_MSDC2_AXI: u32 = 27;
+pub const CLK_PERI_AO_MSDC2_HCLK_WRAP: u32 = 28;
+pub const CLK_PERI_AO_FLASHIF_FLASH: u32 = 29;
+pub const CLK_PERI_AO_FLASHIF_27M: u32 = 30;
+pub const CLK_PERI_AO_FLASHIF_DRAM: u32 = 31;
+pub const CLK_PERI_AO_FLASHIF_AXI: u32 = 32;
+pub const CLK_PERI_AO_FLASHIF_BCLK: u32 = 33;
+
+/* UFSCFG_AO */
+pub const CLK_UFSAO_UNIPRO_TX_SYM: u32 = 0;
+pub const CLK_UFSAO_UNIPRO_RX_SYM0: u32 = 1;
+pub const CLK_UFSAO_UNIPRO_RX_SYM1: u32 = 2;
+pub const CLK_UFSAO_UNIPRO_SYS: u32 = 3;
+pub const CLK_UFSAO_UNIPRO_SAP: u32 = 4;
+pub const CLK_UFSAO_PHY_SAP: u32 = 5;
+pub const CLK_UFSAO_UFSHCI_UFS: u32 = 6;
+pub const CLK_UFSAO_UFSHCI_AES: u32 = 7;
+
+/* PEXTP0CFG_AO */
+pub const CLK_PEXT_PEXTP_MAC_P0_TL: u32 = 0;
+pub const CLK_PEXT_PEXTP_MAC_P0_REF: u32 = 1;
+pub const CLK_PEXT_PEXTP_PHY_P0_MCU_BUS: u32 = 2;
+pub const CLK_PEXT_PEXTP_PHY_P0_PEXTP_REF: u32 = 3;
+pub const CLK_PEXT_PEXTP_MAC_P0_AXI_250: u32 = 4;
+pub const CLK_PEXT_PEXTP_MAC_P0_AHB_APB: u32 = 5;
+pub const CLK_PEXT_PEXTP_MAC_P0_PL_P: u32 = 6;
+pub const CLK_PEXT_PEXTP_VLP_AO_P0_LP: u32 = 7;
+
+/* PEXTP1CFG_AO */
+pub const CLK_PEXT1_PEXTP_MAC_P1_TL: u32 = 0;
+pub const CLK_PEXT1_PEXTP_MAC_P1_REF: u32 = 1;
+pub const CLK_PEXT1_PEXTP_MAC_P2_TL: u32 = 2;
+pub const CLK_PEXT1_PEXTP_MAC_P2_REF: u32 = 3;
+pub const CLK_PEXT1_PEXTP_PHY_P1_MCU_BUS: u32 = 4;
+pub const CLK_PEXT1_PEXTP_PHY_P1_PEXTP_REF: u32 = 5;
+pub const CLK_PEXT1_PEXTP_PHY_P2_MCU_BUS: u32 = 6;
+pub const CLK_PEXT1_PEXTP_PHY_P2_PEXTP_REF: u32 = 7;
+pub const CLK_PEXT1_PEXTP_MAC_P1_AXI_250: u32 = 8;
+pub const CLK_PEXT1_PEXTP_MAC_P1_AHB_APB: u32 = 9;
+pub const CLK_PEXT1_PEXTP_MAC_P1_PL_P: u32 = 10;
+pub const CLK_PEXT1_PEXTP_MAC_P2_AXI_250: u32 = 11;
+pub const CLK_PEXT1_PEXTP_MAC_P2_AHB_APB: u32 = 12;
+pub const CLK_PEXT1_PEXTP_MAC_P2_PL_P: u32 = 13;
+pub const CLK_PEXT1_PEXTP_VLP_AO_P1_LP: u32 = 14;
+pub const CLK_PEXT1_PEXTP_VLP_AO_P2_LP: u32 = 15;
+
+/* VLP_CKSYS */
+pub const CLK_VLP_APLL1: u32 = 0;
+pub const CLK_VLP_APLL2: u32 = 1;
+pub const CLK_VLP_SCP: u32 = 2;
+pub const CLK_VLP_SCP_SPI: u32 = 3;
+pub const CLK_VLP_SCP_IIC: u32 = 4;
+pub const CLK_VLP_SCP_IIC_HS: u32 = 5;
+pub const CLK_VLP_PWRAP_ULPOSC: u32 = 6;
+pub const CLK_VLP_SPMI_M_TIA_32K: u32 = 7;
+pub const CLK_VLP_APXGPT_26M_B: u32 = 8;
+pub const CLK_VLP_DPSW: u32 = 9;
+pub const CLK_VLP_DPSW_CENTRAL: u32 = 10;
+pub const CLK_VLP_SPMI_M_MST: u32 = 11;
+pub const CLK_VLP_DVFSRC: u32 = 12;
+pub const CLK_VLP_PWM_VLP: u32 = 13;
+pub const CLK_VLP_AXI_VLP: u32 = 14;
+pub const CLK_VLP_SYSTIMER_26M: u32 = 15;
+pub const CLK_VLP_SSPM: u32 = 16;
+pub const CLK_VLP_SRCK: u32 = 17;
+pub const CLK_VLP_CAMTG0: u32 = 18;
+pub const CLK_VLP_CAMTG1: u32 = 19;
+pub const CLK_VLP_CAMTG2: u32 = 20;
+pub const CLK_VLP_CAMTG3: u32 = 21;
+pub const CLK_VLP_CAMTG4: u32 = 22;
+pub const CLK_VLP_CAMTG5: u32 = 23;
+pub const CLK_VLP_CAMTG6: u32 = 24;
+pub const CLK_VLP_CAMTG7: u32 = 25;
+pub const CLK_VLP_SSPM_26M: u32 = 26;
+pub const CLK_VLP_ULPOSC_SSPM: u32 = 27;
+pub const CLK_VLP_VLP_PBUS_26M: u32 = 28;
+pub const CLK_VLP_DEBUG_ERR_FLAG: u32 = 29;
+pub const CLK_VLP_DPMSRDMA: u32 = 30;
+pub const CLK_VLP_VLP_PBUS_156M: u32 = 31;
+pub const CLK_VLP_SPM: u32 = 32;
+pub const CLK_VLP_MMINFRA: u32 = 33;
+pub const CLK_VLP_USB_TOP: u32 = 34;
+pub const CLK_VLP_USB_XHCI: u32 = 35;
+pub const CLK_VLP_NOC_VLP: u32 = 36;
+pub const CLK_VLP_AUDIO_H: u32 = 37;
+pub const CLK_VLP_AUD_ENGEN1: u32 = 38;
+pub const CLK_VLP_AUD_ENGEN2: u32 = 39;
+pub const CLK_VLP_AUD_INTBUS: u32 = 40;
+pub const CLK_VLP_SPVLP_26M: u32 = 41;
+pub const CLK_VLP_SPU0_VLP: u32 = 42;
+pub const CLK_VLP_SPU1_VLP: u32 = 43;
+pub const CLK_VLP_CLK26M: u32 = 44;
+pub const CLK_VLP_APLL1_D4: u32 = 45;
+pub const CLK_VLP_APLL1_D8: u32 = 46;
+pub const CLK_VLP_APLL2_D4: u32 = 47;
+pub const CLK_VLP_APLL2_D8: u32 = 48;
+
+/* DISPSYS_CONFIG */
+pub const CLK_MM_CONFIG: u32 = 0;
+pub const CLK_MM_DISP_MUTEX0: u32 = 1;
+pub const CLK_MM_DISP_AAL0: u32 = 2;
+pub const CLK_MM_DISP_AAL1: u32 = 3;
+pub const CLK_MM_DISP_C3D0: u32 = 4;
+pub const CLK_MM_DISP_C3D1: u32 = 5;
+pub const CLK_MM_DISP_C3D2: u32 = 6;
+pub const CLK_MM_DISP_C3D3: u32 = 7;
+pub const CLK_MM_DISP_CCORR0: u32 = 8;
+pub const CLK_MM_DISP_CCORR1: u32 = 9;
+pub const CLK_MM_DISP_CCORR2: u32 = 10;
+pub const CLK_MM_DISP_CCORR3: u32 = 11;
+pub const CLK_MM_DISP_CHIST0: u32 = 12;
+pub const CLK_MM_DISP_CHIST1: u32 = 13;
+pub const CLK_MM_DISP_COLOR0: u32 = 14;
+pub const CLK_MM_DISP_COLOR1: u32 = 15;
+pub const CLK_MM_DISP_DITHER0: u32 = 16;
+pub const CLK_MM_DISP_DITHER1: u32 = 17;
+pub const CLK_MM_DISP_DLI_ASYNC0: u32 = 18;
+pub const CLK_MM_DISP_DLI_ASYNC1: u32 = 19;
+pub const CLK_MM_DISP_DLI_ASYNC2: u32 = 20;
+pub const CLK_MM_DISP_DLI_ASYNC3: u32 = 21;
+pub const CLK_MM_DISP_DLI_ASYNC4: u32 = 22;
+pub const CLK_MM_DISP_DLI_ASYNC5: u32 = 23;
+pub const CLK_MM_DISP_DLI_ASYNC6: u32 = 24;
+pub const CLK_MM_DISP_DLI_ASYNC7: u32 = 25;
+pub const CLK_MM_DISP_DLI_ASYNC8: u32 = 26;
+pub const CLK_MM_DISP_DLI_ASYNC9: u32 = 27;
+pub const CLK_MM_DISP_DLI_ASYNC10: u32 = 28;
+pub const CLK_MM_DISP_DLI_ASYNC11: u32 = 29;
+pub const CLK_MM_DISP_DLI_ASYNC12: u32 = 30;
+pub const CLK_MM_DISP_DLI_ASYNC13: u32 = 31;
+pub const CLK_MM_DISP_DLI_ASYNC14: u32 = 32;
+pub const CLK_MM_DISP_DLI_ASYNC15: u32 = 33;
+pub const CLK_MM_DISP_DLO_ASYNC0: u32 = 34;
+pub const CLK_MM_DISP_DLO_ASYNC1: u32 = 35;
+pub const CLK_MM_DISP_DLO_ASYNC2: u32 = 36;
+pub const CLK_MM_DISP_DLO_ASYNC3: u32 = 37;
+pub const CLK_MM_DISP_DLO_ASYNC4: u32 = 38;
+pub const CLK_MM_DISP_DLO_ASYNC5: u32 = 39;
+pub const CLK_MM_DISP_DLO_ASYNC6: u32 = 40;
+pub const CLK_MM_DISP_DLO_ASYNC7: u32 = 41;
+pub const CLK_MM_DISP_DLO_ASYNC8: u32 = 42;
+pub const CLK_MM_DISP_GAMMA0: u32 = 43;
+pub const CLK_MM_DISP_GAMMA1: u32 = 44;
+pub const CLK_MM_MDP_AAL0: u32 = 45;
+pub const CLK_MM_MDP_AAL1: u32 = 46;
+pub const CLK_MM_MDP_RDMA0: u32 = 47;
+pub const CLK_MM_DISP_POSTMASK0: u32 = 48;
+pub const CLK_MM_DISP_POSTMASK1: u32 = 49;
+pub const CLK_MM_MDP_RSZ0: u32 = 50;
+pub const CLK_MM_MDP_RSZ1: u32 = 51;
+pub const CLK_MM_DISP_SPR0: u32 = 52;
+pub const CLK_MM_DISP_TDSHP0: u32 = 53;
+pub const CLK_MM_DISP_TDSHP1: u32 = 54;
+pub const CLK_MM_DISP_WDMA0: u32 = 55;
+pub const CLK_MM_DISP_Y2R0: u32 = 56;
+pub const CLK_MM_SMI_SUB_COMM0: u32 = 57;
+pub const CLK_MM_DISP_FAKE_ENG0: u32 = 58;
+
+/* DISPSYS1_CONFIG */
+pub const CLK_MM1_DISPSYS1_CONFIG: u32 = 0;
+pub const CLK_MM1_DISPSYS1_S_CONFIG: u32 = 1;
+pub const CLK_MM1_DISP_MUTEX0: u32 = 2;
+pub const CLK_MM1_DISP_DLI_ASYNC20: u32 = 3;
+pub const CLK_MM1_DISP_DLI_ASYNC21: u32 = 4;
+pub const CLK_MM1_DISP_DLI_ASYNC22: u32 = 5;
+pub const CLK_MM1_DISP_DLI_ASYNC23: u32 = 6;
+pub const CLK_MM1_DISP_DLI_ASYNC24: u32 = 7;
+pub const CLK_MM1_DISP_DLI_ASYNC25: u32 = 8;
+pub const CLK_MM1_DISP_DLI_ASYNC26: u32 = 9;
+pub const CLK_MM1_DISP_DLI_ASYNC27: u32 = 10;
+pub const CLK_MM1_DISP_DLI_ASYNC28: u32 = 11;
+pub const CLK_MM1_DISP_RELAY0: u32 = 12;
+pub const CLK_MM1_DISP_RELAY1: u32 = 13;
+pub const CLK_MM1_DISP_RELAY2: u32 = 14;
+pub const CLK_MM1_DISP_RELAY3: u32 = 15;
+pub const CLK_MM1_DISP_DP_INTF0: u32 = 16;
+pub const CLK_MM1_DISP_DP_INTF1: u32 = 17;
+pub const CLK_MM1_DISP_DSC_WRAP0: u32 = 18;
+pub const CLK_MM1_DISP_DSC_WRAP1: u32 = 19;
+pub const CLK_MM1_DISP_DSC_WRAP2: u32 = 20;
+pub const CLK_MM1_DISP_DSC_WRAP3: u32 = 21;
+pub const CLK_MM1_DISP_DSI0: u32 = 22;
+pub const CLK_MM1_DISP_DSI1: u32 = 23;
+pub const CLK_MM1_DISP_DSI2: u32 = 24;
+pub const CLK_MM1_DISP_DVO0: u32 = 25;
+pub const CLK_MM1_DISP_GDMA0: u32 = 26;
+pub const CLK_MM1_DISP_MERGE0: u32 = 27;
+pub const CLK_MM1_DISP_MERGE1: u32 = 28;
+pub const CLK_MM1_DISP_MERGE2: u32 = 29;
+pub const CLK_MM1_DISP_ODDMR0: u32 = 30;
+pub const CLK_MM1_DISP_POSTALIGN0: u32 = 31;
+pub const CLK_MM1_DISP_DITHER2: u32 = 32;
+pub const CLK_MM1_DISP_R2Y0: u32 = 33;
+pub const CLK_MM1_DISP_SPLITTER0: u32 = 34;
+pub const CLK_MM1_DISP_SPLITTER1: u32 = 35;
+pub const CLK_MM1_DISP_SPLITTER2: u32 = 36;
+pub const CLK_MM1_DISP_SPLITTER3: u32 = 37;
+pub const CLK_MM1_DISP_VDCM0: u32 = 38;
+pub const CLK_MM1_DISP_WDMA1: u32 = 39;
+pub const CLK_MM1_DISP_WDMA2: u32 = 40;
+pub const CLK_MM1_DISP_WDMA3: u32 = 41;
+pub const CLK_MM1_DISP_WDMA4: u32 = 42;
+pub const CLK_MM1_MDP_RDMA1: u32 = 43;
+pub const CLK_MM1_SMI_LARB0: u32 = 44;
+pub const CLK_MM1_MOD1: u32 = 45;
+pub const CLK_MM1_MOD2: u32 = 46;
+pub const CLK_MM1_MOD3: u32 = 47;
+pub const CLK_MM1_MOD4: u32 = 48;
+pub const CLK_MM1_MOD5: u32 = 49;
+pub const CLK_MM1_MOD6: u32 = 50;
+pub const CLK_MM1_CG0: u32 = 51;
+pub const CLK_MM1_CG1: u32 = 52;
+pub const CLK_MM1_CG2: u32 = 53;
+pub const CLK_MM1_CG3: u32 = 54;
+pub const CLK_MM1_CG4: u32 = 55;
+pub const CLK_MM1_CG5: u32 = 56;
+pub const CLK_MM1_CG6: u32 = 57;
+pub const CLK_MM1_CG7: u32 = 58;
+pub const CLK_MM1_F26M: u32 = 59;
+
+/* OVLSYS_CONFIG */
+pub const CLK_OVLSYS_CONFIG: u32 = 0;
+pub const CLK_OVL_FAKE_ENG0: u32 = 1;
+pub const CLK_OVL_FAKE_ENG1: u32 = 2;
+pub const CLK_OVL_MUTEX0: u32 = 3;
+pub const CLK_OVL_EXDMA0: u32 = 4;
+pub const CLK_OVL_EXDMA1: u32 = 5;
+pub const CLK_OVL_EXDMA2: u32 = 6;
+pub const CLK_OVL_EXDMA3: u32 = 7;
+pub const CLK_OVL_EXDMA4: u32 = 8;
+pub const CLK_OVL_EXDMA5: u32 = 9;
+pub const CLK_OVL_EXDMA6: u32 = 10;
+pub const CLK_OVL_EXDMA7: u32 = 11;
+pub const CLK_OVL_EXDMA8: u32 = 12;
+pub const CLK_OVL_EXDMA9: u32 = 13;
+pub const CLK_OVL_BLENDER0: u32 = 14;
+pub const CLK_OVL_BLENDER1: u32 = 15;
+pub const CLK_OVL_BLENDER2: u32 = 16;
+pub const CLK_OVL_BLENDER3: u32 = 17;
+pub const CLK_OVL_BLENDER4: u32 = 18;
+pub const CLK_OVL_BLENDER5: u32 = 19;
+pub const CLK_OVL_BLENDER6: u32 = 20;
+pub const CLK_OVL_BLENDER7: u32 = 21;
+pub const CLK_OVL_BLENDER8: u32 = 22;
+pub const CLK_OVL_BLENDER9: u32 = 23;
+pub const CLK_OVL_OUTPROC0: u32 = 24;
+pub const CLK_OVL_OUTPROC1: u32 = 25;
+pub const CLK_OVL_OUTPROC2: u32 = 26;
+pub const CLK_OVL_OUTPROC3: u32 = 27;
+pub const CLK_OVL_OUTPROC4: u32 = 28;
+pub const CLK_OVL_OUTPROC5: u32 = 29;
+pub const CLK_OVL_MDP_RSZ0: u32 = 30;
+pub const CLK_OVL_MDP_RSZ1: u32 = 31;
+pub const CLK_OVL_DISP_WDMA0: u32 = 32;
+pub const CLK_OVL_DISP_WDMA1: u32 = 33;
+pub const CLK_OVL_UFBC_WDMA0: u32 = 34;
+pub const CLK_OVL_MDP_RDMA0: u32 = 35;
+pub const CLK_OVL_MDP_RDMA1: u32 = 36;
+pub const CLK_OVL_BWM0: u32 = 37;
+pub const CLK_OVL_DLI0: u32 = 38;
+pub const CLK_OVL_DLI1: u32 = 39;
+pub const CLK_OVL_DLI2: u32 = 40;
+pub const CLK_OVL_DLI3: u32 = 41;
+pub const CLK_OVL_DLI4: u32 = 42;
+pub const CLK_OVL_DLI5: u32 = 43;
+pub const CLK_OVL_DLI6: u32 = 44;
+pub const CLK_OVL_DLI7: u32 = 45;
+pub const CLK_OVL_DLI8: u32 = 46;
+pub const CLK_OVL_DLO0: u32 = 47;
+pub const CLK_OVL_DLO1: u32 = 48;
+pub const CLK_OVL_DLO2: u32 = 49;
+pub const CLK_OVL_DLO3: u32 = 50;
+pub const CLK_OVL_DLO4: u32 = 51;
+pub const CLK_OVL_DLO5: u32 = 52;
+pub const CLK_OVL_DLO6: u32 = 53;
+pub const CLK_OVL_DLO7: u32 = 54;
+pub const CLK_OVL_DLO8: u32 = 55;
+pub const CLK_OVL_DLO9: u32 = 56;
+pub const CLK_OVL_DLO10: u32 = 57;
+pub const CLK_OVL_DLO11: u32 = 58;
+pub const CLK_OVL_DLO12: u32 = 59;
+pub const CLK_OVLSYS_RELAY0: u32 = 60;
+pub const CLK_OVL_INLINEROT0: u32 = 61;
+pub const CLK_OVL_SMI: u32 = 62;
+pub const CLK_OVL_SMI_SMI: u32 = 63;
+
+
+/* OVLSYS1_CONFIG */
+pub const CLK_OVL1_OVLSYS_CONFIG: u32 = 0;
+pub const CLK_OVL1_OVL_FAKE_ENG0: u32 = 1;
+pub const CLK_OVL1_OVL_FAKE_ENG1: u32 = 2;
+pub const CLK_OVL1_OVL_MUTEX0: u32 = 3;
+pub const CLK_OVL1_OVL_EXDMA0: u32 = 4;
+pub const CLK_OVL1_OVL_EXDMA1: u32 = 5;
+pub const CLK_OVL1_OVL_EXDMA2: u32 = 6;
+pub const CLK_OVL1_OVL_EXDMA3: u32 = 7;
+pub const CLK_OVL1_OVL_EXDMA4: u32 = 8;
+pub const CLK_OVL1_OVL_EXDMA5: u32 = 9;
+pub const CLK_OVL1_OVL_EXDMA6: u32 = 10;
+pub const CLK_OVL1_OVL_EXDMA7: u32 = 11;
+pub const CLK_OVL1_OVL_EXDMA8: u32 = 12;
+pub const CLK_OVL1_OVL_EXDMA9: u32 = 13;
+pub const CLK_OVL1_OVL_BLENDER0: u32 = 14;
+pub const CLK_OVL1_OVL_BLENDER1: u32 = 15;
+pub const CLK_OVL1_OVL_BLENDER2: u32 = 16;
+pub const CLK_OVL1_OVL_BLENDER3: u32 = 17;
+pub const CLK_OVL1_OVL_BLENDER4: u32 = 18;
+pub const CLK_OVL1_OVL_BLENDER5: u32 = 19;
+pub const CLK_OVL1_OVL_BLENDER6: u32 = 20;
+pub const CLK_OVL1_OVL_BLENDER7: u32 = 21;
+pub const CLK_OVL1_OVL_BLENDER8: u32 = 22;
+pub const CLK_OVL1_OVL_BLENDER9: u32 = 23;
+pub const CLK_OVL1_OVL_OUTPROC0: u32 = 24;
+pub const CLK_OVL1_OVL_OUTPROC1: u32 = 25;
+pub const CLK_OVL1_OVL_OUTPROC2: u32 = 26;
+pub const CLK_OVL1_OVL_OUTPROC3: u32 = 27;
+pub const CLK_OVL1_OVL_OUTPROC4: u32 = 28;
+pub const CLK_OVL1_OVL_OUTPROC5: u32 = 29;
+pub const CLK_OVL1_OVL_MDP_RSZ0: u32 = 30;
+pub const CLK_OVL1_OVL_MDP_RSZ1: u32 = 31;
+pub const CLK_OVL1_OVL_DISP_WDMA0: u32 = 32;
+pub const CLK_OVL1_OVL_DISP_WDMA1: u32 = 33;
+pub const CLK_OVL1_OVL_UFBC_WDMA0: u32 = 34;
+pub const CLK_OVL1_OVL_MDP_RDMA0: u32 = 35;
+pub const CLK_OVL1_OVL_MDP_RDMA1: u32 = 36;
+pub const CLK_OVL1_OVL_BWM0: u32 = 37;
+pub const CLK_OVL1_DLI0: u32 = 38;
+pub const CLK_OVL1_DLI1: u32 = 39;
+pub const CLK_OVL1_DLI2: u32 = 40;
+pub const CLK_OVL1_DLI3: u32 = 41;
+pub const CLK_OVL1_DLI4: u32 = 42;
+pub const CLK_OVL1_DLI5: u32 = 43;
+pub const CLK_OVL1_DLI6: u32 = 44;
+pub const CLK_OVL1_DLI7: u32 = 45;
+pub const CLK_OVL1_DLI8: u32 = 46;
+pub const CLK_OVL1_DLO0: u32 = 47;
+pub const CLK_OVL1_DLO1: u32 = 48;
+pub const CLK_OVL1_DLO2: u32 = 49;
+pub const CLK_OVL1_DLO3: u32 = 50;
+pub const CLK_OVL1_DLO4: u32 = 51;
+pub const CLK_OVL1_DLO5: u32 = 52;
+pub const CLK_OVL1_DLO6: u32 = 53;
+pub const CLK_OVL1_DLO7: u32 = 54;
+pub const CLK_OVL1_DLO8: u32 = 55;
+pub const CLK_OVL1_DLO9: u32 = 56;
+pub const CLK_OVL1_DLO10: u32 = 57;
+pub const CLK_OVL1_DLO11: u32 = 58;
+pub const CLK_OVL1_DLO12: u32 = 59;
+pub const CLK_OVL1_OVLSYS_RELAY0: u32 = 60;
+pub const CLK_OVL1_OVL_INLINEROT0: u32 = 61;
+pub const CLK_OVL1_SMI: u32 = 62;
+
+
+/* VDEC_SOC_GCON_BASE */
+pub const CLK_VDE1_LARB1_CKEN: u32 = 0;
+pub const CLK_VDE1_LAT_CKEN: u32 = 1;
+pub const CLK_VDE1_LAT_ACTIVE: u32 = 2;
+pub const CLK_VDE1_LAT_CKEN_ENG: u32 = 3;
+pub const CLK_VDE1_VDEC_CKEN: u32 = 4;
+pub const CLK_VDE1_VDEC_ACTIVE: u32 = 5;
+pub const CLK_VDE1_VDEC_CKEN_ENG: u32 = 6;
+pub const CLK_VDE1_VDEC_SOC_APTV_EN: u32 = 7;
+pub const CLK_VDE1_VDEC_SOC_APTV_TOP_EN: u32 = 8;
+pub const CLK_VDE1_VDEC_SOC_IPS_EN: u32 = 9;
+
+/* VDEC_GCON_BASE */
+pub const CLK_VDE2_LARB1_CKEN: u32 = 0;
+pub const CLK_VDE2_LAT_CKEN: u32 = 1;
+pub const CLK_VDE2_LAT_ACTIVE: u32 = 2;
+pub const CLK_VDE2_LAT_CKEN_ENG: u32 = 3;
+pub const CLK_VDE2_VDEC_CKEN: u32 = 4;
+pub const CLK_VDE2_VDEC_ACTIVE: u32 = 5;
+pub const CLK_VDE2_VDEC_CKEN_ENG: u32 = 6;
+
+/* VENC_GCON */
+pub const CLK_VEN1_CKE0_LARB: u32 = 0;
+pub const CLK_VEN1_CKE1_VENC: u32 = 1;
+pub const CLK_VEN1_CKE2_JPGENC: u32 = 2;
+pub const CLK_VEN1_CKE3_JPGDEC: u32 = 3;
+pub const CLK_VEN1_CKE4_JPGDEC_C1: u32 = 4;
+pub const CLK_VEN1_CKE5_GALS: u32 = 5;
+pub const CLK_VEN1_CKE29_VENC_ADAB_CTRL: u32 = 6;
+pub const CLK_VEN1_CKE29_VENC_XPC_CTRL: u32 = 7;
+pub const CLK_VEN1_CKE6_GALS_SRAM: u32 = 8;
+pub const CLK_VEN1_RES_FLAT: u32 = 9;
+
+/* VENC_GCON_CORE1 */
+pub const CLK_VEN2_CKE0_LARB: u32 = 0;
+pub const CLK_VEN2_CKE1_VENC: u32 = 1;
+pub const CLK_VEN2_CKE2_JPGENC: u32 = 2;
+pub const CLK_VEN2_CKE3_JPGDEC: u32 = 3;
+pub const CLK_VEN2_CKE5_GALS: u32 = 4;
+pub const CLK_VEN2_CKE29_VENC_XPC_CTRL: u32 = 5;
+pub const CLK_VEN2_CKE6_GALS_SRAM: u32 = 6;
+pub const CLK_VEN2_RES_FLAT: u32 = 7;
+
+/* VENC_GCON_CORE2 */
+pub const CLK_VEN_C2_CKE0_LARB: u32 = 0;
+pub const CLK_VEN_C2_CKE1_VENC: u32 = 1;
+pub const CLK_VEN_C2_CKE5_GALS: u32 = 2;
+pub const CLK_VEN_C2_CKE29_VENC_XPC_CTRL: u32 = 3;
+pub const CLK_VEN_C2_CKE6_GALS_SRAM: u32 = 4;
+pub const CLK_VEN_C2_RES_FLAT: u32 = 5;
+
+/* MDPSYS_CONFIG */
+pub const CLK_MDP_MDP_MUTEX0: u32 = 0;
+pub const CLK_MDP_SMI0: u32 = 1;
+pub const CLK_MDP_SMI0_SMI: u32 = 2;
+pub const CLK_MDP_APB_BUS: u32 = 3;
+pub const CLK_MDP_MDP_RDMA0: u32 = 4;
+pub const CLK_MDP_MDP_RDMA1: u32 = 5;
+pub const CLK_MDP_MDP_RDMA2: u32 = 6;
+pub const CLK_MDP_MDP_BIRSZ0: u32 = 7;
+pub const CLK_MDP_MDP_HDR0: u32 = 8;
+pub const CLK_MDP_MDP_AAL0: u32 = 9;
+pub const CLK_MDP_MDP_RSZ0: u32 = 10;
+pub const CLK_MDP_MDP_RSZ2: u32 = 11;
+pub const CLK_MDP_MDP_TDSHP0: u32 = 12;
+pub const CLK_MDP_MDP_COLOR0: u32 = 13;
+pub const CLK_MDP_MDP_WROT0: u32 = 14;
+pub const CLK_MDP_MDP_WROT1: u32 = 15;
+pub const CLK_MDP_MDP_WROT2: u32 = 16;
+pub const CLK_MDP_MDP_FAKE_ENG0: u32 = 17;
+pub const CLK_MDP_APB_DB: u32 = 18;
+pub const CLK_MDP_MDP_DLI_ASYNC0: u32 = 19;
+pub const CLK_MDP_MDP_DLI_ASYNC1: u32 = 20;
+pub const CLK_MDP_MDP_DLO_ASYNC0: u32 = 21;
+pub const CLK_MDP_MDP_DLO_ASYNC1: u32 = 22;
+pub const CLK_MDP_MDP_DLI_ASYNC2: u32 = 23;
+pub const CLK_MDP_MDP_DLO_ASYNC2: u32 = 24;
+pub const CLK_MDP_MDP_DLO_ASYNC3: u32 = 25;
+pub const CLK_MDP_IMG_DL_ASYNC0: u32 = 26;
+pub const CLK_MDP_MDP_RROT0: u32 = 27;
+pub const CLK_MDP_MDP_MERGE0: u32 = 28;
+pub const CLK_MDP_MDP_C3D0: u32 = 29;
+pub const CLK_MDP_MDP_FG0: u32 = 30;
+pub const CLK_MDP_MDP_CLA2: u32 = 31;
+pub const CLK_MDP_MDP_DLO_ASYNC4: u32 = 32;
+pub const CLK_MDP_VPP_RSZ0: u32 = 33;
+pub const CLK_MDP_VPP_RSZ1: u32 = 34;
+pub const CLK_MDP_MDP_DLO_ASYNC5: u32 = 35;
+pub const CLK_MDP_IMG0: u32 = 36;
+pub const CLK_MDP_F26M: u32 = 37;
+pub const CLK_MDP_IMG_DL_RELAY0: u32 = 38;
+pub const CLK_MDP_IMG_DL_RELAY1: u32 = 39;
+
+/* MDPSYS1_CONFIG */
+pub const CLK_MDP1_MDP_MUTEX0: u32 = 0;
+pub const CLK_MDP1_SMI0: u32 = 1;
+pub const CLK_MDP1_SMI0_SMI: u32 = 2;
+pub const CLK_MDP1_APB_BUS: u32 = 3;
+pub const CLK_MDP1_MDP_RDMA0: u32 = 4;
+pub const CLK_MDP1_MDP_RDMA1: u32 = 5;
+pub const CLK_MDP1_MDP_RDMA2: u32 = 6;
+pub const CLK_MDP1_MDP_BIRSZ0: u32 = 7;
+pub const CLK_MDP1_MDP_HDR0: u32 = 8;
+pub const CLK_MDP1_MDP_AAL0: u32 = 9;
+pub const CLK_MDP1_MDP_RSZ0: u32 = 10;
+pub const CLK_MDP1_MDP_RSZ2: u32 = 11;
+pub const CLK_MDP1_MDP_TDSHP0: u32 = 12;
+pub const CLK_MDP1_MDP_COLOR0: u32 = 13;
+pub const CLK_MDP1_MDP_WROT0: u32 = 14;
+pub const CLK_MDP1_MDP_WROT1: u32 = 15;
+pub const CLK_MDP1_MDP_WROT2: u32 = 16;
+pub const CLK_MDP1_MDP_FAKE_ENG0: u32 = 17;
+pub const CLK_MDP1_APB_DB: u32 = 18;
+pub const CLK_MDP1_MDP_DLI_ASYNC0: u32 = 19;
+pub const CLK_MDP1_MDP_DLI_ASYNC1: u32 = 20;
+pub const CLK_MDP1_MDP_DLO_ASYNC0: u32 = 21;
+pub const CLK_MDP1_MDP_DLO_ASYNC1: u32 = 22;
+pub const CLK_MDP1_MDP_DLI_ASYNC2: u32 = 23;
+pub const CLK_MDP1_MDP_DLO_ASYNC2: u32 = 24;
+pub const CLK_MDP1_MDP_DLO_ASYNC3: u32 = 25;
+pub const CLK_MDP1_IMG_DL_ASYNC0: u32 = 26;
+pub const CLK_MDP1_MDP_RROT0: u32 = 27;
+pub const CLK_MDP1_MDP_MERGE0: u32 = 28;
+pub const CLK_MDP1_MDP_C3D0: u32 = 29;
+pub const CLK_MDP1_MDP_FG0: u32 = 30;
+pub const CLK_MDP1_MDP_CLA2: u32 = 31;
+pub const CLK_MDP1_MDP_DLO_ASYNC4: u32 = 32;
+pub const CLK_MDP1_VPP_RSZ0: u32 = 33;
+pub const CLK_MDP1_VPP_RSZ1: u32 = 34;
+pub const CLK_MDP1_MDP_DLO_ASYNC5: u32 = 35;
+pub const CLK_MDP1_IMG0: u32 = 36;
+pub const CLK_MDP1_F26M: u32 = 37;
+pub const CLK_MDP1_IMG_DL_RELAY0: u32 = 38;
+pub const CLK_MDP1_IMG_DL_RELAY1: u32 = 39;
+
+/* DISP_VDISP_AO_CONFIG */
+pub const CLK_MM_V_DISP_VDISP_AO_CONFIG: u32 = 0;
+pub const CLK_MM_V_DISP_DPC: u32 = 1;
+pub const CLK_MM_V_SMI_SUB_SOMM0: u32 = 2;
+
+/* MFGPLL_PLL_CTRL */
+pub const CLK_MFG_AO_MFGPLL: u32 = 0;
+
+/* MFGPLL_SC0_PLL_CTRL */
+pub const CLK_MFGSC0_AO_MFGPLL_SC0: u32 = 0;
+
+/* MFGPLL_SC1_PLL_CTRL */
+pub const CLK_MFGSC1_AO_MFGPLL_SC1: u32 = 0;
+
+/* CCIPLL_PLL_CTRL */
+pub const CLK_CCIPLL: u32 = 0;
+
+/* ARMPLL_LL_PLL_CTRL */
+pub const CLK_CPLL_ARMPLL_LL: u32 = 0;
+
+/* ARMPLL_BL_PLL_CTRL */
+pub const CLK_CPBL_ARMPLL_BL: u32 = 0;
+
+/* ARMPLL_B_PLL_CTRL */
+pub const CLK_CPB_ARMPLL_B: u32 = 0;
+
+/* PTPPLL_PLL_CTRL */
+pub const CLK_PTPPLL: u32 = 0;
+
+#endif /* _DT_BINDINGS_CLK_MT8196_H */
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

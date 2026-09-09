@@ -1,0 +1,216 @@
+/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
+/* Do not edit directly, auto-generated from: */
+/*	Documentation/netlink/specs/nfsd.yaml */
+/* YNL-GEN uapi header */
+/* To regenerate run: tools/net/ynl/ynl-regen.sh */
+
+pub const NFSD_FAMILY_NAME: &str = "nfsd";
+pub const NFSD_FAMILY_VERSION: u32 = 1;
+
+pub const NFSD_CACHE_TYPE_SVC_EXPORT: u32 = 1;
+pub const NFSD_CACHE_TYPE_EXPKEY: u32 = 2;
+
+/*
+ * These flags are ordered to match the NFSEXP_* flags in
+ * include/linux/nfsd/export.h
+ */
+pub const NFSD_EXPORT_FLAGS_READONLY: u32 = 1;
+pub const NFSD_EXPORT_FLAGS_INSECURE_PORT: u32 = 2;
+pub const NFSD_EXPORT_FLAGS_ROOTSQUASH: u32 = 4;
+pub const NFSD_EXPORT_FLAGS_ALLSQUASH: u32 = 8;
+pub const NFSD_EXPORT_FLAGS_ASYNC: u32 = 16;
+pub const NFSD_EXPORT_FLAGS_GATHERED_WRITES: u32 = 32;
+pub const NFSD_EXPORT_FLAGS_NOREADDIRPLUS: u32 = 64;
+pub const NFSD_EXPORT_FLAGS_SECURITY_LABEL: u32 = 128;
+pub const NFSD_EXPORT_FLAGS_SIGN_FH: u32 = 256;
+pub const NFSD_EXPORT_FLAGS_NOHIDE: u32 = 512;
+pub const NFSD_EXPORT_FLAGS_NOSUBTREECHECK: u32 = 1024;
+pub const NFSD_EXPORT_FLAGS_NOAUTHNLM: u32 = 2048;
+pub const NFSD_EXPORT_FLAGS_MSNFS: u32 = 4096;
+pub const NFSD_EXPORT_FLAGS_FSID: u32 = 8192;
+pub const NFSD_EXPORT_FLAGS_CROSSMOUNT: u32 = 16384;
+pub const NFSD_EXPORT_FLAGS_NOACL: u32 = 32768;
+pub const NFSD_EXPORT_FLAGS_V4ROOT: u32 = 65536;
+pub const NFSD_EXPORT_FLAGS_PNFS: u32 = 131072;
+
+/*
+ * These flags are ordered to match the NFSEXP_XPRTSEC_* flags in
+ * include/linux/nfsd/export.h
+ */
+pub const NFSD_XPRTSEC_MODE_NONE: u32 = 1;
+pub const NFSD_XPRTSEC_MODE_TLS: u32 = 2;
+pub const NFSD_XPRTSEC_MODE_MTLS: u32 = 4;
+
+pub const NFSD_A_CACHE_NOTIFY_CACHE_TYPE: u32 = 1;
+pub const __NFSD_A_CACHE_NOTIFY_MAX: u32 = 2;
+pub const NFSD_A_CACHE_NOTIFY_MAX: u32 = __NFSD_A_CACHE_NOTIFY_MAX - 1;
+
+pub const NFSD_A_RPC_STATUS_XID: u32 = 1;
+pub const NFSD_A_RPC_STATUS_FLAGS: u32 = 2;
+pub const NFSD_A_RPC_STATUS_PROG: u32 = 3;
+pub const NFSD_A_RPC_STATUS_VERSION: u32 = 4;
+pub const NFSD_A_RPC_STATUS_PROC: u32 = 5;
+pub const NFSD_A_RPC_STATUS_SERVICE_TIME: u32 = 6;
+pub const NFSD_A_RPC_STATUS_PAD: u32 = 7;
+pub const NFSD_A_RPC_STATUS_SADDR4: u32 = 8;
+pub const NFSD_A_RPC_STATUS_DADDR4: u32 = 9;
+pub const NFSD_A_RPC_STATUS_SADDR6: u32 = 10;
+pub const NFSD_A_RPC_STATUS_DADDR6: u32 = 11;
+pub const NFSD_A_RPC_STATUS_SPORT: u32 = 12;
+pub const NFSD_A_RPC_STATUS_DPORT: u32 = 13;
+pub const NFSD_A_RPC_STATUS_COMPOUND_OPS: u32 = 14;
+pub const __NFSD_A_RPC_STATUS_MAX: u32 = 15;
+pub const NFSD_A_RPC_STATUS_MAX: u32 = __NFSD_A_RPC_STATUS_MAX - 1;
+
+pub const NFSD_A_SERVER_THREADS: u32 = 1;
+pub const NFSD_A_SERVER_GRACETIME: u32 = 2;
+pub const NFSD_A_SERVER_LEASETIME: u32 = 3;
+pub const NFSD_A_SERVER_SCOPE: u32 = 4;
+pub const NFSD_A_SERVER_MIN_THREADS: u32 = 5;
+pub const NFSD_A_SERVER_FH_KEY: u32 = 6;
+pub const __NFSD_A_SERVER_MAX: u32 = 7;
+pub const NFSD_A_SERVER_MAX: u32 = __NFSD_A_SERVER_MAX - 1;
+
+pub const NFSD_A_VERSION_MAJOR: u32 = 1;
+pub const NFSD_A_VERSION_MINOR: u32 = 2;
+pub const NFSD_A_VERSION_ENABLED: u32 = 3;
+pub const __NFSD_A_VERSION_MAX: u32 = 4;
+pub const NFSD_A_VERSION_MAX: u32 = __NFSD_A_VERSION_MAX - 1;
+
+pub const NFSD_A_SERVER_PROTO_VERSION: u32 = 1;
+pub const __NFSD_A_SERVER_PROTO_MAX: u32 = 2;
+pub const NFSD_A_SERVER_PROTO_MAX: u32 = __NFSD_A_SERVER_PROTO_MAX - 1;
+
+pub const NFSD_A_SOCK_ADDR: u32 = 1;
+pub const NFSD_A_SOCK_TRANSPORT_NAME: u32 = 2;
+pub const __NFSD_A_SOCK_MAX: u32 = 3;
+pub const NFSD_A_SOCK_MAX: u32 = __NFSD_A_SOCK_MAX - 1;
+
+pub const NFSD_A_SERVER_SOCK_ADDR: u32 = 1;
+pub const __NFSD_A_SERVER_SOCK_MAX: u32 = 2;
+pub const NFSD_A_SERVER_SOCK_MAX: u32 = __NFSD_A_SERVER_SOCK_MAX - 1;
+
+pub const NFSD_A_POOL_MODE_MODE: u32 = 1;
+pub const NFSD_A_POOL_MODE_NPOOLS: u32 = 2;
+pub const __NFSD_A_POOL_MODE_MAX: u32 = 3;
+pub const NFSD_A_POOL_MODE_MAX: u32 = __NFSD_A_POOL_MODE_MAX - 1;
+
+pub const NFSD_A_FSLOCATION_HOST: u32 = 1;
+pub const NFSD_A_FSLOCATION_PATH: u32 = 2;
+pub const __NFSD_A_FSLOCATION_MAX: u32 = 3;
+pub const NFSD_A_FSLOCATION_MAX: u32 = __NFSD_A_FSLOCATION_MAX - 1;
+
+pub const NFSD_A_FSLOCATIONS_LOCATION: u32 = 1;
+pub const __NFSD_A_FSLOCATIONS_MAX: u32 = 2;
+pub const NFSD_A_FSLOCATIONS_MAX: u32 = __NFSD_A_FSLOCATIONS_MAX - 1;
+
+pub const NFSD_A_AUTH_FLAVOR_PSEUDOFLAVOR: u32 = 1;
+pub const NFSD_A_AUTH_FLAVOR_FLAGS: u32 = 2;
+pub const __NFSD_A_AUTH_FLAVOR_MAX: u32 = 3;
+pub const NFSD_A_AUTH_FLAVOR_MAX: u32 = __NFSD_A_AUTH_FLAVOR_MAX - 1;
+
+pub const NFSD_A_SVC_EXPORT_SEQNO: u32 = 1;
+pub const NFSD_A_SVC_EXPORT_CLIENT: u32 = 2;
+pub const NFSD_A_SVC_EXPORT_PATH: u32 = 3;
+pub const NFSD_A_SVC_EXPORT_NEGATIVE: u32 = 4;
+pub const NFSD_A_SVC_EXPORT_EXPIRY: u32 = 5;
+pub const NFSD_A_SVC_EXPORT_ANON_UID: u32 = 6;
+pub const NFSD_A_SVC_EXPORT_ANON_GID: u32 = 7;
+pub const NFSD_A_SVC_EXPORT_FSLOCATIONS: u32 = 8;
+pub const NFSD_A_SVC_EXPORT_UUID: u32 = 9;
+pub const NFSD_A_SVC_EXPORT_SECINFO: u32 = 10;
+pub const NFSD_A_SVC_EXPORT_XPRTSEC: u32 = 11;
+pub const NFSD_A_SVC_EXPORT_FLAGS: u32 = 12;
+pub const NFSD_A_SVC_EXPORT_FSID: u32 = 13;
+pub const __NFSD_A_SVC_EXPORT_MAX: u32 = 14;
+pub const NFSD_A_SVC_EXPORT_MAX: u32 = __NFSD_A_SVC_EXPORT_MAX - 1;
+
+pub const NFSD_A_SVC_EXPORT_REQS_REQUESTS: u32 = 1;
+pub const __NFSD_A_SVC_EXPORT_REQS_MAX: u32 = 2;
+pub const NFSD_A_SVC_EXPORT_REQS_MAX: u32 = __NFSD_A_SVC_EXPORT_REQS_MAX - 1;
+
+pub const NFSD_A_EXPKEY_SEQNO: u32 = 1;
+pub const NFSD_A_EXPKEY_CLIENT: u32 = 2;
+pub const NFSD_A_EXPKEY_FSIDTYPE: u32 = 3;
+pub const NFSD_A_EXPKEY_FSID: u32 = 4;
+pub const NFSD_A_EXPKEY_NEGATIVE: u32 = 5;
+pub const NFSD_A_EXPKEY_EXPIRY: u32 = 6;
+pub const NFSD_A_EXPKEY_PATH: u32 = 7;
+pub const __NFSD_A_EXPKEY_MAX: u32 = 8;
+pub const NFSD_A_EXPKEY_MAX: u32 = __NFSD_A_EXPKEY_MAX - 1;
+
+pub const NFSD_A_EXPKEY_REQS_REQUESTS: u32 = 1;
+pub const __NFSD_A_EXPKEY_REQS_MAX: u32 = 2;
+pub const NFSD_A_EXPKEY_REQS_MAX: u32 = __NFSD_A_EXPKEY_REQS_MAX - 1;
+
+pub const NFSD_A_CACHE_FLUSH_MASK: u32 = 1;
+pub const __NFSD_A_CACHE_FLUSH_MAX: u32 = 2;
+pub const NFSD_A_CACHE_FLUSH_MAX: u32 = __NFSD_A_CACHE_FLUSH_MAX - 1;
+
+pub const NFSD_A_UNLOCK_IP_ADDRESS: u32 = 1;
+pub const __NFSD_A_UNLOCK_IP_MAX: u32 = 2;
+pub const NFSD_A_UNLOCK_IP_MAX: u32 = __NFSD_A_UNLOCK_IP_MAX - 1;
+
+pub const NFSD_A_UNLOCK_FILESYSTEM_PATH: u32 = 1;
+pub const __NFSD_A_UNLOCK_FILESYSTEM_MAX: u32 = 2;
+pub const NFSD_A_UNLOCK_FILESYSTEM_MAX: u32 = __NFSD_A_UNLOCK_FILESYSTEM_MAX - 1;
+
+pub const NFSD_A_UNLOCK_EXPORT_PATH: u32 = 1;
+pub const __NFSD_A_UNLOCK_EXPORT_MAX: u32 = 2;
+pub const NFSD_A_UNLOCK_EXPORT_MAX: u32 = __NFSD_A_UNLOCK_EXPORT_MAX - 1;
+
+pub const NFSD_A_SERVER_PROC_ENTRY_OP: u32 = 1;
+pub const NFSD_A_SERVER_PROC_ENTRY_COUNT: u32 = 2;
+pub const NFSD_A_SERVER_PROC_ENTRY_PAD: u32 = 3;
+pub const __NFSD_A_SERVER_PROC_ENTRY_MAX: u32 = 4;
+pub const NFSD_A_SERVER_PROC_ENTRY_MAX: u32 = __NFSD_A_SERVER_PROC_ENTRY_MAX - 1;
+
+pub const NFSD_A_SERVER_STATS_RC_HITS: u32 = 1;
+pub const NFSD_A_SERVER_STATS_RC_MISSES: u32 = 2;
+pub const NFSD_A_SERVER_STATS_RC_NOCACHE: u32 = 3;
+pub const NFSD_A_SERVER_STATS_PAD: u32 = 4;
+pub const NFSD_A_SERVER_STATS_FH_STALE: u32 = 5;
+pub const NFSD_A_SERVER_STATS_IO_READ: u32 = 6;
+pub const NFSD_A_SERVER_STATS_IO_WRITE: u32 = 7;
+pub const NFSD_A_SERVER_STATS_NETCNT: u32 = 8;
+pub const NFSD_A_SERVER_STATS_NETUDPCNT: u32 = 9;
+pub const NFSD_A_SERVER_STATS_NETTCPCNT: u32 = 10;
+pub const NFSD_A_SERVER_STATS_NETTCPCONN: u32 = 11;
+pub const NFSD_A_SERVER_STATS_RPCCNT: u32 = 12;
+pub const NFSD_A_SERVER_STATS_RPCBADFMT: u32 = 13;
+pub const NFSD_A_SERVER_STATS_RPCBADAUTH: u32 = 14;
+pub const NFSD_A_SERVER_STATS_RPCBADCLNT: u32 = 15;
+pub const NFSD_A_SERVER_STATS_PROC2_OPS: u32 = 16;
+pub const NFSD_A_SERVER_STATS_PROC3_OPS: u32 = 17;
+pub const NFSD_A_SERVER_STATS_PROC4_OPS: u32 = 18;
+pub const NFSD_A_SERVER_STATS_PROC4OPS_OPS: u32 = 19;
+pub const NFSD_A_SERVER_STATS_PROC4CB_OPS: u32 = 20;
+pub const __NFSD_A_SERVER_STATS_MAX: u32 = 21;
+pub const NFSD_A_SERVER_STATS_MAX: u32 = __NFSD_A_SERVER_STATS_MAX - 1;
+
+pub const NFSD_CMD_RPC_STATUS_GET: u32 = 1;
+pub const NFSD_CMD_THREADS_SET: u32 = 2;
+pub const NFSD_CMD_THREADS_GET: u32 = 3;
+pub const NFSD_CMD_VERSION_SET: u32 = 4;
+pub const NFSD_CMD_VERSION_GET: u32 = 5;
+pub const NFSD_CMD_LISTENER_SET: u32 = 6;
+pub const NFSD_CMD_LISTENER_GET: u32 = 7;
+pub const NFSD_CMD_POOL_MODE_SET: u32 = 8;
+pub const NFSD_CMD_POOL_MODE_GET: u32 = 9;
+pub const NFSD_CMD_CACHE_NOTIFY: u32 = 10;
+pub const NFSD_CMD_SVC_EXPORT_GET_REQS: u32 = 11;
+pub const NFSD_CMD_SVC_EXPORT_SET_REQS: u32 = 12;
+pub const NFSD_CMD_EXPKEY_GET_REQS: u32 = 13;
+pub const NFSD_CMD_EXPKEY_SET_REQS: u32 = 14;
+pub const NFSD_CMD_CACHE_FLUSH: u32 = 15;
+pub const NFSD_CMD_UNLOCK_IP: u32 = 16;
+pub const NFSD_CMD_UNLOCK_FILESYSTEM: u32 = 17;
+pub const NFSD_CMD_UNLOCK_EXPORT: u32 = 18;
+pub const NFSD_CMD_SERVER_STATS_GET: u32 = 19;
+pub const __NFSD_CMD_MAX: u32 = 20;
+pub const NFSD_CMD_MAX: u32 = __NFSD_CMD_MAX - 1;
+
+pub const NFSD_MCGRP_NONE: &str = "none";
+pub const NFSD_MCGRP_EXPORTD: &str = "exportd";
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

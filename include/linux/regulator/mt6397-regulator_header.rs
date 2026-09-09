@@ -1,0 +1,39 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2014 MediaTek Inc.
+ * Author: Flora Fu <flora.fu@mediatek.com>
+ */
+
+#[repr(i32)]
+pub enum Mt6397RegulatorId {
+    MT6397_ID_VPCA15 = 0,
+    MT6397_ID_VPCA7,
+    MT6397_ID_VSRAMCA15,
+    MT6397_ID_VSRAMCA7,
+    MT6397_ID_VCORE,
+    MT6397_ID_VGPU,
+    MT6397_ID_VDRM,
+    MT6397_ID_VIO18 = 7,
+    MT6397_ID_VTCXO,
+    MT6397_ID_VA28,
+    MT6397_ID_VCAMA,
+    MT6397_ID_VIO28,
+    MT6397_ID_VUSB,
+    MT6397_ID_VMC,
+    MT6397_ID_VMCH,
+    MT6397_ID_VEMC3V3,
+    MT6397_ID_VGP1,
+    MT6397_ID_VGP2,
+    MT6397_ID_VGP3,
+    MT6397_ID_VGP4,
+    MT6397_ID_VGP5,
+    MT6397_ID_VGP6,
+    MT6397_ID_VIBR,
+    MT6397_ID_RG_MAX,
+}
+
+pub const MT6397_MAX_REGULATOR: Mt6397RegulatorId = Mt6397RegulatorId::MT6397_ID_RG_MAX;
+pub const MT6397_REGULATOR_ID97: u32 = 0x97;
+pub const MT6397_REGULATOR_ID91: u32 = 0x91;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

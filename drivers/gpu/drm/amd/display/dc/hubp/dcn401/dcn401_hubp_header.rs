@@ -1,0 +1,289 @@
+/*
+ * Copyright 2023 Advanced Micro Devices, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Authors: AMD
+ */
+
+// Dependencies supplied by the surrounding translation unit:
+// dcn20/dcn20_hubp.h, dcn21/dcn21_hubp.h, dcn30/dcn30_hubp.h,
+// dcn31/dcn31_hubp.h, dcn32/dcn32_hubp.h, and dml2 register definitions.
+
+#[macro_export]
+macro_rules! HUBP_3DLUT_FL_REG_LIST_DCN401 {
+    ($inst:expr) => {
+        SRI_ARR_US!(_3DLUT_FL_CONFIG, HUBP, $inst),
+        SRI_ARR_US!(_3DLUT_FL_BIAS_SCALE, HUBP, $inst),
+        SRI_ARR!(HUBP_3DLUT_ADDRESS_HIGH, CURSOR0_, $inst),
+        SRI_ARR!(HUBP_3DLUT_ADDRESS_LOW, CURSOR0_, $inst),
+        SRI_ARR!(HUBP_3DLUT_CONTROL, CURSOR0_, $inst),
+        SRI_ARR!(HUBP_3DLUT_DLG_PARAM, CURSOR0_, $inst)
+    };
+}
+
+// Register field list. HUBP_SF! and HUBP_MASK_SH_LIST_DCN_VM! are supplied by
+// the surrounding register-definition translation.
+#[macro_export]
+macro_rules! HUBP_MASK_SH_LIST_DCN401 {
+    ($mask_sh:expr) => {
+        HUBP_SF!(HUBPREQ0_DCN_DMDATA_VM_CNTL, REFCYC_PER_VM_DMDATA, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_FAULT_STATUS, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_FAULT_STATUS_CLEAR, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_UNDERFLOW_STATUS, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_LATE_STATUS, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_UNDERFLOW_STATUS_CLEAR, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_DMDATA_VM_CNTL, DMDATA_VM_DONE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_BLANK_EN, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_TTU_DISABLE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_UNDERFLOW_STATUS, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_UNDERFLOW_CLEAR, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_NO_OUTSTANDING_REQ, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_VTG_SEL, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_UNBOUNDED_REQ_MODE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_IN_BLANK, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_SOFT_RESET, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_ADDR_CONFIG, NUM_PIPES, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_ADDR_CONFIG, PIPE_INTERLEAVE, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_ADDR_CONFIG, MAX_COMPRESSED_FRAGS, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_ADDR_CONFIG, NUM_PKRS, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_TILING_CONFIG, SW_MODE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_PITCH, PITCH, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_PITCH_C, PITCH_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SURFACE_CONFIG, SURFACE_PIXEL_FORMAT, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_FLIP_CONTROL, SURFACE_FLIP_TYPE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_FLIP_CONTROL, SURFACE_FLIP_IN_STEREOSYNC, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_FLIP_CONTROL, SURFACE_FLIP_PENDING, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_FLIP_CONTROL, SURFACE_UPDATE_LOCK, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION, PRI_VIEWPORT_WIDTH, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION, PRI_VIEWPORT_HEIGHT, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_PRI_VIEWPORT_START, PRI_VIEWPORT_X_START, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_PRI_VIEWPORT_START, PRI_VIEWPORT_Y_START, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SEC_VIEWPORT_DIMENSION, SEC_VIEWPORT_WIDTH, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SEC_VIEWPORT_DIMENSION, SEC_VIEWPORT_HEIGHT, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SEC_VIEWPORT_START, SEC_VIEWPORT_X_START, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SEC_VIEWPORT_START, SEC_VIEWPORT_Y_START, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION_C, PRI_VIEWPORT_WIDTH_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION_C, PRI_VIEWPORT_HEIGHT_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_PRI_VIEWPORT_START_C, PRI_VIEWPORT_X_START_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_PRI_VIEWPORT_START_C, PRI_VIEWPORT_Y_START_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SEC_VIEWPORT_DIMENSION_C, SEC_VIEWPORT_WIDTH_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SEC_VIEWPORT_DIMENSION_C, SEC_VIEWPORT_HEIGHT_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SEC_VIEWPORT_START_C, SEC_VIEWPORT_X_START_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SEC_VIEWPORT_START_C, SEC_VIEWPORT_Y_START_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_PRIMARY_SURFACE_ADDRESS_HIGH, PRIMARY_SURFACE_ADDRESS_HIGH, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_PRIMARY_SURFACE_ADDRESS, PRIMARY_SURFACE_ADDRESS, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SECONDARY_SURFACE_ADDRESS_HIGH, SECONDARY_SURFACE_ADDRESS_HIGH, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SECONDARY_SURFACE_ADDRESS, SECONDARY_SURFACE_ADDRESS, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_PRIMARY_SURFACE_ADDRESS_HIGH_C, PRIMARY_SURFACE_ADDRESS_HIGH_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_PRIMARY_SURFACE_ADDRESS_C, PRIMARY_SURFACE_ADDRESS_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SECONDARY_SURFACE_ADDRESS_HIGH_C, SECONDARY_SURFACE_ADDRESS_HIGH_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SECONDARY_SURFACE_ADDRESS_C, SECONDARY_SURFACE_ADDRESS_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_INUSE, SURFACE_INUSE_ADDRESS, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_INUSE_HIGH, SURFACE_INUSE_ADDRESS_HIGH, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_INUSE_C, SURFACE_INUSE_ADDRESS_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_INUSE_HIGH_C, SURFACE_INUSE_ADDRESS_HIGH_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_EARLIEST_INUSE, SURFACE_EARLIEST_INUSE_ADDRESS, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_EARLIEST_INUSE_HIGH, SURFACE_EARLIEST_INUSE_ADDRESS_HIGH, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_EARLIEST_INUSE_C, SURFACE_EARLIEST_INUSE_ADDRESS_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_EARLIEST_INUSE_HIGH_C, SURFACE_EARLIEST_INUSE_ADDRESS_HIGH_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_CONTROL, PRIMARY_SURFACE_TMZ, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_CONTROL, PRIMARY_SURFACE_TMZ_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_CONTROL, PRIMARY_SURFACE_DCC_EN, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_CONTROL, SECONDARY_SURFACE_TMZ, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_CONTROL, SECONDARY_SURFACE_TMZ_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_CONTROL, SECONDARY_SURFACE_DCC_EN, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_SURFACE_FLIP_INTERRUPT, SURFACE_FLIP_INT_MASK, $mask_sh),
+        HUBP_SF!(HUBPRET0_HUBPRET_CONTROL, DET_BUF_PLANE1_BASE_ADDRESS, $mask_sh),
+        HUBP_SF!(HUBPRET0_HUBPRET_CONTROL, CROSSBAR_SRC_CB_B, $mask_sh),
+        HUBP_SF!(HUBPRET0_HUBPRET_CONTROL, CROSSBAR_SRC_CR_R, $mask_sh),
+        HUBP_SF!(HUBPRET0_HUBPRET_CONTROL, CROSSBAR_SRC_Y_G, $mask_sh),
+        HUBP_SF!(HUBPRET0_HUBPRET_CONTROL, CROSSBAR_SRC_ALPHA, $mask_sh),
+        HUBP_SF!(HUBPRET0_HUBPRET_CONTROL, PACK_3TO2_ELEMENT_DISABLE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_EXPANSION_MODE, DRQ_EXPANSION_MODE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_EXPANSION_MODE, PRQ_EXPANSION_MODE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_EXPANSION_MODE, MRQ_EXPANSION_MODE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_EXPANSION_MODE, CRQ_EXPANSION_MODE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG, CHUNK_SIZE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG, MIN_CHUNK_SIZE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG, DPTE_GROUP_SIZE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG, SWATH_HEIGHT, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG, PTE_ROW_HEIGHT_LINEAR, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG_C, CHUNK_SIZE_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG_C, MIN_CHUNK_SIZE_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG_C, DPTE_GROUP_SIZE_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG_C, SWATH_HEIGHT_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG_C, PTE_ROW_HEIGHT_LINEAR_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_BLANK_OFFSET_0, REFCYC_H_BLANK_END, $mask_sh),
+        HUBP_SF!(HUBPREQ0_BLANK_OFFSET_0, DLG_V_BLANK_END, $mask_sh),
+        HUBP_SF!(HUBPREQ0_BLANK_OFFSET_1, MIN_DST_Y_NEXT_START, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DST_DIMENSIONS, REFCYC_PER_HTOTAL, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DST_AFTER_SCALER, REFCYC_X_AFTER_SCALER, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DST_AFTER_SCALER, DST_Y_AFTER_SCALER, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VBLANK_PARAMETERS_0, DST_Y_PER_VM_VBLANK, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VBLANK_PARAMETERS_0, DST_Y_PER_ROW_VBLANK, $mask_sh),
+        HUBP_SF!(HUBPREQ0_REF_FREQ_TO_PIX_FREQ, REF_FREQ_TO_PIX_FREQ, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VBLANK_PARAMETERS_1, REFCYC_PER_PTE_GROUP_VBLANK_L, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VBLANK_PARAMETERS_3, REFCYC_PER_META_CHUNK_VBLANK_L, $mask_sh),
+        HUBP_SF!(HUBPREQ0_NOM_PARAMETERS_4, DST_Y_PER_META_ROW_NOM_L, $mask_sh),
+        HUBP_SF!(HUBPREQ0_NOM_PARAMETERS_5, REFCYC_PER_META_CHUNK_NOM_L, $mask_sh),
+        HUBP_SF!(HUBPREQ0_PER_LINE_DELIVERY_PRE, REFCYC_PER_LINE_DELIVERY_PRE_L, $mask_sh),
+        HUBP_SF!(HUBPREQ0_PER_LINE_DELIVERY_PRE, REFCYC_PER_LINE_DELIVERY_PRE_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_PER_LINE_DELIVERY, REFCYC_PER_LINE_DELIVERY_L, $mask_sh),
+        HUBP_SF!(HUBPREQ0_PER_LINE_DELIVERY, REFCYC_PER_LINE_DELIVERY_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VBLANK_PARAMETERS_2, REFCYC_PER_PTE_GROUP_VBLANK_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VBLANK_PARAMETERS_4, REFCYC_PER_META_CHUNK_VBLANK_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_NOM_PARAMETERS_6, DST_Y_PER_META_ROW_NOM_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_NOM_PARAMETERS_7, REFCYC_PER_META_CHUNK_NOM_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_TTU_QOS_WM, QoS_LEVEL_LOW_WM, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_TTU_QOS_WM, QoS_LEVEL_HIGH_WM, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_GLOBAL_TTU_CNTL, MIN_TTU_VBLANK, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_GLOBAL_TTU_CNTL, QoS_LEVEL_FLIP, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_GLOBAL_TTU_CNTL, ROW_TTU_MODE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_SURF0_TTU_CNTL0, REFCYC_PER_REQ_DELIVERY, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_SURF0_TTU_CNTL0, QoS_LEVEL_FIXED, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_SURF0_TTU_CNTL0, QoS_RAMP_DISABLE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_SURF0_TTU_CNTL1, REFCYC_PER_REQ_DELIVERY_PRE, $mask_sh),
+        HUBP_SF!(HUBP0_HUBP_CLK_CNTL, HUBP_CLOCK_ENABLE, $mask_sh),
+        HUBP_MASK_SH_LIST_DCN_VM!($mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SURFACE_CONFIG, ROTATION_ANGLE, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SURFACE_CONFIG, H_MIRROR_EN, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_SURFACE_CONFIG, ALPHA_PLANE_EN, $mask_sh),
+        HUBP_SF!(HUBPREQ0_PREFETCH_SETTINGS, DST_Y_PREFETCH, $mask_sh),
+        HUBP_SF!(HUBPREQ0_PREFETCH_SETTINGS, VRATIO_PREFETCH, $mask_sh),
+        HUBP_SF!(HUBPREQ0_PREFETCH_SETTINGS_C, VRATIO_PREFETCH_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_VM_SYSTEM_APERTURE_LOW_ADDR, MC_VM_SYSTEM_APERTURE_LOW_ADDR, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCN_VM_SYSTEM_APERTURE_HIGH_ADDR, MC_VM_SYSTEM_APERTURE_HIGH_ADDR, $mask_sh),
+        HUBP_SF!(HUBPREQ0_CURSOR_SETTINGS, CURSOR0_DST_Y_OFFSET, $mask_sh),
+        HUBP_SF!(HUBPREQ0_CURSOR_SETTINGS, CURSOR0_CHUNK_HDL_ADJUST, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_SURFACE_ADDRESS_HIGH, CURSOR_SURFACE_ADDRESS_HIGH, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_SURFACE_ADDRESS, CURSOR_SURFACE_ADDRESS, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_SIZE, CURSOR_WIDTH, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_SIZE, CURSOR_HEIGHT, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_CONTROL, CURSOR_MODE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_CONTROL, CURSOR_REQ_MODE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_CONTROL, CURSOR_2X_MAGNIFY, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_CONTROL, CURSOR_PITCH, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_CONTROL, CURSOR_LINES_PER_CHUNK, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_CONTROL, CURSOR_ENABLE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_POSITION, CURSOR_X_POSITION, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_POSITION, CURSOR_Y_POSITION, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_HOT_SPOT, CURSOR_HOT_SPOT_X, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_HOT_SPOT, CURSOR_HOT_SPOT_Y, $mask_sh),
+        HUBP_SF!(CURSOR0_0_CURSOR_DST_OFFSET, CURSOR_DST_X_OFFSET, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_ADDRESS_HIGH, DMDATA_ADDRESS_HIGH, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_CNTL, DMDATA_MODE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_CNTL, DMDATA_UPDATED, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_CNTL, DMDATA_REPEAT, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_CNTL, DMDATA_SIZE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_SW_CNTL, DMDATA_SW_UPDATED, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_SW_CNTL, DMDATA_SW_REPEAT, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_SW_CNTL, DMDATA_SW_SIZE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_QOS_CNTL, DMDATA_QOS_MODE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_QOS_CNTL, DMDATA_QOS_LEVEL, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_QOS_CNTL, DMDATA_DL_DELTA, $mask_sh),
+        HUBP_SF!(CURSOR0_0_DMDATA_STATUS, DMDATA_DONE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_FLIP_PARAMETERS_0, DST_Y_PER_VM_FLIP, $mask_sh),
+        HUBP_SF!(HUBPREQ0_FLIP_PARAMETERS_0, DST_Y_PER_ROW_FLIP, $mask_sh),
+        HUBP_SF!(HUBPREQ0_FLIP_PARAMETERS_1, REFCYC_PER_PTE_GROUP_FLIP_L, $mask_sh),
+        HUBP_SF!(HUBPREQ0_FLIP_PARAMETERS_2, REFCYC_PER_META_CHUNK_FLIP_L, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_VREADY_AT_OR_AFTER_VSYNC, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_DISABLE_STOP_DATA_DURING_VM, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_FLIP_CONTROL, HUBPREQ_MASTER_UPDATE_LOCK_STATUS, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_FLIP_CONTROL2, SURFACE_GSL_ENABLE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_DCSURF_FLIP_CONTROL2, SURFACE_TRIPLE_BUFFER_ENABLE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VMID_SETTINGS_0, VMID, $mask_sh),
+        HUBP_SF!(HUBPREQ0_FLIP_PARAMETERS_3, REFCYC_PER_VM_GROUP_FLIP, $mask_sh),
+        HUBP_SF!(HUBPREQ0_FLIP_PARAMETERS_4, REFCYC_PER_VM_REQ_FLIP, $mask_sh),
+        HUBP_SF!(HUBPREQ0_FLIP_PARAMETERS_5, REFCYC_PER_PTE_GROUP_FLIP_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_FLIP_PARAMETERS_6, REFCYC_PER_META_CHUNK_FLIP_C, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VBLANK_PARAMETERS_5, REFCYC_PER_VM_GROUP_VBLANK, $mask_sh),
+        HUBP_SF!(HUBPREQ0_VBLANK_PARAMETERS_6, REFCYC_PER_VM_REQ_VBLANK, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_REQ_SIZE_CONFIG, VM_GROUP_SIZE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MALL_CONFIG, USE_MALL_SEL, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MALL_CONFIG, USE_MALL_FOR_CURSOR, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_VMPG_CONFIG, VMPG_SIZE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_VMPG_CONFIG, PTE_BUFFER_MODE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_VMPG_CONFIG, BIGK_FRAGMENT_SIZE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_VMPG_CONFIG, FORCE_ONE_ROW_FOR_FRAME, $mask_sh),
+        HUBP_SF!(HUBPREQ0_UCLK_PSTATE_FORCE, DATA_UCLK_PSTATE_FORCE_EN, $mask_sh),
+        HUBP_SF!(HUBPREQ0_UCLK_PSTATE_FORCE, DATA_UCLK_PSTATE_FORCE_VALUE, $mask_sh),
+        HUBP_SF!(HUBPREQ0_UCLK_PSTATE_FORCE, CURSOR_UCLK_PSTATE_FORCE_EN, $mask_sh),
+        HUBP_SF!(HUBPREQ0_UCLK_PSTATE_FORCE, CURSOR_UCLK_PSTATE_FORCE_VALUE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MALL_CONFIG, MALL_PREF_CMD_TYPE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MALL_CONFIG, MALL_PREF_MODE, $mask_sh),
+        HUBP_SF!(HUBP0_3DLUT_FL_CONFIG, HUBP0_3DLUT_FL_MODE, $mask_sh),
+        HUBP_SF!(HUBP0_3DLUT_FL_CONFIG, HUBP0_3DLUT_FL_FORMAT, $mask_sh),
+        HUBP_SF!(HUBP0_3DLUT_FL_BIAS_SCALE, HUBP0_3DLUT_FL_BIAS, $mask_sh),
+        HUBP_SF!(HUBP0_3DLUT_FL_BIAS_SCALE, HUBP0_3DLUT_FL_SCALE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_CONTROL, HUBP_3DLUT_ENABLE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_CONTROL, HUBP_3DLUT_DONE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_CONTROL, HUBP_3DLUT_ADDRESSING_MODE, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_CONTROL, HUBP_3DLUT_WIDTH, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_CONTROL, HUBP_3DLUT_TMZ, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_CONTROL, HUBP_3DLUT_CROSSBAR_SELECT_Y_G, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_CONTROL, HUBP_3DLUT_CROSSBAR_SELECT_CB_B, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_CONTROL, HUBP_3DLUT_CROSSBAR_SELECT_CR_R, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_ADDRESS_HIGH, HUBP_3DLUT_ADDRESS_HIGH, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_ADDRESS_LOW, HUBP_3DLUT_ADDRESS_LOW, $mask_sh),
+        HUBP_SF!(CURSOR0_0_HUBP_3DLUT_DLG_PARAM, REFCYC_PER_3DLUT_GROUP, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_VIEWPORT_MCACHE_SPLIT_COORDINATE, VIEWPORT_MCACHE_SPLIT_COORDINATE, $mask_sh),
+        HUBP_SF!(HUBP0_DCSURF_VIEWPORT_MCACHE_SPLIT_COORDINATE, VIEWPORT_MCACHE_SPLIT_COORDINATE_C, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MCACHEID_CONFIG, MCACHEID_REG_READ_1H_P0, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MCACHEID_CONFIG, MCACHEID_REG_READ_2H_P0, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MCACHEID_CONFIG, MCACHEID_REG_READ_1H_P1, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MCACHEID_CONFIG, MCACHEID_REG_READ_2H_P1, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MCACHEID_CONFIG, MCACHEID_MALL_PREF_1H_P0, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MCACHEID_CONFIG, MCACHEID_MALL_PREF_2H_P0, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MCACHEID_CONFIG, MCACHEID_MALL_PREF_1H_P1, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_MCACHEID_CONFIG, MCACHEID_MALL_PREF_2H_P1, $mask_sh),
+        HUBP_SF!(HUBPRET0_HUBPRET_READ_LINE_VALUE, PIPE_READ_LINE, $mask_sh),
+        HUBP_SF!(HUBP0_DCHUBP_CNTL, HUBP_SEG_ALLOC_ERR_STATUS, $mask_sh)
+    };
+}
+
+extern "C" {
+    pub fn hubp401_update_mall_sel(hubp: *mut hubp, mall_sel: u32, c_cursor: bool);
+    pub fn hubp401_setup(hubp: *mut hubp, pipe_regs: *mut dml2_dchub_per_pipe_register_set, pipe_global_sync: *mut dml2_global_sync_programming, timing: *mut dc_crtc_timing);
+    pub fn hubp401_setup_interdependent(hubp: *mut hubp, pipe_regs: *mut dml2_dchub_per_pipe_register_set);
+    pub fn hubp401_program_surface_flip_and_addr(hubp: *mut hubp, address: *const dc_plane_address, flip_immediate: bool) -> bool;
+    pub fn hubp401_dcc_control(hubp: *mut hubp, dcc: *mut dc_plane_dcc_param);
+    pub fn hubp401_program_tiling(hubp2: *mut dcn20_hubp, info: *const dc_tiling_info, pixel_format: surface_pixel_format);
+    pub fn hubp401_program_size(hubp: *mut hubp, format: surface_pixel_format, plane_size: *const plane_size, dcc: *mut dc_plane_dcc_param);
+    pub fn hubp401_program_surface_config(hubp: *mut hubp, format: surface_pixel_format, tiling_info: *mut dc_tiling_info, plane_size: *mut plane_size, rotation: dc_rotation_angle, dcc: *mut dc_plane_dcc_param, horizontal_mirror: bool, compat_level: u32);
+    pub fn hubp401_set_viewport(hubp: *mut hubp, viewport: *const rect, viewport_c: *const rect);
+    pub fn hubp401_program_mcache_id_and_split_coordinate(hubp: *mut hubp, mcache_regs: *mut dml2_hubp_pipe_mcache_regs);
+    pub fn hubp401_set_flip_int(hubp: *mut hubp);
+    pub fn hubp401_in_blank(hubp: *mut hubp) -> bool;
+    pub fn hubp401_cursor_set_position(hubp: *mut hubp, pos: *const dc_cursor_position, param: *const dc_cursor_mi_param);
+    pub fn hubp401_read_state(hubp: *mut hubp);
+    pub fn hubp401_construct(hubp2: *mut dcn20_hubp, ctx: *mut dc_context, inst: u32, hubp_regs: *const dcn_hubp2_registers, hubp_shift: *const dcn_hubp2_shift, hubp_mask: *const dcn_hubp2_mask);
+    pub fn hubp401_init(hubp: *mut hubp);
+    pub fn hubp401_get_3dlut_fl_done(hubp: *mut hubp) -> u32;
+    pub fn hubp401_set_unbounded_requesting(hubp: *mut hubp, enable: bool);
+    pub fn hubp401_program_3dlut_fl_crossbar(hubp: *mut hubp, format: dc_cm_lut_pixel_format);
+    pub fn hubp401_enable_3dlut_fl(hubp: *mut hubp, enable: bool);
+    pub fn hubp401_program_3dlut_fl_dlg_param(hubp: *mut hubp, refcyc_per_3dlut_group: i32);
+    pub fn hubp401_program_3dlut_fl_addr(hubp: *mut hubp, address: *const dc_plane_address);
+    pub fn hubp401_program_3dlut_fl_config(hubp: *mut hubp, config: *const dc_3dlut_dma);
+    pub fn hubp401_clear_tiling(hubp: *mut hubp);
+    pub fn hubp401_vready_at_or_After_vsync(hubp: *mut hubp, pipe_global_sync: *mut dml2_global_sync_programming, timing: *mut dc_crtc_timing);
+    pub fn hubp401_program_requestor(hubp: *mut hubp, rq_regs: *mut dml2_display_rq_regs);
+    pub fn hubp401_program_deadline(hubp: *mut hubp, dlg_attr: *mut dml2_display_dlg_regs, ttu_attr: *mut dml2_display_ttu_regs);
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

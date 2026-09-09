@@ -1,0 +1,180 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* Network device features. */
+
+// Dependencies supplied by the surrounding kernel translation.
+pub type netdev_features_t = u64;
+
+pub const NETIF_F_SG_BIT: i32 = 0;
+pub const NETIF_F_IP_CSUM_BIT: i32 = 1;
+pub const __UNUSED_NETIF_F_1: i32 = 2;
+pub const NETIF_F_HW_CSUM_BIT: i32 = 3;
+pub const NETIF_F_IPV6_CSUM_BIT: i32 = 4;
+pub const NETIF_F_HIGHDMA_BIT: i32 = 5;
+pub const NETIF_F_FRAGLIST_BIT: i32 = 6;
+pub const NETIF_F_HW_VLAN_CTAG_TX_BIT: i32 = 7;
+pub const NETIF_F_HW_VLAN_CTAG_RX_BIT: i32 = 8;
+pub const NETIF_F_HW_VLAN_CTAG_FILTER_BIT: i32 = 9;
+pub const NETIF_F_VLAN_CHALLENGED_BIT: i32 = 10;
+pub const NETIF_F_GSO_BIT: i32 = 11;
+pub const __UNUSED_NETIF_F_12: i32 = 12;
+pub const __UNUSED_NETIF_F_13: i32 = 13;
+pub const NETIF_F_GRO_BIT: i32 = 14;
+pub const NETIF_F_LRO_BIT: i32 = 15;
+pub const NETIF_F_GSO_SHIFT: i32 = 16;
+pub const NETIF_F_TSO_BIT: i32 = NETIF_F_GSO_SHIFT;
+pub const NETIF_F_GSO_ROBUST_BIT: i32 = 17;
+pub const NETIF_F_TSO_ECN_BIT: i32 = 18;
+pub const NETIF_F_TSO_MANGLEID_BIT: i32 = 19;
+pub const NETIF_F_TSO6_BIT: i32 = 20;
+pub const NETIF_F_FSO_BIT: i32 = 21;
+pub const NETIF_F_GSO_GRE_BIT: i32 = 22;
+pub const NETIF_F_GSO_GRE_CSUM_BIT: i32 = 23;
+pub const NETIF_F_GSO_IPXIP4_BIT: i32 = 24;
+pub const NETIF_F_GSO_IPXIP6_BIT: i32 = 25;
+pub const NETIF_F_GSO_UDP_TUNNEL_BIT: i32 = 26;
+pub const NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT: i32 = 27;
+pub const NETIF_F_GSO_PARTIAL_BIT: i32 = 28;
+pub const NETIF_F_GSO_TUNNEL_REMCSUM_BIT: i32 = 29;
+pub const NETIF_F_GSO_SCTP_BIT: i32 = 30;
+pub const NETIF_F_GSO_ESP_BIT: i32 = 31;
+pub const NETIF_F_GSO_UDP_BIT: i32 = 32;
+pub const NETIF_F_GSO_UDP_L4_BIT: i32 = 33;
+pub const NETIF_F_GSO_FRAGLIST_BIT: i32 = 34;
+pub const NETIF_F_GSO_ACCECN_BIT: i32 = 35;
+pub const NETIF_F_GSO_LAST: i32 = NETIF_F_GSO_ACCECN_BIT;
+pub const NETIF_F_FCOE_CRC_BIT: i32 = 36;
+pub const NETIF_F_SCTP_CRC_BIT: i32 = 37;
+pub const NETIF_F_NTUPLE_BIT: i32 = 38;
+pub const NETIF_F_RXHASH_BIT: i32 = 39;
+pub const NETIF_F_RXCSUM_BIT: i32 = 40;
+pub const NETIF_F_NOCACHE_COPY_BIT: i32 = 41;
+pub const NETIF_F_LOOPBACK_BIT: i32 = 42;
+pub const NETIF_F_RXFCS_BIT: i32 = 43;
+pub const NETIF_F_RXALL_BIT: i32 = 44;
+pub const NETIF_F_HW_VLAN_STAG_TX_BIT: i32 = 45;
+pub const NETIF_F_HW_VLAN_STAG_RX_BIT: i32 = 46;
+pub const NETIF_F_HW_VLAN_STAG_FILTER_BIT: i32 = 47;
+pub const NETIF_F_HW_L2FW_DOFFLOAD_BIT: i32 = 48;
+pub const NETIF_F_HW_TC_BIT: i32 = 49;
+pub const NETIF_F_HW_ESP_BIT: i32 = 50;
+pub const NETIF_F_HW_ESP_TX_CSUM_BIT: i32 = 51;
+pub const NETIF_F_RX_UDP_TUNNEL_PORT_BIT: i32 = 52;
+pub const NETIF_F_HW_TLS_TX_BIT: i32 = 53;
+pub const NETIF_F_HW_TLS_RX_BIT: i32 = 54;
+pub const NETIF_F_GRO_HW_BIT: i32 = 55;
+pub const __UNUSED_NETIF_F_56: i32 = 56;
+pub const NETIF_F_GRO_FRAGLIST_BIT: i32 = 57;
+pub const NETIF_F_HW_MACSEC_BIT: i32 = 58;
+pub const NETIF_F_GRO_UDP_FWD_BIT: i32 = 59;
+pub const NETIF_F_HW_HSR_TAG_INS_BIT: i32 = 60;
+pub const NETIF_F_HW_HSR_TAG_RM_BIT: i32 = 61;
+pub const NETIF_F_HW_HSR_FWD_BIT: i32 = 62;
+pub const NETIF_F_HW_HSR_DUP_BIT: i32 = 63;
+pub const NETDEV_FEATURE_COUNT: i32 = 64;
+
+macro_rules! __NETIF_F_BIT { ($bit:expr) => { (1u64).wrapping_shl(($bit) as u32) }; }
+macro_rules! __NETIF_F { ($name:ident) => { __NETIF_F_BIT!(concat_idents!(NETIF_F_, $name, _BIT)) }; }
+
+pub const NETIF_F_FCOE_CRC: u64 = __NETIF_F_BIT!(NETIF_F_FCOE_CRC_BIT);
+pub const NETIF_F_FRAGLIST: u64 = __NETIF_F_BIT!(NETIF_F_FRAGLIST_BIT);
+pub const NETIF_F_FSO: u64 = __NETIF_F_BIT!(NETIF_F_FSO_BIT);
+pub const NETIF_F_GRO: u64 = __NETIF_F_BIT!(NETIF_F_GRO_BIT);
+pub const NETIF_F_GRO_HW: u64 = __NETIF_F_BIT!(NETIF_F_GRO_HW_BIT);
+pub const NETIF_F_GSO: u64 = __NETIF_F_BIT!(NETIF_F_GSO_BIT);
+pub const NETIF_F_GSO_ROBUST: u64 = __NETIF_F_BIT!(NETIF_F_GSO_ROBUST_BIT);
+pub const NETIF_F_HIGHDMA: u64 = __NETIF_F_BIT!(NETIF_F_HIGHDMA_BIT);
+pub const NETIF_F_HW_CSUM: u64 = __NETIF_F_BIT!(NETIF_F_HW_CSUM_BIT);
+pub const NETIF_F_HW_VLAN_CTAG_FILTER: u64 = __NETIF_F_BIT!(NETIF_F_HW_VLAN_CTAG_FILTER_BIT);
+pub const NETIF_F_HW_VLAN_CTAG_RX: u64 = __NETIF_F_BIT!(NETIF_F_HW_VLAN_CTAG_RX_BIT);
+pub const NETIF_F_HW_VLAN_CTAG_TX: u64 = __NETIF_F_BIT!(NETIF_F_HW_VLAN_CTAG_TX_BIT);
+pub const NETIF_F_IP_CSUM: u64 = __NETIF_F_BIT!(NETIF_F_IP_CSUM_BIT);
+pub const NETIF_F_IPV6_CSUM: u64 = __NETIF_F_BIT!(NETIF_F_IPV6_CSUM_BIT);
+pub const NETIF_F_LOOPBACK: u64 = __NETIF_F_BIT!(NETIF_F_LOOPBACK_BIT);
+pub const NETIF_F_LRO: u64 = __NETIF_F_BIT!(NETIF_F_LRO_BIT);
+pub const NETIF_F_NOCACHE_COPY: u64 = __NETIF_F_BIT!(NETIF_F_NOCACHE_COPY_BIT);
+pub const NETIF_F_NTUPLE: u64 = __NETIF_F_BIT!(NETIF_F_NTUPLE_BIT);
+pub const NETIF_F_RXCSUM: u64 = __NETIF_F_BIT!(NETIF_F_RXCSUM_BIT);
+pub const NETIF_F_RXHASH: u64 = __NETIF_F_BIT!(NETIF_F_RXHASH_BIT);
+pub const NETIF_F_SCTP_CRC: u64 = __NETIF_F_BIT!(NETIF_F_SCTP_CRC_BIT);
+pub const NETIF_F_SG: u64 = __NETIF_F_BIT!(NETIF_F_SG_BIT);
+pub const NETIF_F_TSO6: u64 = __NETIF_F_BIT!(NETIF_F_TSO6_BIT);
+pub const NETIF_F_TSO_ECN: u64 = __NETIF_F_BIT!(NETIF_F_TSO_ECN_BIT);
+pub const NETIF_F_GSO_ACCECN: u64 = __NETIF_F_BIT!(NETIF_F_GSO_ACCECN_BIT);
+pub const NETIF_F_TSO: u64 = __NETIF_F_BIT!(NETIF_F_TSO_BIT);
+pub const NETIF_F_VLAN_CHALLENGED: u64 = __NETIF_F_BIT!(NETIF_F_VLAN_CHALLENGED_BIT);
+pub const NETIF_F_RXFCS: u64 = __NETIF_F_BIT!(NETIF_F_RXFCS_BIT);
+pub const NETIF_F_RXALL: u64 = __NETIF_F_BIT!(NETIF_F_RXALL_BIT);
+pub const NETIF_F_GSO_GRE: u64 = __NETIF_F_BIT!(NETIF_F_GSO_GRE_BIT);
+pub const NETIF_F_GSO_GRE_CSUM: u64 = __NETIF_F_BIT!(NETIF_F_GSO_GRE_CSUM_BIT);
+pub const NETIF_F_GSO_IPXIP4: u64 = __NETIF_F_BIT!(NETIF_F_GSO_IPXIP4_BIT);
+pub const NETIF_F_GSO_IPXIP6: u64 = __NETIF_F_BIT!(NETIF_F_GSO_IPXIP6_BIT);
+pub const NETIF_F_GSO_UDP_TUNNEL: u64 = __NETIF_F_BIT!(NETIF_F_GSO_UDP_TUNNEL_BIT);
+pub const NETIF_F_GSO_UDP_TUNNEL_CSUM: u64 = __NETIF_F_BIT!(NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT);
+pub const NETIF_F_TSO_MANGLEID: u64 = __NETIF_F_BIT!(NETIF_F_TSO_MANGLEID_BIT);
+pub const NETIF_F_GSO_PARTIAL: u64 = __NETIF_F_BIT!(NETIF_F_GSO_PARTIAL_BIT);
+pub const NETIF_F_GSO_TUNNEL_REMCSUM: u64 = __NETIF_F_BIT!(NETIF_F_GSO_TUNNEL_REMCSUM_BIT);
+pub const NETIF_F_GSO_SCTP: u64 = __NETIF_F_BIT!(NETIF_F_GSO_SCTP_BIT);
+pub const NETIF_F_GSO_ESP: u64 = __NETIF_F_BIT!(NETIF_F_GSO_ESP_BIT);
+pub const NETIF_F_GSO_UDP: u64 = __NETIF_F_BIT!(NETIF_F_GSO_UDP_BIT);
+pub const NETIF_F_HW_VLAN_STAG_FILTER: u64 = __NETIF_F_BIT!(NETIF_F_HW_VLAN_STAG_FILTER_BIT);
+pub const NETIF_F_HW_VLAN_STAG_RX: u64 = __NETIF_F_BIT!(NETIF_F_HW_VLAN_STAG_RX_BIT);
+pub const NETIF_F_HW_VLAN_STAG_TX: u64 = __NETIF_F_BIT!(NETIF_F_HW_VLAN_STAG_TX_BIT);
+pub const NETIF_F_HW_L2FW_DOFFLOAD: u64 = __NETIF_F_BIT!(NETIF_F_HW_L2FW_DOFFLOAD_BIT);
+pub const NETIF_F_HW_TC: u64 = __NETIF_F_BIT!(NETIF_F_HW_TC_BIT);
+pub const NETIF_F_HW_ESP: u64 = __NETIF_F_BIT!(NETIF_F_HW_ESP_BIT);
+pub const NETIF_F_HW_ESP_TX_CSUM: u64 = __NETIF_F_BIT!(NETIF_F_HW_ESP_TX_CSUM_BIT);
+pub const NETIF_F_RX_UDP_TUNNEL_PORT: u64 = __NETIF_F_BIT!(NETIF_F_RX_UDP_TUNNEL_PORT_BIT);
+pub const NETIF_F_GSO_UDP_L4: u64 = __NETIF_F_BIT!(NETIF_F_GSO_UDP_L4_BIT);
+pub const NETIF_F_HW_TLS_TX: u64 = __NETIF_F_BIT!(NETIF_F_HW_TLS_TX_BIT);
+pub const NETIF_F_HW_TLS_RX: u64 = __NETIF_F_BIT!(NETIF_F_HW_TLS_RX_BIT);
+pub const NETIF_F_GRO_FRAGLIST: u64 = __NETIF_F_BIT!(NETIF_F_GRO_FRAGLIST_BIT);
+pub const NETIF_F_GSO_FRAGLIST: u64 = __NETIF_F_BIT!(NETIF_F_GSO_FRAGLIST_BIT);
+pub const NETIF_F_HW_MACSEC: u64 = __NETIF_F_BIT!(NETIF_F_HW_MACSEC_BIT);
+pub const NETIF_F_GRO_UDP_FWD: u64 = __NETIF_F_BIT!(NETIF_F_GRO_UDP_FWD_BIT);
+pub const NETIF_F_HW_HSR_TAG_INS: u64 = __NETIF_F_BIT!(NETIF_F_HW_HSR_TAG_INS_BIT);
+pub const NETIF_F_HW_HSR_TAG_RM: u64 = __NETIF_F_BIT!(NETIF_F_HW_HSR_TAG_RM_BIT);
+pub const NETIF_F_HW_HSR_FWD: u64 = __NETIF_F_BIT!(NETIF_F_HW_HSR_FWD_BIT);
+pub const NETIF_F_HW_HSR_DUP: u64 = __NETIF_F_BIT!(NETIF_F_HW_HSR_DUP_BIT);
+
+unsafe extern "C" { pub fn fls64(x: u64) -> i32; }
+
+pub unsafe fn find_next_netdev_feature(mut feature: u64, start: usize) -> i32 {
+    feature &= !0u64 >> ((start.wrapping_neg()) & ((core::mem::size_of::<u64>() * 8) - 1));
+    fls64(feature) - 1
+}
+
+/* Iterate from the MSB to the LSB through set feature bits. */
+#[macro_export]
+macro_rules! for_each_netdev_feature {
+    ($mask_addr:expr, $bit:ident, $body:block) => {{
+        let mut $bit = unsafe { $crate::find_next_netdev_feature($mask_addr, $crate::NETDEV_FEATURE_COUNT as usize) };
+        while $bit >= 0 { $body; $bit = unsafe { $crate::find_next_netdev_feature($mask_addr, $bit as usize) }; }
+    }};
+}
+
+pub const NETIF_F_NEVER_CHANGE: u64 = NETIF_F_VLAN_CHALLENGED;
+pub const NETIF_F_ETHTOOL_BITS: u64 = (__NETIF_F_BIT!(NETDEV_FEATURE_COUNT - 1) | (__NETIF_F_BIT!(NETDEV_FEATURE_COUNT - 1) - 1)) & !NETIF_F_NEVER_CHANGE;
+pub const NETIF_F_GSO_MASK: u64 = __NETIF_F_BIT!(NETIF_F_GSO_LAST + 1) - __NETIF_F_BIT!(NETIF_F_GSO_SHIFT);
+pub const NETIF_F_CSUM_MASK: u64 = NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | NETIF_F_HW_CSUM;
+pub const NETIF_F_ALL_TSO: u64 = NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN | NETIF_F_TSO_MANGLEID;
+pub const NETIF_F_GSO_SOFTWARE: u64 = NETIF_F_ALL_TSO | NETIF_F_GSO_ACCECN | NETIF_F_GSO_SCTP | NETIF_F_GSO_UDP_L4 | NETIF_F_GSO_FRAGLIST;
+pub const NETIF_F_ONE_FOR_ALL: u64 = NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_ROBUST | NETIF_F_SG | NETIF_F_HIGHDMA | NETIF_F_FRAGLIST | NETIF_F_VLAN_CHALLENGED;
+pub const NETIF_F_ALL_FOR_ALL: u64 = NETIF_F_NOCACHE_COPY | NETIF_F_FSO;
+pub const NETIF_F_UPPER_DISABLES: u64 = NETIF_F_LRO;
+pub const NETIF_F_SOFT_FEATURES: u64 = NETIF_F_GSO | NETIF_F_GRO;
+pub const NETIF_F_SOFT_FEATURES_OFF: u64 = NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UDP_FWD;
+pub const NETIF_F_VLAN_FEATURES: u64 = NETIF_F_HW_VLAN_CTAG_FILTER | NETIF_F_HW_VLAN_CTAG_RX | NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_STAG_FILTER | NETIF_F_HW_VLAN_STAG_RX | NETIF_F_HW_VLAN_STAG_TX;
+pub const NETIF_F_GSO_ENCAP_ALL: u64 = NETIF_F_GSO_GRE | NETIF_F_GSO_GRE_CSUM | NETIF_F_GSO_IPXIP4 | NETIF_F_GSO_IPXIP6 | NETIF_F_GSO_UDP_TUNNEL | NETIF_F_GSO_UDP_TUNNEL_CSUM;
+pub const MASTER_UPPER_DEV_VLAN_FEATURES: u64 = NETIF_F_HW_CSUM | NETIF_F_SG | NETIF_F_FRAGLIST | NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_ENCAP_ALL | NETIF_F_HIGHDMA | NETIF_F_LRO;
+pub const MASTER_UPPER_DEV_ENC_FEATURES: u64 = NETIF_F_HW_CSUM | NETIF_F_SG | NETIF_F_RXCSUM | NETIF_F_GSO_SOFTWARE | NETIF_F_GSO_PARTIAL;
+pub const MASTER_UPPER_DEV_MPLS_FEATURES: u64 = NETIF_F_HW_CSUM | NETIF_F_SG | NETIF_F_GSO_SOFTWARE;
+pub const MASTER_UPPER_DEV_XFRM_FEATURES: u64 = NETIF_F_HW_ESP | NETIF_F_HW_ESP_TX_CSUM | NETIF_F_GSO_ESP;
+pub const MASTER_UPPER_DEV_GSO_PARTIAL_FEATURES: u64 = NETIF_F_GSO_ESP;
+
+pub fn netdev_base_features(mut features: netdev_features_t) -> netdev_features_t {
+    features &= !NETIF_F_ONE_FOR_ALL;
+    features |= NETIF_F_ALL_FOR_ALL;
+    features
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

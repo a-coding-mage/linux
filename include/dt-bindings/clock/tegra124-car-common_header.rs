@@ -1,0 +1,214 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * This header provides constants for binding nvidia,tegra124-car or
+ * nvidia,tegra132-car.
+ *
+ * The first 192 clocks are numbered to match the bits in the CAR's CLK_OUT_ENB
+ * registers. These IDs often match those in the CAR's RST_DEVICES registers,
+ * but not in all cases. Some bits in CLK_OUT_ENB affect multiple clocks. In
+ * this case, those clocks are assigned IDs above 185 in order to highlight
+ * this issue. Implementations that interpret these clock IDs as bit values
+ * within the CLK_OUT_ENB or RST_DEVICES registers should be careful to
+ * explicitly handle these special cases.
+ *
+ * The balance of the clocks controlled by the CAR are assigned IDs of 185 and
+ * above.
+ */
+
+pub const TEGRA124_CLK_ISPB: u32 = 3;
+pub const TEGRA124_CLK_RTC: u32 = 4;
+pub const TEGRA124_CLK_TIMER: u32 = 5;
+pub const TEGRA124_CLK_UARTA: u32 = 6;
+pub const TEGRA124_CLK_SDMMC2: u32 = 9;
+pub const TEGRA124_CLK_I2S1: u32 = 11;
+pub const TEGRA124_CLK_I2C1: u32 = 12;
+pub const TEGRA124_CLK_SDMMC1: u32 = 14;
+pub const TEGRA124_CLK_SDMMC4: u32 = 15;
+pub const TEGRA124_CLK_PWM: u32 = 17;
+pub const TEGRA124_CLK_I2S2: u32 = 18;
+pub const TEGRA124_CLK_USBD: u32 = 22;
+pub const TEGRA124_CLK_ISP: u32 = 23;
+pub const TEGRA124_CLK_DISP2: u32 = 26;
+pub const TEGRA124_CLK_DISP1: u32 = 27;
+pub const TEGRA124_CLK_HOST1X: u32 = 28;
+pub const TEGRA124_CLK_VCP: u32 = 29;
+pub const TEGRA124_CLK_I2S0: u32 = 30;
+pub const TEGRA124_CLK_MC: u32 = 32;
+pub const TEGRA124_CLK_APBDMA: u32 = 34;
+pub const TEGRA124_CLK_KBC: u32 = 36;
+pub const TEGRA124_CLK_KFUSE: u32 = 40;
+pub const TEGRA124_CLK_SBC1: u32 = 41;
+pub const TEGRA124_CLK_NOR: u32 = 42;
+pub const TEGRA124_CLK_SBC2: u32 = 44;
+pub const TEGRA124_CLK_SBC3: u32 = 46;
+pub const TEGRA124_CLK_I2C5: u32 = 47;
+pub const TEGRA124_CLK_DSIA: u32 = 48;
+pub const TEGRA124_CLK_MIPI: u32 = 50;
+pub const TEGRA124_CLK_HDMI: u32 = 51;
+pub const TEGRA124_CLK_CSI: u32 = 52;
+pub const TEGRA124_CLK_I2C2: u32 = 54;
+pub const TEGRA124_CLK_UARTC: u32 = 55;
+pub const TEGRA124_CLK_MIPI_CAL: u32 = 56;
+pub const TEGRA124_CLK_EMC: u32 = 57;
+pub const TEGRA124_CLK_USB2: u32 = 58;
+pub const TEGRA124_CLK_USB3: u32 = 59;
+pub const TEGRA124_CLK_VDE: u32 = 61;
+pub const TEGRA124_CLK_BSEA: u32 = 62;
+pub const TEGRA124_CLK_BSEV: u32 = 63;
+pub const TEGRA124_CLK_UARTD: u32 = 65;
+pub const TEGRA124_CLK_I2C3: u32 = 67;
+pub const TEGRA124_CLK_SBC4: u32 = 68;
+pub const TEGRA124_CLK_SDMMC3: u32 = 69;
+pub const TEGRA124_CLK_PCIE: u32 = 70;
+pub const TEGRA124_CLK_OWR: u32 = 71;
+pub const TEGRA124_CLK_AFI: u32 = 72;
+pub const TEGRA124_CLK_CSITE: u32 = 73;
+pub const TEGRA124_CLK_LA: u32 = 76;
+pub const TEGRA124_CLK_TRACE: u32 = 77;
+pub const TEGRA124_CLK_SOC_THERM: u32 = 78;
+pub const TEGRA124_CLK_DTV: u32 = 79;
+pub const TEGRA124_CLK_I2CSLOW: u32 = 81;
+pub const TEGRA124_CLK_DSIB: u32 = 82;
+pub const TEGRA124_CLK_TSEC: u32 = 83;
+pub const TEGRA124_CLK_XUSB_HOST: u32 = 89;
+pub const TEGRA124_CLK_MSENC: u32 = 91;
+pub const TEGRA124_CLK_CSUS: u32 = 92;
+pub const TEGRA124_CLK_MSELECT: u32 = 99;
+pub const TEGRA124_CLK_TSENSOR: u32 = 100;
+pub const TEGRA124_CLK_I2S3: u32 = 101;
+pub const TEGRA124_CLK_I2S4: u32 = 102;
+pub const TEGRA124_CLK_I2C4: u32 = 103;
+pub const TEGRA124_CLK_SBC5: u32 = 104;
+pub const TEGRA124_CLK_SBC6: u32 = 105;
+pub const TEGRA124_CLK_D_AUDIO: u32 = 106;
+pub const TEGRA124_CLK_APBIF: u32 = 107;
+pub const TEGRA124_CLK_DAM0: u32 = 108;
+pub const TEGRA124_CLK_DAM1: u32 = 109;
+pub const TEGRA124_CLK_DAM2: u32 = 110;
+pub const TEGRA124_CLK_HDA2CODEC_2X: u32 = 111;
+pub const TEGRA124_CLK_AUDIO0_2X: u32 = 113;
+pub const TEGRA124_CLK_AUDIO1_2X: u32 = 114;
+pub const TEGRA124_CLK_AUDIO2_2X: u32 = 115;
+pub const TEGRA124_CLK_AUDIO3_2X: u32 = 116;
+pub const TEGRA124_CLK_AUDIO4_2X: u32 = 117;
+pub const TEGRA124_CLK_SPDIF_2X: u32 = 118;
+pub const TEGRA124_CLK_ACTMON: u32 = 119;
+pub const TEGRA124_CLK_EXTERN1: u32 = 120;
+pub const TEGRA124_CLK_EXTERN2: u32 = 121;
+pub const TEGRA124_CLK_EXTERN3: u32 = 122;
+pub const TEGRA124_CLK_SATA_OOB: u32 = 123;
+pub const TEGRA124_CLK_SATA: u32 = 124;
+pub const TEGRA124_CLK_HDA: u32 = 125;
+pub const TEGRA124_CLK_SE: u32 = 127;
+pub const TEGRA124_CLK_HDA2HDMI: u32 = 128;
+pub const TEGRA124_CLK_SATA_COLD: u32 = 129;
+pub const TEGRA124_CLK_CEC: u32 = 136;
+pub const TEGRA124_CLK_CILAB: u32 = 144;
+pub const TEGRA124_CLK_CILCD: u32 = 145;
+pub const TEGRA124_CLK_CILE: u32 = 146;
+pub const TEGRA124_CLK_DSIALP: u32 = 147;
+pub const TEGRA124_CLK_DSIBLP: u32 = 148;
+pub const TEGRA124_CLK_ENTROPY: u32 = 149;
+pub const TEGRA124_CLK_DDS: u32 = 150;
+pub const TEGRA124_CLK_DP2: u32 = 152;
+pub const TEGRA124_CLK_AMX: u32 = 153;
+pub const TEGRA124_CLK_ADX: u32 = 154;
+pub const TEGRA124_CLK_XUSB_SS: u32 = 156;
+pub const TEGRA124_CLK_I2C6: u32 = 166;
+pub const TEGRA124_CLK_VIM2_CLK: u32 = 171;
+pub const TEGRA124_CLK_HDMI_AUDIO: u32 = 176;
+pub const TEGRA124_CLK_CLK72MHZ: u32 = 177;
+pub const TEGRA124_CLK_VIC03: u32 = 178;
+pub const TEGRA124_CLK_ADX1: u32 = 180;
+pub const TEGRA124_CLK_DPAUX: u32 = 181;
+pub const TEGRA124_CLK_SOR0: u32 = 182;
+pub const TEGRA124_CLK_GPU: u32 = 184;
+pub const TEGRA124_CLK_AMX1: u32 = 185;
+pub const TEGRA124_CLK_UARTB: u32 = 192;
+pub const TEGRA124_CLK_VFIR: u32 = 193;
+pub const TEGRA124_CLK_SPDIF_IN: u32 = 194;
+pub const TEGRA124_CLK_SPDIF_OUT: u32 = 195;
+pub const TEGRA124_CLK_VI: u32 = 196;
+pub const TEGRA124_CLK_VI_SENSOR: u32 = 197;
+pub const TEGRA124_CLK_FUSE: u32 = 198;
+pub const TEGRA124_CLK_FUSE_BURN: u32 = 199;
+pub const TEGRA124_CLK_CLK_32K: u32 = 200;
+pub const TEGRA124_CLK_CLK_M: u32 = 201;
+pub const TEGRA124_CLK_CLK_M_DIV2: u32 = 202;
+pub const TEGRA124_CLK_CLK_M_DIV4: u32 = 203;
+pub const TEGRA124_CLK_OSC_DIV2: u32 = 202;
+pub const TEGRA124_CLK_OSC_DIV4: u32 = 203;
+pub const TEGRA124_CLK_PLL_REF: u32 = 204;
+pub const TEGRA124_CLK_PLL_C: u32 = 205;
+pub const TEGRA124_CLK_PLL_C_OUT1: u32 = 206;
+pub const TEGRA124_CLK_PLL_C2: u32 = 207;
+pub const TEGRA124_CLK_PLL_C3: u32 = 208;
+pub const TEGRA124_CLK_PLL_M: u32 = 209;
+pub const TEGRA124_CLK_PLL_M_OUT1: u32 = 210;
+pub const TEGRA124_CLK_PLL_P: u32 = 211;
+pub const TEGRA124_CLK_PLL_P_OUT1: u32 = 212;
+pub const TEGRA124_CLK_PLL_P_OUT2: u32 = 213;
+pub const TEGRA124_CLK_PLL_P_OUT3: u32 = 214;
+pub const TEGRA124_CLK_PLL_P_OUT4: u32 = 215;
+pub const TEGRA124_CLK_PLL_A: u32 = 216;
+pub const TEGRA124_CLK_PLL_A_OUT0: u32 = 217;
+pub const TEGRA124_CLK_PLL_D: u32 = 218;
+pub const TEGRA124_CLK_PLL_D_OUT0: u32 = 219;
+pub const TEGRA124_CLK_PLL_D2: u32 = 220;
+pub const TEGRA124_CLK_PLL_D2_OUT0: u32 = 221;
+pub const TEGRA124_CLK_PLL_U: u32 = 222;
+pub const TEGRA124_CLK_PLL_U_480M: u32 = 223;
+pub const TEGRA124_CLK_PLL_U_60M: u32 = 224;
+pub const TEGRA124_CLK_PLL_U_48M: u32 = 225;
+pub const TEGRA124_CLK_PLL_U_12M: u32 = 226;
+pub const TEGRA124_CLK_PLL_RE_VCO: u32 = 229;
+pub const TEGRA124_CLK_PLL_RE_OUT: u32 = 230;
+pub const TEGRA124_CLK_PLL_E: u32 = 231;
+pub const TEGRA124_CLK_SPDIF_IN_SYNC: u32 = 232;
+pub const TEGRA124_CLK_I2S0_SYNC: u32 = 233;
+pub const TEGRA124_CLK_I2S1_SYNC: u32 = 234;
+pub const TEGRA124_CLK_I2S2_SYNC: u32 = 235;
+pub const TEGRA124_CLK_I2S3_SYNC: u32 = 236;
+pub const TEGRA124_CLK_I2S4_SYNC: u32 = 237;
+pub const TEGRA124_CLK_VIMCLK_SYNC: u32 = 238;
+pub const TEGRA124_CLK_AUDIO0: u32 = 239;
+pub const TEGRA124_CLK_AUDIO1: u32 = 240;
+pub const TEGRA124_CLK_AUDIO2: u32 = 241;
+pub const TEGRA124_CLK_AUDIO3: u32 = 242;
+pub const TEGRA124_CLK_AUDIO4: u32 = 243;
+pub const TEGRA124_CLK_SPDIF: u32 = 244;
+pub const TEGRA124_CLK_OSC: u32 = 249;
+pub const TEGRA124_CLK_XUSB_HOST_SRC: u32 = 252;
+pub const TEGRA124_CLK_XUSB_FALCON_SRC: u32 = 253;
+pub const TEGRA124_CLK_XUSB_FS_SRC: u32 = 254;
+pub const TEGRA124_CLK_XUSB_SS_SRC: u32 = 255;
+pub const TEGRA124_CLK_XUSB_DEV_SRC: u32 = 256;
+pub const TEGRA124_CLK_XUSB_DEV: u32 = 257;
+pub const TEGRA124_CLK_XUSB_HS_SRC: u32 = 258;
+pub const TEGRA124_CLK_SCLK: u32 = 259;
+pub const TEGRA124_CLK_HCLK: u32 = 260;
+pub const TEGRA124_CLK_PCLK: u32 = 261;
+pub const TEGRA124_CLK_DFLL_REF: u32 = 264;
+pub const TEGRA124_CLK_DFLL_SOC: u32 = 265;
+pub const TEGRA124_CLK_VI_SENSOR2: u32 = 266;
+pub const TEGRA124_CLK_PLL_P_OUT5: u32 = 267;
+pub const TEGRA124_CLK_CML0: u32 = 268;
+pub const TEGRA124_CLK_CML1: u32 = 269;
+pub const TEGRA124_CLK_PLL_C4: u32 = 270;
+pub const TEGRA124_CLK_PLL_DP: u32 = 271;
+pub const TEGRA124_CLK_PLL_E_MUX: u32 = 272;
+pub const TEGRA124_CLK_PLL_D_DSI_OUT: u32 = 273;
+pub const TEGRA124_CLK_AUDIO0_MUX: u32 = 300;
+pub const TEGRA124_CLK_AUDIO1_MUX: u32 = 301;
+pub const TEGRA124_CLK_AUDIO2_MUX: u32 = 302;
+pub const TEGRA124_CLK_AUDIO3_MUX: u32 = 303;
+pub const TEGRA124_CLK_AUDIO4_MUX: u32 = 304;
+pub const TEGRA124_CLK_SPDIF_MUX: u32 = 305;
+/* deprecated */
+pub const TEGRA124_CLK_SOR0_LVDS: u32 = 311;
+pub const TEGRA124_CLK_SOR0_OUT: u32 = 311;
+pub const TEGRA124_CLK_XUSB_SS_DIV2: u32 = 312;
+pub const TEGRA124_CLK_PLL_M_UD: u32 = 313;
+pub const TEGRA124_CLK_PLL_C_UD: u32 = 314;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

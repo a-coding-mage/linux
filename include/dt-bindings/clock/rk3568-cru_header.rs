@@ -1,0 +1,931 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (c) 2021 Rockchip Electronics Co. Ltd.
+ * Author: Elaine Zhang <zhangqing@rock-chips.com>
+ */
+
+#ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3568_H
+
+/* pmucru-clocks indices */
+
+/* pmucru plls */
+pub const PLL_PPLL: u32 = 1;
+pub const PLL_HPLL: u32 = 2;
+
+/* pmucru clocks */
+pub const XIN_OSC0_DIV: u32 = 4;
+pub const CLK_RTC_32K: u32 = 5;
+pub const CLK_PMU: u32 = 6;
+pub const CLK_I2C0: u32 = 7;
+pub const CLK_RTC32K_FRAC: u32 = 8;
+pub const CLK_UART0_DIV: u32 = 9;
+pub const CLK_UART0_FRAC: u32 = 10;
+pub const SCLK_UART0: u32 = 11;
+pub const DBCLK_GPIO0: u32 = 12;
+pub const CLK_PWM0: u32 = 13;
+pub const CLK_CAPTURE_PWM0_NDFT: u32 = 14;
+pub const CLK_PMUPVTM: u32 = 15;
+pub const CLK_CORE_PMUPVTM: u32 = 16;
+pub const CLK_REF24M: u32 = 17;
+pub const XIN_OSC0_USBPHY0_G: u32 = 18;
+pub const CLK_USBPHY0_REF: u32 = 19;
+pub const XIN_OSC0_USBPHY1_G: u32 = 20;
+pub const CLK_USBPHY1_REF: u32 = 21;
+pub const XIN_OSC0_MIPIDSIPHY0_G: u32 = 22;
+pub const CLK_MIPIDSIPHY0_REF: u32 = 23;
+pub const XIN_OSC0_MIPIDSIPHY1_G: u32 = 24;
+pub const CLK_MIPIDSIPHY1_REF: u32 = 25;
+pub const CLK_WIFI_DIV: u32 = 26;
+pub const CLK_WIFI_OSC0: u32 = 27;
+pub const CLK_WIFI: u32 = 28;
+pub const CLK_PCIEPHY0_DIV: u32 = 29;
+pub const CLK_PCIEPHY0_OSC0: u32 = 30;
+pub const CLK_PCIEPHY0_REF: u32 = 31;
+pub const CLK_PCIEPHY1_DIV: u32 = 32;
+pub const CLK_PCIEPHY1_OSC0: u32 = 33;
+pub const CLK_PCIEPHY1_REF: u32 = 34;
+pub const CLK_PCIEPHY2_DIV: u32 = 35;
+pub const CLK_PCIEPHY2_OSC0: u32 = 36;
+pub const CLK_PCIEPHY2_REF: u32 = 37;
+pub const CLK_PCIE30PHY_REF_M: u32 = 38;
+pub const CLK_PCIE30PHY_REF_N: u32 = 39;
+pub const CLK_HDMI_REF: u32 = 40;
+pub const XIN_OSC0_EDPPHY_G: u32 = 41;
+pub const PCLK_PDPMU: u32 = 42;
+pub const PCLK_PMU: u32 = 43;
+pub const PCLK_UART0: u32 = 44;
+pub const PCLK_I2C0: u32 = 45;
+pub const PCLK_GPIO0: u32 = 46;
+pub const PCLK_PMUPVTM: u32 = 47;
+pub const PCLK_PWM0: u32 = 48;
+pub const CLK_PDPMU: u32 = 49;
+pub const SCLK_32K_IOE: u32 = 50;
+
+pub const CLKPMU_NR_CLKS: u32 = (SCLK_32K_IOE + 1);
+
+/* cru-clocks indices */
+
+/* cru plls */
+pub const PLL_APLL: u32 = 1;
+pub const PLL_DPLL: u32 = 2;
+pub const PLL_CPLL: u32 = 3;
+pub const PLL_GPLL: u32 = 4;
+pub const PLL_VPLL: u32 = 5;
+pub const PLL_NPLL: u32 = 6;
+
+/* cru clocks */
+pub const CPLL_333M: u32 = 9;
+pub const ARMCLK: u32 = 10;
+pub const USB480M: u32 = 11;
+pub const USB480M_PHY: u32 = 12;
+pub const ACLK_CORE_NIU2BUS: u32 = 18;
+pub const CLK_CORE_PVTM: u32 = 19;
+pub const CLK_CORE_PVTM_CORE: u32 = 20;
+pub const CLK_CORE_PVTPLL: u32 = 21;
+pub const CLK_GPU_SRC: u32 = 22;
+pub const CLK_GPU_PRE_NDFT: u32 = 23;
+pub const CLK_GPU_PRE_MUX: u32 = 24;
+pub const ACLK_GPU_PRE: u32 = 25;
+pub const PCLK_GPU_PRE: u32 = 26;
+pub const CLK_GPU: u32 = 27;
+pub const CLK_GPU_NP5: u32 = 28;
+pub const PCLK_GPU_PVTM: u32 = 29;
+pub const CLK_GPU_PVTM: u32 = 30;
+pub const CLK_GPU_PVTM_CORE: u32 = 31;
+pub const CLK_GPU_PVTPLL: u32 = 32;
+pub const CLK_NPU_SRC: u32 = 33;
+pub const CLK_NPU_PRE_NDFT: u32 = 34;
+pub const CLK_NPU: u32 = 35;
+pub const CLK_NPU_NP5: u32 = 36;
+pub const HCLK_NPU_PRE: u32 = 37;
+pub const PCLK_NPU_PRE: u32 = 38;
+pub const ACLK_NPU_PRE: u32 = 39;
+pub const ACLK_NPU: u32 = 40;
+pub const HCLK_NPU: u32 = 41;
+pub const PCLK_NPU_PVTM: u32 = 42;
+pub const CLK_NPU_PVTM: u32 = 43;
+pub const CLK_NPU_PVTM_CORE: u32 = 44;
+pub const CLK_NPU_PVTPLL: u32 = 45;
+pub const CLK_DDRPHY1X_SRC: u32 = 46;
+pub const CLK_DDRPHY1X_HWFFC_SRC: u32 = 47;
+pub const CLK_DDR1X: u32 = 48;
+pub const CLK_MSCH: u32 = 49;
+pub const CLK24_DDRMON: u32 = 50;
+pub const ACLK_GIC_AUDIO: u32 = 51;
+pub const HCLK_GIC_AUDIO: u32 = 52;
+pub const HCLK_SDMMC_BUFFER: u32 = 53;
+pub const DCLK_SDMMC_BUFFER: u32 = 54;
+pub const ACLK_GIC600: u32 = 55;
+pub const ACLK_SPINLOCK: u32 = 56;
+pub const HCLK_I2S0_8CH: u32 = 57;
+pub const HCLK_I2S1_8CH: u32 = 58;
+pub const HCLK_I2S2_2CH: u32 = 59;
+pub const HCLK_I2S3_2CH: u32 = 60;
+pub const CLK_I2S0_8CH_TX_SRC: u32 = 61;
+pub const CLK_I2S0_8CH_TX_FRAC: u32 = 62;
+pub const MCLK_I2S0_8CH_TX: u32 = 63;
+pub const I2S0_MCLKOUT_TX: u32 = 64;
+pub const CLK_I2S0_8CH_RX_SRC: u32 = 65;
+pub const CLK_I2S0_8CH_RX_FRAC: u32 = 66;
+pub const MCLK_I2S0_8CH_RX: u32 = 67;
+pub const I2S0_MCLKOUT_RX: u32 = 68;
+pub const CLK_I2S1_8CH_TX_SRC: u32 = 69;
+pub const CLK_I2S1_8CH_TX_FRAC: u32 = 70;
+pub const MCLK_I2S1_8CH_TX: u32 = 71;
+pub const I2S1_MCLKOUT_TX: u32 = 72;
+pub const CLK_I2S1_8CH_RX_SRC: u32 = 73;
+pub const CLK_I2S1_8CH_RX_FRAC: u32 = 74;
+pub const MCLK_I2S1_8CH_RX: u32 = 75;
+pub const I2S1_MCLKOUT_RX: u32 = 76;
+pub const CLK_I2S2_2CH_SRC: u32 = 77;
+pub const CLK_I2S2_2CH_FRAC: u32 = 78;
+pub const MCLK_I2S2_2CH: u32 = 79;
+pub const I2S2_MCLKOUT: u32 = 80;
+pub const CLK_I2S3_2CH_TX_SRC: u32 = 81;
+pub const CLK_I2S3_2CH_TX_FRAC: u32 = 82;
+pub const MCLK_I2S3_2CH_TX: u32 = 83;
+pub const I2S3_MCLKOUT_TX: u32 = 84;
+pub const CLK_I2S3_2CH_RX_SRC: u32 = 85;
+pub const CLK_I2S3_2CH_RX_FRAC: u32 = 86;
+pub const MCLK_I2S3_2CH_RX: u32 = 87;
+pub const I2S3_MCLKOUT_RX: u32 = 88;
+pub const HCLK_PDM: u32 = 89;
+pub const MCLK_PDM: u32 = 90;
+pub const HCLK_VAD: u32 = 91;
+pub const HCLK_SPDIF_8CH: u32 = 92;
+pub const MCLK_SPDIF_8CH_SRC: u32 = 93;
+pub const MCLK_SPDIF_8CH_FRAC: u32 = 94;
+pub const MCLK_SPDIF_8CH: u32 = 95;
+pub const HCLK_AUDPWM: u32 = 96;
+pub const SCLK_AUDPWM_SRC: u32 = 97;
+pub const SCLK_AUDPWM_FRAC: u32 = 98;
+pub const SCLK_AUDPWM: u32 = 99;
+pub const HCLK_ACDCDIG: u32 = 100;
+pub const CLK_ACDCDIG_I2C: u32 = 101;
+pub const CLK_ACDCDIG_DAC: u32 = 102;
+pub const CLK_ACDCDIG_ADC: u32 = 103;
+pub const ACLK_SECURE_FLASH: u32 = 104;
+pub const HCLK_SECURE_FLASH: u32 = 105;
+pub const ACLK_CRYPTO_NS: u32 = 106;
+pub const HCLK_CRYPTO_NS: u32 = 107;
+pub const CLK_CRYPTO_NS_CORE: u32 = 108;
+pub const CLK_CRYPTO_NS_PKA: u32 = 109;
+pub const CLK_CRYPTO_NS_RNG: u32 = 110;
+pub const HCLK_TRNG_NS: u32 = 111;
+pub const CLK_TRNG_NS: u32 = 112;
+pub const PCLK_OTPC_NS: u32 = 113;
+pub const CLK_OTPC_NS_SBPI: u32 = 114;
+pub const CLK_OTPC_NS_USR: u32 = 115;
+pub const HCLK_NANDC: u32 = 116;
+pub const NCLK_NANDC: u32 = 117;
+pub const HCLK_SFC: u32 = 118;
+pub const HCLK_SFC_XIP: u32 = 119;
+pub const SCLK_SFC: u32 = 120;
+pub const ACLK_EMMC: u32 = 121;
+pub const HCLK_EMMC: u32 = 122;
+pub const BCLK_EMMC: u32 = 123;
+pub const CCLK_EMMC: u32 = 124;
+pub const TCLK_EMMC: u32 = 125;
+pub const ACLK_PIPE: u32 = 126;
+pub const PCLK_PIPE: u32 = 127;
+pub const PCLK_PIPE_GRF: u32 = 128;
+pub const ACLK_PCIE20_MST: u32 = 129;
+pub const ACLK_PCIE20_SLV: u32 = 130;
+pub const ACLK_PCIE20_DBI: u32 = 131;
+pub const PCLK_PCIE20: u32 = 132;
+pub const CLK_PCIE20_AUX_NDFT: u32 = 133;
+pub const CLK_PCIE20_AUX_DFT: u32 = 134;
+pub const CLK_PCIE20_PIPE_DFT: u32 = 135;
+pub const ACLK_PCIE30X1_MST: u32 = 136;
+pub const ACLK_PCIE30X1_SLV: u32 = 137;
+pub const ACLK_PCIE30X1_DBI: u32 = 138;
+pub const PCLK_PCIE30X1: u32 = 139;
+pub const CLK_PCIE30X1_AUX_NDFT: u32 = 140;
+pub const CLK_PCIE30X1_AUX_DFT: u32 = 141;
+pub const CLK_PCIE30X1_PIPE_DFT: u32 = 142;
+pub const ACLK_PCIE30X2_MST: u32 = 143;
+pub const ACLK_PCIE30X2_SLV: u32 = 144;
+pub const ACLK_PCIE30X2_DBI: u32 = 145;
+pub const PCLK_PCIE30X2: u32 = 146;
+pub const CLK_PCIE30X2_AUX_NDFT: u32 = 147;
+pub const CLK_PCIE30X2_AUX_DFT: u32 = 148;
+pub const CLK_PCIE30X2_PIPE_DFT: u32 = 149;
+pub const ACLK_SATA0: u32 = 150;
+pub const CLK_SATA0_PMALIVE: u32 = 151;
+pub const CLK_SATA0_RXOOB: u32 = 152;
+pub const CLK_SATA0_PIPE_NDFT: u32 = 153;
+pub const CLK_SATA0_PIPE_DFT: u32 = 154;
+pub const ACLK_SATA1: u32 = 155;
+pub const CLK_SATA1_PMALIVE: u32 = 156;
+pub const CLK_SATA1_RXOOB: u32 = 157;
+pub const CLK_SATA1_PIPE_NDFT: u32 = 158;
+pub const CLK_SATA1_PIPE_DFT: u32 = 159;
+pub const ACLK_SATA2: u32 = 160;
+pub const CLK_SATA2_PMALIVE: u32 = 161;
+pub const CLK_SATA2_RXOOB: u32 = 162;
+pub const CLK_SATA2_PIPE_NDFT: u32 = 163;
+pub const CLK_SATA2_PIPE_DFT: u32 = 164;
+pub const ACLK_USB3OTG0: u32 = 165;
+pub const CLK_USB3OTG0_REF: u32 = 166;
+pub const CLK_USB3OTG0_SUSPEND: u32 = 167;
+pub const ACLK_USB3OTG1: u32 = 168;
+pub const CLK_USB3OTG1_REF: u32 = 169;
+pub const CLK_USB3OTG1_SUSPEND: u32 = 170;
+pub const CLK_XPCS_EEE: u32 = 171;
+pub const PCLK_XPCS: u32 = 172;
+pub const ACLK_PHP: u32 = 173;
+pub const HCLK_PHP: u32 = 174;
+pub const PCLK_PHP: u32 = 175;
+pub const HCLK_SDMMC0: u32 = 176;
+pub const CLK_SDMMC0: u32 = 177;
+pub const HCLK_SDMMC1: u32 = 178;
+pub const CLK_SDMMC1: u32 = 179;
+pub const ACLK_GMAC0: u32 = 180;
+pub const PCLK_GMAC0: u32 = 181;
+pub const CLK_MAC0_2TOP: u32 = 182;
+pub const CLK_MAC0_OUT: u32 = 183;
+pub const CLK_MAC0_REFOUT: u32 = 184;
+pub const CLK_GMAC0_PTP_REF: u32 = 185;
+pub const ACLK_USB: u32 = 186;
+pub const HCLK_USB: u32 = 187;
+pub const PCLK_USB: u32 = 188;
+pub const HCLK_USB2HOST0: u32 = 189;
+pub const HCLK_USB2HOST0_ARB: u32 = 190;
+pub const HCLK_USB2HOST1: u32 = 191;
+pub const HCLK_USB2HOST1_ARB: u32 = 192;
+pub const HCLK_SDMMC2: u32 = 193;
+pub const CLK_SDMMC2: u32 = 194;
+pub const ACLK_GMAC1: u32 = 195;
+pub const PCLK_GMAC1: u32 = 196;
+pub const CLK_MAC1_2TOP: u32 = 197;
+pub const CLK_MAC1_OUT: u32 = 198;
+pub const CLK_MAC1_REFOUT: u32 = 199;
+pub const CLK_GMAC1_PTP_REF: u32 = 200;
+pub const ACLK_PERIMID: u32 = 201;
+pub const HCLK_PERIMID: u32 = 202;
+pub const ACLK_VI: u32 = 203;
+pub const HCLK_VI: u32 = 204;
+pub const PCLK_VI: u32 = 205;
+pub const ACLK_VICAP: u32 = 206;
+pub const HCLK_VICAP: u32 = 207;
+pub const DCLK_VICAP: u32 = 208;
+pub const ICLK_VICAP_G: u32 = 209;
+pub const ACLK_ISP: u32 = 210;
+pub const HCLK_ISP: u32 = 211;
+pub const CLK_ISP: u32 = 212;
+pub const PCLK_CSI2HOST1: u32 = 213;
+pub const CLK_CIF_OUT: u32 = 214;
+pub const CLK_CAM0_OUT: u32 = 215;
+pub const CLK_CAM1_OUT: u32 = 216;
+pub const ACLK_VO: u32 = 217;
+pub const HCLK_VO: u32 = 218;
+pub const PCLK_VO: u32 = 219;
+pub const ACLK_VOP_PRE: u32 = 220;
+pub const ACLK_VOP: u32 = 221;
+pub const HCLK_VOP: u32 = 222;
+pub const DCLK_VOP0: u32 = 223;
+pub const DCLK_VOP1: u32 = 224;
+pub const DCLK_VOP2: u32 = 225;
+pub const CLK_VOP_PWM: u32 = 226;
+pub const ACLK_HDCP: u32 = 227;
+pub const HCLK_HDCP: u32 = 228;
+pub const PCLK_HDCP: u32 = 229;
+pub const PCLK_HDMI_HOST: u32 = 230;
+pub const CLK_HDMI_SFR: u32 = 231;
+pub const PCLK_DSITX_0: u32 = 232;
+pub const PCLK_DSITX_1: u32 = 233;
+pub const PCLK_EDP_CTRL: u32 = 234;
+pub const CLK_EDP_200M: u32 = 235;
+pub const ACLK_VPU_PRE: u32 = 236;
+pub const HCLK_VPU_PRE: u32 = 237;
+pub const ACLK_VPU: u32 = 238;
+pub const HCLK_VPU: u32 = 239;
+pub const ACLK_RGA_PRE: u32 = 240;
+pub const HCLK_RGA_PRE: u32 = 241;
+pub const PCLK_RGA_PRE: u32 = 242;
+pub const ACLK_RGA: u32 = 243;
+pub const HCLK_RGA: u32 = 244;
+pub const CLK_RGA_CORE: u32 = 245;
+pub const ACLK_IEP: u32 = 246;
+pub const HCLK_IEP: u32 = 247;
+pub const CLK_IEP_CORE: u32 = 248;
+pub const HCLK_EBC: u32 = 249;
+pub const DCLK_EBC: u32 = 250;
+pub const ACLK_JDEC: u32 = 251;
+pub const HCLK_JDEC: u32 = 252;
+pub const ACLK_JENC: u32 = 253;
+pub const HCLK_JENC: u32 = 254;
+pub const PCLK_EINK: u32 = 255;
+pub const HCLK_EINK: u32 = 256;
+pub const ACLK_RKVENC_PRE: u32 = 257;
+pub const HCLK_RKVENC_PRE: u32 = 258;
+pub const ACLK_RKVENC: u32 = 259;
+pub const HCLK_RKVENC: u32 = 260;
+pub const CLK_RKVENC_CORE: u32 = 261;
+pub const ACLK_RKVDEC_PRE: u32 = 262;
+pub const HCLK_RKVDEC_PRE: u32 = 263;
+pub const ACLK_RKVDEC: u32 = 264;
+pub const HCLK_RKVDEC: u32 = 265;
+pub const CLK_RKVDEC_CA: u32 = 266;
+pub const CLK_RKVDEC_CORE: u32 = 267;
+pub const CLK_RKVDEC_HEVC_CA: u32 = 268;
+pub const ACLK_BUS: u32 = 269;
+pub const PCLK_BUS: u32 = 270;
+pub const PCLK_TSADC: u32 = 271;
+pub const CLK_TSADC_TSEN: u32 = 272;
+pub const CLK_TSADC: u32 = 273;
+pub const PCLK_SARADC: u32 = 274;
+pub const CLK_SARADC: u32 = 275;
+pub const PCLK_SCR: u32 = 276;
+pub const PCLK_WDT_NS: u32 = 277;
+pub const TCLK_WDT_NS: u32 = 278;
+pub const ACLK_DMAC0: u32 = 279;
+pub const ACLK_DMAC1: u32 = 280;
+pub const ACLK_MCU: u32 = 281;
+pub const PCLK_INTMUX: u32 = 282;
+pub const PCLK_MAILBOX: u32 = 283;
+pub const PCLK_UART1: u32 = 284;
+pub const CLK_UART1_SRC: u32 = 285;
+pub const CLK_UART1_FRAC: u32 = 286;
+pub const SCLK_UART1: u32 = 287;
+pub const PCLK_UART2: u32 = 288;
+pub const CLK_UART2_SRC: u32 = 289;
+pub const CLK_UART2_FRAC: u32 = 290;
+pub const SCLK_UART2: u32 = 291;
+pub const PCLK_UART3: u32 = 292;
+pub const CLK_UART3_SRC: u32 = 293;
+pub const CLK_UART3_FRAC: u32 = 294;
+pub const SCLK_UART3: u32 = 295;
+pub const PCLK_UART4: u32 = 296;
+pub const CLK_UART4_SRC: u32 = 297;
+pub const CLK_UART4_FRAC: u32 = 298;
+pub const SCLK_UART4: u32 = 299;
+pub const PCLK_UART5: u32 = 300;
+pub const CLK_UART5_SRC: u32 = 301;
+pub const CLK_UART5_FRAC: u32 = 302;
+pub const SCLK_UART5: u32 = 303;
+pub const PCLK_UART6: u32 = 304;
+pub const CLK_UART6_SRC: u32 = 305;
+pub const CLK_UART6_FRAC: u32 = 306;
+pub const SCLK_UART6: u32 = 307;
+pub const PCLK_UART7: u32 = 308;
+pub const CLK_UART7_SRC: u32 = 309;
+pub const CLK_UART7_FRAC: u32 = 310;
+pub const SCLK_UART7: u32 = 311;
+pub const PCLK_UART8: u32 = 312;
+pub const CLK_UART8_SRC: u32 = 313;
+pub const CLK_UART8_FRAC: u32 = 314;
+pub const SCLK_UART8: u32 = 315;
+pub const PCLK_UART9: u32 = 316;
+pub const CLK_UART9_SRC: u32 = 317;
+pub const CLK_UART9_FRAC: u32 = 318;
+pub const SCLK_UART9: u32 = 319;
+pub const PCLK_CAN0: u32 = 320;
+pub const CLK_CAN0: u32 = 321;
+pub const PCLK_CAN1: u32 = 322;
+pub const CLK_CAN1: u32 = 323;
+pub const PCLK_CAN2: u32 = 324;
+pub const CLK_CAN2: u32 = 325;
+pub const CLK_I2C: u32 = 326;
+pub const PCLK_I2C1: u32 = 327;
+pub const CLK_I2C1: u32 = 328;
+pub const PCLK_I2C2: u32 = 329;
+pub const CLK_I2C2: u32 = 330;
+pub const PCLK_I2C3: u32 = 331;
+pub const CLK_I2C3: u32 = 332;
+pub const PCLK_I2C4: u32 = 333;
+pub const CLK_I2C4: u32 = 334;
+pub const PCLK_I2C5: u32 = 335;
+pub const CLK_I2C5: u32 = 336;
+pub const PCLK_SPI0: u32 = 337;
+pub const CLK_SPI0: u32 = 338;
+pub const PCLK_SPI1: u32 = 339;
+pub const CLK_SPI1: u32 = 340;
+pub const PCLK_SPI2: u32 = 341;
+pub const CLK_SPI2: u32 = 342;
+pub const PCLK_SPI3: u32 = 343;
+pub const CLK_SPI3: u32 = 344;
+pub const PCLK_PWM1: u32 = 345;
+pub const CLK_PWM1: u32 = 346;
+pub const CLK_PWM1_CAPTURE: u32 = 347;
+pub const PCLK_PWM2: u32 = 348;
+pub const CLK_PWM2: u32 = 349;
+pub const CLK_PWM2_CAPTURE: u32 = 350;
+pub const PCLK_PWM3: u32 = 351;
+pub const CLK_PWM3: u32 = 352;
+pub const CLK_PWM3_CAPTURE: u32 = 353;
+pub const DBCLK_GPIO: u32 = 354;
+pub const PCLK_GPIO1: u32 = 355;
+pub const DBCLK_GPIO1: u32 = 356;
+pub const PCLK_GPIO2: u32 = 357;
+pub const DBCLK_GPIO2: u32 = 358;
+pub const PCLK_GPIO3: u32 = 359;
+pub const DBCLK_GPIO3: u32 = 360;
+pub const PCLK_GPIO4: u32 = 361;
+pub const DBCLK_GPIO4: u32 = 362;
+pub const OCC_SCAN_CLK_GPIO: u32 = 363;
+pub const PCLK_TIMER: u32 = 364;
+pub const CLK_TIMER0: u32 = 365;
+pub const CLK_TIMER1: u32 = 366;
+pub const CLK_TIMER2: u32 = 367;
+pub const CLK_TIMER3: u32 = 368;
+pub const CLK_TIMER4: u32 = 369;
+pub const CLK_TIMER5: u32 = 370;
+pub const ACLK_TOP_HIGH: u32 = 371;
+pub const ACLK_TOP_LOW: u32 = 372;
+pub const HCLK_TOP: u32 = 373;
+pub const PCLK_TOP: u32 = 374;
+pub const PCLK_PCIE30PHY: u32 = 375;
+pub const CLK_OPTC_ARB: u32 = 376;
+pub const PCLK_MIPICSIPHY: u32 = 377;
+pub const PCLK_MIPIDSIPHY0: u32 = 378;
+pub const PCLK_MIPIDSIPHY1: u32 = 379;
+pub const PCLK_PIPEPHY0: u32 = 380;
+pub const PCLK_PIPEPHY1: u32 = 381;
+pub const PCLK_PIPEPHY2: u32 = 382;
+pub const PCLK_CPU_BOOST: u32 = 383;
+pub const CLK_CPU_BOOST: u32 = 384;
+pub const PCLK_OTPPHY: u32 = 385;
+pub const SCLK_GMAC0: u32 = 386;
+pub const SCLK_GMAC0_RGMII_SPEED: u32 = 387;
+pub const SCLK_GMAC0_RMII_SPEED: u32 = 388;
+pub const SCLK_GMAC0_RX_TX: u32 = 389;
+pub const SCLK_GMAC1: u32 = 390;
+pub const SCLK_GMAC1_RGMII_SPEED: u32 = 391;
+pub const SCLK_GMAC1_RMII_SPEED: u32 = 392;
+pub const SCLK_GMAC1_RX_TX: u32 = 393;
+pub const SCLK_SDMMC0_DRV: u32 = 394;
+pub const SCLK_SDMMC0_SAMPLE: u32 = 395;
+pub const SCLK_SDMMC1_DRV: u32 = 396;
+pub const SCLK_SDMMC1_SAMPLE: u32 = 397;
+pub const SCLK_SDMMC2_DRV: u32 = 398;
+pub const SCLK_SDMMC2_SAMPLE: u32 = 399;
+pub const SCLK_EMMC_DRV: u32 = 400;
+pub const SCLK_EMMC_SAMPLE: u32 = 401;
+pub const PCLK_EDPPHY_GRF: u32 = 402;
+pub const CLK_HDMI_CEC: u32 = 403;
+pub const CLK_I2S0_8CH_TX: u32 = 404;
+pub const CLK_I2S0_8CH_RX: u32 = 405;
+pub const CLK_I2S1_8CH_TX: u32 = 406;
+pub const CLK_I2S1_8CH_RX: u32 = 407;
+pub const CLK_I2S2_2CH: u32 = 408;
+pub const CLK_I2S3_2CH_TX: u32 = 409;
+pub const CLK_I2S3_2CH_RX: u32 = 410;
+pub const CPLL_500M: u32 = 411;
+pub const CPLL_250M: u32 = 412;
+pub const CPLL_125M: u32 = 413;
+pub const CPLL_62P5M: u32 = 414;
+pub const CPLL_50M: u32 = 415;
+pub const CPLL_25M: u32 = 416;
+pub const CPLL_100M: u32 = 417;
+pub const SCLK_DDRCLK: u32 = 418;
+
+pub const PCLK_CORE_PVTM: u32 = 450;
+
+/* scmi-clocks indices */
+
+pub const SCMI_CLK_CPU: u32 = 0;
+pub const SCMI_CLK_GPU: u32 = 1;
+pub const SCMI_CLK_NPU: u32 = 2;
+
+/* pmu soft-reset indices */
+/* pmucru_softrst_con0 */
+pub const SRST_P_PDPMU_NIU: u32 = 0;
+pub const SRST_P_PMUCRU: u32 = 1;
+pub const SRST_P_PMUGRF: u32 = 2;
+pub const SRST_P_I2C0: u32 = 3;
+pub const SRST_I2C0: u32 = 4;
+pub const SRST_P_UART0: u32 = 5;
+pub const SRST_S_UART0: u32 = 6;
+pub const SRST_P_PWM0: u32 = 7;
+pub const SRST_PWM0: u32 = 8;
+pub const SRST_P_GPIO0: u32 = 9;
+pub const SRST_GPIO0: u32 = 10;
+pub const SRST_P_PMUPVTM: u32 = 11;
+pub const SRST_PMUPVTM: u32 = 12;
+
+/* soft-reset indices */
+
+/* cru_softrst_con0 */
+pub const SRST_NCORERESET0: u32 = 0;
+pub const SRST_NCORERESET1: u32 = 1;
+pub const SRST_NCORERESET2: u32 = 2;
+pub const SRST_NCORERESET3: u32 = 3;
+pub const SRST_NCPUPORESET0: u32 = 4;
+pub const SRST_NCPUPORESET1: u32 = 5;
+pub const SRST_NCPUPORESET2: u32 = 6;
+pub const SRST_NCPUPORESET3: u32 = 7;
+pub const SRST_NSRESET: u32 = 8;
+pub const SRST_NSPORESET: u32 = 9;
+pub const SRST_NATRESET: u32 = 10;
+pub const SRST_NGICRESET: u32 = 11;
+pub const SRST_NPRESET: u32 = 12;
+pub const SRST_NPERIPHRESET: u32 = 13;
+
+/* cru_softrst_con1 */
+pub const SRST_A_CORE_NIU2DDR: u32 = 16;
+pub const SRST_A_CORE_NIU2BUS: u32 = 17;
+pub const SRST_P_DBG_NIU: u32 = 18;
+pub const SRST_P_DBG: u32 = 19;
+pub const SRST_P_DBG_DAPLITE: u32 = 20;
+pub const SRST_DAP: u32 = 21;
+pub const SRST_A_ADB400_CORE2GIC: u32 = 22;
+pub const SRST_A_ADB400_GIC2CORE: u32 = 23;
+pub const SRST_P_CORE_GRF: u32 = 24;
+pub const SRST_P_CORE_PVTM: u32 = 25;
+pub const SRST_CORE_PVTM: u32 = 26;
+pub const SRST_CORE_PVTPLL: u32 = 27;
+
+/* cru_softrst_con2 */
+pub const SRST_GPU: u32 = 32;
+pub const SRST_A_GPU_NIU: u32 = 33;
+pub const SRST_P_GPU_NIU: u32 = 34;
+pub const SRST_P_GPU_PVTM: u32 = 35;
+pub const SRST_GPU_PVTM: u32 = 36;
+pub const SRST_GPU_PVTPLL: u32 = 37;
+pub const SRST_A_NPU_NIU: u32 = 40;
+pub const SRST_H_NPU_NIU: u32 = 41;
+pub const SRST_P_NPU_NIU: u32 = 42;
+pub const SRST_A_NPU: u32 = 43;
+pub const SRST_H_NPU: u32 = 44;
+pub const SRST_P_NPU_PVTM: u32 = 45;
+pub const SRST_NPU_PVTM: u32 = 46;
+pub const SRST_NPU_PVTPLL: u32 = 47;
+
+/* cru_softrst_con3 */
+pub const SRST_A_MSCH: u32 = 51;
+pub const SRST_HWFFC_CTRL: u32 = 52;
+pub const SRST_DDR_ALWAYSON: u32 = 53;
+pub const SRST_A_DDRSPLIT: u32 = 54;
+pub const SRST_DDRDFI_CTL: u32 = 55;
+pub const SRST_A_DMA2DDR: u32 = 57;
+
+/* cru_softrst_con4 */
+pub const SRST_A_PERIMID_NIU: u32 = 64;
+pub const SRST_H_PERIMID_NIU: u32 = 65;
+pub const SRST_A_GIC_AUDIO_NIU: u32 = 66;
+pub const SRST_H_GIC_AUDIO_NIU: u32 = 67;
+pub const SRST_A_GIC600: u32 = 68;
+pub const SRST_A_GIC600_DEBUG: u32 = 69;
+pub const SRST_A_GICADB_CORE2GIC: u32 = 70;
+pub const SRST_A_GICADB_GIC2CORE: u32 = 71;
+pub const SRST_A_SPINLOCK: u32 = 72;
+pub const SRST_H_SDMMC_BUFFER: u32 = 73;
+pub const SRST_D_SDMMC_BUFFER: u32 = 74;
+pub const SRST_H_I2S0_8CH: u32 = 75;
+pub const SRST_H_I2S1_8CH: u32 = 76;
+pub const SRST_H_I2S2_2CH: u32 = 77;
+pub const SRST_H_I2S3_2CH: u32 = 78;
+
+/* cru_softrst_con5 */
+pub const SRST_M_I2S0_8CH_TX: u32 = 80;
+pub const SRST_M_I2S0_8CH_RX: u32 = 81;
+pub const SRST_M_I2S1_8CH_TX: u32 = 82;
+pub const SRST_M_I2S1_8CH_RX: u32 = 83;
+pub const SRST_M_I2S2_2CH: u32 = 84;
+pub const SRST_M_I2S3_2CH_TX: u32 = 85;
+pub const SRST_M_I2S3_2CH_RX: u32 = 86;
+pub const SRST_H_PDM: u32 = 87;
+pub const SRST_M_PDM: u32 = 88;
+pub const SRST_H_VAD: u32 = 89;
+pub const SRST_H_SPDIF_8CH: u32 = 90;
+pub const SRST_M_SPDIF_8CH: u32 = 91;
+pub const SRST_H_AUDPWM: u32 = 92;
+pub const SRST_S_AUDPWM: u32 = 93;
+pub const SRST_H_ACDCDIG: u32 = 94;
+pub const SRST_ACDCDIG: u32 = 95;
+
+/* cru_softrst_con6 */
+pub const SRST_A_SECURE_FLASH_NIU: u32 = 96;
+pub const SRST_H_SECURE_FLASH_NIU: u32 = 97;
+pub const SRST_A_CRYPTO_NS: u32 = 103;
+pub const SRST_H_CRYPTO_NS: u32 = 104;
+pub const SRST_CRYPTO_NS_CORE: u32 = 105;
+pub const SRST_CRYPTO_NS_PKA: u32 = 106;
+pub const SRST_CRYPTO_NS_RNG: u32 = 107;
+pub const SRST_H_TRNG_NS: u32 = 108;
+pub const SRST_TRNG_NS: u32 = 109;
+
+/* cru_softrst_con7 */
+pub const SRST_H_NANDC: u32 = 112;
+pub const SRST_N_NANDC: u32 = 113;
+pub const SRST_H_SFC: u32 = 114;
+pub const SRST_H_SFC_XIP: u32 = 115;
+pub const SRST_S_SFC: u32 = 116;
+pub const SRST_A_EMMC: u32 = 117;
+pub const SRST_H_EMMC: u32 = 118;
+pub const SRST_B_EMMC: u32 = 119;
+pub const SRST_C_EMMC: u32 = 120;
+pub const SRST_T_EMMC: u32 = 121;
+
+/* cru_softrst_con8 */
+pub const SRST_A_PIPE_NIU: u32 = 128;
+pub const SRST_P_PIPE_NIU: u32 = 130;
+pub const SRST_P_PIPE_GRF: u32 = 133;
+pub const SRST_A_SATA0: u32 = 134;
+pub const SRST_SATA0_PIPE: u32 = 135;
+pub const SRST_SATA0_PMALIVE: u32 = 136;
+pub const SRST_SATA0_RXOOB: u32 = 137;
+pub const SRST_A_SATA1: u32 = 138;
+pub const SRST_SATA1_PIPE: u32 = 139;
+pub const SRST_SATA1_PMALIVE: u32 = 140;
+pub const SRST_SATA1_RXOOB: u32 = 141;
+
+/* cru_softrst_con9 */
+pub const SRST_A_SATA2: u32 = 144;
+pub const SRST_SATA2_PIPE: u32 = 145;
+pub const SRST_SATA2_PMALIVE: u32 = 146;
+pub const SRST_SATA2_RXOOB: u32 = 147;
+pub const SRST_USB3OTG0: u32 = 148;
+pub const SRST_USB3OTG1: u32 = 149;
+pub const SRST_XPCS: u32 = 150;
+pub const SRST_XPCS_TX_DIV10: u32 = 151;
+pub const SRST_XPCS_RX_DIV10: u32 = 152;
+pub const SRST_XPCS_XGXS_RX: u32 = 153;
+
+/* cru_softrst_con10 */
+pub const SRST_P_PCIE20: u32 = 160;
+pub const SRST_PCIE20_POWERUP: u32 = 161;
+pub const SRST_MSTR_ARESET_PCIE20: u32 = 162;
+pub const SRST_SLV_ARESET_PCIE20: u32 = 163;
+pub const SRST_DBI_ARESET_PCIE20: u32 = 164;
+pub const SRST_BRESET_PCIE20: u32 = 165;
+pub const SRST_PERST_PCIE20: u32 = 166;
+pub const SRST_CORE_RST_PCIE20: u32 = 167;
+pub const SRST_NSTICKY_RST_PCIE20: u32 = 168;
+pub const SRST_STICKY_RST_PCIE20: u32 = 169;
+pub const SRST_PWR_RST_PCIE20: u32 = 170;
+
+/* cru_softrst_con11 */
+pub const SRST_P_PCIE30X1: u32 = 176;
+pub const SRST_PCIE30X1_POWERUP: u32 = 177;
+pub const SRST_M_ARESET_PCIE30X1: u32 = 178;
+pub const SRST_S_ARESET_PCIE30X1: u32 = 179;
+pub const SRST_D_ARESET_PCIE30X1: u32 = 180;
+pub const SRST_BRESET_PCIE30X1: u32 = 181;
+pub const SRST_PERST_PCIE30X1: u32 = 182;
+pub const SRST_CORE_RST_PCIE30X1: u32 = 183;
+pub const SRST_NSTC_RST_PCIE30X1: u32 = 184;
+pub const SRST_STC_RST_PCIE30X1: u32 = 185;
+pub const SRST_PWR_RST_PCIE30X1: u32 = 186;
+
+/* cru_softrst_con12 */
+pub const SRST_P_PCIE30X2: u32 = 192;
+pub const SRST_PCIE30X2_POWERUP: u32 = 193;
+pub const SRST_M_ARESET_PCIE30X2: u32 = 194;
+pub const SRST_S_ARESET_PCIE30X2: u32 = 195;
+pub const SRST_D_ARESET_PCIE30X2: u32 = 196;
+pub const SRST_BRESET_PCIE30X2: u32 = 197;
+pub const SRST_PERST_PCIE30X2: u32 = 198;
+pub const SRST_CORE_RST_PCIE30X2: u32 = 199;
+pub const SRST_NSTC_RST_PCIE30X2: u32 = 200;
+pub const SRST_STC_RST_PCIE30X2: u32 = 201;
+pub const SRST_PWR_RST_PCIE30X2: u32 = 202;
+
+/* cru_softrst_con13 */
+pub const SRST_A_PHP_NIU: u32 = 208;
+pub const SRST_H_PHP_NIU: u32 = 209;
+pub const SRST_P_PHP_NIU: u32 = 210;
+pub const SRST_H_SDMMC0: u32 = 211;
+pub const SRST_SDMMC0: u32 = 212;
+pub const SRST_H_SDMMC1: u32 = 213;
+pub const SRST_SDMMC1: u32 = 214;
+pub const SRST_A_GMAC0: u32 = 215;
+pub const SRST_GMAC0_TIMESTAMP: u32 = 216;
+
+/* cru_softrst_con14 */
+pub const SRST_A_USB_NIU: u32 = 224;
+pub const SRST_H_USB_NIU: u32 = 225;
+pub const SRST_P_USB_NIU: u32 = 226;
+pub const SRST_P_USB_GRF: u32 = 227;
+pub const SRST_H_USB2HOST0: u32 = 228;
+pub const SRST_H_USB2HOST0_ARB: u32 = 229;
+pub const SRST_USB2HOST0_UTMI: u32 = 230;
+pub const SRST_H_USB2HOST1: u32 = 231;
+pub const SRST_H_USB2HOST1_ARB: u32 = 232;
+pub const SRST_USB2HOST1_UTMI: u32 = 233;
+pub const SRST_H_SDMMC2: u32 = 234;
+pub const SRST_SDMMC2: u32 = 235;
+pub const SRST_A_GMAC1: u32 = 236;
+pub const SRST_GMAC1_TIMESTAMP: u32 = 237;
+
+/* cru_softrst_con15 */
+pub const SRST_A_VI_NIU: u32 = 240;
+pub const SRST_H_VI_NIU: u32 = 241;
+pub const SRST_P_VI_NIU: u32 = 242;
+pub const SRST_A_VICAP: u32 = 247;
+pub const SRST_H_VICAP: u32 = 248;
+pub const SRST_D_VICAP: u32 = 249;
+pub const SRST_I_VICAP: u32 = 250;
+pub const SRST_P_VICAP: u32 = 251;
+pub const SRST_H_ISP: u32 = 252;
+pub const SRST_ISP: u32 = 253;
+pub const SRST_P_CSI2HOST1: u32 = 255;
+
+/* cru_softrst_con16 */
+pub const SRST_A_VO_NIU: u32 = 256;
+pub const SRST_H_VO_NIU: u32 = 257;
+pub const SRST_P_VO_NIU: u32 = 258;
+pub const SRST_A_VOP_NIU: u32 = 259;
+pub const SRST_A_VOP: u32 = 260;
+pub const SRST_H_VOP: u32 = 261;
+pub const SRST_VOP0: u32 = 262;
+pub const SRST_VOP1: u32 = 263;
+pub const SRST_VOP2: u32 = 264;
+pub const SRST_VOP_PWM: u32 = 265;
+pub const SRST_A_HDCP: u32 = 266;
+pub const SRST_H_HDCP: u32 = 267;
+pub const SRST_P_HDCP: u32 = 268;
+pub const SRST_P_HDMI_HOST: u32 = 270;
+pub const SRST_HDMI_HOST: u32 = 271;
+
+/* cru_softrst_con17 */
+pub const SRST_P_DSITX_0: u32 = 272;
+pub const SRST_P_DSITX_1: u32 = 273;
+pub const SRST_P_EDP_CTRL: u32 = 274;
+pub const SRST_EDP_24M: u32 = 275;
+pub const SRST_A_VPU_NIU: u32 = 280;
+pub const SRST_H_VPU_NIU: u32 = 281;
+pub const SRST_A_VPU: u32 = 282;
+pub const SRST_H_VPU: u32 = 283;
+pub const SRST_H_EINK: u32 = 286;
+pub const SRST_P_EINK: u32 = 287;
+
+/* cru_softrst_con18 */
+pub const SRST_A_RGA_NIU: u32 = 288;
+pub const SRST_H_RGA_NIU: u32 = 289;
+pub const SRST_P_RGA_NIU: u32 = 290;
+pub const SRST_A_RGA: u32 = 292;
+pub const SRST_H_RGA: u32 = 293;
+pub const SRST_RGA_CORE: u32 = 294;
+pub const SRST_A_IEP: u32 = 295;
+pub const SRST_H_IEP: u32 = 296;
+pub const SRST_IEP_CORE: u32 = 297;
+pub const SRST_H_EBC: u32 = 298;
+pub const SRST_D_EBC: u32 = 299;
+pub const SRST_A_JDEC: u32 = 300;
+pub const SRST_H_JDEC: u32 = 301;
+pub const SRST_A_JENC: u32 = 302;
+pub const SRST_H_JENC: u32 = 303;
+
+/* cru_softrst_con19 */
+pub const SRST_A_VENC_NIU: u32 = 304;
+pub const SRST_H_VENC_NIU: u32 = 305;
+pub const SRST_A_RKVENC: u32 = 307;
+pub const SRST_H_RKVENC: u32 = 308;
+pub const SRST_RKVENC_CORE: u32 = 309;
+
+/* cru_softrst_con20 */
+pub const SRST_A_RKVDEC_NIU: u32 = 320;
+pub const SRST_H_RKVDEC_NIU: u32 = 321;
+pub const SRST_A_RKVDEC: u32 = 322;
+pub const SRST_H_RKVDEC: u32 = 323;
+pub const SRST_RKVDEC_CA: u32 = 324;
+pub const SRST_RKVDEC_CORE: u32 = 325;
+pub const SRST_RKVDEC_HEVC_CA: u32 = 326;
+
+/* cru_softrst_con21 */
+pub const SRST_A_BUS_NIU: u32 = 336;
+pub const SRST_P_BUS_NIU: u32 = 338;
+pub const SRST_P_CAN0: u32 = 340;
+pub const SRST_CAN0: u32 = 341;
+pub const SRST_P_CAN1: u32 = 342;
+pub const SRST_CAN1: u32 = 343;
+pub const SRST_P_CAN2: u32 = 344;
+pub const SRST_CAN2: u32 = 345;
+pub const SRST_P_GPIO1: u32 = 346;
+pub const SRST_GPIO1: u32 = 347;
+pub const SRST_P_GPIO2: u32 = 348;
+pub const SRST_GPIO2: u32 = 349;
+pub const SRST_P_GPIO3: u32 = 350;
+pub const SRST_GPIO3: u32 = 351;
+
+/* cru_softrst_con22 */
+pub const SRST_P_GPIO4: u32 = 352;
+pub const SRST_GPIO4: u32 = 353;
+pub const SRST_P_I2C1: u32 = 354;
+pub const SRST_I2C1: u32 = 355;
+pub const SRST_P_I2C2: u32 = 356;
+pub const SRST_I2C2: u32 = 357;
+pub const SRST_P_I2C3: u32 = 358;
+pub const SRST_I2C3: u32 = 359;
+pub const SRST_P_I2C4: u32 = 360;
+pub const SRST_I2C4: u32 = 361;
+pub const SRST_P_I2C5: u32 = 362;
+pub const SRST_I2C5: u32 = 363;
+pub const SRST_P_OTPC_NS: u32 = 364;
+pub const SRST_OTPC_NS_SBPI: u32 = 365;
+pub const SRST_OTPC_NS_USR: u32 = 366;
+
+/* cru_softrst_con23 */
+pub const SRST_P_PWM1: u32 = 368;
+pub const SRST_PWM1: u32 = 369;
+pub const SRST_P_PWM2: u32 = 370;
+pub const SRST_PWM2: u32 = 371;
+pub const SRST_P_PWM3: u32 = 372;
+pub const SRST_PWM3: u32 = 373;
+pub const SRST_P_SPI0: u32 = 374;
+pub const SRST_SPI0: u32 = 375;
+pub const SRST_P_SPI1: u32 = 376;
+pub const SRST_SPI1: u32 = 377;
+pub const SRST_P_SPI2: u32 = 378;
+pub const SRST_SPI2: u32 = 379;
+pub const SRST_P_SPI3: u32 = 380;
+pub const SRST_SPI3: u32 = 381;
+
+/* cru_softrst_con24 */
+pub const SRST_P_SARADC: u32 = 384;
+pub const SRST_P_TSADC: u32 = 385;
+pub const SRST_TSADC: u32 = 386;
+pub const SRST_P_TIMER: u32 = 387;
+pub const SRST_TIMER0: u32 = 388;
+pub const SRST_TIMER1: u32 = 389;
+pub const SRST_TIMER2: u32 = 390;
+pub const SRST_TIMER3: u32 = 391;
+pub const SRST_TIMER4: u32 = 392;
+pub const SRST_TIMER5: u32 = 393;
+pub const SRST_P_UART1: u32 = 394;
+pub const SRST_S_UART1: u32 = 395;
+
+/* cru_softrst_con25 */
+pub const SRST_P_UART2: u32 = 400;
+pub const SRST_S_UART2: u32 = 401;
+pub const SRST_P_UART3: u32 = 402;
+pub const SRST_S_UART3: u32 = 403;
+pub const SRST_P_UART4: u32 = 404;
+pub const SRST_S_UART4: u32 = 405;
+pub const SRST_P_UART5: u32 = 406;
+pub const SRST_S_UART5: u32 = 407;
+pub const SRST_P_UART6: u32 = 408;
+pub const SRST_S_UART6: u32 = 409;
+pub const SRST_P_UART7: u32 = 410;
+pub const SRST_S_UART7: u32 = 411;
+pub const SRST_P_UART8: u32 = 412;
+pub const SRST_S_UART8: u32 = 413;
+pub const SRST_P_UART9: u32 = 414;
+pub const SRST_S_UART9: u32 = 415;
+
+/* cru_softrst_con26 */
+pub const SRST_P_GRF: u32 = 416;
+pub const SRST_P_GRF_VCCIO12: u32 = 417;
+pub const SRST_P_GRF_VCCIO34: u32 = 418;
+pub const SRST_P_GRF_VCCIO567: u32 = 419;
+pub const SRST_P_SCR: u32 = 420;
+pub const SRST_P_WDT_NS: u32 = 421;
+pub const SRST_T_WDT_NS: u32 = 422;
+pub const SRST_P_DFT2APB: u32 = 423;
+pub const SRST_A_MCU: u32 = 426;
+pub const SRST_P_INTMUX: u32 = 427;
+pub const SRST_P_MAILBOX: u32 = 428;
+
+/* cru_softrst_con27 */
+pub const SRST_A_TOP_HIGH_NIU: u32 = 432;
+pub const SRST_A_TOP_LOW_NIU: u32 = 433;
+pub const SRST_H_TOP_NIU: u32 = 434;
+pub const SRST_P_TOP_NIU: u32 = 435;
+pub const SRST_P_TOP_CRU: u32 = 438;
+pub const SRST_P_DDRPHY: u32 = 439;
+pub const SRST_DDRPHY: u32 = 440;
+pub const SRST_P_MIPICSIPHY: u32 = 442;
+pub const SRST_P_MIPIDSIPHY0: u32 = 443;
+pub const SRST_P_MIPIDSIPHY1: u32 = 444;
+pub const SRST_P_PCIE30PHY: u32 = 445;
+pub const SRST_PCIE30PHY: u32 = 446;
+pub const SRST_P_PCIE30PHY_GRF: u32 = 447;
+
+/* cru_softrst_con28 */
+pub const SRST_P_APB2ASB_LEFT: u32 = 448;
+pub const SRST_P_APB2ASB_BOTTOM: u32 = 449;
+pub const SRST_P_ASB2APB_LEFT: u32 = 450;
+pub const SRST_P_ASB2APB_BOTTOM: u32 = 451;
+pub const SRST_P_PIPEPHY0: u32 = 452;
+pub const SRST_PIPEPHY0: u32 = 453;
+pub const SRST_P_PIPEPHY1: u32 = 454;
+pub const SRST_PIPEPHY1: u32 = 455;
+pub const SRST_P_PIPEPHY2: u32 = 456;
+pub const SRST_PIPEPHY2: u32 = 457;
+pub const SRST_P_USB2PHY0_GRF: u32 = 458;
+pub const SRST_P_USB2PHY1_GRF: u32 = 459;
+pub const SRST_P_CPU_BOOST: u32 = 460;
+pub const SRST_CPU_BOOST: u32 = 461;
+pub const SRST_P_OTPPHY: u32 = 462;
+pub const SRST_OTPPHY: u32 = 463;
+
+/* cru_softrst_con29 */
+pub const SRST_USB2PHY0_POR: u32 = 464;
+pub const SRST_USB2PHY0_USB3OTG0: u32 = 465;
+pub const SRST_USB2PHY0_USB3OTG1: u32 = 466;
+pub const SRST_USB2PHY1_POR: u32 = 467;
+pub const SRST_USB2PHY1_USB2HOST0: u32 = 468;
+pub const SRST_USB2PHY1_USB2HOST1: u32 = 469;
+pub const SRST_P_EDPPHY_GRF: u32 = 470;
+pub const SRST_TSADCPHY: u32 = 471;
+pub const SRST_GMAC0_DELAYLINE: u32 = 472;
+pub const SRST_GMAC1_DELAYLINE: u32 = 473;
+pub const SRST_OTPC_ARB: u32 = 474;
+pub const SRST_P_PIPEPHY0_GRF: u32 = 475;
+pub const SRST_P_PIPEPHY1_GRF: u32 = 476;
+pub const SRST_P_PIPEPHY2_GRF: u32 = 477;
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

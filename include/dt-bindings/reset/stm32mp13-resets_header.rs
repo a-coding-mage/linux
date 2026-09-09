@@ -1,0 +1,97 @@
+/* SPDX-License-Identifier: GPL-2.0-only OR BSD-3-Clause */
+/*
+ * Copyright (C) STMicroelectronics 2018 - All Rights Reserved
+ * Author: Gabriel Fernandez <gabriel.fernandez@foss.st.com> for STMicroelectronics.
+ */
+
+pub const TIM2_R: u32 = 13568;
+pub const TIM3_R: u32 = 13569;
+pub const TIM4_R: u32 = 13570;
+pub const TIM5_R: u32 = 13571;
+pub const TIM6_R: u32 = 13572;
+pub const TIM7_R: u32 = 13573;
+pub const LPTIM1_R: u32 = 13577;
+pub const SPI2_R: u32 = 13579;
+pub const SPI3_R: u32 = 13580;
+pub const USART3_R: u32 = 13583;
+pub const UART4_R: u32 = 13584;
+pub const UART5_R: u32 = 13585;
+pub const UART7_R: u32 = 13586;
+pub const UART8_R: u32 = 13587;
+pub const I2C1_R: u32 = 13589;
+pub const I2C2_R: u32 = 13590;
+pub const SPDIF_R: u32 = 13594;
+pub const TIM1_R: u32 = 13632;
+pub const TIM8_R: u32 = 13633;
+pub const SPI1_R: u32 = 13640;
+pub const USART6_R: u32 = 13645;
+pub const SAI1_R: u32 = 13648;
+pub const SAI2_R: u32 = 13649;
+pub const DFSDM_R: u32 = 13652;
+pub const FDCAN_R: u32 = 13656;
+pub const LPTIM2_R: u32 = 13696;
+pub const LPTIM3_R: u32 = 13697;
+pub const LPTIM4_R: u32 = 13698;
+pub const LPTIM5_R: u32 = 13699;
+pub const SYSCFG_R: u32 = 13707;
+pub const VREF_R: u32 = 13709;
+pub const DTS_R: u32 = 13712;
+pub const PMBCTRL_R: u32 = 13713;
+pub const LTDC_R: u32 = 13760;
+pub const DCMIPP_R: u32 = 13761;
+pub const DDRPERFM_R: u32 = 13768;
+pub const USBPHY_R: u32 = 13776;
+pub const STGEN_R: u32 = 13844;
+pub const USART1_R: u32 = 13888;
+pub const USART2_R: u32 = 13889;
+pub const SPI4_R: u32 = 13890;
+pub const SPI5_R: u32 = 13891;
+pub const I2C3_R: u32 = 13892;
+pub const I2C4_R: u32 = 13893;
+pub const I2C5_R: u32 = 13894;
+pub const TIM12_R: u32 = 13895;
+pub const TIM13_R: u32 = 13896;
+pub const TIM14_R: u32 = 13897;
+pub const TIM15_R: u32 = 13898;
+pub const TIM16_R: u32 = 13899;
+pub const TIM17_R: u32 = 13900;
+pub const DMA1_R: u32 = 13952;
+pub const DMA2_R: u32 = 13953;
+pub const DMAMUX1_R: u32 = 13954;
+pub const DMA3_R: u32 = 13955;
+pub const DMAMUX2_R: u32 = 13956;
+pub const ADC1_R: u32 = 13957;
+pub const ADC2_R: u32 = 13958;
+pub const USBO_R: u32 = 13960;
+pub const GPIOA_R: u32 = 14080;
+pub const GPIOB_R: u32 = 14081;
+pub const GPIOC_R: u32 = 14082;
+pub const GPIOD_R: u32 = 14083;
+pub const GPIOE_R: u32 = 14084;
+pub const GPIOF_R: u32 = 14085;
+pub const GPIOG_R: u32 = 14086;
+pub const GPIOH_R: u32 = 14087;
+pub const GPIOI_R: u32 = 14088;
+pub const TSC_R: u32 = 14095;
+pub const PKA_R: u32 = 14146;
+pub const SAES_R: u32 = 14147;
+pub const CRYP1_R: u32 = 14148;
+pub const HASH1_R: u32 = 14149;
+pub const RNG1_R: u32 = 14150;
+pub const AXIMC_R: u32 = 14160;
+pub const MDMA_R: u32 = 14208;
+pub const MCE_R: u32 = 14209;
+pub const ETH1MAC_R: u32 = 14218;
+pub const FMC_R: u32 = 14220;
+pub const QSPI_R: u32 = 14222;
+pub const SDMMC1_R: u32 = 14224;
+pub const SDMMC2_R: u32 = 14225;
+pub const CRC1_R: u32 = 14228;
+pub const USBH_R: u32 = 14232;
+pub const ETH2MAC_R: u32 = 14238;
+
+/* SCMI reset domain identifiers */
+pub const RST_SCMI_LTDC: u32 = 0;
+pub const RST_SCMI_MDMA: u32 = 1;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

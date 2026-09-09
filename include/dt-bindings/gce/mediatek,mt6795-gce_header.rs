@@ -1,0 +1,121 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+/*
+ * Copyright (c) 2023 Collabora Ltd.
+ * Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+ */
+
+/* GCE HW thread priority */
+pub const CMDQ_THR_PRIO_LOWEST: i32 = 0;
+pub const CMDQ_THR_PRIO_NORMAL: i32 = 1;
+pub const CMDQ_THR_PRIO_NORMAL_2: i32 = 2;
+pub const CMDQ_THR_PRIO_MEDIUM: i32 = 3;
+pub const CMDQ_THR_PRIO_MEDIUM_2: i32 = 4;
+pub const CMDQ_THR_PRIO_HIGH: i32 = 5;
+pub const CMDQ_THR_PRIO_HIGHER: i32 = 6;
+pub const CMDQ_THR_PRIO_HIGHEST: i32 = 7;
+
+/* GCE SUBSYS */
+pub const SUBSYS_1300XXXX: i32 = 0;
+pub const SUBSYS_1400XXXX: i32 = 1;
+pub const SUBSYS_1401XXXX: i32 = 2;
+pub const SUBSYS_1402XXXX: i32 = 3;
+pub const SUBSYS_1500XXXX: i32 = 4;
+pub const SUBSYS_1600XXXX: i32 = 5;
+pub const SUBSYS_1700XXXX: i32 = 6;
+pub const SUBSYS_1800XXXX: i32 = 7;
+pub const SUBSYS_1000XXXX: i32 = 8;
+pub const SUBSYS_1001XXXX: i32 = 9;
+pub const SUBSYS_1002XXXX: i32 = 10;
+pub const SUBSYS_1003XXXX: i32 = 11;
+pub const SUBSYS_1004XXXX: i32 = 12;
+pub const SUBSYS_1005XXXX: i32 = 13;
+pub const SUBSYS_1020XXXX: i32 = 14;
+pub const SUBSYS_1021XXXX: i32 = 15;
+pub const SUBSYS_1120XXXX: i32 = 16;
+pub const SUBSYS_1121XXXX: i32 = 17;
+pub const SUBSYS_1122XXXX: i32 = 18;
+pub const SUBSYS_1123XXXX: i32 = 19;
+pub const SUBSYS_1124XXXX: i32 = 20;
+pub const SUBSYS_1125XXXX: i32 = 21;
+pub const SUBSYS_1126XXXX: i32 = 22;
+
+/* GCE HW EVENT */
+pub const CMDQ_EVENT_MDP_RDMA0_SOF: i32 = 0;
+pub const CMDQ_EVENT_MDP_RDMA1_SOF: i32 = 1;
+pub const CMDQ_EVENT_MDP_DSI0_TE_SOF: i32 = 2;
+pub const CMDQ_EVENT_MDP_DSI1_TE_SOF: i32 = 3;
+pub const CMDQ_EVENT_MDP_MVW_SOF: i32 = 4;
+pub const CMDQ_EVENT_MDP_TDSHP0_SOF: i32 = 5;
+pub const CMDQ_EVENT_MDP_TDSHP1_SOF: i32 = 6;
+pub const CMDQ_EVENT_MDP_WDMA_SOF: i32 = 7;
+pub const CMDQ_EVENT_MDP_WROT0_SOF: i32 = 8;
+pub const CMDQ_EVENT_MDP_WROT1_SOF: i32 = 9;
+pub const CMDQ_EVENT_MDP_CROP_SOF: i32 = 10;
+pub const CMDQ_EVENT_DISP_OVL0_SOF: i32 = 11;
+pub const CMDQ_EVENT_DISP_OVL1_SOF: i32 = 12;
+pub const CMDQ_EVENT_DISP_RDMA0_SOF: i32 = 13;
+pub const CMDQ_EVENT_DISP_RDMA1_SOF: i32 = 14;
+pub const CMDQ_EVENT_DISP_RDMA2_SOF: i32 = 15;
+pub const CMDQ_EVENT_DISP_WDMA0_SOF: i32 = 16;
+pub const CMDQ_EVENT_DISP_WDMA1_SOF: i32 = 17;
+pub const CMDQ_EVENT_DISP_COLOR0_SOF: i32 = 18;
+pub const CMDQ_EVENT_DISP_COLOR1_SOF: i32 = 19;
+pub const CMDQ_EVENT_DISP_AAL_SOF: i32 = 20;
+pub const CMDQ_EVENT_DISP_GAMMA_SOF: i32 = 21;
+pub const CMDQ_EVENT_DISP_UFOE_SOF: i32 = 22;
+pub const CMDQ_EVENT_DISP_PWM0_SOF: i32 = 23;
+pub const CMDQ_EVENT_DISP_PWM1_SOF: i32 = 24;
+pub const CMDQ_EVENT_DISP_OD_SOF: i32 = 25;
+pub const CMDQ_EVENT_MDP_RDMA0_EOF: i32 = 26;
+pub const CMDQ_EVENT_MDP_RDMA1_EOF: i32 = 27;
+pub const CMDQ_EVENT_MDP_RSZ0_EOF: i32 = 28;
+pub const CMDQ_EVENT_MDP_RSZ1_EOF: i32 = 29;
+pub const CMDQ_EVENT_MDP_RSZ2_EOF: i32 = 30;
+pub const CMDQ_EVENT_MDP_TDSHP0_EOF: i32 = 31;
+pub const CMDQ_EVENT_MDP_TDSHP1_EOF: i32 = 32;
+pub const CMDQ_EVENT_MDP_WDMA_EOF: i32 = 33;
+pub const CMDQ_EVENT_MDP_WROT0_WRITE_EOF: i32 = 34;
+pub const CMDQ_EVENT_MDP_WROT0_READ_EOF: i32 = 35;
+pub const CMDQ_EVENT_MDP_WROT1_WRITE_EOF: i32 = 36;
+pub const CMDQ_EVENT_MDP_WROT1_READ_EOF: i32 = 37;
+pub const CMDQ_EVENT_MDP_CROP_EOF: i32 = 38;
+pub const CMDQ_EVENT_DISP_OVL0_EOF: i32 = 39;
+pub const CMDQ_EVENT_DISP_OVL1_EOF: i32 = 40;
+pub const CMDQ_EVENT_DISP_RDMA0_EOF: i32 = 41;
+pub const CMDQ_EVENT_DISP_RDMA1_EOF: i32 = 42;
+pub const CMDQ_EVENT_DISP_RDMA2_EOF: i32 = 43;
+pub const CMDQ_EVENT_DISP_WDMA0_EOF: i32 = 44;
+pub const CMDQ_EVENT_DISP_WDMA1_EOF: i32 = 45;
+pub const CMDQ_EVENT_DISP_COLOR0_EOF: i32 = 46;
+pub const CMDQ_EVENT_DISP_COLOR1_EOF: i32 = 47;
+pub const CMDQ_EVENT_DISP_AAL_EOF: i32 = 48;
+pub const CMDQ_EVENT_DISP_GAMMA_EOF: i32 = 49;
+pub const CMDQ_EVENT_DISP_UFOE_EOF: i32 = 50;
+pub const CMDQ_EVENT_DISP_DPI0_EOF: i32 = 51;
+pub const CMDQ_EVENT_MUTEX0_STREAM_EOF: i32 = 52;
+pub const CMDQ_EVENT_MUTEX1_STREAM_EOF: i32 = 53;
+pub const CMDQ_EVENT_MUTEX2_STREAM_EOF: i32 = 54;
+pub const CMDQ_EVENT_MUTEX3_STREAM_EOF: i32 = 55;
+pub const CMDQ_EVENT_MUTEX4_STREAM_EOF: i32 = 56;
+pub const CMDQ_EVENT_MUTEX5_STREAM_EOF: i32 = 57;
+pub const CMDQ_EVENT_MUTEX6_STREAM_EOF: i32 = 58;
+pub const CMDQ_EVENT_MUTEX7_STREAM_EOF: i32 = 59;
+pub const CMDQ_EVENT_MUTEX8_STREAM_EOF: i32 = 60;
+pub const CMDQ_EVENT_MUTEX9_STREAM_EOF: i32 = 61;
+pub const CMDQ_EVENT_DISP_RDMA0_UNDERRUN: i32 = 62;
+pub const CMDQ_EVENT_DISP_RDMA1_UNDERRUN: i32 = 63;
+pub const CMDQ_EVENT_DISP_RDMA2_UNDERRUN: i32 = 64;
+pub const CMDQ_EVENT_ISP_PASS2_2_EOF: i32 = 129;
+pub const CMDQ_EVENT_ISP_PASS2_1_EOF: i32 = 130;
+pub const CMDQ_EVENT_ISP_PASS2_0_EOF: i32 = 131;
+pub const CMDQ_EVENT_ISP_PASS1_1_EOF: i32 = 132;
+pub const CMDQ_EVENT_ISP_PASS1_0_EOF: i32 = 133;
+pub const CMDQ_EVENT_CAMSV_2_PASS1_EOF: i32 = 134;
+pub const CMDQ_EVENT_CAMSV_1_PASS1_EOF: i32 = 135;
+pub const CMDQ_EVENT_SENINF_CAM1_2_3_FIFO_FULL: i32 = 136;
+pub const CMDQ_EVENT_SENINF_CAM0_FIFO_FULL: i32 = 137;
+pub const CMDQ_EVENT_JPGENC_PASS2_EOF: i32 = 257;
+pub const CMDQ_EVENT_JPGENC_PASS1_EOF: i32 = 258;
+pub const CMDQ_EVENT_JPGDEC_EOF: i32 = 259;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

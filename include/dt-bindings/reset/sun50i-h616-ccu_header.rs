@@ -1,0 +1,71 @@
+/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
+/*
+ * Copyright (C) 2020 Arm Ltd.
+ */
+
+pub const RST_MBUS: u32 = 0;
+pub const RST_BUS_DE: u32 = 1;
+pub const RST_BUS_DEINTERLACE: u32 = 2;
+pub const RST_BUS_GPU: u32 = 3;
+pub const RST_BUS_CE: u32 = 4;
+pub const RST_BUS_VE: u32 = 5;
+pub const RST_BUS_DMA: u32 = 6;
+pub const RST_BUS_HSTIMER: u32 = 7;
+pub const RST_BUS_DBG: u32 = 8;
+pub const RST_BUS_PSI: u32 = 9;
+pub const RST_BUS_PWM: u32 = 10;
+pub const RST_BUS_IOMMU: u32 = 11;
+pub const RST_BUS_DRAM: u32 = 12;
+pub const RST_BUS_NAND: u32 = 13;
+pub const RST_BUS_MMC0: u32 = 14;
+pub const RST_BUS_MMC1: u32 = 15;
+pub const RST_BUS_MMC2: u32 = 16;
+pub const RST_BUS_UART0: u32 = 17;
+pub const RST_BUS_UART1: u32 = 18;
+pub const RST_BUS_UART2: u32 = 19;
+pub const RST_BUS_UART3: u32 = 20;
+pub const RST_BUS_UART4: u32 = 21;
+pub const RST_BUS_UART5: u32 = 22;
+pub const RST_BUS_I2C0: u32 = 23;
+pub const RST_BUS_I2C1: u32 = 24;
+pub const RST_BUS_I2C2: u32 = 25;
+pub const RST_BUS_I2C3: u32 = 26;
+pub const RST_BUS_I2C4: u32 = 27;
+pub const RST_BUS_SPI0: u32 = 28;
+pub const RST_BUS_SPI1: u32 = 29;
+pub const RST_BUS_EMAC0: u32 = 30;
+pub const RST_BUS_EMAC1: u32 = 31;
+pub const RST_BUS_TS: u32 = 32;
+pub const RST_BUS_THS: u32 = 33;
+pub const RST_BUS_SPDIF: u32 = 34;
+pub const RST_BUS_DMIC: u32 = 35;
+pub const RST_BUS_AUDIO_CODEC: u32 = 36;
+pub const RST_BUS_AUDIO_HUB: u32 = 37;
+pub const RST_USB_PHY0: u32 = 38;
+pub const RST_USB_PHY1: u32 = 39;
+pub const RST_USB_PHY2: u32 = 40;
+pub const RST_USB_PHY3: u32 = 41;
+pub const RST_BUS_OHCI0: u32 = 42;
+pub const RST_BUS_OHCI1: u32 = 43;
+pub const RST_BUS_OHCI2: u32 = 44;
+pub const RST_BUS_OHCI3: u32 = 45;
+pub const RST_BUS_EHCI0: u32 = 46;
+pub const RST_BUS_EHCI1: u32 = 47;
+pub const RST_BUS_EHCI2: u32 = 48;
+pub const RST_BUS_EHCI3: u32 = 49;
+pub const RST_BUS_OTG: u32 = 50;
+pub const RST_BUS_HDMI: u32 = 51;
+pub const RST_BUS_HDMI_SUB: u32 = 52;
+pub const RST_BUS_TCON_TOP: u32 = 53;
+pub const RST_BUS_TCON_TV0: u32 = 54;
+pub const RST_BUS_TCON_TV1: u32 = 55;
+pub const RST_BUS_TVE_TOP: u32 = 56;
+pub const RST_BUS_TVE0: u32 = 57;
+pub const RST_BUS_HDCP: u32 = 58;
+pub const RST_BUS_KEYADC: u32 = 59;
+pub const RST_BUS_GPADC: u32 = 60;
+pub const RST_BUS_TCON_LCD0: u32 = 61;
+pub const RST_BUS_TCON_LCD1: u32 = 62;
+pub const RST_BUS_LVDS: u32 = 63;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

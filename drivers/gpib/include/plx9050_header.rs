@@ -1,0 +1,63 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+/***************************************************************************
+ *  Header for plx9050 pci chip
+ *    copyright            : (C) 2002 by Frank Mori Hess
+ ***************************************************************************/
+
+// plx pci chip registers and bits
+pub const PLX9050_INTCSR_REG: u32 = 0x4c;
+pub const PLX9050_CNTRL_REG: u32 = 0x50;
+
+pub const PLX9050_LINTR1_EN_BIT: u32 = 0x1;
+pub const PLX9050_LINTR1_POLARITY_BIT: u32 = 0x2;
+pub const PLX9050_LINTR1_STATUS_BIT: u32 = 0x4;
+pub const PLX9050_LINTR2_EN_BIT: u32 = 0x8;
+pub const PLX9050_LINTR2_POLARITY_BIT: u32 = 0x10;
+pub const PLX9050_LINTR2_STATUS_BIT: u32 = 0x20;
+pub const PLX9050_PCI_INTR_EN_BIT: u32 = 0x40;
+pub const PLX9050_SOFT_INTR_BIT: u32 = 0x80;
+pub const PLX9050_LINTR1_SELECT_ENABLE_BIT: u32 = 0x100; // 9052 extension
+pub const PLX9050_LINTR2_SELECT_ENABLE_BIT: u32 = 0x200; // 9052 extension
+pub const PLX9050_LINTR1_EDGE_CLEAR_BIT: u32 = 0x400; // 9052 extension
+pub const PLX9050_LINTR2_EDGE_CLEAR_BIT: u32 = 0x800; // 9052 extension
+
+pub const PLX9050_WAITO_NOT_USER0_SELECT_BIT: u32 = 0x1;
+pub const PLX9050_USER0_OUTPUT_BIT: u32 = 0x2;
+pub const PLX9050_USER0_DATA_BIT: u32 = 0x4;
+pub const PLX9050_LLOCK_NOT_USER1_SELECT_BIT: u32 = 0x8;
+pub const PLX9050_USER1_OUTPUT_BIT: u32 = 0x10;
+pub const PLX9050_USER1_DATA_BIT: u32 = 0x20;
+pub const PLX9050_CS2_NOT_USER2_SELECT_BIT: u32 = 0x40;
+pub const PLX9050_USER2_OUTPUT_BIT: u32 = 0x80;
+pub const PLX9050_USER2_DATA_BIT: u32 = 0x100;
+pub const PLX9050_CS3_NOT_USER3_SELECT_BIT: u32 = 0x200;
+pub const PLX9050_USER3_OUTPUT_BIT: u32 = 0x400;
+pub const PLX9050_USER3_DATA_BIT: u32 = 0x800;
+pub const PLX9050_PCIBAR_ENABLE_MASK: u32 = 0x3000;
+pub const PLX9050_PCIBAR_MEMORY_AND_IO_ENABLE_BITS: u32 = 0x0;
+pub const PLX9050_PCIBAR_MEMORY_NO_IO_ENABLE_BITS: u32 = 0x1000;
+pub const PLX9050_PCIBAR_IO_NO_MEMORY_ENABLE_BITS: u32 = 0x2000;
+pub const PLX9050_PCIBAR_MEMORY_AND_IO_TOO_ENABLE_BITS: u32 = 0x3000;
+pub const PLX9050_PCI_READ_MODE_BIT: u32 = 0x4000;
+pub const PLX9050_PCI_READ_WITH_WRITE_FLUSH_MODE_BIT: u32 = 0x8000;
+pub const PLX9050_PCI_READ_NO_FLUSH_MODE_BIT: u32 = 0x10000;
+pub const PLX9050_PCI_READ_NO_WRITE_MODE_BIT: u32 = 0x20000;
+pub const PLX9050_PCI_WRITE_MODE_BIT: u32 = 0x40000;
+pub const PLX9050_PCI_RETRY_DELAY_MASK: u32 = 0x780000;
+pub const PLX9050_DIRECT_SLAVE_LOCK_ENABLE_BIT: u32 = 0x800000;
+pub const PLX9050_EEPROM_CLOCK_BIT: u32 = 0x1000000;
+pub const PLX9050_EEPROM_CHIP_SELECT_BIT: u32 = 0x2000000;
+pub const PLX9050_WRITE_TO_EEPROM_BIT: u32 = 0x4000000;
+pub const PLX9050_READ_EEPROM_DATA_BIT: u32 = 0x8000000;
+pub const PLX9050_EEPROM_VALID_BIT: u32 = 0x10000000;
+pub const PLX9050_RELOAD_CONFIG_REGISTERS_BIT: u32 = 0x20000000;
+pub const PLX9050_PCI_SOFTWARE_RESET_BIT: u32 = 0x40000000;
+pub const PLX9050_MASK_REVISION_BIT: u32 = 0x80000000;
+
+#[inline]
+pub const fn PLX9050_PCI_RETRY_DELAY_BITS(clocks: u32) -> u32 {
+    ((clocks / 8) << 19) & PLX9050_PCI_RETRY_DELAY_MASK
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

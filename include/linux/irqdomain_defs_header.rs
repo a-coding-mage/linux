@@ -1,0 +1,31 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+/*
+ * Should several domains have the same device node, but serve
+ * different purposes (for example one domain is for PCI/MSI, and the
+ * other for wired IRQs), they can be distinguished using a
+ * bus-specific token. Most domains are expected to only carry
+ * DOMAIN_BUS_ANY.
+ */
+#[repr(C)]
+#[derive(Copy, Clone, PartialEq, Eq)]
+pub enum irq_domain_bus_token {
+    DOMAIN_BUS_ANY = 0,
+    DOMAIN_BUS_WIRED,
+    DOMAIN_BUS_GENERIC_MSI,
+    DOMAIN_BUS_PCI_MSI,
+    DOMAIN_BUS_PLATFORM_MSI,
+    DOMAIN_BUS_NEXUS,
+    DOMAIN_BUS_IPI,
+    DOMAIN_BUS_TI_SCI_INTA_MSI,
+    DOMAIN_BUS_WAKEUP,
+    DOMAIN_BUS_VMD_MSI,
+    DOMAIN_BUS_PCI_DEVICE_MSI,
+    DOMAIN_BUS_PCI_DEVICE_MSIX,
+    DOMAIN_BUS_DMAR,
+    DOMAIN_BUS_AMDVI,
+    DOMAIN_BUS_DEVICE_MSI,
+    DOMAIN_BUS_WIRED_TO_MSI,
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

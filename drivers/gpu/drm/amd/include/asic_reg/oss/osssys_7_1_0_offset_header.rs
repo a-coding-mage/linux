@@ -1,0 +1,276 @@
++/*
+ * Copyright 2025 Advanced Micro Devices, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+// addressBlock: osssys_osssysdec
+// base address: 0x4280
+
+pub const regIH_VMID_0_LUT: u32 = 0x0000;
+pub const regIH_VMID_0_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_1_LUT: u32 = 0x0001;
+pub const regIH_VMID_1_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_2_LUT: u32 = 0x0002;
+pub const regIH_VMID_2_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_3_LUT: u32 = 0x0003;
+pub const regIH_VMID_3_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_4_LUT: u32 = 0x0004;
+pub const regIH_VMID_4_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_5_LUT: u32 = 0x0005;
+pub const regIH_VMID_5_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_6_LUT: u32 = 0x0006;
+pub const regIH_VMID_6_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_7_LUT: u32 = 0x0007;
+pub const regIH_VMID_7_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_8_LUT: u32 = 0x0008;
+pub const regIH_VMID_8_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_9_LUT: u32 = 0x0009;
+pub const regIH_VMID_9_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_10_LUT: u32 = 0x000a;
+pub const regIH_VMID_10_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_11_LUT: u32 = 0x000b;
+pub const regIH_VMID_11_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_12_LUT: u32 = 0x000c;
+pub const regIH_VMID_12_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_13_LUT: u32 = 0x000d;
+pub const regIH_VMID_13_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_14_LUT: u32 = 0x000e;
+pub const regIH_VMID_14_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_15_LUT: u32 = 0x000f;
+pub const regIH_VMID_15_LUT_BASE_IDX: u32 = 0;
+pub const regIH_VMID_0_LUT_MM: u32 = 0x0010;
+pub const regIH_VMID_0_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_1_LUT_MM: u32 = 0x0011;
+pub const regIH_VMID_1_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_2_LUT_MM: u32 = 0x0012;
+pub const regIH_VMID_2_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_3_LUT_MM: u32 = 0x0013;
+pub const regIH_VMID_3_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_4_LUT_MM: u32 = 0x0014;
+pub const regIH_VMID_4_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_5_LUT_MM: u32 = 0x0015;
+pub const regIH_VMID_5_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_6_LUT_MM: u32 = 0x0016;
+pub const regIH_VMID_6_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_7_LUT_MM: u32 = 0x0017;
+pub const regIH_VMID_7_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_8_LUT_MM: u32 = 0x0018;
+pub const regIH_VMID_8_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_9_LUT_MM: u32 = 0x0019;
+pub const regIH_VMID_9_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_10_LUT_MM: u32 = 0x001a;
+pub const regIH_VMID_10_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_11_LUT_MM: u32 = 0x001b;
+pub const regIH_VMID_11_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_12_LUT_MM: u32 = 0x001c;
+pub const regIH_VMID_12_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_13_LUT_MM: u32 = 0x001d;
+pub const regIH_VMID_13_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_14_LUT_MM: u32 = 0x001e;
+pub const regIH_VMID_14_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_VMID_15_LUT_MM: u32 = 0x001f;
+pub const regIH_VMID_15_LUT_MM_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_0: u32 = 0x0020;
+pub const regIH_COOKIE_0_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_1: u32 = 0x0021;
+pub const regIH_COOKIE_1_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_2: u32 = 0x0022;
+pub const regIH_COOKIE_2_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_3: u32 = 0x0023;
+pub const regIH_COOKIE_3_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_4: u32 = 0x0024;
+pub const regIH_COOKIE_4_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_5: u32 = 0x0025;
+pub const regIH_COOKIE_5_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_6: u32 = 0x0026;
+pub const regIH_COOKIE_6_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_7: u32 = 0x0027;
+pub const regIH_COOKIE_7_BASE_IDX: u32 = 0;
+pub const regIH_VMID_LUT_INDEX: u32 = 0x0028;
+pub const regIH_VMID_LUT_INDEX_BASE_IDX: u32 = 0;
+pub const regIH_REGISTER_LAST_PART0: u32 = 0x003f;
+pub const regIH_REGISTER_LAST_PART0_BASE_IDX: u32 = 0;
+pub const regIH_RB_CNTL: u32 = 0x0080;
+pub const regIH_RB_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_RB_RPTR: u32 = 0x0081;
+pub const regIH_RB_RPTR_BASE_IDX: u32 = 0;
+pub const regIH_RB_WPTR: u32 = 0x0082;
+pub const regIH_RB_WPTR_BASE_IDX: u32 = 0;
+pub const regIH_RB_BASE: u32 = 0x0083;
+pub const regIH_RB_BASE_BASE_IDX: u32 = 0;
+pub const regIH_RB_BASE_HI: u32 = 0x0084;
+pub const regIH_RB_BASE_HI_BASE_IDX: u32 = 0;
+pub const regIH_RB_WPTR_ADDR_HI: u32 = 0x0085;
+pub const regIH_RB_WPTR_ADDR_HI_BASE_IDX: u32 = 0;
+pub const regIH_RB_WPTR_ADDR_LO: u32 = 0x0086;
+pub const regIH_RB_WPTR_ADDR_LO_BASE_IDX: u32 = 0;
+pub const regIH_DOORBELL_RPTR: u32 = 0x0087;
+pub const regIH_DOORBELL_RPTR_BASE_IDX: u32 = 0;
+pub const regIH_DOORBELL_RETRY_CAM: u32 = 0x0088;
+pub const regIH_DOORBELL_RETRY_CAM_BASE_IDX: u32 = 0;
+pub const regIH_RB_CNTL_RING1: u32 = 0x008c;
+pub const regIH_RB_CNTL_RING1_BASE_IDX: u32 = 0;
+pub const regIH_RB_RPTR_RING1: u32 = 0x008d;
+pub const regIH_RB_RPTR_RING1_BASE_IDX: u32 = 0;
+pub const regIH_RB_WPTR_RING1: u32 = 0x008e;
+pub const regIH_RB_WPTR_RING1_BASE_IDX: u32 = 0;
+pub const regIH_RB_BASE_RING1: u32 = 0x008f;
+pub const regIH_RB_BASE_RING1_BASE_IDX: u32 = 0;
+pub const regIH_RB_BASE_HI_RING1: u32 = 0x0090;
+pub const regIH_RB_BASE_HI_RING1_BASE_IDX: u32 = 0;
+pub const regIH_DOORBELL_RPTR_RING1: u32 = 0x0093;
+pub const regIH_DOORBELL_RPTR_RING1_BASE_IDX: u32 = 0;
+pub const regIH_RETRY_CAM_ACK: u32 = 0x00a4;
+pub const regIH_RETRY_CAM_ACK_BASE_IDX: u32 = 0;
+pub const regIH_VERSION: u32 = 0x00a5;
+pub const regIH_VERSION_BASE_IDX: u32 = 0;
+pub const regIH_CNTL: u32 = 0x00a8;
+pub const regIH_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_CLK_CTRL: u32 = 0x00a9;
+pub const regIH_CLK_CTRL_BASE_IDX: u32 = 0;
+pub const regIH_STORM_CLIENT_LIST_CNTL: u32 = 0x00aa;
+pub const regIH_STORM_CLIENT_LIST_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_LIMIT_INT_RATE_CNTL: u32 = 0x00ab;
+pub const regIH_LIMIT_INT_RATE_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_RETRY_INT_CAM_CNTL: u32 = 0x00ac;
+pub const regIH_RETRY_INT_CAM_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_MEM_POWER_CTRL: u32 = 0x00ad;
+pub const regIH_MEM_POWER_CTRL_BASE_IDX: u32 = 0;
+pub const regIH_MEM_POWER_CTRL2: u32 = 0x00ae;
+pub const regIH_MEM_POWER_CTRL2_BASE_IDX: u32 = 0;
+pub const regIH_CNTL2: u32 = 0x00c1;
+pub const regIH_CNTL2_BASE_IDX: u32 = 0;
+pub const regIH_STATUS: u32 = 0x00c2;
+pub const regIH_STATUS_BASE_IDX: u32 = 0;
+pub const regIH_PERFMON_CNTL: u32 = 0x00c3;
+pub const regIH_PERFMON_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_PERFCOUNTER0_RESULT: u32 = 0x00c4;
+pub const regIH_PERFCOUNTER0_RESULT_BASE_IDX: u32 = 0;
+pub const regIH_PERFCOUNTER1_RESULT: u32 = 0x00c5;
+pub const regIH_PERFCOUNTER1_RESULT_BASE_IDX: u32 = 0;
+pub const regIH_DSM_MATCH_VALUE_BIT_31_0: u32 = 0x00c7;
+pub const regIH_DSM_MATCH_VALUE_BIT_31_0_BASE_IDX: u32 = 0;
+pub const regIH_DSM_MATCH_VALUE_BIT_63_32: u32 = 0x00c8;
+pub const regIH_DSM_MATCH_VALUE_BIT_63_32_BASE_IDX: u32 = 0;
+pub const regIH_DSM_MATCH_VALUE_BIT_95_64: u32 = 0x00c9;
+pub const regIH_DSM_MATCH_VALUE_BIT_95_64_BASE_IDX: u32 = 0;
+pub const regIH_DSM_MATCH_FIELD_CONTROL: u32 = 0x00ca;
+pub const regIH_DSM_MATCH_FIELD_CONTROL_BASE_IDX: u32 = 0;
+pub const regIH_DSM_MATCH_DATA_CONTROL: u32 = 0x00cb;
+pub const regIH_DSM_MATCH_DATA_CONTROL_BASE_IDX: u32 = 0;
+pub const regIH_DSM_MATCH_FCN_ID: u32 = 0x00cc;
+pub const regIH_DSM_MATCH_FCN_ID_BASE_IDX: u32 = 0;
+pub const regIH_VF_RB_STATUS: u32 = 0x00ce;
+pub const regIH_VF_RB_STATUS_BASE_IDX: u32 = 0;
+pub const regIH_VF_RB_STATUS2: u32 = 0x00cf;
+pub const regIH_VF_RB_STATUS2_BASE_IDX: u32 = 0;
+pub const regIH_VF_RB1_STATUS: u32 = 0x00d0;
+pub const regIH_VF_RB1_STATUS_BASE_IDX: u32 = 0;
+pub const regIH_VF_RB1_STATUS2: u32 = 0x00d1;
+pub const regIH_VF_RB1_STATUS2_BASE_IDX: u32 = 0;
+pub const regIH_RB_STATUS: u32 = 0x00d4;
+pub const regIH_RB_STATUS_BASE_IDX: u32 = 0;
+pub const regIH_INT_FLOOD_CNTL: u32 = 0x00d5;
+pub const regIH_INT_FLOOD_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_RB0_INT_FLOOD_STATUS: u32 = 0x00d6;
+pub const regIH_RB0_INT_FLOOD_STATUS_BASE_IDX: u32 = 0;
+pub const regIH_RB1_INT_FLOOD_STATUS: u32 = 0x00d7;
+pub const regIH_RB1_INT_FLOOD_STATUS_BASE_IDX: u32 = 0;
+pub const regIH_INT_FLOOD_STATUS: u32 = 0x00d9;
+pub const regIH_INT_FLOOD_STATUS_BASE_IDX: u32 = 0;
+pub const regIH_INT_FLAGS: u32 = 0x00dc;
+pub const regIH_INT_FLAGS_BASE_IDX: u32 = 0;
+pub const regIH_SCRATCH: u32 = 0x00e0;
+pub const regIH_SCRATCH_BASE_IDX: u32 = 0;
+pub const regIH_CLIENT_CREDIT_ERROR: u32 = 0x00e1;
+pub const regIH_CLIENT_CREDIT_ERROR_BASE_IDX: u32 = 0;
+pub const regIH_GPU_IOV_VIOLATION_LOG: u32 = 0x00e2;
+pub const regIH_GPU_IOV_VIOLATION_LOG_BASE_IDX: u32 = 0;
+pub const regIH_GPU_IOV_VIOLATION_LOG2: u32 = 0x00e3;
+pub const regIH_GPU_IOV_VIOLATION_LOG2_BASE_IDX: u32 = 0;
+pub const regIH_COOKIE_REC_VIOLATION_LOG: u32 = 0x00e4;
+pub const regIH_COOKIE_REC_VIOLATION_LOG_BASE_IDX: u32 = 0;
+pub const regIH_CREDIT_STATUS: u32 = 0x00e5;
+pub const regIH_CREDIT_STATUS_BASE_IDX: u32 = 0;
+pub const regIH_MMHUB_ERROR: u32 = 0x00e6;
+pub const regIH_MMHUB_ERROR_BASE_IDX: u32 = 0;
+pub const regIH_VF_RB_STATUS3: u32 = 0x00ea;
+pub const regIH_VF_RB_STATUS3_BASE_IDX: u32 = 0;
+pub const regIH_VF_RB_STATUS4: u32 = 0x00eb;
+pub const regIH_VF_RB_STATUS4_BASE_IDX: u32 = 0;
+pub const regIH_VF_RB1_STATUS3: u32 = 0x00ec;
+pub const regIH_VF_RB1_STATUS3_BASE_IDX: u32 = 0;
+pub const regIH_MSI_STORM_CTRL: u32 = 0x00f1;
+pub const regIH_MSI_STORM_CTRL_BASE_IDX: u32 = 0;
+pub const regIH_MSI_STORM_CLIENT_INDEX: u32 = 0x00f2;
+pub const regIH_MSI_STORM_CLIENT_INDEX_BASE_IDX: u32 = 0;
+pub const regIH_MSI_STORM_CLIENT_DATA: u32 = 0x00f3;
+pub const regIH_MSI_STORM_CLIENT_DATA_BASE_IDX: u32 = 0;
+pub const regIH_LAST_INT_INFO0: u32 = 0x00f9;
+pub const regIH_LAST_INT_INFO0_BASE_IDX: u32 = 0;
+pub const regIH_LAST_INT_INFO1: u32 = 0x00fa;
+pub const regIH_LAST_INT_INFO1_BASE_IDX: u32 = 0;
+pub const regIH_LAST_INT_INFO2: u32 = 0x00fb;
+pub const regIH_LAST_INT_INFO2_BASE_IDX: u32 = 0;
+pub const regIH_REGISTER_LAST_PART2: u32 = 0x00ff;
+pub const regIH_REGISTER_LAST_PART2_BASE_IDX: u32 = 0;
+pub const regSEM_MAILBOX: u32 = 0x010a;
+pub const regSEM_MAILBOX_BASE_IDX: u32 = 0;
+pub const regSEM_MAILBOX_CLEAR: u32 = 0x010b;
+pub const regSEM_MAILBOX_CLEAR_BASE_IDX: u32 = 0;
+pub const regSEM_REGISTER_LAST_PART2: u32 = 0x011f;
+pub const regSEM_REGISTER_LAST_PART2_BASE_IDX: u32 = 0;
+pub const regIH_VIRT_RESET_REQ: u32 = 0x0120;
+pub const regIH_VIRT_RESET_REQ_BASE_IDX: u32 = 0;
+pub const regIH_CLIENT_CFG: u32 = 0x0121;
+pub const regIH_CLIENT_CFG_BASE_IDX: u32 = 0;
+pub const regIH_RING1_CLIENT_CFG_INDEX: u32 = 0x0122;
+pub const regIH_RING1_CLIENT_CFG_INDEX_BASE_IDX: u32 = 0;
+pub const regIH_RING1_CLIENT_CFG_DATA: u32 = 0x0123;
+pub const regIH_RING1_CLIENT_CFG_DATA_BASE_IDX: u32 = 0;
+pub const regIH_CLIENT_CFG_INDEX: u32 = 0x0124;
+pub const regIH_CLIENT_CFG_INDEX_BASE_IDX: u32 = 0;
+pub const regIH_CLIENT_CFG_DATA: u32 = 0x0125;
+pub const regIH_CLIENT_CFG_DATA_BASE_IDX: u32 = 0;
+pub const regIH_CLIENT_CFG_DATA2: u32 = 0x0126;
+pub const regIH_CLIENT_CFG_DATA2_BASE_IDX: u32 = 0;
+pub const regIH_CID_REMAP_INDEX: u32 = 0x0127;
+pub const regIH_CID_REMAP_INDEX_BASE_IDX: u32 = 0;
+pub const regIH_CID_REMAP_DATA: u32 = 0x0128;
+pub const regIH_CID_REMAP_DATA_BASE_IDX: u32 = 0;
+pub const regIH_CHICKEN: u32 = 0x0129;
+pub const regIH_CHICKEN_BASE_IDX: u32 = 0;
+pub const regIH_INT_DROP_CNTL: u32 = 0x012a;
+pub const regIH_INT_DROP_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_INT_DROP_MATCH_VALUE0: u32 = 0x012b;
+pub const regIH_INT_DROP_MATCH_VALUE0_BASE_IDX: u32 = 0;
+pub const regIH_INT_DROP_MATCH_VALUE1: u32 = 0x012c;
+pub const regIH_INT_DROP_MATCH_VALUE1_BASE_IDX: u32 = 0;
+pub const regIH_INT_DROP_MATCH_MASK0: u32 = 0x012d;
+pub const regIH_INT_DROP_MATCH_MASK0_BASE_IDX: u32 = 0;
+pub const regIH_INT_DROP_MATCH_MASK1: u32 = 0x012e;
+pub const regIH_INT_DROP_MATCH_MASK1_BASE_IDX: u32 = 0;
+pub const regIH_MMHUB_CNTL: u32 = 0x0147;
+pub const regIH_MMHUB_CNTL_BASE_IDX: u32 = 0;
+pub const regIH_REGISTER_LAST_PART1: u32 = 0x019f;
+pub const regIH_REGISTER_LAST_PART1_BASE_IDX: u32 = 0;
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

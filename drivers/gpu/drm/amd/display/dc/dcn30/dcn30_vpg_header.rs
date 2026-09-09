@@ -1,0 +1,205 @@
+/*
+ * Copyright 2020 Advanced Micro Devices, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+ * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ * OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * Authors: AMD
+ */
+
+// C dependency: vpg.h
+
+#[macro_export]
+macro_rules! DCN30_VPG_FROM_VPG {
+    ($vpg:expr) => { container_of!($vpg, dcn30_vpg, base) };
+}
+
+// C macro expansion retained as a Rust macro; SRI is supplied by the register definitions.
+#[macro_export]
+macro_rules! VPG_DCN3_REG_LIST {
+    ($id:expr) => {
+        SRI!(VPG_GENERIC_STATUS, VPG, $id),
+        SRI!(VPG_GENERIC_PACKET_ACCESS_CTRL, VPG, $id),
+        SRI!(VPG_GENERIC_PACKET_DATA, VPG, $id),
+        SRI!(VPG_GSP_FRAME_UPDATE_CTRL, VPG, $id),
+        SRI!(VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG, $id)
+    };
+}
+
+#[repr(C)]
+pub struct dcn30_vpg_registers {
+    pub VPG_GENERIC_STATUS: u32,
+    pub VPG_GENERIC_PACKET_ACCESS_CTRL: u32,
+    pub VPG_GENERIC_PACKET_DATA: u32,
+    pub VPG_GSP_FRAME_UPDATE_CTRL: u32,
+    pub VPG_GSP_IMMEDIATE_UPDATE_CTRL: u32,
+}
+
+// C macro expansion retained as a Rust macro; SE_SF is supplied by register definitions.
+#[macro_export]
+macro_rules! DCN3_VPG_MASK_SH_LIST {
+    ($mask_sh:expr) => {
+        SE_SF!(VPG0_VPG_GENERIC_STATUS, VPG_GENERIC_CONFLICT_OCCURED, $mask_sh),
+        SE_SF!(VPG0_VPG_GENERIC_STATUS, VPG_GENERIC_CONFLICT_CLR, $mask_sh),
+        SE_SF!(VPG0_VPG_GENERIC_PACKET_ACCESS_CTRL, VPG_GENERIC_DATA_INDEX, $mask_sh),
+        SE_SF!(VPG0_VPG_GENERIC_PACKET_DATA, VPG_GENERIC_DATA_BYTE0, $mask_sh),
+        SE_SF!(VPG0_VPG_GENERIC_PACKET_DATA, VPG_GENERIC_DATA_BYTE1, $mask_sh),
+        SE_SF!(VPG0_VPG_GENERIC_PACKET_DATA, VPG_GENERIC_DATA_BYTE2, $mask_sh),
+        SE_SF!(VPG0_VPG_GENERIC_PACKET_DATA, VPG_GENERIC_DATA_BYTE3, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC0_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC1_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC2_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC3_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC4_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC5_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC6_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC7_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC8_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC9_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC10_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC11_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC12_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC13_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_FRAME_UPDATE_CTRL, VPG_GENERIC14_FRAME_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC0_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC1_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC2_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC3_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC4_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC5_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC6_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC7_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC8_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC9_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC10_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC11_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC12_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC13_IMMEDIATE_UPDATE, $mask_sh),
+        SE_SF!(VPG0_VPG_GSP_IMMEDIATE_UPDATE_CTRL, VPG_GENERIC14_IMMEDIATE_UPDATE, $mask_sh)
+    };
+}
+
+#[repr(C)]
+pub struct dcn30_vpg_shift {
+    pub VPG_GENERIC_CONFLICT_OCCURED: u8,
+    pub VPG_GENERIC_CONFLICT_CLR: u8,
+    pub VPG_GENERIC_DATA_INDEX: u8,
+    pub VPG_GENERIC_DATA_BYTE0: u8,
+    pub VPG_GENERIC_DATA_BYTE1: u8,
+    pub VPG_GENERIC_DATA_BYTE2: u8,
+    pub VPG_GENERIC_DATA_BYTE3: u8,
+    pub VPG_GENERIC0_FRAME_UPDATE: u8,
+    pub VPG_GENERIC1_FRAME_UPDATE: u8,
+    pub VPG_GENERIC2_FRAME_UPDATE: u8,
+    pub VPG_GENERIC3_FRAME_UPDATE: u8,
+    pub VPG_GENERIC4_FRAME_UPDATE: u8,
+    pub VPG_GENERIC5_FRAME_UPDATE: u8,
+    pub VPG_GENERIC6_FRAME_UPDATE: u8,
+    pub VPG_GENERIC7_FRAME_UPDATE: u8,
+    pub VPG_GENERIC8_FRAME_UPDATE: u8,
+    pub VPG_GENERIC9_FRAME_UPDATE: u8,
+    pub VPG_GENERIC10_FRAME_UPDATE: u8,
+    pub VPG_GENERIC11_FRAME_UPDATE: u8,
+    pub VPG_GENERIC12_FRAME_UPDATE: u8,
+    pub VPG_GENERIC13_FRAME_UPDATE: u8,
+    pub VPG_GENERIC14_FRAME_UPDATE: u8,
+    pub VPG_GENERIC0_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC1_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC2_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC3_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC4_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC5_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC6_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC7_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC8_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC9_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC10_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC11_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC12_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC13_IMMEDIATE_UPDATE: u8,
+    pub VPG_GENERIC14_IMMEDIATE_UPDATE: u8,
+}
+
+#[repr(C)]
+pub struct dcn30_vpg_mask {
+    pub VPG_GENERIC_CONFLICT_OCCURED: u32,
+    pub VPG_GENERIC_CONFLICT_CLR: u32,
+    pub VPG_GENERIC_DATA_INDEX: u32,
+    pub VPG_GENERIC_DATA_BYTE0: u32,
+    pub VPG_GENERIC_DATA_BYTE1: u32,
+    pub VPG_GENERIC_DATA_BYTE2: u32,
+    pub VPG_GENERIC_DATA_BYTE3: u32,
+    pub VPG_GENERIC0_FRAME_UPDATE: u32,
+    pub VPG_GENERIC1_FRAME_UPDATE: u32,
+    pub VPG_GENERIC2_FRAME_UPDATE: u32,
+    pub VPG_GENERIC3_FRAME_UPDATE: u32,
+    pub VPG_GENERIC4_FRAME_UPDATE: u32,
+    pub VPG_GENERIC5_FRAME_UPDATE: u32,
+    pub VPG_GENERIC6_FRAME_UPDATE: u32,
+    pub VPG_GENERIC7_FRAME_UPDATE: u32,
+    pub VPG_GENERIC8_FRAME_UPDATE: u32,
+    pub VPG_GENERIC9_FRAME_UPDATE: u32,
+    pub VPG_GENERIC10_FRAME_UPDATE: u32,
+    pub VPG_GENERIC11_FRAME_UPDATE: u32,
+    pub VPG_GENERIC12_FRAME_UPDATE: u32,
+    pub VPG_GENERIC13_FRAME_UPDATE: u32,
+    pub VPG_GENERIC14_FRAME_UPDATE: u32,
+    pub VPG_GENERIC0_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC1_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC2_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC3_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC4_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC5_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC6_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC7_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC8_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC9_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC10_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC11_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC12_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC13_IMMEDIATE_UPDATE: u32,
+    pub VPG_GENERIC14_IMMEDIATE_UPDATE: u32,
+}
+
+#[repr(C)]
+pub struct dcn30_vpg {
+    pub base: vpg,
+    pub regs: *const dcn30_vpg_registers,
+    pub vpg_shift: *const dcn30_vpg_shift,
+    pub vpg_mask: *const dcn30_vpg_mask,
+}
+
+extern "C" {
+    pub fn vpg3_update_generic_info_packet(
+        vpg: *mut vpg,
+        packet_index: u32,
+        info_packet: *const dc_info_packet,
+        immediate_update: bool,
+    );
+
+    pub fn vpg3_construct(
+        vpg3: *mut dcn30_vpg,
+        ctx: *mut dc_context,
+        inst: u32,
+        vpg_regs: *const dcn30_vpg_registers,
+        vpg_shift: *const dcn30_vpg_shift,
+        vpg_mask: *const dcn30_vpg_mask,
+    );
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

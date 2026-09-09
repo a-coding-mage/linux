@@ -1,0 +1,2623 @@
+/* Faithful Rust translation of uapi/drm/xe_drm.h. */
+#![allow(non_camel_case_types, non_upper_case_globals, dead_code)]
+use core::ffi::c_char;
+
+/* C header dependencies (not reproduced here). */
+/* SPDX-License-Identifier: MIT */
+/*
+ * Copyright © 2023 Intel Corporation
+ */
+
+
+
+
+/*
+ * Please note that modifications to all structs defined here are
+ * subject to backwards-compatibility constraints.
+ * Sections in this file are organized as follows:
+ *   1. IOCTL definition
+ *   2. Extension definition and helper structs
+ *   3. IOCTL's Query structs in the order of the Query's entries.
+ *   4. The rest of IOCTL structs in the order of IOCTL declaration.
+ */
+
+/**
+ * DOC: Xe Device Block Diagram
+ *
+ * The diagram below represents a high-level simplification of a discrete
+ * GPU supported by the Xe driver. It shows some device components which
+ * are necessary to understand this API, as well as how their relations
+ * to each other. This diagram does not represent real hardware::
+ *
+ *   ┌──────────────────────────────────────────────────────────────────┐
+ *   │ ┌──────────────────────────────────────────────────┐ ┌─────────┐ │
+ *   │ │        ┌───────────────────────┐   ┌─────┐       │ │ ┌─────┐ │ │
+ *   │ │        │         VRAM0         ├───┤ ... │       │ │ │VRAM1│ │ │
+ *   │ │        └───────────┬───────────┘   └─GT1─┘       │ │ └──┬──┘ │ │
+ *   │ │ ┌──────────────────┴───────────────────────────┐ │ │ ┌──┴──┐ │ │
+ *   │ │ │ ┌─────────────────────┐  ┌─────────────────┐ │ │ │ │     │ │ │
+ *   │ │ │ │ ┌──┐ ┌──┐ ┌──┐ ┌──┐ │  │ ┌─────┐ ┌─────┐ │ │ │ │ │     │ │ │
+ *   │ │ │ │ │EU│ │EU│ │EU│ │EU│ │  │ │RCS0 │ │BCS0 │ │ │ │ │ │     │ │ │
+ *   │ │ │ │ └──┘ └──┘ └──┘ └──┘ │  │ └─────┘ └─────┘ │ │ │ │ │     │ │ │
+ *   │ │ │ │ ┌──┐ ┌──┐ ┌──┐ ┌──┐ │  │ ┌─────┐ ┌─────┐ │ │ │ │ │     │ │ │
+ *   │ │ │ │ │EU│ │EU│ │EU│ │EU│ │  │ │VCS0 │ │VCS1 │ │ │ │ │ │     │ │ │
+ *   │ │ │ │ └──┘ └──┘ └──┘ └──┘ │  │ └─────┘ └─────┘ │ │ │ │ │     │ │ │
+ *   │ │ │ │ ┌──┐ ┌──┐ ┌──┐ ┌──┐ │  │ ┌─────┐ ┌─────┐ │ │ │ │ │     │ │ │
+ *   │ │ │ │ │EU│ │EU│ │EU│ │EU│ │  │ │VECS0│ │VECS1│ │ │ │ │ │ ... │ │ │
+ *   │ │ │ │ └──┘ └──┘ └──┘ └──┘ │  │ └─────┘ └─────┘ │ │ │ │ │     │ │ │
+ *   │ │ │ │ ┌──┐ ┌──┐ ┌──┐ ┌──┐ │  │ ┌─────┐ ┌─────┐ │ │ │ │ │     │ │ │
+ *   │ │ │ │ │EU│ │EU│ │EU│ │EU│ │  │ │CCS0 │ │CCS1 │ │ │ │ │ │     │ │ │
+ *   │ │ │ │ └──┘ └──┘ └──┘ └──┘ │  │ └─────┘ └─────┘ │ │ │ │ │     │ │ │
+ *   │ │ │ └─────────DSS─────────┘  │ ┌─────┐ ┌─────┐ │ │ │ │ │     │ │ │
+ *   │ │ │                          │ │CCS2 │ │CCS3 │ │ │ │ │ │     │ │ │
+ *   │ │ │ ┌─────┐ ┌─────┐ ┌─────┐  │ └─────┘ └─────┘ │ │ │ │ │     │ │ │
+ *   │ │ │ │ ... │ │ ... │ │ ... │  │                 │ │ │ │ │     │ │ │
+ *   │ │ │ └─DSS─┘ └─DSS─┘ └─DSS─┘  └─────Engines─────┘ │ │ │ │     │ │ │
+ *   │ │ └───────────────────────────GT0────────────────┘ │ │ └─GT2─┘ │ │
+ *   │ └────────────────────────────Tile0─────────────────┘ └─ Tile1──┘ │
+ *   └─────────────────────────────Device0───────┬──────────────────────┘
+ *                                               │
+ *                        ───────────────────────┴────────── PCI bus
+ */
+
+/**
+ * DOC: Xe uAPI Overview
+ *
+ * This section aims to describe the Xe's IOCTL entries, its structs, and other
+ * Xe related uAPI such as uevents and PMU (Platform Monitoring Unit) related
+ * entries and usage.
+ *
+ * List of supported IOCTLs:
+ *  - &DRM_IOCTL_XE_DEVICE_QUERY
+ *  - &DRM_IOCTL_XE_GEM_CREATE
+ *  - &DRM_IOCTL_XE_GEM_MMAP_OFFSET
+ *  - &DRM_IOCTL_XE_VM_CREATE
+ *  - &DRM_IOCTL_XE_VM_DESTROY
+ *  - &DRM_IOCTL_XE_VM_BIND
+ *  - &DRM_IOCTL_XE_EXEC_QUEUE_CREATE
+ *  - &DRM_IOCTL_XE_EXEC_QUEUE_DESTROY
+ *  - &DRM_IOCTL_XE_EXEC_QUEUE_GET_PROPERTY
+ *  - &DRM_IOCTL_XE_EXEC
+ *  - &DRM_IOCTL_XE_WAIT_USER_FENCE
+ *  - &DRM_IOCTL_XE_OBSERVATION
+ *  - &DRM_IOCTL_XE_MADVISE
+ *  - &DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS
+ *  - &DRM_IOCTL_XE_EXEC_QUEUE_SET_PROPERTY
+ *  - &DRM_IOCTL_XE_VM_GET_PROPERTY
+ */
+
+/*
+ * xe specific ioctls.
+ *
+ * The device specific ioctl range is [DRM_COMMAND_BASE, DRM_COMMAND_END) ie
+ * [0x40, 0xa0) (a0 is excluded). The numbers below are defined as offset
+ * against DRM_COMMAND_BASE and should be between [0x0, 0x60).
+ */
+pub const DRM_XE_DEVICE_QUERY: _ = 0x00;
+pub const DRM_XE_GEM_CREATE: _ = 0x01;
+pub const DRM_XE_GEM_MMAP_OFFSET: _ = 0x02;
+pub const DRM_XE_VM_CREATE: _ = 0x03;
+pub const DRM_XE_VM_DESTROY: _ = 0x04;
+pub const DRM_XE_VM_BIND: _ = 0x05;
+pub const DRM_XE_EXEC_QUEUE_CREATE: _ = 0x06;
+pub const DRM_XE_EXEC_QUEUE_DESTROY: _ = 0x07;
+pub const DRM_XE_EXEC_QUEUE_GET_PROPERTY: _ = 0x08;
+pub const DRM_XE_EXEC: _ = 0x09;
+pub const DRM_XE_WAIT_USER_FENCE: _ = 0x0a;
+pub const DRM_XE_OBSERVATION: _ = 0x0b;
+pub const DRM_XE_MADVISE: _ = 0x0c;
+pub const DRM_XE_VM_QUERY_MEM_RANGE_ATTRS: _ = 0x0d;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY: _ = 0x0e;
+pub const DRM_XE_VM_GET_PROPERTY: _ = 0x0f;
+
+/* Must be kept compact -- no holes */
+
+pub const DRM_IOCTL_XE_DEVICE_QUERY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_DEVICE_QUERY, struct drm_xe_device_query);
+pub const DRM_IOCTL_XE_GEM_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_CREATE, struct drm_xe_gem_create);
+pub const DRM_IOCTL_XE_GEM_MMAP_OFFSET: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_GEM_MMAP_OFFSET, struct drm_xe_gem_mmap_offset);
+pub const DRM_IOCTL_XE_VM_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_CREATE, struct drm_xe_vm_create);
+pub const DRM_IOCTL_XE_VM_DESTROY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_DESTROY, struct drm_xe_vm_destroy);
+pub const DRM_IOCTL_XE_VM_BIND: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_VM_BIND, struct drm_xe_vm_bind);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_CREATE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_CREATE, struct drm_xe_exec_queue_create);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_DESTROY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_DESTROY, struct drm_xe_exec_queue_destroy);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_GET_PROPERTY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_GET_PROPERTY, struct drm_xe_exec_queue_get_property);
+pub const DRM_IOCTL_XE_EXEC: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC, struct drm_xe_exec);
+pub const DRM_IOCTL_XE_WAIT_USER_FENCE: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_WAIT_USER_FENCE, struct drm_xe_wait_user_fence);
+pub const DRM_IOCTL_XE_OBSERVATION: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_OBSERVATION, struct drm_xe_observation_param);
+pub const DRM_IOCTL_XE_MADVISE: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_MADVISE, struct drm_xe_madvise);
+pub const DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_QUERY_MEM_RANGE_ATTRS, struct drm_xe_vm_query_mem_range_attr);
+pub const DRM_IOCTL_XE_EXEC_QUEUE_SET_PROPERTY: _ = DRM_IOW(DRM_COMMAND_BASE + DRM_XE_EXEC_QUEUE_SET_PROPERTY, struct drm_xe_exec_queue_set_property);
+pub const DRM_IOCTL_XE_VM_GET_PROPERTY: _ = DRM_IOWR(DRM_COMMAND_BASE + DRM_XE_VM_GET_PROPERTY, struct drm_xe_vm_get_property);
+
+/**
+ * DOC: Xe IOCTL Extensions
+ *
+ * Before detailing the IOCTLs and its structs, it is important to highlight
+ * that every IOCTL in Xe is extensible.
+ *
+ * Many interfaces need to grow over time. In most cases we can simply
+ * extend the and have userspace pass in more data. Another option,
+ * as demonstrated by Vulkan's approach to providing extensions for forward
+ * and backward compatibility, is to use a list of optional structs to
+ * provide those extra details.
+ *
+ * The key advantage to using an extension chain is that it allows us to
+ * redefine the interface more easily than an ever growing of
+ * increasing complexity, and for large parts of that interface to be
+ * entirely optional. The downside is more pointer chasing; chasing across
+ * the __user boundary with pointers encapsulated inside u64.
+ *
+ * Example chaining:
+ *
+ * .. code-block:: C
+ *
+ *	drm_xe_user_extension ext3 {
+ *		.next_extension = 0, // end
+ *		.name = ...,
+ *	},
+ *	drm_xe_user_extension ext2 {
+ *		.next_extension = (uintptr_t)&ext3,
+ *		.name = ...,
+ *	},
+ *	drm_xe_user_extension ext1 {
+ *		.next_extension = (uintptr_t)&ext2,
+ *		.name = ...,
+ *	},
+ *
+ * Typically the drm_xe_user_extension would be embedded in some uAPI
+ * struct, and in this case we would feed it the head of the chain(i.e ext1),
+ * which would then apply all of the above extensions.
+ */
+
+/**
+ * drm_xe_user_extension - Base class for defining a chain of extensions
+ */
+#[repr(C)]
+pub struct drm_xe_user_extension {
+	/**
+	 * @next_extension:
+	 *
+	 * Pointer to the next drm_xe_user_extension, or zero if the end.
+	 */
+next_extension: u64,
+
+	/**
+	 * @name: Name of the extension.
+	 *
+	 * Note that the name here is just some integer.
+	 *
+	 * Also note that the name space for this is not global for the whole
+	 * driver, but rather its scope/meaning is limited to the specific piece
+	 * of uAPI which has embedded the drm_xe_user_extension.
+	 */
+name: u32,
+
+	/**
+	 * @pad: MBZ
+	 *
+	 * All undefined bits must be zero.
+	 */
+pad: u32,
+}
+
+/**
+ * drm_xe_ext_set_property - Generic set property extension
+ *
+ * A generic that allows any of the Xe's IOCTL to be extended
+ * with a set_property operation.
+ */
+#[repr(C)]
+pub struct drm_xe_ext_set_property {
+	/** @base: base user extension */
+base: drm_xe_user_extension,
+
+	/** @property: property to set */
+property: u32,
+
+	/** @pad: MBZ */
+pad: u32,
+
+#[repr(C)]
+pub union __anonymous_union {
+		/** @value: property value */
+value: u64,
+		/** @ptr: pointer to user value */
+ptr: u64,
+}
+
+	/** @reserved: Reserved */
+
+/**
+ * drm_xe_engine_class_instance - instance of an engine class
+ *
+ * It is returned as part of the &drm_xe_engine, but it also is used as
+ * the input of engine selection for both &drm_xe_exec_queue_create and
+ * &drm_xe_query_engine_cycles
+ *
+ * The @engine_class can be:
+ *  - %DRM_XE_ENGINE_CLASS_RENDER
+ *  - %DRM_XE_ENGINE_CLASS_COPY
+ *  - %DRM_XE_ENGINE_CLASS_VIDEO_DECODE
+ *  - %DRM_XE_ENGINE_CLASS_VIDEO_ENHANCE
+ *  - %DRM_XE_ENGINE_CLASS_COMPUTE
+ *  - %DRM_XE_ENGINE_CLASS_VM_BIND - Kernel only classes (not actual
+ *    hardware engine class). Used for creating ordered queues of VM
+ *    bind operations.
+ */
+#[repr(C)]
+pub struct drm_xe_engine_class_instance {
+pub const DRM_XE_ENGINE_CLASS_RENDER: _ = 0;
+pub const DRM_XE_ENGINE_CLASS_COPY: _ = 1;
+pub const DRM_XE_ENGINE_CLASS_VIDEO_DECODE: _ = 2;
+pub const DRM_XE_ENGINE_CLASS_VIDEO_ENHANCE: _ = 3;
+pub const DRM_XE_ENGINE_CLASS_COMPUTE: _ = 4;
+pub const DRM_XE_ENGINE_CLASS_VM_BIND: _ = 5;
+	/** @engine_class: engine class id */
+engine_class: u16,
+	/** @engine_instance: engine instance id */
+engine_instance: u16,
+	/** @gt_id: Unique ID of this GT within the PCI Device */
+gt_id: u16,
+	/** @pad: MBZ */
+pad: u16,
+}
+
+/**
+ * drm_xe_engine - describe hardware engine
+ */
+#[repr(C)]
+pub struct drm_xe_engine {
+	/** @instance: The &drm_xe_engine_class_instance */
+instance: drm_xe_engine_class_instance,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 3],
+}
+
+/**
+ * drm_xe_query_engines - describe engines
+ *
+ * If a query is made with a &drm_xe_device_query where .query
+ * is equal to %DRM_XE_DEVICE_QUERY_ENGINES, then the reply uses an array of
+ * &drm_xe_query_engines in .data.
+ */
+#[repr(C)]
+pub struct drm_xe_query_engines {
+	/** @num_engines: number of engines returned in @engines */
+num_engines: u32,
+	/** @pad: MBZ */
+pad: u32,
+	/** @engines: The returned engines for this device */
+	drm_xe_engine engines: [u8; 0],
+}
+
+/**
+ * enum drm_xe_memory_class - Supported memory classes.
+ */
+#[repr(C)]
+pub enum drm_xe_memory_class {
+	/** @DRM_XE_MEM_REGION_CLASS_SYSMEM: Represents system memory. */
+	DRM_XE_MEM_REGION_CLASS_SYSMEM = 0,
+	/**
+	 * @DRM_XE_MEM_REGION_CLASS_VRAM: On discrete platforms, this
+	 * represents the memory that is local to the device, which we
+	 * call VRAM. Not valid on integrated platforms.
+	 */
+	DRM_XE_MEM_REGION_CLASS_VRAM
+}
+
+/**
+ * drm_xe_mem_region - Describes some region as known to
+ * the driver.
+ */
+#[repr(C)]
+pub struct drm_xe_mem_region {
+	/**
+	 * @mem_class: The memory class describing this region.
+	 *
+	 * See enum drm_xe_memory_class for supported values.
+	 */
+mem_class: u16,
+	/**
+	 * @instance: The unique ID for this region, which serves as the
+	 * index in the placement bitmask used as argument for
+	 * &DRM_IOCTL_XE_GEM_CREATE
+	 */
+instance: u16,
+	/**
+	 * @min_page_size: Min page-size in bytes for this region.
+	 *
+	 * When the kernel allocates memory for this region, the
+	 * underlying pages will be at least @min_page_size in size.
+	 * Buffer objects with an allowable placement in this region must be
+	 * created with a size aligned to this value.
+	 * GPU virtual address mappings of (parts of) buffer objects that
+	 * may be placed in this region must also have their GPU virtual
+	 * address and range aligned to this value.
+	 * Affected IOCTLS will return %-EINVAL if alignment restrictions are
+	 * not met.
+	 */
+min_page_size: u32,
+	/**
+	 * @total_size: The usable size in bytes for this region.
+	 */
+total_size: u64,
+	/**
+	 * @used: Estimate of the memory used in bytes for this region.
+	 */
+used: u64,
+	/**
+	 * @cpu_visible_size: How much of this region can be CPU
+	 * accessed, in bytes.
+	 *
+	 * This will always be <= @total_size, and the remainder (if
+	 * any) will not be CPU accessible. If the CPU accessible part
+	 * is smaller than @total_size then this is referred to as a
+	 * small BAR system.
+	 *
+	 * On systems without small BAR (full BAR), the @cpu_visible_size will
+	 * always equal the @total_size, since all of it will be CPU
+	 * accessible.
+	 *
+	 * Note this is only tracked for DRM_XE_MEM_REGION_CLASS_VRAM
+	 * regions (for other types the value here will always equal
+	 * zero).
+	 */
+cpu_visible_size: u64,
+	/**
+	 * @cpu_visible_used: Estimate of CPU visible memory used, in
+	 * bytes.
+	 *
+	 * Note this is only currently tracked for
+	 * DRM_XE_MEM_REGION_CLASS_VRAM regions (for other types the value
+	 * here will always be zero).
+	 */
+cpu_visible_used: u64,
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 6],
+}
+
+/**
+ * drm_xe_query_mem_regions - describe memory regions
+ *
+ * If a query is made with a drm_xe_device_query where .query
+ * is equal to DRM_XE_DEVICE_QUERY_MEM_REGIONS, then the reply uses
+ * drm_xe_query_mem_regions in .data.
+ */
+#[repr(C)]
+pub struct drm_xe_query_mem_regions {
+	/** @num_mem_regions: number of memory regions returned in @mem_regions */
+num_mem_regions: u32,
+	/** @pad: MBZ */
+pad: u32,
+	/** @mem_regions: The returned memory regions for this device */
+	drm_xe_mem_region mem_regions: [u8; 0],
+}
+
+/**
+ * drm_xe_query_config - describe the device configuration
+ *
+ * If a query is made with a drm_xe_device_query where .query
+ * is equal to DRM_XE_DEVICE_QUERY_CONFIG, then the reply uses
+ * drm_xe_query_config in .data.
+ *
+ * The index in @info can be:
+ *  - %DRM_XE_QUERY_CONFIG_REV_AND_DEVICE_ID - Device ID (lower 16 bits)
+ *    and the device revision (next 8 bits)
+ *  - %DRM_XE_QUERY_CONFIG_FLAGS - Flags describing the device
+ *    configuration, see list below
+ *
+ *    - %DRM_XE_QUERY_CONFIG_FLAG_HAS_VRAM - Flag is set if the device
+ *      has usable VRAM
+ *    - %DRM_XE_QUERY_CONFIG_FLAG_HAS_LOW_LATENCY - Flag is set if the device
+ *      has low latency hint support
+ *    - %DRM_XE_QUERY_CONFIG_FLAG_HAS_CPU_ADDR_MIRROR - Flag is set if the
+ *      device has CPU address mirroring support
+ *    - %DRM_XE_QUERY_CONFIG_FLAG_HAS_NO_COMPRESSION_HINT - Flag is set if the
+ *      device supports the userspace hint %DRM_XE_GEM_CREATE_FLAG_NO_COMPRESSION.
+ *      This is exposed only on Xe2+.
+ *    - %DRM_XE_QUERY_CONFIG_FLAG_HAS_DISABLE_STATE_CACHE_PERF_FIX - Flag is set
+ *      if a queue can be created with
+ *      %DRM_XE_EXEC_QUEUE_SET_DISABLE_STATE_CACHE_PERF_FIX
+ *  - %DRM_XE_QUERY_CONFIG_MIN_ALIGNMENT - Minimal memory alignment
+ *    required by this device, typically SZ_4K or SZ_64K
+ *  - %DRM_XE_QUERY_CONFIG_VA_BITS - Maximum bits of a virtual address
+ *  - %DRM_XE_QUERY_CONFIG_MAX_EXEC_QUEUE_PRIORITY - Value of the highest
+ *    available exec queue priority
+ */
+#[repr(C)]
+pub struct drm_xe_query_config {
+	/** @num_params: number of parameters returned in info */
+num_params: u32,
+
+	/** @pad: MBZ */
+pad: u32,
+
+pub const DRM_XE_QUERY_CONFIG_REV_AND_DEVICE_ID: _ = 0;
+pub const DRM_XE_QUERY_CONFIG_FLAGS: _ = 1;
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_VRAM: _ = (1u32 << 0);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_LOW_LATENCY: _ = (1u32 << 1);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_CPU_ADDR_MIRROR: _ = (1u32 << 2);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_NO_COMPRESSION_HINT: _ = (1u32 << 3);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_DISABLE_STATE_CACHE_PERF_FIX: _ = (1u32 << 4);
+pub const DRM_XE_QUERY_CONFIG_FLAG_HAS_PURGING_SUPPORT: _ = (1u32 << 5);
+pub const DRM_XE_QUERY_CONFIG_MIN_ALIGNMENT: _ = 2;
+pub const DRM_XE_QUERY_CONFIG_VA_BITS: _ = 3;
+pub const DRM_XE_QUERY_CONFIG_MAX_EXEC_QUEUE_PRIORITY: _ = 4;
+	/** @info: array of elements containing the config info */
+	u64 info: [u8; 0],
+}
+
+/**
+ * drm_xe_gt - describe an individual GT.
+ *
+ * To be used with drm_xe_query_gt_list, which will return a list with all the
+ * existing GT individual descriptions.
+ * Graphics Technology (GT) is a subset of a GPU/tile that is responsible for
+ * implementing graphics and/or media operations.
+ *
+ * The index in @type can be:
+ *  - %DRM_XE_QUERY_GT_TYPE_MAIN
+ *  - %DRM_XE_QUERY_GT_TYPE_MEDIA
+ */
+#[repr(C)]
+pub struct drm_xe_gt {
+pub const DRM_XE_QUERY_GT_TYPE_MAIN: _ = 0;
+pub const DRM_XE_QUERY_GT_TYPE_MEDIA: _ = 1;
+	/** @type: GT type: Main or Media */
+type: u16,
+	/** @tile_id: Tile ID where this GT lives (Information only) */
+tile_id: u16,
+	/** @gt_id: Unique ID of this GT within the PCI Device */
+gt_id: u16,
+	/** @pad: MBZ */
+	u16 pad: [pad; 3],
+	/** @reference_clock: A clock frequency for timestamp */
+reference_clock: u32,
+	/**
+	 * @near_mem_regions: Bit mask of instances from
+	 * drm_xe_query_mem_regions that are nearest to the current engines
+	 * of this GT.
+	 * Each index in this mask refers directly to the struct
+	 * drm_xe_query_mem_regions' instance, no assumptions should
+	 * be made about order. The type of each region is described
+	 * by drm_xe_query_mem_regions' mem_class.
+	 */
+near_mem_regions: u64,
+	/**
+	 * @far_mem_regions: Bit mask of instances from
+	 * drm_xe_query_mem_regions that are far from the engines of this GT.
+	 * In general, they have extra indirections when compared to the
+	 * @near_mem_regions. For a discrete device this could mean system
+	 * memory and memory living in a different tile.
+	 * Each index in this mask refers directly to the struct
+	 * drm_xe_query_mem_regions' instance, no assumptions should
+	 * be made about order. The type of each region is described
+	 * by drm_xe_query_mem_regions' mem_class.
+	 */
+far_mem_regions: u64,
+	/** @ip_ver_major: Graphics/media IP major version on GMD_ID platforms */
+ip_ver_major: u16,
+	/** @ip_ver_minor: Graphics/media IP minor version on GMD_ID platforms */
+ip_ver_minor: u16,
+	/** @ip_ver_rev: Graphics/media IP revision version on GMD_ID platforms */
+ip_ver_rev: u16,
+	/** @pad2: MBZ */
+pad2: u16,
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 7],
+}
+
+/**
+ * drm_xe_query_gt_list - A list with GT description items.
+ *
+ * If a query is made with a drm_xe_device_query where .query
+ * is equal to DRM_XE_DEVICE_QUERY_GT_LIST, then the reply uses struct
+ * drm_xe_query_gt_list in .data.
+ */
+#[repr(C)]
+pub struct drm_xe_query_gt_list {
+	/** @num_gt: number of GT items returned in gt_list */
+num_gt: u32,
+	/** @pad: MBZ */
+pad: u32,
+	/** @gt_list: The GT list returned for this device */
+	drm_xe_gt gt_list: [u8; 0],
+}
+
+/**
+ * drm_xe_query_topology_mask - describe the topology mask of a GT
+ *
+ * This is the hardware topology which reflects the internal physical
+ * structure of the GPU.
+ *
+ * If a query is made with a drm_xe_device_query where .query
+ * is equal to DRM_XE_DEVICE_QUERY_GT_TOPOLOGY, then the reply uses
+ * drm_xe_query_topology_mask in .data.
+ *
+ * The @type can be:
+ *  - %DRM_XE_TOPO_DSS_GEOMETRY - To query the mask of Dual Sub Slices
+ *    (DSS) available for geometry operations. For example a query response
+ *    containing the following in mask:
+ *    ``DSS_GEOMETRY    ff ff ff ff 00 00 00 00``
+ *    means 32 DSS are available for geometry.
+ *  - %DRM_XE_TOPO_DSS_COMPUTE - To query the mask of Dual Sub Slices
+ *    (DSS) available for compute operations. For example a query response
+ *    containing the following in mask:
+ *    ``DSS_COMPUTE    ff ff ff ff 00 00 00 00``
+ *    means 32 DSS are available for compute.
+ *  - %DRM_XE_TOPO_L3_BANK - To query the mask of enabled L3 banks.  This type
+ *    may be omitted if the driver is unable to query the mask from the
+ *    hardware.
+ *  - %DRM_XE_TOPO_EU_PER_DSS - To query the mask of Execution Units (EU)
+ *    available per Dual Sub Slices (DSS). For example a query response
+ *    containing the following in mask:
+ *    ``EU_PER_DSS    ff ff 00 00 00 00 00 00``
+ *    means each DSS has 16 SIMD8 EUs. This type may be omitted if device
+ *    doesn't have SIMD8 EUs.
+ *  - %DRM_XE_TOPO_SIMD16_EU_PER_DSS - To query the mask of SIMD16 Execution
+ *    Units (EU) available per Dual Sub Slices (DSS). For example a query
+ *    response containing the following in mask:
+ *    ``SIMD16_EU_PER_DSS    ff ff 00 00 00 00 00 00``
+ *    means each DSS has 16 SIMD16 EUs. This type may be omitted if device
+ *    doesn't have SIMD16 EUs.
+ */
+#[repr(C)]
+pub struct drm_xe_query_topology_mask {
+	/** @gt_id: GT ID the mask is associated with */
+gt_id: u16,
+
+pub const DRM_XE_TOPO_DSS_GEOMETRY: _ = 1;
+pub const DRM_XE_TOPO_DSS_COMPUTE: _ = 2;
+pub const DRM_XE_TOPO_L3_BANK: _ = 3;
+pub const DRM_XE_TOPO_EU_PER_DSS: _ = 4;
+pub const DRM_XE_TOPO_SIMD16_EU_PER_DSS: _ = 5;
+	/** @type: type of mask */
+type: u16,
+
+	/** @num_bytes: number of bytes in requested mask */
+num_bytes: u32,
+
+	/** @mask: little-endian mask of @num_bytes */
+	u8 mask: [u8; 0],
+}
+
+/**
+ * drm_xe_query_engine_cycles - correlate CPU and GPU timestamps
+ *
+ * If a query is made with a drm_xe_device_query where .query is equal to
+ * DRM_XE_DEVICE_QUERY_ENGINE_CYCLES, then the reply uses drm_xe_query_engine_cycles
+ * in .data. drm_xe_query_engine_cycles is allocated by the user and
+ * .data points to this allocated structure.
+ *
+ * The query returns the engine cycles, which along with GT's @reference_clock,
+ * can be used to calculate the engine timestamp. In addition the
+ * query returns a set of cpu timestamps that indicate when the command
+ * streamer cycle count was captured.
+ */
+#[repr(C)]
+pub struct drm_xe_query_engine_cycles {
+	/**
+	 * @eci: This is input by the user and is the engine for which command
+	 * streamer cycles is queried.
+	 */
+eci: drm_xe_engine_class_instance,
+
+	/**
+	 * @clockid: This is input by the user and is the reference clock id for
+	 * CPU timestamp. For definition, see clock_gettime(2) and
+	 * perf_event_open(2). Supported clock ids are CLOCK_MONOTONIC,
+	 * CLOCK_MONOTONIC_RAW, CLOCK_REALTIME, CLOCK_BOOTTIME, CLOCK_TAI.
+	 */
+clockid: i32,
+
+	/** @width: Width of the engine cycle counter in bits. */
+width: u32,
+
+	/**
+	 * @engine_cycles: Engine cycles as read from its register
+	 * at 0x358 offset.
+	 */
+engine_cycles: u64,
+
+	/**
+	 * @cpu_timestamp: CPU timestamp in ns. The timestamp is captured before
+	 * reading the engine_cycles register using the reference clockid set by the
+	 * user.
+	 */
+cpu_timestamp: u64,
+
+	/**
+	 * @cpu_delta: Time delta in ns captured around reading the lower dword
+	 * of the engine_cycles register.
+	 */
+cpu_delta: u64,
+}
+
+/**
+ * drm_xe_query_uc_fw_version - query a micro-controller firmware version
+ *
+ * Given a uc_type this will return the branch, major, minor and patch version
+ * of the micro-controller firmware.
+ */
+#[repr(C)]
+pub struct drm_xe_query_uc_fw_version {
+	/** @uc_type: The micro-controller type to query firmware version */
+pub const XE_QUERY_UC_TYPE_GUC_SUBMISSION: _ = 0;
+pub const XE_QUERY_UC_TYPE_HUC: _ = 1;
+uc_type: u16,
+
+	/** @pad: MBZ */
+pad: u16,
+
+	/** @branch_ver: branch uc fw version */
+branch_ver: u32,
+	/** @major_ver: major uc fw version */
+major_ver: u32,
+	/** @minor_ver: minor uc fw version */
+minor_ver: u32,
+	/** @patch_ver: patch uc fw version */
+patch_ver: u32,
+
+	/** @pad2: MBZ */
+pad2: u32,
+
+	/** @reserved: Reserved */
+reserved: u64,
+}
+
+/**
+ * drm_xe_query_pxp_status - query if PXP is ready
+ *
+ * If PXP is enabled and no fatal error has occurred, the status will be set to
+ * one of the following values:
+ * 0: PXP init still in progress
+ * 1: PXP init complete
+ *
+ * If PXP is not enabled or something has gone wrong, the query will be failed
+ * with one of the following error codes:
+ * -ENODEV: PXP not supported or disabled,
+ * -EIO: fatal error occurred during init, so PXP will never be enabled,
+ * -EINVAL: incorrect value provided as part of the query,
+ * -EFAULT: error copying the memory between kernel and userspace.
+ *
+ * The status can only be 0 in the first few seconds after driver load. If
+ * everything works as expected, the status will transition to init complete in
+ * less than 1 second, while in case of errors the driver might take longer to
+ * start returning an error code, but it should still take less than 10 seconds.
+ *
+ * The supported session type bitmask is based on the values in
+ * enum drm_xe_pxp_session_type. TYPE_NONE is always supported and therefore
+ * is not reported in the bitmask.
+ *
+ */
+#[repr(C)]
+pub struct drm_xe_query_pxp_status {
+	/** @status: current PXP status */
+status: u32,
+
+	/** @supported_session_types: bitmask of supported PXP session types */
+supported_session_types: u32,
+}
+
+/**
+ * drm_xe_device_query - Input of &DRM_IOCTL_XE_DEVICE_QUERY - main
+ * structure to query device information
+ *
+ * The user selects the type of data to query among DRM_XE_DEVICE_QUERY_*
+ * and sets the value in the query member. This determines the type of
+ * the structure provided by the driver in data, among drm_xe_query_*.
+ *
+ * The @query can be:
+ *  - %DRM_XE_DEVICE_QUERY_ENGINES
+ *  - %DRM_XE_DEVICE_QUERY_MEM_REGIONS
+ *  - %DRM_XE_DEVICE_QUERY_CONFIG
+ *  - %DRM_XE_DEVICE_QUERY_GT_LIST
+ *  - %DRM_XE_DEVICE_QUERY_HWCONFIG - Query type to retrieve the hardware
+ *    configuration of the device such as information on slices, memory,
+ *    caches, and so on. It is provided as a table of key / value
+ *    attributes.
+ *  - %DRM_XE_DEVICE_QUERY_GT_TOPOLOGY
+ *  - %DRM_XE_DEVICE_QUERY_ENGINE_CYCLES
+ *  - %DRM_XE_DEVICE_QUERY_UC_FW_VERSION
+ *  - %DRM_XE_DEVICE_QUERY_OA_UNITS
+ *  - %DRM_XE_DEVICE_QUERY_PXP_STATUS
+ *  - %DRM_XE_DEVICE_QUERY_EU_STALL
+ *
+ * If size is set to 0, the driver fills it with the required size for
+ * the requested type of data to query. If size is equal to the required
+ * size, the queried information is copied into data. If size is set to
+ * a value different from 0 and different from the required size, the
+ * IOCTL call returns -EINVAL.
+ *
+ * For example the following code snippet allows retrieving and printing
+ * information about the device engines with DRM_XE_DEVICE_QUERY_ENGINES:
+ *
+ * .. code-block:: C
+ *
+ *     drm_xe_query_engines *engines,
+ *     drm_xe_device_query query = {
+ *         .extensions = 0,
+ *         .query = DRM_XE_DEVICE_QUERY_ENGINES,
+ *         .size = 0,
+ *         .data = 0,
+ *     },
+ *     ioctl(fd, DRM_IOCTL_XE_DEVICE_QUERY, &query),
+ *     engines = malloc(query.size),
+ *     query.data = (uintptr_t)engines,
+ *     ioctl(fd, DRM_IOCTL_XE_DEVICE_QUERY, &query),
+ *     for (int i = 0; i < engines->num_engines; i++) {
+ *         printf("Engine %d: %s\n", i,
+ *             engines->engines[i].instance.engine_class ==
+ *                 DRM_XE_ENGINE_CLASS_RENDER ? "RENDER":
+ *             engines->engines[i].instance.engine_class ==
+ *                 DRM_XE_ENGINE_CLASS_COPY ? "COPY":
+ *             engines->engines[i].instance.engine_class ==
+ *                 DRM_XE_ENGINE_CLASS_VIDEO_DECODE ? "VIDEO_DECODE":
+ *             engines->engines[i].instance.engine_class ==
+ *                 DRM_XE_ENGINE_CLASS_VIDEO_ENHANCE ? "VIDEO_ENHANCE":
+ *             engines->engines[i].instance.engine_class ==
+ *                 DRM_XE_ENGINE_CLASS_COMPUTE ? "COMPUTE":
+ *             "UNKNOWN"),
+ *     }
+ *     free(engines),
+ */
+#[repr(C)]
+pub struct drm_xe_device_query {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+pub const DRM_XE_DEVICE_QUERY_ENGINES: _ = 0;
+pub const DRM_XE_DEVICE_QUERY_MEM_REGIONS: _ = 1;
+pub const DRM_XE_DEVICE_QUERY_CONFIG: _ = 2;
+pub const DRM_XE_DEVICE_QUERY_GT_LIST: _ = 3;
+pub const DRM_XE_DEVICE_QUERY_HWCONFIG: _ = 4;
+pub const DRM_XE_DEVICE_QUERY_GT_TOPOLOGY: _ = 5;
+pub const DRM_XE_DEVICE_QUERY_ENGINE_CYCLES: _ = 6;
+pub const DRM_XE_DEVICE_QUERY_UC_FW_VERSION: _ = 7;
+pub const DRM_XE_DEVICE_QUERY_OA_UNITS: _ = 8;
+pub const DRM_XE_DEVICE_QUERY_PXP_STATUS: _ = 9;
+pub const DRM_XE_DEVICE_QUERY_EU_STALL: _ = 10;
+	/** @query: The type of data to query */
+query: u32,
+
+	/** @size: Size of the queried data */
+size: u32,
+
+	/** @data: Queried data is placed here */
+data: u64,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_gem_create - Input of &DRM_IOCTL_XE_GEM_CREATE - A structure for
+ * gem creation
+ *
+ * The @flags can be:
+ *  - %DRM_XE_GEM_CREATE_FLAG_DEFER_BACKING - Modify the GEM object
+ *    allocation strategy by deferring physical memory allocation
+ *    until the object is either bound to a virtual memory region via
+ *    VM_BIND or accessed by the CPU. As a result, no backing memory is
+ *    reserved at the time of GEM object creation.
+ *  - %DRM_XE_GEM_CREATE_FLAG_SCANOUT - Indicates that the GEM object is
+ *    intended for scanout via the display engine. When set, kernel ensures
+ *    that the allocation is placed in a memory region compatible with the
+ *    display engine requirements. This may impose restrictions on tiling,
+ *    alignment, and memory placement to guarantee proper display functionality.
+ *  - %DRM_XE_GEM_CREATE_FLAG_NEEDS_VISIBLE_VRAM - When using VRAM as a
+ *    possible placement, ensure that the corresponding VRAM allocation
+ *    will always use the CPU accessible part of VRAM. This is important
+ *    for small-bar systems (on full-bar systems this gets turned into a
+ *    noop).
+ *    Note1: System memory can be used as an extra placement if the kernel
+ *    should spill the allocation to system memory, if space can't be made
+ *    available in the CPU accessible part of VRAM (giving the same
+ *    behaviour as the i915 interface, see
+ *    I915_GEM_CREATE_EXT_FLAG_NEEDS_CPU_ACCESS).
+ *    Note2: For clear-color CCS surfaces the kernel needs to read the
+ *    clear-color value stored in the buffer, and on discrete platforms we
+ *    need to use VRAM for display surfaces, therefore the kernel requires
+ *    setting this flag for such objects, otherwise an error is thrown on
+ *    small-bar systems.
+ *  - %DRM_XE_GEM_CREATE_FLAG_NO_COMPRESSION - Allows userspace to
+ *    hint that compression (CCS) should be disabled for the buffer being
+ *    created. This can avoid unnecessary memory operations and CCS state
+ *    management.
+ *    On pre-Xe2 platforms, this flag is currently rejected as compression
+ *    control is not supported via PAT index. On Xe2+ platforms, compression
+ *    is controlled via PAT entries. If this flag is set, the driver will reject
+ *    any VM bind that requests a PAT index enabling compression for this BO.
+ *    Note: On dGPU platforms, there is currently no change in behavior with
+ *    this flag, but future improvements may leverage it. The current benefit is
+ *    primarily applicable to iGPU platforms.
+ *
+ * @cpu_caching supports the following values:
+ *  - %DRM_XE_GEM_CPU_CACHING_WB - Allocate the pages with write-back
+ *    caching. On iGPU this can't be used for scanout surfaces. Currently
+ *    not allowed for objects placed in VRAM.
+ *  - %DRM_XE_GEM_CPU_CACHING_WC - Allocate the pages as write-combined. This
+ *    is uncached. Scanout surfaces should likely use this. All objects
+ *    that can be placed in VRAM must use this.
+ *
+ * This ioctl supports setting the following properties via the
+ * %DRM_XE_GEM_CREATE_EXTENSION_SET_PROPERTY extension, which uses the
+ * generic &drm_xe_ext_set_property:
+ *
+ *  - %DRM_XE_GEM_CREATE_SET_PROPERTY_PXP_TYPE - set the type of PXP session
+ *    this object will be used with. Valid values are listed in enum
+ *    drm_xe_pxp_session_type. %DRM_XE_PXP_TYPE_NONE is the default behavior, so
+ *    there is no need to explicitly set that. Objects used with session of type
+ *    %DRM_XE_PXP_TYPE_HWDRM will be marked as invalid if a PXP invalidation
+ *    event occurs after their creation. Attempting to flip an invalid object
+ *    will cause a black frame to be displayed instead. Submissions with invalid
+ *    objects mapped in the VM will be rejected.
+ */
+#[repr(C)]
+pub struct drm_xe_gem_create {
+pub const DRM_XE_GEM_CREATE_EXTENSION_SET_PROPERTY: _ = 0;
+pub const DRM_XE_GEM_CREATE_SET_PROPERTY_PXP_TYPE: _ = 0;
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/**
+	 * @size: Size of the object to be created, must match region
+	 * (system or vram) minimum alignment (&min_page_size).
+	 */
+size: u64,
+
+	/**
+	 * @placement: A mask of memory instances of where BO can be placed.
+	 * Each index in this mask refers directly to the struct
+	 * drm_xe_query_mem_regions' instance, no assumptions should
+	 * be made about order. The type of each region is described
+	 * by drm_xe_query_mem_regions' mem_class.
+	 */
+placement: u32,
+
+pub const DRM_XE_GEM_CREATE_FLAG_DEFER_BACKING: _ = (1u32 << 0);
+pub const DRM_XE_GEM_CREATE_FLAG_SCANOUT: _ = (1u32 << 1);
+pub const DRM_XE_GEM_CREATE_FLAG_NEEDS_VISIBLE_VRAM: _ = (1u32 << 2);
+pub const DRM_XE_GEM_CREATE_FLAG_NO_COMPRESSION: _ = (1u32 << 3);
+	/**
+	 * @flags: Flags for the GEM object, see DRM_XE_GEM_CREATE_FLAG_*
+	 */
+flags: u32,
+
+	/**
+	 * @vm_id: Attached VM, if any
+	 *
+	 * If a VM is specified, this BO must:
+	 *
+	 *  1. Only ever be bound to that VM.
+	 *  2. Cannot be exported as a PRIME fd.
+	 */
+vm_id: u32,
+
+	/**
+	 * @handle: Returned handle for the object.
+	 *
+	 * Object handles are nonzero.
+	 */
+handle: u32,
+
+pub const DRM_XE_GEM_CPU_CACHING_WB: _ = 1;
+pub const DRM_XE_GEM_CPU_CACHING_WC: _ = 2;
+	/**
+	 * @cpu_caching: The CPU caching mode to select for this object. If
+	 * mmapping the object the mode selected here will also be used. The
+	 * exception is when mapping system memory (including data evicted
+	 * to system) on discrete GPUs. The caching mode selected will
+	 * then be overridden to DRM_XE_GEM_CPU_CACHING_WB, and coherency
+	 * between GPU- and CPU is guaranteed. The caching mode of
+	 * existing CPU-mappings will be updated transparently to
+	 * user-space clients.
+	 */
+cpu_caching: u16,
+	/** @pad: MBZ */
+	u16 pad: [pad; 3],
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_gem_mmap_offset - Input of &DRM_IOCTL_XE_GEM_MMAP_OFFSET
+ *
+ * The @flags can be:
+ *  - %DRM_XE_MMAP_OFFSET_FLAG_PCI_BARRIER - For user to query special offset
+ *    for use in mmap ioctl. Writing to the returned mmap address will generate a
+ *    PCI memory barrier with low overhead (avoiding IOCTL call as well as writing
+ *    to VRAM which would also add overhead), acting like an MI_MEM_FENCE
+ *    instruction.
+ *
+ * Note: The mmap size can be at most 4K, due to HW limitations. As a result
+ * this interface is only supported on CPU architectures that support 4K page
+ * size. The mmap_offset ioctl will detect this and gracefully return an
+ * error, where userspace is expected to have a different fallback method for
+ * triggering a barrier.
+ *
+ * Roughly the usage would be as follows:
+ *
+ * .. code-block:: C
+ *
+ *     drm_xe_gem_mmap_offset mmo = {
+ *         .handle = 0, // must be set to 0
+ *         .flags = DRM_XE_MMAP_OFFSET_FLAG_PCI_BARRIER,
+ *     },
+ *
+ *     err = ioctl(fd, DRM_IOCTL_XE_GEM_MMAP_OFFSET, &mmo),
+ *     map = mmap(NULL, size, PROT_WRITE, MAP_SHARED, fd, mmo.offset),
+ *     map[i] = 0xdeadbeef; // issue barrier
+ */
+#[repr(C)]
+pub struct drm_xe_gem_mmap_offset {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @handle: Handle for the object being mapped. */
+handle: u32,
+
+pub const DRM_XE_MMAP_OFFSET_FLAG_PCI_BARRIER: _ = (1u32 << 0);
+	/** @flags: Flags */
+flags: u32,
+
+	/** @offset: The fake offset to use for subsequent mmap call */
+offset: u64,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_vm_create - Input of &DRM_IOCTL_XE_VM_CREATE
+ *
+ * The @flags can be:
+ *  - %DRM_XE_VM_CREATE_FLAG_SCRATCH_PAGE - Map the whole virtual address
+ *    space of the VM to scratch page. A vm_bind would overwrite the scratch
+ *    page mapping. This flag is mutually exclusive with the
+ *    %DRM_XE_VM_CREATE_FLAG_FAULT_MODE flag, with an exception on Xe2 and
+ *    Xe3 platforms.
+ *  - %DRM_XE_VM_CREATE_FLAG_LR_MODE - An LR, or Long Running VM accepts
+ *    exec submissions to its exec_queues that don't have an upper time
+ *    limit on the job execution time. But exec submissions to these
+ *    don't allow any of the sync types DRM_XE_SYNC_TYPE_SYNCOBJ,
+ *    DRM_XE_SYNC_TYPE_TIMELINE_SYNCOBJ, used as out-syncobjs, that is,
+ *    together with sync flag DRM_XE_SYNC_FLAG_SIGNAL.
+ *    LR VMs can be created in recoverable page-fault mode using
+ *    DRM_XE_VM_CREATE_FLAG_FAULT_MODE, if the device supports it.
+ *    If that flag is omitted, the UMD can not rely on the slightly
+ *    different per-VM overcommit semantics that are enabled by
+ *    DRM_XE_VM_CREATE_FLAG_FAULT_MODE (see below), but KMD may
+ *    still enable recoverable pagefaults if supported by the device.
+ *  - %DRM_XE_VM_CREATE_FLAG_FAULT_MODE - Requires also
+ *    DRM_XE_VM_CREATE_FLAG_LR_MODE. It allows memory to be allocated on
+ *    demand when accessed, and also allows per-VM overcommit of memory.
+ *    The xe driver internally uses recoverable pagefaults to implement
+ *    this.
+ *  - %DRM_XE_VM_CREATE_FLAG_NO_VM_OVERCOMMIT - Requires also
+ *    DRM_XE_VM_CREATE_FLAG_FAULT_MODE. This disallows per-VM overcommit
+ *    but only during a &DRM_IOCTL_XE_VM_BIND operation with the
+ *    %DRM_XE_VM_BIND_FLAG_IMMEDIATE flag set. This may be useful for
+ *    user-space naively probing the amount of available memory.
+ */
+#[repr(C)]
+pub struct drm_xe_vm_create {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+pub const DRM_XE_VM_CREATE_FLAG_SCRATCH_PAGE: _ = (1u32 << 0);
+pub const DRM_XE_VM_CREATE_FLAG_LR_MODE: _ = (1u32 << 1);
+pub const DRM_XE_VM_CREATE_FLAG_FAULT_MODE: _ = (1u32 << 2);
+pub const DRM_XE_VM_CREATE_FLAG_NO_VM_OVERCOMMIT: _ = (1u32 << 3);
+	/** @flags: Flags */
+flags: u32,
+
+	/** @vm_id: Returned VM ID */
+vm_id: u32,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_vm_destroy - Input of &DRM_IOCTL_XE_VM_DESTROY
+ */
+#[repr(C)]
+pub struct drm_xe_vm_destroy {
+	/** @vm_id: VM ID */
+vm_id: u32,
+
+	/** @pad: MBZ */
+pad: u32,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_vm_bind_op - run bind operations
+ *
+ * The @op can be:
+ *  - %DRM_XE_VM_BIND_OP_MAP
+ *  - %DRM_XE_VM_BIND_OP_UNMAP
+ *  - %DRM_XE_VM_BIND_OP_MAP_USERPTR
+ *  - %DRM_XE_VM_BIND_OP_UNMAP_ALL
+ *  - %DRM_XE_VM_BIND_OP_PREFETCH
+ *
+ * and the @flags can be:
+ *  - %DRM_XE_VM_BIND_FLAG_READONLY - Setup the page tables as read-only
+ *    to ensure write protection
+ *  - %DRM_XE_VM_BIND_FLAG_IMMEDIATE - On a faulting VM, do the
+ *    MAP operation immediately rather than deferring the MAP to the page
+ *    fault handler. This is implied on a non-faulting VM as there is no
+ *    fault handler to defer to.
+ *  - %DRM_XE_VM_BIND_FLAG_NULL - When the NULL flag is set, the page
+ *    tables are setup with a special bit which indicates writes are
+ *    dropped and all reads return zero. In the future, the NULL flags
+ *    will only be valid for DRM_XE_VM_BIND_OP_MAP operations, the BO
+ *    handle MBZ, and the BO offset MBZ. This flag is intended to
+ *    implement VK sparse bindings.
+ *  - %DRM_XE_VM_BIND_FLAG_CHECK_PXP - If the object is encrypted via PXP,
+ *    reject the binding if the encryption key is no longer valid. This
+ *    flag has no effect on BOs that are not marked as using PXP.
+ *  - %DRM_XE_VM_BIND_FLAG_CPU_ADDR_MIRROR - When the CPU address mirror flag is
+ *    set, no mappings are created rather the range is reserved for CPU address
+ *    mirroring which will be populated on GPU page faults or prefetches. Only
+ *    valid on VMs with DRM_XE_VM_CREATE_FLAG_FAULT_MODE set. The CPU address
+ *    mirror flag is only valid for DRM_XE_VM_BIND_OP_MAP operations, the BO
+ *    handle MBZ, and the BO offset MBZ.
+ *  - %DRM_XE_VM_BIND_FLAG_MADVISE_AUTORESET - Can be used in combination with
+ *    %DRM_XE_VM_BIND_FLAG_CPU_ADDR_MIRROR to reset madvises when the underlying
+ *    CPU address space range is unmapped (typically with munmap(2) or brk(2)).
+ *    The madvise values set with &DRM_IOCTL_XE_MADVISE are reset to the values
+ *    that were present immediately after the &DRM_IOCTL_XE_VM_BIND.
+ *    The reset GPU virtual address range is the intersection of the range bound
+ *    using &DRM_IOCTL_XE_VM_BIND and the virtual CPU address space range
+ *    unmapped.
+ *    This functionality is present to mimic the behaviour of CPU address space
+ *    madvises set using madvise(2), which are typically reset on unmap.
+ *    Note: free(3) may or may not call munmap(2) and/or brk(2), and may thus
+ *    not invoke autoreset. Neither will stack variables going out of scope.
+ *    Therefore it's recommended to always explicitly reset the madvises when
+ *    freeing the memory backing a region used in a &DRM_IOCTL_XE_MADVISE call.
+ *
+ *  - %DRM_XE_VM_BIND_FLAG_DECOMPRESS - Request on-device decompression for a MAP.
+ *    When set on a MAP bind operation, request the driver schedule an on-device
+ *    in-place decompression (via the migrate/resolve path) for the GPU mapping
+ *    created by this bind. Only valid for DRM_XE_VM_BIND_OP_MAP; usage on
+ *    other ops is rejected. The bind's pat_index must select the device's
+ *    "no-compression" PAT. Only meaningful for VRAM-backed BOs on devices that
+ *    support Flat CCS and the required HW generation XE2+.
+ *
+ * The @prefetch_mem_region_instance for %DRM_XE_VM_BIND_OP_PREFETCH can also be:
+ *  - %DRM_XE_CONSULT_MEM_ADVISE_PREF_LOC, which ensures prefetching occurs in
+ *    the memory region advised by madvise.
+ */
+#[repr(C)]
+pub struct drm_xe_vm_bind_op {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/**
+	 * @obj: GEM object to operate on, MBZ for MAP_USERPTR, MBZ for UNMAP
+	 */
+obj: u32,
+
+	/**
+	 * @pat_index: The platform defined @pat_index to use for this mapping.
+	 * The index basically maps to some predefined memory attributes,
+	 * including things like caching, coherency, compression etc.  The exact
+	 * meaning of the pat_index is platform specific and defined in the
+	 * Bspec and PRMs.  When the KMD sets up the binding the index here is
+	 * encoded into the ppGTT PTE.
+	 *
+	 * For coherency the @pat_index needs to be at least 1way coherent when
+	 * drm_xe_gem_create.cpu_caching is DRM_XE_GEM_CPU_CACHING_WB. The KMD
+	 * will extract the coherency mode from the @pat_index and reject if
+	 * there is a mismatch (see note below for pre-MTL platforms).
+	 *
+	 * Note: On pre-MTL platforms there is only a caching mode and no
+	 * explicit coherency mode, but on such hardware there is always a
+	 * shared-LLC (or is dgpu) so all GT memory accesses are coherent with
+	 * CPU caches even with the caching mode set as uncached.  It's only the
+	 * display engine that is incoherent (on dgpu it must be in VRAM which
+	 * is always mapped as WC on the CPU). However to keep the uapi somewhat
+	 * consistent with newer platforms the KMD groups the different cache
+	 * levels into the following coherency buckets on all pre-MTL platforms:
+	 *
+	 *	ppGTT UC -> COH_NONE
+	 *	ppGTT WC -> COH_NONE
+	 *	ppGTT WT -> COH_NONE
+	 *	ppGTT WB -> COH_AT_LEAST_1WAY
+	 *
+	 * In practice UC/WC/WT should only ever be used for scanout surfaces on
+	 * such platforms (or perhaps in general for dma-buf if shared with
+	 * another device) since it is only the display engine that is actually
+	 * incoherent.  Everything else should typically use WB given that we
+	 * have a shared-LLC.  On MTL+ this completely changes and the HW
+	 * defines the coherency mode as part of the @pat_index, where
+	 * incoherent GT access is possible.
+	 *
+	 * Note: For userptr and externally imported dma-buf the kernel expects
+	 * either 1WAY or 2WAY for the @pat_index. Starting from NVL-P, for
+	 * userptr, svm, madvise and externally imported dma-buf the kernel expects
+	 * either 2WAY or 1WAY and XA @pat_index.
+	 *
+	 * For DRM_XE_VM_BIND_FLAG_NULL bindings there are no KMD restrictions
+	 * on the @pat_index. For such mappings there is no actual memory being
+	 * mapped (the address in the PTE is invalid), so the various PAT memory
+	 * attributes likely do not apply.  Simply leaving as zero is one
+	 * option (still a valid pat_index). Same applies to
+	 * DRM_XE_VM_BIND_FLAG_CPU_ADDR_MIRROR bindings as for such mapping
+	 * there is no actual memory being mapped.
+	 */
+pat_index: u16,
+
+	/** @pad: MBZ */
+pad: u16,
+
+#[repr(C)]
+pub union __anonymous_union {
+		/**
+		 * @obj_offset: Offset into the object, MBZ for CLEAR_RANGE,
+		 * ignored for unbind
+		 */
+obj_offset: u64,
+
+		/** @userptr: user pointer to bind on */
+userptr: u64,
+
+		/**
+		 * @cpu_addr_mirror_offset: Offset from GPU @addr to create
+		 * CPU address mirror mappings. MBZ with current level of
+		 * support (e.g. 1 to 1 mapping between GPU and CPU mappings
+		 * only supported).
+		 */
+cpu_addr_mirror_offset: i64,
+}
+
+	/**
+	 * @range: Number of bytes from the object to bind to addr, MBZ for UNMAP_ALL
+	 */
+
+	/** @addr: Address to operate on, MBZ for UNMAP_ALL */
+
+pub const DRM_XE_VM_BIND_OP_MAP: _ = 0x0;
+pub const DRM_XE_VM_BIND_OP_UNMAP: _ = 0x1;
+pub const DRM_XE_VM_BIND_OP_MAP_USERPTR: _ = 0x2;
+pub const DRM_XE_VM_BIND_OP_UNMAP_ALL: _ = 0x3;
+pub const DRM_XE_VM_BIND_OP_PREFETCH: _ = 0x4;
+	/** @op: Bind operation to perform */
+
+pub const DRM_XE_VM_BIND_FLAG_READONLY: _ = (1u32 << 0);
+pub const DRM_XE_VM_BIND_FLAG_IMMEDIATE: _ = (1u32 << 1);
+pub const DRM_XE_VM_BIND_FLAG_NULL: _ = (1u32 << 2);
+pub const DRM_XE_VM_BIND_FLAG_DUMPABLE: _ = (1u32 << 3);
+pub const DRM_XE_VM_BIND_FLAG_CHECK_PXP: _ = (1u32 << 4);
+pub const DRM_XE_VM_BIND_FLAG_CPU_ADDR_MIRROR: _ = (1u32 << 5);
+pub const DRM_XE_VM_BIND_FLAG_MADVISE_AUTORESET: _ = (1u32 << 6);
+pub const DRM_XE_VM_BIND_FLAG_DECOMPRESS: _ = (1u32 << 7);
+	/** @flags: Bind flags */
+
+pub const DRM_XE_CONSULT_MEM_ADVISE_PREF_LOC: _ = -1;
+	/**
+	 * @prefetch_mem_region_instance: Memory region to prefetch VMA to.
+	 * It is a region instance, not a mask.
+	 * To be used only with %DRM_XE_VM_BIND_OP_PREFETCH operation.
+	 */
+
+	/** @pad2: MBZ */
+
+	/** @reserved: Reserved */
+
+/**
+ * drm_xe_vm_bind - Input of &DRM_IOCTL_XE_VM_BIND
+ *
+ * Below is an example of a minimal use of &drm_xe_vm_bind to
+ * asynchronously bind the buffer `data` at address `BIND_ADDRESS` to
+ * illustrate `userptr`. It can be synchronized by using the example
+ * provided for &drm_xe_sync.
+ *
+ * .. code-block:: C
+ *
+ *     data = aligned_alloc(ALIGNMENT, BO_SIZE),
+ *     drm_xe_vm_bind bind = {
+ *         .vm_id = vm,
+ *         .num_binds = 1,
+ *         .bind.obj = 0,
+ *         .bind.obj_offset = to_user_pointer(data),
+ *         .bind.range = BO_SIZE,
+ *         .bind.addr = BIND_ADDRESS,
+ *         .bind.op = DRM_XE_VM_BIND_OP_MAP_USERPTR,
+ *         .bind.flags = 0,
+ *         .num_syncs = 1,
+ *         .syncs = &sync,
+ *         .exec_queue_id = 0,
+ *     },
+ *     ioctl(fd, DRM_IOCTL_XE_VM_BIND, &bind),
+ *
+ */
+#[repr(C)]
+pub struct drm_xe_vm_bind {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @vm_id: The ID of the VM to bind to */
+vm_id: u32,
+
+	/**
+	 * @exec_queue_id: exec_queue_id, must be of class DRM_XE_ENGINE_CLASS_VM_BIND
+	 * and exec queue must have same vm_id. If zero, the default VM bind engine
+	 * is used.
+	 */
+exec_queue_id: u32,
+
+	/** @pad: MBZ */
+pad: u32,
+
+	/** @num_binds: number of binds in this IOCTL */
+num_binds: u32,
+
+#[repr(C)]
+pub union __anonymous_union {
+		/** @bind: used if num_binds == 1 */
+bind: drm_xe_vm_bind_op,
+
+		/**
+		 * @vector_of_binds: userptr to array of struct
+		 * drm_xe_vm_bind_op if num_binds > 1
+		 */
+vector_of_binds: u64,
+}
+
+	/** @pad2: MBZ */
+
+	/** @num_syncs: amount of syncs to wait on */
+
+	/** @syncs: pointer to drm_xe_sync array */
+
+	/** @reserved: Reserved */
+
+/** xe_vm_fault - Describes faults for %DRM_XE_VM_GET_PROPERTY_FAULTS */
+#[repr(C)]
+pub struct xe_vm_fault {
+	/** @address: Canonical address of the fault */
+address: u64,
+	/** @address_precision: Precision of faulted address */
+address_precision: u32,
+	/** @access_type: Type of address access that resulted in fault */
+pub const FAULT_ACCESS_TYPE_READ: _ = 0;
+pub const FAULT_ACCESS_TYPE_WRITE: _ = 1;
+pub const FAULT_ACCESS_TYPE_ATOMIC: _ = 2;
+access_type: u8,
+	/** @fault_type: Type of fault reported */
+pub const FAULT_TYPE_NOT_PRESENT: _ = 0;
+pub const FAULT_TYPE_WRITE_ACCESS: _ = 1;
+pub const FAULT_TYPE_ATOMIC_ACCESS: _ = 2;
+fault_type: u8,
+	/** @fault_level: fault level of the fault */
+pub const FAULT_LEVEL_PTE: _ = 0;
+pub const FAULT_LEVEL_PDE: _ = 1;
+pub const FAULT_LEVEL_PDP: _ = 2;
+pub const FAULT_LEVEL_PML4: _ = 3;
+pub const FAULT_LEVEL_PML5: _ = 4;
+fault_level: u8,
+	/** @pad: MBZ */
+pad: u8,
+	/** @reserved: MBZ */
+	u64 reserved: [reserved; 4],
+}
+
+/**
+ * drm_xe_vm_get_property - Input of &DRM_IOCTL_XE_VM_GET_PROPERTY
+ *
+ * The user provides a VM and a property to query among DRM_XE_VM_GET_PROPERTY_*,
+ * and sets the values in the vm_id and property members, respectively.  This
+ * determines both the VM to get the property of, as well as the property to
+ * report.
+ *
+ * If size is set to 0, the driver fills it with the required size for the
+ * requested property.  The user is expected here to allocate memory for the
+ * property structure and to provide a pointer to the allocated memory using the
+ * data member.  For some properties, this may be zero, in which case, the
+ * value of the property will be saved to the value member and size will remain
+ * zero on return.
+ *
+ * If size is not zero, then the IOCTL will attempt to copy the requested
+ * property into the data member.
+ *
+ * The IOCTL will return -ENOENT if the VM could not be identified from the
+ * provided VM ID, or -EINVAL if the IOCTL fails for any other reason, such as
+ * providing an invalid size for the given property or if the property data
+ * could not be copied to the memory allocated to the data member.
+ *
+ * The property member can be:
+ *  - %DRM_XE_VM_GET_PROPERTY_FAULTS
+ */
+#[repr(C)]
+pub struct drm_xe_vm_get_property {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @vm_id: The ID of the VM to query the properties of */
+vm_id: u32,
+
+pub const DRM_XE_VM_GET_PROPERTY_FAULTS: _ = 0;
+	/** @property: property to get */
+property: u32,
+
+	/** @size: Size to allocate for @data */
+size: u32,
+
+	/** @pad: MBZ */
+pad: u32,
+
+#[repr(C)]
+pub union __anonymous_union {
+		/** @data: Pointer to user-defined array of flexible size and type */
+data: u64,
+		/** @value: Return value for scalar queries */
+value: u64,
+}
+
+	/** @reserved: MBZ */
+
+/**
+ * drm_xe_exec_queue_create - Input of &DRM_IOCTL_XE_EXEC_QUEUE_CREATE
+ *
+ * This ioctl supports setting the following properties via the
+ * %DRM_XE_EXEC_QUEUE_EXTENSION_SET_PROPERTY extension, which uses the
+ * generic &drm_xe_ext_set_property:
+ *
+ *  - %DRM_XE_EXEC_QUEUE_SET_PROPERTY_PRIORITY - set the queue priority.
+ *    CAP_SYS_NICE is required to set a value above normal.
+ *  - %DRM_XE_EXEC_QUEUE_SET_PROPERTY_TIMESLICE - set the queue timeslice
+ *    duration in microseconds.
+ *  - %DRM_XE_EXEC_QUEUE_SET_PROPERTY_PXP_TYPE - set the type of PXP session
+ *    this queue will be used with. Valid values are listed in enum
+ *    drm_xe_pxp_session_type. %DRM_XE_PXP_TYPE_NONE is the default behavior, so
+ *    there is no need to explicitly set that. When a queue of type
+ *    %DRM_XE_PXP_TYPE_HWDRM is created, the PXP default HWDRM session
+ *    (%DRM_XE_PXP_HWDRM_DEFAULT_SESSION) will be started, if it isn't already running.
+ *    The user is expected to query the PXP status via the query ioctl (see
+ *    %DRM_XE_DEVICE_QUERY_PXP_STATUS) and to wait for PXP to be ready before
+ *    attempting to create a queue with this property. When a queue is created
+ *    before PXP is ready, the ioctl will return -EBUSY if init is still in
+ *    progress or -EIO if init failed.
+ *    Given that going into a power-saving state kills PXP HWDRM sessions,
+ *    runtime PM will be blocked while queues of this type are alive.
+ *    All PXP queues will be killed if a PXP invalidation event occurs.
+ *  - %DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_GROUP - Create a multi-queue group
+ *    or add secondary queues to a multi-queue group.
+ *    If the extension's 'value' field has %DRM_XE_MULTI_GROUP_CREATE flag set,
+ *    then a new multi-queue group is created with this queue as the primary queue
+ *    (Q0). Otherwise, the queue gets added to the multi-queue group whose primary
+ *    queue's exec_queue_id is specified in the lower 32 bits of the 'value' field.
+ *    All the other non-relevant bits of extension's 'value' field while adding the
+ *    primary or the secondary queues of the group must be set to 0.
+ *  - %DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_QUEUE_PRIORITY - Set the queue
+ *    priority within the multi-queue group. Current valid priority values are 0–2
+ *    (default is 1), with higher values indicating higher priority.
+ *  - %DRM_XE_EXEC_QUEUE_SET_DISABLE_STATE_CACHE_PERF_FIX - Set the queue to
+ *    enable render color cache keying on BTP+BTI instead of just BTI
+ *    (only valid for render queues).
+ *
+ * The example below shows how to use &drm_xe_exec_queue_create to create
+ * a simple exec_queue (no parallel submission) of class
+ * %DRM_XE_ENGINE_CLASS_RENDER.
+ *
+ * .. code-block:: C
+ *
+ *     drm_xe_engine_class_instance instance = {
+ *         .engine_class = DRM_XE_ENGINE_CLASS_RENDER,
+ *     },
+ *     drm_xe_exec_queue_create exec_queue_create = {
+ *          .extensions = 0,
+ *          .vm_id = vm,
+ *          .width = 1,
+ *          .num_placements = 1,
+ *          .instances = to_user_pointer(&instance),
+ *     },
+ *     ioctl(fd, DRM_IOCTL_XE_EXEC_QUEUE_CREATE, &exec_queue_create),
+ *
+ * Allow users to provide a hint to kernel for cases demanding low latency
+ * profile. Please note it will have impact on power consumption. User can
+ * indicate low latency hint with flag while creating exec queue as
+ * mentioned below:
+ *
+ * .. code-block:: C
+ *
+ *     drm_xe_exec_queue_create exec_queue_create = {
+ *          .flags = DRM_XE_EXEC_QUEUE_LOW_LATENCY_HINT,
+ *          .extensions = 0,
+ *          .vm_id = vm,
+ *          .width = 1,
+ *          .num_placements = 1,
+ *          .instances = to_user_pointer(&instance),
+ *     },
+ *     ioctl(fd, DRM_IOCTL_XE_EXEC_QUEUE_CREATE, &exec_queue_create),
+ *
+ */
+#[repr(C)]
+pub struct drm_xe_exec_queue_create {
+pub const DRM_XE_EXEC_QUEUE_EXTENSION_SET_PROPERTY: _ = 0;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_PRIORITY: _ = 0;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_TIMESLICE: _ = 1;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_PXP_TYPE: _ = 2;
+pub const DRM_XE_EXEC_QUEUE_SET_HANG_REPLAY_STATE: _ = 3;
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_GROUP: _ = 4;
+pub const DRM_XE_MULTI_GROUP_CREATE: _ = (1u64 << 63);
+pub const DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_QUEUE_PRIORITY: _ = 5;
+pub const DRM_XE_EXEC_QUEUE_SET_DISABLE_STATE_CACHE_PERF_FIX: _ = 6;
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @width: submission width (number BB per exec) for this exec queue */
+width: u16,
+
+	/** @num_placements: number of valid placements for this exec queue */
+num_placements: u16,
+
+	/** @vm_id: VM to use for this exec queue */
+vm_id: u32,
+
+pub const DRM_XE_EXEC_QUEUE_LOW_LATENCY_HINT: _ = (1u32 << 0);
+	/** @flags: flags to use for this exec queue */
+flags: u32,
+
+	/** @exec_queue_id: Returned exec queue ID */
+exec_queue_id: u32,
+
+	/**
+	 * @instances: user pointer to a 2-d array of struct
+	 * drm_xe_engine_class_instance
+	 *
+	 * length = width (i) * num_placements (j)
+	 * index = j + i * width
+	 */
+instances: u64,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_exec_queue_destroy - Input of &DRM_IOCTL_XE_EXEC_QUEUE_DESTROY
+ */
+#[repr(C)]
+pub struct drm_xe_exec_queue_destroy {
+	/** @exec_queue_id: Exec queue ID */
+exec_queue_id: u32,
+
+	/** @pad: MBZ */
+pad: u32,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_exec_queue_get_property - Input of &DRM_IOCTL_XE_EXEC_QUEUE_GET_PROPERTY
+ *
+ * The @property can be:
+ *  - %DRM_XE_EXEC_QUEUE_GET_PROPERTY_BAN
+ */
+#[repr(C)]
+pub struct drm_xe_exec_queue_get_property {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @exec_queue_id: Exec queue ID */
+exec_queue_id: u32,
+
+pub const DRM_XE_EXEC_QUEUE_GET_PROPERTY_BAN: _ = 0;
+	/** @property: property to get */
+property: u32,
+
+	/** @value: property value */
+value: u64,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_sync - sync object
+ *
+ * The @type can be:
+ *  - %DRM_XE_SYNC_TYPE_SYNCOBJ
+ *  - %DRM_XE_SYNC_TYPE_TIMELINE_SYNCOBJ
+ *  - %DRM_XE_SYNC_TYPE_USER_FENCE
+ *
+ * and the @flags can be:
+ *  - %DRM_XE_SYNC_FLAG_SIGNAL
+ *
+ * A minimal use of &drm_xe_sync looks like this:
+ *
+ * .. code-block:: C
+ *
+ *     drm_xe_sync sync = {
+ *         .flags = DRM_XE_SYNC_FLAG_SIGNAL,
+ *         .type = DRM_XE_SYNC_TYPE_SYNCOBJ,
+ *     },
+ *     drm_syncobj_create syncobj_create = { 0 },
+ *     ioctl(fd, DRM_IOCTL_SYNCOBJ_CREATE, &syncobj_create),
+ *     sync.handle = syncobj_create.handle,
+ *         ...
+ *         use of &sync in drm_xe_exec or drm_xe_vm_bind
+ *         ...
+ *     drm_syncobj_wait wait = {
+ *         .handles = &sync.handle,
+ *         .timeout_nsec = INT64_MAX,
+ *         .count_handles = 1,
+ *         .flags = 0,
+ *         .first_signaled = 0,
+ *         .pad = 0,
+ *     },
+ *     ioctl(fd, DRM_IOCTL_SYNCOBJ_WAIT, &wait),
+ */
+#[repr(C)]
+pub struct drm_xe_sync {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+pub const DRM_XE_SYNC_TYPE_SYNCOBJ: _ = 0x0;
+pub const DRM_XE_SYNC_TYPE_TIMELINE_SYNCOBJ: _ = 0x1;
+pub const DRM_XE_SYNC_TYPE_USER_FENCE: _ = 0x2;
+	/** @type: Type of this sync object */
+type: u32,
+
+pub const DRM_XE_SYNC_FLAG_SIGNAL: _ = (1u32 << 0);
+	/** @flags: Sync Flags */
+flags: u32,
+
+#[repr(C)]
+pub union __anonymous_union {
+		/** @handle: Handle for the object */
+handle: u32,
+
+		/**
+		 * @addr: Address of user fence. When sync is passed in via exec
+		 * IOCTL this is a GPU address in the VM. When sync is passed in via
+		 * VM bind IOCTL this is a user pointer. In either case, it is
+		 * the user's responsibility that this address is present and
+		 * mapped when the user fence is signalled. Must be qword
+		 * aligned.
+		 */
+addr: u64,
+}
+
+	/**
+	 * @timeline_value: Input for the timeline sync object. Needs to be
+	 * different than 0 when used with %DRM_XE_SYNC_TYPE_TIMELINE_SYNCOBJ.
+	 */
+
+	/** @reserved: Reserved */
+
+/**
+ * drm_xe_exec - Input of &DRM_IOCTL_XE_EXEC
+ *
+ * This is an example to use &drm_xe_exec for execution of the object
+ * at BIND_ADDRESS (see example in &drm_xe_vm_bind) by an exec_queue
+ * (see example in &drm_xe_exec_queue_create). It can be synchronized
+ * by using the example provided for &drm_xe_sync.
+ *
+ * .. code-block:: C
+ *
+ *     drm_xe_exec exec = {
+ *         .exec_queue_id = exec_queue,
+ *         .syncs = &sync,
+ *         .num_syncs = 1,
+ *         .address = BIND_ADDRESS,
+ *         .num_batch_buffer = 1,
+ *     },
+ *     ioctl(fd, DRM_IOCTL_XE_EXEC, &exec),
+ *
+ */
+#[repr(C)]
+pub struct drm_xe_exec {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @exec_queue_id: Exec queue ID for the batch buffer */
+exec_queue_id: u32,
+
+pub const DRM_XE_MAX_SYNCS: _ = 1024;
+	/** @num_syncs: Amount of drm_xe_sync in array. */
+num_syncs: u32,
+
+	/** @syncs: Pointer to drm_xe_sync array. */
+syncs: u64,
+
+	/**
+	 * @address: address of batch buffer if num_batch_buffer == 1 or an
+	 * array of batch buffer addresses
+	 */
+address: u64,
+
+	/**
+	 * @num_batch_buffer: number of batch buffer in this exec, must match
+	 * the width of the engine
+	 */
+num_batch_buffer: u16,
+
+	/** @pad: MBZ */
+	u16 pad: [pad; 3],
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * drm_xe_wait_user_fence - Input of &DRM_IOCTL_XE_WAIT_USER_FENCE
+ *
+ * Wait on user fence, XE will wake-up on every HW engine interrupt in the
+ * instances list and check if user fence is complete::
+ *
+ *	(*addr & MASK) OP (VALUE & MASK)
+ *
+ * Returns to user on user fence completion or timeout.
+ *
+ * The @op can be:
+ *  - %DRM_XE_UFENCE_WAIT_OP_EQ
+ *  - %DRM_XE_UFENCE_WAIT_OP_NEQ
+ *  - %DRM_XE_UFENCE_WAIT_OP_GT
+ *  - %DRM_XE_UFENCE_WAIT_OP_GTE
+ *  - %DRM_XE_UFENCE_WAIT_OP_LT
+ *  - %DRM_XE_UFENCE_WAIT_OP_LTE
+ *
+ * and the @flags can be:
+ *  - %DRM_XE_UFENCE_WAIT_FLAG_ABSTIME
+ *
+ * The @mask values can be for example:
+ *  - 0xffu for u8
+ *  - 0xffffu for u16
+ *  - 0xffffffffu for u32
+ *  - 0xffffffffffffffffu for u64
+ */
+#[repr(C)]
+pub struct drm_xe_wait_user_fence {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/**
+	 * @addr: user pointer address to wait on, must be qword aligned
+	 */
+addr: u64,
+
+pub const DRM_XE_UFENCE_WAIT_OP_EQ: _ = 0x0;
+pub const DRM_XE_UFENCE_WAIT_OP_NEQ: _ = 0x1;
+pub const DRM_XE_UFENCE_WAIT_OP_GT: _ = 0x2;
+pub const DRM_XE_UFENCE_WAIT_OP_GTE: _ = 0x3;
+pub const DRM_XE_UFENCE_WAIT_OP_LT: _ = 0x4;
+pub const DRM_XE_UFENCE_WAIT_OP_LTE: _ = 0x5;
+	/** @op: wait operation (type of comparison) */
+op: u16,
+
+pub const DRM_XE_UFENCE_WAIT_FLAG_ABSTIME: _ = (1u32 << 0);
+	/** @flags: wait flags */
+flags: u16,
+
+	/** @pad: MBZ */
+pad: u32,
+
+	/** @value: compare value */
+value: u64,
+
+	/** @mask: comparison mask */
+mask: u64,
+
+	/**
+	 * @timeout: how long to wait before bailing, value in nanoseconds.
+	 * Without DRM_XE_UFENCE_WAIT_FLAG_ABSTIME flag set (relative timeout)
+	 * it contains timeout expressed in nanoseconds to wait (fence will
+	 * expire at now() + timeout).
+	 * When DRM_XE_UFENCE_WAIT_FLAG_ABSTIME flag is set (absolute timeout) wait
+	 * will end at timeout (uses system CLOCK_MONOTONIC).
+	 * Passing negative timeout leads to never ending wait.
+	 *
+	 * On relative timeout this value is updated with timeout left
+	 * (for restarting the call in case of signal delivery).
+	 * On absolute timeout this value stays intact (restarted call still
+	 * expire at the same point of time).
+	 */
+timeout: i64,
+
+	/** @exec_queue_id: exec_queue_id returned from xe_exec_queue_create_ioctl */
+exec_queue_id: u32,
+
+	/** @pad2: MBZ */
+pad2: u32,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * enum drm_xe_observation_type - Observation stream types
+ */
+#[repr(C)]
+pub enum drm_xe_observation_type {
+	/** @DRM_XE_OBSERVATION_TYPE_OA: OA observation stream type */
+	DRM_XE_OBSERVATION_TYPE_OA,
+	/** @DRM_XE_OBSERVATION_TYPE_EU_STALL: EU stall sampling observation stream type */
+	DRM_XE_OBSERVATION_TYPE_EU_STALL,
+}
+
+/**
+ * enum drm_xe_observation_op - Observation stream ops
+ */
+#[repr(C)]
+pub enum drm_xe_observation_op {
+	/** @DRM_XE_OBSERVATION_OP_STREAM_OPEN: Open an observation stream */
+	DRM_XE_OBSERVATION_OP_STREAM_OPEN,
+
+	/** @DRM_XE_OBSERVATION_OP_ADD_CONFIG: Add observation stream config */
+	DRM_XE_OBSERVATION_OP_ADD_CONFIG,
+
+	/** @DRM_XE_OBSERVATION_OP_REMOVE_CONFIG: Remove observation stream config */
+	DRM_XE_OBSERVATION_OP_REMOVE_CONFIG,
+}
+
+/**
+ * drm_xe_observation_param - Input of &DRM_IOCTL_XE_OBSERVATION
+ *
+ * The observation layer enables multiplexing observation streams of
+ * multiple types. The actual params for a particular stream operation are
+ * supplied via the @param pointer (use __copy_from_user to get these
+ * params).
+ */
+#[repr(C)]
+pub struct drm_xe_observation_param {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+	/** @observation_type: observation stream type, of &enum drm_xe_observation_type */
+observation_type: u64,
+	/** @observation_op: observation stream op, of &enum drm_xe_observation_op */
+observation_op: u64,
+	/** @param: Pointer to actual stream params */
+param: u64,
+}
+
+/**
+ * enum drm_xe_observation_ioctls - Observation stream fd ioctls
+ *
+ * Information exchanged between userspace and kernel for observation fd
+ * ioctls is stream type specific
+ */
+#[repr(C)]
+pub enum drm_xe_observation_ioctls {
+	/** @DRM_XE_OBSERVATION_IOCTL_ENABLE: Enable data capture for an observation stream */
+	DRM_XE_OBSERVATION_IOCTL_ENABLE = _IO('i', 0x0),
+
+	/** @DRM_XE_OBSERVATION_IOCTL_DISABLE: Disable data capture for an observation stream */
+	DRM_XE_OBSERVATION_IOCTL_DISABLE = _IO('i', 0x1),
+
+	/** @DRM_XE_OBSERVATION_IOCTL_CONFIG: Change observation stream configuration */
+	DRM_XE_OBSERVATION_IOCTL_CONFIG = _IO('i', 0x2),
+
+	/** @DRM_XE_OBSERVATION_IOCTL_STATUS: Return observation stream status */
+	DRM_XE_OBSERVATION_IOCTL_STATUS = _IO('i', 0x3),
+
+	/** @DRM_XE_OBSERVATION_IOCTL_INFO: Return observation stream info */
+	DRM_XE_OBSERVATION_IOCTL_INFO = _IO('i', 0x4),
+}
+
+/**
+ * enum drm_xe_oa_unit_type - OA unit types
+ */
+#[repr(C)]
+pub enum drm_xe_oa_unit_type {
+	/**
+	 * @DRM_XE_OA_UNIT_TYPE_OAG: OAG OA unit. OAR/OAC are considered
+	 * sub-types of OAG. For OAR/OAC, use OAG.
+	 */
+	DRM_XE_OA_UNIT_TYPE_OAG,
+
+	/** @DRM_XE_OA_UNIT_TYPE_OAM: OAM OA unit */
+	DRM_XE_OA_UNIT_TYPE_OAM,
+
+	/** @DRM_XE_OA_UNIT_TYPE_OAM_SAG: OAM_SAG OA unit */
+	DRM_XE_OA_UNIT_TYPE_OAM_SAG,
+
+	/** @DRM_XE_OA_UNIT_TYPE_MERT: MERT OA unit */
+	DRM_XE_OA_UNIT_TYPE_MERT,
+}
+
+/**
+ * drm_xe_oa_unit - describe OA unit
+ */
+#[repr(C)]
+pub struct drm_xe_oa_unit {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @oa_unit_id: OA unit ID */
+oa_unit_id: u32,
+
+	/** @oa_unit_type: OA unit type of &enum drm_xe_oa_unit_type */
+oa_unit_type: u32,
+
+	/** @capabilities: OA capabilities bit-mask */
+capabilities: u64,
+pub const DRM_XE_OA_CAPS_BASE: _ = (1u32 << 0);
+pub const DRM_XE_OA_CAPS_SYNCS: _ = (1u32 << 1);
+pub const DRM_XE_OA_CAPS_OA_BUFFER_SIZE: _ = (1u32 << 2);
+pub const DRM_XE_OA_CAPS_WAIT_NUM_REPORTS: _ = (1u32 << 3);
+pub const DRM_XE_OA_CAPS_OAM: _ = (1u32 << 4);
+pub const DRM_XE_OA_CAPS_OA_UNIT_GT_ID: _ = (1u32 << 5);
+
+	/** @oa_timestamp_freq: OA timestamp freq */
+oa_timestamp_freq: u64,
+
+	/** @gt_id: gt id for this OA unit */
+gt_id: u16,
+
+	/** @reserved1: MBZ */
+	u16 reserved1: [reserved1; 3],
+
+	/** @reserved: MBZ */
+	u64 reserved: [reserved; 3],
+
+	/** @num_engines: number of engines in @eci array */
+num_engines: u64,
+
+	/** @eci: engines attached to this OA unit */
+	drm_xe_engine_class_instance eci: [u8; 0],
+}
+
+/**
+ * drm_xe_query_oa_units - describe OA units
+ *
+ * If a query is made with a drm_xe_device_query where .query
+ * is equal to DRM_XE_DEVICE_QUERY_OA_UNITS, then the reply uses struct
+ * drm_xe_query_oa_units in .data.
+ *
+ * OA unit properties for all OA units can be accessed using a code block
+ * such as the one below:
+ *
+ * .. code-block:: C
+ *
+ *	drm_xe_query_oa_units *qoa,
+ *	drm_xe_oa_unit *oau,
+ *	u8 *poau,
+ *
+ *	// malloc qoa and issue DRM_XE_DEVICE_QUERY_OA_UNITS. Then:
+ *	poau = (u8 *)&qoa->oa_units: [oa_units; 0],
+ *	for (int i = 0; i < qoa->num_oa_units; i++) {
+ *		oau = (drm_xe_oa_unit *)poau,
+ *		// Access 'drm_xe_oa_unit' fields here
+ *		poau += sizeof(*oau) + oau->num_engines * sizeof(oau->eci: [eci; 0]),
+ *	}
+ */
+#[repr(C)]
+pub struct drm_xe_query_oa_units {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+	/** @num_oa_units: number of OA units returned in oau: [u8; 0] */
+num_oa_units: u32,
+	/** @pad: MBZ */
+pad: u32,
+	/**
+	 * @oa_units: &drm_xe_oa_unit array returned for this device.
+	 * Written below as a u64 array to avoid problems with nested flexible
+	 * arrays with some compilers
+	 */
+	u64 oa_units: [u8; 0],
+}
+
+/**
+ * enum drm_xe_oa_format_type - OA format types as specified in PRM/Bspec
+ * 52198/60942
+ */
+#[repr(C)]
+pub enum drm_xe_oa_format_type {
+	/** @DRM_XE_OA_FMT_TYPE_OAG: OAG report format */
+	DRM_XE_OA_FMT_TYPE_OAG,
+	/** @DRM_XE_OA_FMT_TYPE_OAR: OAR report format */
+	DRM_XE_OA_FMT_TYPE_OAR,
+	/** @DRM_XE_OA_FMT_TYPE_OAM: OAM report format */
+	DRM_XE_OA_FMT_TYPE_OAM,
+	/** @DRM_XE_OA_FMT_TYPE_OAC: OAC report format */
+	DRM_XE_OA_FMT_TYPE_OAC,
+	/** @DRM_XE_OA_FMT_TYPE_OAM_MPEC: OAM SAMEDIA or OAM MPEC report format */
+	DRM_XE_OA_FMT_TYPE_OAM_MPEC,
+	/** @DRM_XE_OA_FMT_TYPE_PEC: PEC report format */
+	DRM_XE_OA_FMT_TYPE_PEC,
+}
+
+/**
+ * enum drm_xe_oa_property_id - OA stream property IDs
+ *
+ * Stream params are specified as a chain of &drm_xe_ext_set_property
+ * structs, with property values from &enum drm_xe_oa_property_id and
+ * &drm_xe_user_extension base.name set to %DRM_XE_OA_EXTENSION_SET_PROPERTY.
+ * The param field in &drm_xe_observation_param points to the first
+ * &drm_xe_ext_set_property struct.
+ *
+ * Exactly the same mechanism is also used for stream reconfiguration using the
+ * %DRM_XE_OBSERVATION_IOCTL_CONFIG observation stream fd ioctl, though only a
+ * subset of properties below can be specified for stream reconfiguration.
+ */
+#[repr(C)]
+pub enum drm_xe_oa_property_id {
+pub const DRM_XE_OA_EXTENSION_SET_PROPERTY: _ = 0;
+	/**
+	 * @DRM_XE_OA_PROPERTY_OA_UNIT_ID: ID of the OA unit on which to open
+	 * the OA stream, see oa_unit_id in &drm_xe_oa_unit.
+	 * Defaults to 0 if not provided.
+	 */
+	DRM_XE_OA_PROPERTY_OA_UNIT_ID = 1,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_SAMPLE_OA: A value of 1 requests inclusion of raw
+	 * OA unit reports or stream samples in a global buffer attached to an
+	 * OA unit.
+	 */
+	DRM_XE_OA_PROPERTY_SAMPLE_OA,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_OA_METRIC_SET: OA metrics defining contents of OA
+	 * reports, previously added via %DRM_XE_OBSERVATION_OP_ADD_CONFIG.
+	 */
+	DRM_XE_OA_PROPERTY_OA_METRIC_SET,
+
+	/** @DRM_XE_OA_PROPERTY_OA_FORMAT: OA counter report format */
+	DRM_XE_OA_PROPERTY_OA_FORMAT,
+	/*
+	 * OA_FORMAT's are specified the same way as in PRM/Bspec 52198/60942,
+	 * in terms of the following quantities: a. &enum drm_xe_oa_format_type
+	 * b. Counter select c. Counter size and d. BC report. Also refer to the
+	 * oa_formats array in drivers/gpu/drm/xe/xe_oa.c.
+	 */
+pub const DRM_XE_OA_FORMAT_MASK_FMT_TYPE: _ = (0xffu << 0);
+pub const DRM_XE_OA_FORMAT_MASK_COUNTER_SEL: _ = (0xffu << 8);
+pub const DRM_XE_OA_FORMAT_MASK_COUNTER_SIZE: _ = (0xffu << 16);
+pub const DRM_XE_OA_FORMAT_MASK_BC_REPORT: _ = (0xffu << 24);
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_OA_PERIOD_EXPONENT: Requests periodic OA unit
+	 * sampling with sampling frequency proportional to 2^(period_exponent + 1)
+	 */
+	DRM_XE_OA_PROPERTY_OA_PERIOD_EXPONENT,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_OA_DISABLED: A value of 1 will open the OA
+	 * stream in a DISABLED state (see %DRM_XE_OBSERVATION_IOCTL_ENABLE).
+	 */
+	DRM_XE_OA_PROPERTY_OA_DISABLED,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_EXEC_QUEUE_ID: Open the stream for a specific
+	 * exec_queue_id. OA queries can be executed on this exec queue.
+	 */
+	DRM_XE_OA_PROPERTY_EXEC_QUEUE_ID,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_OA_ENGINE_INSTANCE: Optional engine instance to
+	 * pass along with %DRM_XE_OA_PROPERTY_EXEC_QUEUE_ID or will default to 0.
+	 */
+	DRM_XE_OA_PROPERTY_OA_ENGINE_INSTANCE,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_NO_PREEMPT: Allow preemption and timeslicing
+	 * to be disabled for the stream exec queue.
+	 */
+	DRM_XE_OA_PROPERTY_NO_PREEMPT,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_NUM_SYNCS: Number of syncs in the sync array
+	 * specified in %DRM_XE_OA_PROPERTY_SYNCS
+	 */
+	DRM_XE_OA_PROPERTY_NUM_SYNCS,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_SYNCS: Pointer to &drm_xe_sync array
+	 * with array size specified via %DRM_XE_OA_PROPERTY_NUM_SYNCS. OA
+	 * configuration will wait till input fences signal. Output fences
+	 * will signal after the new OA configuration takes effect. For
+	 * %DRM_XE_SYNC_TYPE_USER_FENCE, addr is a user pointer, similar
+	 * to the VM bind case.
+	 */
+	DRM_XE_OA_PROPERTY_SYNCS,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_OA_BUFFER_SIZE: Size of OA buffer to be
+	 * allocated by the driver in bytes. Supported sizes are powers of
+	 * 2 from 128 KiB to 128 MiB. When not specified, a 16 MiB OA
+	 * buffer is allocated by default.
+	 */
+	DRM_XE_OA_PROPERTY_OA_BUFFER_SIZE,
+
+	/**
+	 * @DRM_XE_OA_PROPERTY_WAIT_NUM_REPORTS: Number of reports to wait
+	 * for before unblocking poll or read
+	 */
+	DRM_XE_OA_PROPERTY_WAIT_NUM_REPORTS,
+}
+
+/**
+ * drm_xe_oa_config - OA metric configuration
+ *
+ * Multiple OA configs can be added using %DRM_XE_OBSERVATION_OP_ADD_CONFIG. A
+ * particular config can be specified when opening an OA stream using
+ * %DRM_XE_OA_PROPERTY_OA_METRIC_SET property.
+ */
+#[repr(C)]
+pub struct drm_xe_oa_config {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @uuid: String formatted like "%08x-%04x-%04x-%04x-%012x" */
+	c_char uuid: [uuid; 36],
+
+	/** @n_regs: Number of regs in @regs_ptr */
+n_regs: u32,
+
+	/**
+	 * @regs_ptr: Pointer to (register address, value) pairs for OA config
+	 * registers. Expected length of buffer is: (2 * sizeof(u32) * @n_regs).
+	 */
+regs_ptr: u64,
+}
+
+/**
+ * drm_xe_oa_stream_status - OA stream status returned from
+ * %DRM_XE_OBSERVATION_IOCTL_STATUS observation stream fd ioctl. Userspace can
+ * call the ioctl to query stream status in response to EIO errno from
+ * observation fd read().
+ */
+#[repr(C)]
+pub struct drm_xe_oa_stream_status {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @oa_status: OA stream status (see Bspec 46717/61226) */
+oa_status: u64,
+pub const DRM_XE_OASTATUS_MMIO_TRG_Q_FULL: _ = (1u32 << 3);
+pub const DRM_XE_OASTATUS_COUNTER_OVERFLOW: _ = (1u32 << 2);
+pub const DRM_XE_OASTATUS_BUFFER_OVERFLOW: _ = (1u32 << 1);
+pub const DRM_XE_OASTATUS_REPORT_LOST: _ = (1u32 << 0);
+
+	/** @reserved: reserved for future use */
+	u64 reserved: [reserved; 3],
+}
+
+/**
+ * drm_xe_oa_stream_info - OA stream info returned from
+ * %DRM_XE_OBSERVATION_IOCTL_INFO observation stream fd ioctl
+ */
+#[repr(C)]
+pub struct drm_xe_oa_stream_info {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @oa_buf_size: OA buffer size */
+oa_buf_size: u64,
+
+	/** @reserved: reserved for future use */
+	u64 reserved: [reserved; 3],
+}
+
+/**
+ * enum drm_xe_pxp_session_type - Supported PXP session types.
+ *
+ * We currently only support HWDRM sessions, which are used for protected
+ * content that ends up being displayed, but the HW supports multiple types, so
+ * we might extend support in the future.
+ */
+#[repr(C)]
+pub enum drm_xe_pxp_session_type {
+	/** @DRM_XE_PXP_TYPE_NONE: PXP not used */
+	DRM_XE_PXP_TYPE_NONE = 0,
+	/**
+	 * @DRM_XE_PXP_TYPE_HWDRM: HWDRM sessions are used for content that ends
+	 * up on the display.
+	 */
+	DRM_XE_PXP_TYPE_HWDRM = 1,
+}
+
+/* ID of the protected content session managed by Xe when PXP is active */
+pub const DRM_XE_PXP_HWDRM_DEFAULT_SESSION: _ = 0xf;
+
+/**
+ * enum drm_xe_eu_stall_property_id - EU stall sampling input property ids.
+ *
+ * These properties are passed to the driver at open as a chain of
+ * &drm_xe_ext_set_property structures with property set to these
+ * properties' enums and value set to the corresponding values of these
+ * properties. &drm_xe_user_extension base.name should be set to
+ * %DRM_XE_EU_STALL_EXTENSION_SET_PROPERTY.
+ *
+ * With the file descriptor obtained from open, user space must enable
+ * the EU stall stream fd with %DRM_XE_OBSERVATION_IOCTL_ENABLE before
+ * calling read(). EIO errno from read() indicates HW dropped data
+ * due to full buffer.
+ */
+#[repr(C)]
+pub enum drm_xe_eu_stall_property_id {
+pub const DRM_XE_EU_STALL_EXTENSION_SET_PROPERTY: _ = 0;
+	/**
+	 * @DRM_XE_EU_STALL_PROP_GT_ID: gt_id of the GT on which
+	 * EU stall data will be captured.
+	 */
+	DRM_XE_EU_STALL_PROP_GT_ID = 1,
+
+	/**
+	 * @DRM_XE_EU_STALL_PROP_SAMPLE_RATE: Sampling rate in
+	 * GPU cycles from sampling_rates in &drm_xe_query_eu_stall
+	 */
+	DRM_XE_EU_STALL_PROP_SAMPLE_RATE,
+
+	/**
+	 * @DRM_XE_EU_STALL_PROP_WAIT_NUM_REPORTS: Minimum number of
+	 * EU stall data reports to be present in the kernel buffer
+	 * before unblocking a blocked poll or read.
+	 */
+	DRM_XE_EU_STALL_PROP_WAIT_NUM_REPORTS,
+}
+
+/**
+ * drm_xe_query_eu_stall - Information about EU stall sampling.
+ *
+ * If a query is made with a &drm_xe_device_query where .query
+ * is equal to %DRM_XE_DEVICE_QUERY_EU_STALL, then the reply uses
+ * &drm_xe_query_eu_stall in .data.
+ */
+#[repr(C)]
+pub struct drm_xe_query_eu_stall {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @capabilities: EU stall capabilities bit-mask */
+capabilities: u64,
+pub const DRM_XE_EU_STALL_CAPS_BASE: _ = (1u32 << 0);
+
+	/** @record_size: size of each EU stall data record */
+record_size: u64,
+
+	/** @per_xecore_buf_size: internal per XeCore buffer size */
+per_xecore_buf_size: u64,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 5],
+
+	/** @num_sampling_rates: Number of sampling rates in @sampling_rates array */
+num_sampling_rates: u64,
+
+	/**
+	 * @sampling_rates: Flexible array of sampling rates
+	 * sorted in the fastest to slowest order.
+	 * Sampling rates are specified in GPU clock cycles.
+	 */
+	u64 sampling_rates: [u8; 0],
+}
+
+/**
+ * drm_xe_madvise - Input of &DRM_IOCTL_XE_MADVISE
+ *
+ * This structure is used to set memory attributes for a virtual address range
+ * in a VM. The type of attribute is specified by @type, and the corresponding
+ * member is used to provide additional parameters for @type.
+ *
+ * Supported attribute types:
+ *  - DRM_XE_MEM_RANGE_ATTR_PREFERRED_LOC: Set preferred memory location.
+ *  - DRM_XE_MEM_RANGE_ATTR_ATOMIC: Set atomic access policy.
+ *  - DRM_XE_MEM_RANGE_ATTR_PAT: Set page attribute table index.
+ *  - DRM_XE_VMA_ATTR_PURGEABLE_STATE: Set purgeable state for BOs.
+ *
+ * Example:
+ *
+ * .. code-block:: C
+ *
+ *    drm_xe_madvise madvise = {
+ *         .vm_id = vm_id,
+ *         .start = 0x100000,
+ *         .range = 0x2000,
+ *         .type = DRM_XE_MEM_RANGE_ATTR_ATOMIC,
+ *         .atomic.val = DRM_XE_ATOMIC_DEVICE,
+ *    },
+ *
+ *    ioctl(fd, DRM_IOCTL_XE_MADVISE, &madvise),
+ *
+ */
+#[repr(C)]
+pub struct drm_xe_madvise {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @start: start of the virtual address range */
+start: u64,
+
+	/** @range: size of the virtual address range */
+range: u64,
+
+	/** @vm_id: vm_id of the virtual range */
+vm_id: u32,
+
+pub const DRM_XE_MEM_RANGE_ATTR_PREFERRED_LOC: _ = 0;
+pub const DRM_XE_MEM_RANGE_ATTR_ATOMIC: _ = 1;
+pub const DRM_XE_MEM_RANGE_ATTR_PAT: _ = 2;
+pub const DRM_XE_VMA_ATTR_PURGEABLE_STATE: _ = 3;
+	/** @type: type of attribute */
+type: u32,
+
+#[repr(C)]
+pub union __anonymous_union {
+		/**
+		 * @preferred_mem_loc: preferred memory location
+		 *
+		 * Used when @type == DRM_XE_MEM_RANGE_ATTR_PREFERRED_LOC
+		 *
+		 * Supported values for @preferred_mem_loc.devmem_fd:
+		 *  - DRM_XE_PREFERRED_LOC_DEFAULT_DEVICE: set vram of fault tile as preferred loc
+		 *  - DRM_XE_PREFERRED_LOC_DEFAULT_SYSTEM: set smem as preferred loc
+		 *
+		 * Supported values for @preferred_mem_loc.migration_policy:
+		 *  - DRM_XE_MIGRATE_ALL_PAGES
+		 *  - DRM_XE_MIGRATE_ONLY_SYSTEM_PAGES
+		 */
+		struct {
+pub const DRM_XE_PREFERRED_LOC_DEFAULT_DEVICE: _ = 0;
+pub const DRM_XE_PREFERRED_LOC_DEFAULT_SYSTEM: _ = -1;
+			/**
+			 * @preferred_mem_loc.devmem_fd:
+			 * Device file-descriptor of the device where the
+			 * preferred memory is located, or one of the
+			 * above special values. Please also see
+			 * @preferred_mem_loc.region_instance below.
+			 */
+devmem_fd: u32,
+
+pub const DRM_XE_MIGRATE_ALL_PAGES: _ = 0;
+pub const DRM_XE_MIGRATE_ONLY_SYSTEM_PAGES: _ = 1;
+			/** @preferred_mem_loc.migration_policy: Page migration policy */
+migration_policy: u16,
+
+			/**
+			 * @preferred_mem_loc.region_instance : Region instance.
+			 * MBZ if @devmem_fd <= %DRM_XE_PREFERRED_LOC_DEFAULT_DEVICE.
+			 * Otherwise should point to the desired device
+			 * VRAM instance of the device indicated by
+			 * @preferred_mem_loc.devmem_fd.
+			 */
+region_instance: u16,
+
+			/** @preferred_mem_loc.reserved : Reserved */
+reserved: u64,
+}
+
+		/**
+		 * @atomic: Atomic access policy
+		 *
+		 * Used when @type == DRM_XE_MEM_RANGE_ATTR_ATOMIC.
+		 *
+		 * Supported values for @atomic.val:
+		 *  - DRM_XE_ATOMIC_UNDEFINED: Undefined or default behaviour.
+		 *    Support both GPU and CPU atomic operations for system allocator.
+		 *    Support GPU atomic operations for normal(bo) allocator.
+		 *  - DRM_XE_ATOMIC_DEVICE: Support GPU atomic operations.
+		 *  - DRM_XE_ATOMIC_GLOBAL: Support both GPU and CPU atomic operations.
+		 *  - DRM_XE_ATOMIC_CPU: Support CPU atomic only, no GPU atomics supported.
+		 */
+pub const DRM_XE_ATOMIC_UNDEFINED: _ = 0;
+pub const DRM_XE_ATOMIC_DEVICE: _ = 1;
+pub const DRM_XE_ATOMIC_GLOBAL: _ = 2;
+pub const DRM_XE_ATOMIC_CPU: _ = 3;
+			/** @atomic.val: value of atomic operation */
+
+			/** @atomic.pad: MBZ */
+
+			/** @atomic.reserved: Reserved */
+
+		/**
+		 * @pat_index: Page attribute table index
+		 *
+		 * Used when @type == DRM_XE_MEM_RANGE_ATTR_PAT.
+		 */
+			/** @pat_index.val: PAT index value */
+
+			/** @pat_index.pad: MBZ */
+
+			/** @pat_index.reserved: Reserved */
+
+		/**
+		 * @purge_state_val: Purgeable state configuration
+		 *
+		 * Used when @type == DRM_XE_VMA_ATTR_PURGEABLE_STATE.
+		 *
+		 * Configures the purgeable state of buffer objects in the specified
+		 * virtual address range. This allows applications to hint to the kernel
+		 * about bo's usage patterns for better memory management.
+		 *
+		 * By default all VMAs are in WILLNEED state.
+		 *
+		 * Supported values for @purge_state_val.val:
+		 *  - DRM_XE_VMA_PURGEABLE_STATE_WILLNEED (0): Marks BO as needed.
+		 *    If the BO was previously purged, the kernel sets the u32 at
+		 *    @retained_ptr to 0 (backing store lost) so the application knows
+		 *    it must recreate the BO.
+		 *
+		 *  - DRM_XE_VMA_PURGEABLE_STATE_DONTNEED (1): Marks BO as not currently
+		 *    needed. Kernel may purge it under memory pressure to reclaim memory.
+		 *    Only applies to non-shared BOs. The kernel sets the u32 at
+		 *    @retained_ptr to 1 if the backing store still exists (not yet purged),
+		 *    or 0 if it was already purged.
+		 *
+		 *    Important: Once marked as DONTNEED, touching the BO's memory
+		 *    is undefined behavior. It may succeed temporarily (before the
+		 *    kernel purges the backing store) but will suddenly fail once
+		 *    the BO transitions to PURGED state.
+		 *
+		 *    To transition back: use WILLNEED and check @retained_ptr —
+		 *    if 0, backing store was lost and the BO must be recreated.
+		 *
+		 *    The following operations are blocked in DONTNEED state to
+		 *    prevent the BO from being re-mapped after madvise:
+		 *    - New mmap() calls: Fail with -EBUSY
+		 *    - VM_BIND operations: Fail with -EBUSY
+		 *    - New dma-buf exports: Fail with -EBUSY
+		 *    - CPU page faults (existing mmap): Fail with SIGBUS
+		 *    - GPU page faults (fault-mode VMs): Fail with -EACCES
+		 */
+pub const DRM_XE_VMA_PURGEABLE_STATE_WILLNEED: _ = 0;
+pub const DRM_XE_VMA_PURGEABLE_STATE_DONTNEED: _ = 1;
+			/** @purge_state_val.val: value for DRM_XE_VMA_ATTR_PURGEABLE_STATE */
+
+			/** @purge_state_val.pad: MBZ */
+			/**
+			 * @purge_state_val.retained_ptr: Pointer to a u32 output
+			 * field for backing store status.
+			 *
+			 * Userspace must initialize the u32 value at this address
+			 * to 0 before the ioctl. Kernel writes a u32 after the
+			 * operation:
+			 * - 1 if backing store exists (not purged)
+			 * - 0 if backing store was purged
+			 *
+			 * If userspace fails to initialize to 0, ioctl returns -EINVAL.
+			 * This ensures a safe default (0 = assume purged) if kernel
+			 * cannot write the result.
+			 *
+			 * Similar to i915's drm_i915_gem_madvise.retained field.
+			 */
+
+	/** @reserved: Reserved */
+
+/**
+ * drm_xe_mem_range_attr - Output of &DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS
+ *
+ * This structure is provided by userspace and filled by KMD in response to the
+ * DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS ioctl. It describes memory attributes of
+ * memory ranges within a user specified address range in a VM.
+ *
+ * The structure includes information such as atomic access policy,
+ * page attribute table (PAT) index, and preferred memory location.
+ * Userspace allocates an array of these structures and passes a pointer to the
+ * ioctl to retrieve attributes for each memory range.
+ */
+#[repr(C)]
+pub struct drm_xe_mem_range_attr {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @start: start of the memory range */
+start: u64,
+
+	/** @end: end of the memory range */
+end: u64,
+
+	/** @preferred_mem_loc: preferred memory location */
+	struct {
+		/** @preferred_mem_loc.devmem_fd: fd for preferred loc */
+devmem_fd: u32,
+
+		/** @preferred_mem_loc.migration_policy: Page migration policy */
+migration_policy: u32,
+}
+
+	/** @atomic: Atomic access policy */
+		/** @atomic.val: atomic attribute */
+
+		/** @atomic.reserved: Reserved */
+
+	/** @pat_index: Page attribute table index */
+		/** @pat_index.val: PAT index */
+
+		/** @pat_index.reserved: Reserved */
+
+	/** @reserved: Reserved */
+
+/**
+ * drm_xe_vm_query_mem_range_attr - Input of &DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS
+ *
+ * This structure is used to query memory attributes of memory regions
+ * within a user specified address range in a VM. It provides detailed
+ * information about each memory range, including atomic access policy,
+ * page attribute table (PAT) index, and preferred memory location.
+ *
+ * Userspace first calls the ioctl with @num_mem_ranges = 0,
+ * @sizeof_mem_range_attr = 0 and @vector_of_mem_attr = NULL to retrieve
+ * the number of memory regions and size of each memory range attribute.
+ * Then, it allocates a buffer of that size and calls the ioctl again to fill
+ * the buffer with memory range attributes.
+ *
+ * If second call fails with -ENOSPC, it means memory ranges changed between
+ * first call and now, retry IOCTL again with @num_mem_ranges = 0,
+ * @sizeof_mem_range_attr = 0 and @vector_of_mem_attr = NULL followed by
+ * second ioctl call.
+ *
+ * Example:
+ *
+ * .. code-block:: C
+ *
+ *    drm_xe_vm_query_mem_range_attr query = {
+ *         .vm_id = vm_id,
+ *         .start = 0x100000,
+ *         .range = 0x2000,
+ *     },
+ *
+ *    // First ioctl call to get num of mem regions and sizeof each attribute
+ *    ioctl(fd, DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS, &query),
+ *
+ *    // Allocate buffer for the memory region attributes
+ *    void *ptr = malloc(query.num_mem_ranges * query.sizeof_mem_range_attr),
+ *    void *ptr_start = ptr,
+ *
+ *    query.vector_of_mem_attr = (uintptr_t)ptr,
+ *
+ *    // Second ioctl call to actually fill the memory attributes
+ *    ioctl(fd, DRM_IOCTL_XE_VM_QUERY_MEM_RANGE_ATTRS, &query),
+ *
+ *    // Iterate over the returned memory region attributes
+ *    for (unsigned int i = 0; i < query.num_mem_ranges; ++i) {
+ *       drm_xe_mem_range_attr *attr = (drm_xe_mem_range_attr *)ptr,
+ *
+ *       // Do something with attr
+ *
+ *       // Move pointer by one entry
+ *       ptr += query.sizeof_mem_range_attr,
+ *     }
+ *
+ *    free(ptr_start),
+ */
+#[repr(C)]
+pub struct drm_xe_vm_query_mem_range_attr {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @vm_id: vm_id of the virtual range */
+vm_id: u32,
+
+	/** @num_mem_ranges: number of mem_ranges in range */
+num_mem_ranges: u32,
+
+	/** @start: start of the virtual address range */
+start: u64,
+
+	/** @range: size of the virtual address range */
+range: u64,
+
+	/** @sizeof_mem_range_attr: size of drm_xe_mem_range_attr */
+sizeof_mem_range_attr: u64,
+
+	/** @vector_of_mem_attr: userptr to array of drm_xe_mem_range_attr */
+vector_of_mem_attr: u64,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+
+}
+
+/**
+ * drm_xe_exec_queue_set_property - exec queue set property
+ *
+ * Sets execution queue properties dynamically.
+ * Currently only %DRM_XE_EXEC_QUEUE_SET_PROPERTY_MULTI_QUEUE_PRIORITY
+ * property can be dynamically set.
+ */
+#[repr(C)]
+pub struct drm_xe_exec_queue_set_property {
+	/** @extensions: Pointer to the first extension struct, if any */
+extensions: u64,
+
+	/** @exec_queue_id: Exec queue ID */
+exec_queue_id: u32,
+
+	/** @property: property to set */
+property: u32,
+
+	/** @value: property value */
+value: u64,
+
+	/** @reserved: Reserved */
+	u64 reserved: [reserved; 2],
+}
+
+/**
+ * DOC: Xe DRM RAS
+ *
+ * The enums and strings defined below map to the attributes of the DRM RAS Netlink Interface.
+ * Refer to Documentation/netlink/specs/drm_ras.yaml for complete interface specification.
+ *
+ * Node Registration
+ * -----------------
+ *
+ * The driver registers DRM RAS nodes for each error severity level.
+ * enum drm_xe_ras_error_severity defines the node-id, while DRM_XE_RAS_ERROR_SEVERITY_NAMES maps
+ * node-id to node-name.
+ *
+ * Error Classification
+ * --------------------
+ *
+ * Each node contains a list of error counters. Each error is identified by a error-id and
+ * an error-name. enum drm_xe_ras_error_component defines the error-id, while
+ * DRM_XE_RAS_ERROR_COMPONENT_NAMES maps error-id to error-name.
+ *
+ * User Interface
+ * --------------
+ *
+ * To retrieve error values of a error counter, userspace applications should
+ * follow the below steps:
+ *
+ * 1. Use command LIST_NODES to enumerate all available nodes
+ * 2. Select node by node-id or node-name
+ * 3. Use command GET_ERROR_COUNTERS to list errors of specific node
+ * 4. Query specific error values using either error-id or error-name
+ *
+ * .. code-block:: C
+ *
+ *	// Lookup tables for ID-to-name resolution
+ *	static const c_char *nodes: [u8; 0] = DRM_XE_RAS_ERROR_SEVERITY_NAMES,
+ *	static const c_char *errors: [u8; 0] = DRM_XE_RAS_ERROR_COMPONENT_NAMES,
+ *
+ */
+
+/**
+ * enum drm_xe_ras_error_severity - DRM RAS error severity.
+ */
+#[repr(C)]
+pub enum drm_xe_ras_error_severity {
+	/** @DRM_XE_RAS_ERR_SEV_CORRECTABLE: Correctable Error */
+	DRM_XE_RAS_ERR_SEV_CORRECTABLE = 0,
+	/** @DRM_XE_RAS_ERR_SEV_UNCORRECTABLE: Uncorrectable Error */
+	DRM_XE_RAS_ERR_SEV_UNCORRECTABLE,
+	/** @DRM_XE_RAS_ERR_SEV_MAX: Max severity */
+	DRM_XE_RAS_ERR_SEV_MAX /* non-ABI */
+}
+
+/**
+ * enum drm_xe_ras_error_component - DRM RAS error component.
+ */
+#[repr(C)]
+pub enum drm_xe_ras_error_component {
+	/** @DRM_XE_RAS_ERR_COMP_CORE_COMPUTE: Core Compute Error */
+	DRM_XE_RAS_ERR_COMP_CORE_COMPUTE = 1,
+	/** @DRM_XE_RAS_ERR_COMP_SOC_INTERNAL: SoC Internal Error */
+	DRM_XE_RAS_ERR_COMP_SOC_INTERNAL,
+	/** @DRM_XE_RAS_ERR_COMP_DEVICE_MEMORY: Device Memory Error */
+	DRM_XE_RAS_ERR_COMP_DEVICE_MEMORY,
+	/** @DRM_XE_RAS_ERR_COMP_PCIE: PCIe Subsystem Error */
+	DRM_XE_RAS_ERR_COMP_PCIE,
+	/** @DRM_XE_RAS_ERR_COMP_FABRIC: Fabric Subsystem Error */
+	DRM_XE_RAS_ERR_COMP_FABRIC,
+	/** @DRM_XE_RAS_ERR_COMP_MAX: Max Error */
+	DRM_XE_RAS_ERR_COMP_MAX	/* non-ABI */
+}
+
+/*
+ * Error severity to name mapping.
+ */
+pub const DRM_XE_RAS_ERROR_SEVERITY_NAMES: _ = {				\;
+
+/*
+ * Error component to name mapping.
+ */
+pub const DRM_XE_RAS_ERROR_COMPONENT_NAMES: _ = {				\;
+
+
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

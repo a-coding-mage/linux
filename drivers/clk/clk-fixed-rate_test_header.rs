@@ -1,0 +1,6 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+pub const TEST_FIXED_FREQUENCY: u32 = 50000000;
+pub const TEST_FIXED_ACCURACY: u32 = 300;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

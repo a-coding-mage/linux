@@ -1,0 +1,28 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+
+pub const MT6735_PERI_RST0_UART0: i32 = 0;
+pub const MT6735_PERI_RST0_UART1: i32 = 1;
+pub const MT6735_PERI_RST0_UART2: i32 = 2;
+pub const MT6735_PERI_RST0_UART3: i32 = 3;
+pub const MT6735_PERI_RST0_UART4: i32 = 4;
+pub const MT6735_PERI_RST0_BTIF: i32 = 5;
+pub const MT6735_PERI_RST0_DISP_PWM_PERI: i32 = 6;
+pub const MT6735_PERI_RST0_PWM: i32 = 7;
+pub const MT6735_PERI_RST0_AUXADC: i32 = 8;
+pub const MT6735_PERI_RST0_DMA: i32 = 9;
+pub const MT6735_PERI_RST0_IRDA: i32 = 10;
+pub const MT6735_PERI_RST0_IRTX: i32 = 11;
+pub const MT6735_PERI_RST0_THERM: i32 = 12;
+pub const MT6735_PERI_RST0_MSDC2: i32 = 13;
+pub const MT6735_PERI_RST0_MSDC3: i32 = 14;
+pub const MT6735_PERI_RST0_MSDC0: i32 = 15;
+pub const MT6735_PERI_RST0_MSDC1: i32 = 16;
+pub const MT6735_PERI_RST0_I2C0: i32 = 17;
+pub const MT6735_PERI_RST0_I2C1: i32 = 18;
+pub const MT6735_PERI_RST0_I2C2: i32 = 19;
+pub const MT6735_PERI_RST0_I2C3: i32 = 20;
+pub const MT6735_PERI_RST0_USB: i32 = 21;
+
+pub const MT6735_PERI_RST1_SPI0: i32 = 22;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1,0 +1,23 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (c) 2014-2017 Mentor Graphics Inc.
+ */
+
+/*
+ * events from the subdevs
+ */
+pub const V4L2_EVENT_IMX_CLASS: u32 = V4L2_EVENT_PRIVATE_START;
+pub const V4L2_EVENT_IMX_FRAME_INTERVAL_ERROR: u32 = V4L2_EVENT_IMX_CLASS + 1;
+
+#[repr(C)]
+pub enum imx_ctrl_id {
+    V4L2_CID_IMX_FIM_ENABLE = V4L2_CID_USER_IMX_BASE + 0,
+    V4L2_CID_IMX_FIM_NUM,
+    V4L2_CID_IMX_FIM_TOLERANCE_MIN,
+    V4L2_CID_IMX_FIM_TOLERANCE_MAX,
+    V4L2_CID_IMX_FIM_NUM_SKIP,
+    V4L2_CID_IMX_FIM_ICAP_EDGE,
+    V4L2_CID_IMX_FIM_ICAP_CHANNEL,
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

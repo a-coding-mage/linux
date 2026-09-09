@@ -1,0 +1,103 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
+ */
+
+// C header guard: __DT_BINDINGS_CLOCK_IMX27_H
+
+pub const IMX27_CLK_DUMMY: u32 = 0;
+pub const IMX27_CLK_CKIH: u32 = 1;
+pub const IMX27_CLK_CKIL: u32 = 2;
+pub const IMX27_CLK_MPLL: u32 = 3;
+pub const IMX27_CLK_SPLL: u32 = 4;
+pub const IMX27_CLK_MPLL_MAIN2: u32 = 5;
+pub const IMX27_CLK_AHB: u32 = 6;
+pub const IMX27_CLK_IPG: u32 = 7;
+pub const IMX27_CLK_NFC_DIV: u32 = 8;
+pub const IMX27_CLK_PER1_DIV: u32 = 9;
+pub const IMX27_CLK_PER2_DIV: u32 = 10;
+pub const IMX27_CLK_PER3_DIV: u32 = 11;
+pub const IMX27_CLK_PER4_DIV: u32 = 12;
+pub const IMX27_CLK_VPU_SEL: u32 = 13;
+pub const IMX27_CLK_VPU_DIV: u32 = 14;
+pub const IMX27_CLK_USB_DIV: u32 = 15;
+pub const IMX27_CLK_CPU_SEL: u32 = 16;
+pub const IMX27_CLK_CLKO_SEL: u32 = 17;
+pub const IMX27_CLK_CPU_DIV: u32 = 18;
+pub const IMX27_CLK_CLKO_DIV: u32 = 19;
+pub const IMX27_CLK_SSI1_SEL: u32 = 20;
+pub const IMX27_CLK_SSI2_SEL: u32 = 21;
+pub const IMX27_CLK_SSI1_DIV: u32 = 22;
+pub const IMX27_CLK_SSI2_DIV: u32 = 23;
+pub const IMX27_CLK_CLKO_EN: u32 = 24;
+pub const IMX27_CLK_SSI2_IPG_GATE: u32 = 25;
+pub const IMX27_CLK_SSI1_IPG_GATE: u32 = 26;
+pub const IMX27_CLK_SLCDC_IPG_GATE: u32 = 27;
+pub const IMX27_CLK_SDHC3_IPG_GATE: u32 = 28;
+pub const IMX27_CLK_SDHC2_IPG_GATE: u32 = 29;
+pub const IMX27_CLK_SDHC1_IPG_GATE: u32 = 30;
+pub const IMX27_CLK_SCC_IPG_GATE: u32 = 31;
+pub const IMX27_CLK_SAHARA_IPG_GATE: u32 = 32;
+pub const IMX27_CLK_RTC_IPG_GATE: u32 = 33;
+pub const IMX27_CLK_PWM_IPG_GATE: u32 = 34;
+pub const IMX27_CLK_OWIRE_IPG_GATE: u32 = 35;
+pub const IMX27_CLK_LCDC_IPG_GATE: u32 = 36;
+pub const IMX27_CLK_KPP_IPG_GATE: u32 = 37;
+pub const IMX27_CLK_IIM_IPG_GATE: u32 = 38;
+pub const IMX27_CLK_I2C2_IPG_GATE: u32 = 39;
+pub const IMX27_CLK_I2C1_IPG_GATE: u32 = 40;
+pub const IMX27_CLK_GPT6_IPG_GATE: u32 = 41;
+pub const IMX27_CLK_GPT5_IPG_GATE: u32 = 42;
+pub const IMX27_CLK_GPT4_IPG_GATE: u32 = 43;
+pub const IMX27_CLK_GPT3_IPG_GATE: u32 = 44;
+pub const IMX27_CLK_GPT2_IPG_GATE: u32 = 45;
+pub const IMX27_CLK_GPT1_IPG_GATE: u32 = 46;
+pub const IMX27_CLK_GPIO_IPG_GATE: u32 = 47;
+pub const IMX27_CLK_FEC_IPG_GATE: u32 = 48;
+pub const IMX27_CLK_EMMA_IPG_GATE: u32 = 49;
+pub const IMX27_CLK_DMA_IPG_GATE: u32 = 50;
+pub const IMX27_CLK_CSPI3_IPG_GATE: u32 = 51;
+pub const IMX27_CLK_CSPI2_IPG_GATE: u32 = 52;
+pub const IMX27_CLK_CSPI1_IPG_GATE: u32 = 53;
+pub const IMX27_CLK_NFC_BAUD_GATE: u32 = 54;
+pub const IMX27_CLK_SSI2_BAUD_GATE: u32 = 55;
+pub const IMX27_CLK_SSI1_BAUD_GATE: u32 = 56;
+pub const IMX27_CLK_VPU_BAUD_GATE: u32 = 57;
+pub const IMX27_CLK_PER4_GATE: u32 = 58;
+pub const IMX27_CLK_PER3_GATE: u32 = 59;
+pub const IMX27_CLK_PER2_GATE: u32 = 60;
+pub const IMX27_CLK_PER1_GATE: u32 = 61;
+pub const IMX27_CLK_USB_AHB_GATE: u32 = 62;
+pub const IMX27_CLK_SLCDC_AHB_GATE: u32 = 63;
+pub const IMX27_CLK_SAHARA_AHB_GATE: u32 = 64;
+pub const IMX27_CLK_LCDC_AHB_GATE: u32 = 65;
+pub const IMX27_CLK_VPU_AHB_GATE: u32 = 66;
+pub const IMX27_CLK_FEC_AHB_GATE: u32 = 67;
+pub const IMX27_CLK_EMMA_AHB_GATE: u32 = 68;
+pub const IMX27_CLK_EMI_AHB_GATE: u32 = 69;
+pub const IMX27_CLK_DMA_AHB_GATE: u32 = 70;
+pub const IMX27_CLK_CSI_AHB_GATE: u32 = 71;
+pub const IMX27_CLK_BROM_AHB_GATE: u32 = 72;
+pub const IMX27_CLK_ATA_AHB_GATE: u32 = 73;
+pub const IMX27_CLK_WDOG_IPG_GATE: u32 = 74;
+pub const IMX27_CLK_USB_IPG_GATE: u32 = 75;
+pub const IMX27_CLK_UART6_IPG_GATE: u32 = 76;
+pub const IMX27_CLK_UART5_IPG_GATE: u32 = 77;
+pub const IMX27_CLK_UART4_IPG_GATE: u32 = 78;
+pub const IMX27_CLK_UART3_IPG_GATE: u32 = 79;
+pub const IMX27_CLK_UART2_IPG_GATE: u32 = 80;
+pub const IMX27_CLK_UART1_IPG_GATE: u32 = 81;
+pub const IMX27_CLK_CKIH_DIV1P5: u32 = 82;
+pub const IMX27_CLK_FPM: u32 = 83;
+pub const IMX27_CLK_MPLL_OSC_SEL: u32 = 84;
+pub const IMX27_CLK_MPLL_SEL: u32 = 85;
+pub const IMX27_CLK_SPLL_GATE: u32 = 86;
+pub const IMX27_CLK_MSHC_DIV: u32 = 87;
+pub const IMX27_CLK_RTIC_IPG_GATE: u32 = 88;
+pub const IMX27_CLK_MSHC_IPG_GATE: u32 = 89;
+pub const IMX27_CLK_RTIC_AHB_GATE: u32 = 90;
+pub const IMX27_CLK_MSHC_BAUD_GATE: u32 = 91;
+pub const IMX27_CLK_CKIH_GATE: u32 = 92;
+pub const IMX27_CLK_MAX: u32 = 93;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

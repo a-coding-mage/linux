@@ -1,0 +1,24 @@
+/* SPDX-License-Identifier: GPL-2.0+ */
+
+// Translated from soc/rockchip/rk3588_grf.h.
+
+pub const RK3588_PMUGRF_OS_REG2: u32 = 0x208;
+pub const RK3588_PMUGRF_OS_REG2_DRAMTYPE_INFO: u32 = 0xe000;
+pub const RK3588_PMUGRF_OS_REG2_BW_CH0: u32 = 0x000c;
+pub const RK3588_PMUGRF_OS_REG2_BW_CH1: u32 = 0x000c_0000;
+pub const RK3588_PMUGRF_OS_REG2_CH_INFO: u32 = 0x3000_0000;
+
+pub const RK3588_PMUGRF_OS_REG3: u32 = 0x20c;
+pub const RK3588_PMUGRF_OS_REG3_DRAMTYPE_INFO_V3: u32 = 0x0000_3000;
+pub const RK3588_PMUGRF_OS_REG3_SYSREG_VERSION: u32 = 0xf000_0000;
+
+pub const RK3588_PMUGRF_OS_REG4: u32 = 0x210;
+pub const RK3588_PMUGRF_OS_REG5: u32 = 0x214;
+pub const RK3588_PMUGRF_OS_REG6: u32 = 0x218;
+pub const RK3588_PMUGRF_OS_REG6_LP5_BANK_MODE: u32 = 0x0006;
+/* Whether the LPDDR5 is in 2:1 (= 0) or 4:1 (= 1) CKR a.k.a. DQS mode */
+pub const RK3588_PMUGRF_OS_REG6_LP5_CKR: u32 = 1 << 0;
+
+pub const RK3588_SYSGRF_SOC_CON6: u32 = 0x0318;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

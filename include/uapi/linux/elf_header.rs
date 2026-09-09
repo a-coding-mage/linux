@@ -1,0 +1,62 @@
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
+/* linux/types.h and linux/elf-em.h are supplied by the surrounding bindings. */
+pub type Elf32_Addr = u32; pub type Elf32_Half = u16; pub type Elf32_Off = u32;
+pub type Elf32_Sword = i32; pub type Elf32_Word = u32; pub type Elf32_Versym = u16;
+pub type Elf64_Addr = u64; pub type Elf64_Half = u16; pub type Elf64_SHalf = i16;
+pub type Elf64_Off = u64; pub type Elf64_Sword = i32; pub type Elf64_Word = u32;
+pub type Elf64_Xword = u64; pub type Elf64_Sxword = i64; pub type Elf64_Versym = u16;
+
+pub const PT_NULL:u32=0; pub const PT_LOAD:u32=1; pub const PT_DYNAMIC:u32=2; pub const PT_INTERP:u32=3;
+pub const PT_NOTE:u32=4; pub const PT_SHLIB:u32=5; pub const PT_PHDR:u32=6; pub const PT_TLS:u32=7;
+pub const PT_LOOS:u32=0x60000000; pub const PT_HIOS:u32=0x6fffffff; pub const PT_LOPROC:u32=0x70000000; pub const PT_HIPROC:u32=0x7fffffff;
+pub const PT_GNU_EH_FRAME:u32=PT_LOOS+0x474e550; pub const PT_GNU_STACK:u32=PT_LOOS+0x474e551;
+pub const PT_GNU_RELRO:u32=PT_LOOS+0x474e552; pub const PT_GNU_PROPERTY:u32=PT_LOOS+0x474e553;
+pub const PT_AARCH64_MEMTAG_MTE:u32=PT_LOPROC+0x2; pub const PN_XNUM:u16=0xffff;
+pub const ET_NONE:u16=0; pub const ET_REL:u16=1; pub const ET_EXEC:u16=2; pub const ET_DYN:u16=3; pub const ET_CORE:u16=4; pub const ET_LOPROC:u16=0xff00; pub const ET_HIPROC:u16=0xffff;
+
+pub const DT_NULL:u32=0; pub const DT_NEEDED:u32=1; pub const DT_PLTRELSZ:u32=2; pub const DT_PLTGOT:u32=3; pub const DT_HASH:u32=4; pub const DT_STRTAB:u32=5; pub const DT_SYMTAB:u32=6; pub const DT_RELA:u32=7; pub const DT_RELASZ:u32=8; pub const DT_RELAENT:u32=9; pub const DT_STRSZ:u32=10; pub const DT_SYMENT:u32=11; pub const DT_INIT:u32=12; pub const DT_FINI:u32=13; pub const DT_SONAME:u32=14; pub const DT_RPATH:u32=15; pub const DT_SYMBOLIC:u32=16; pub const DT_REL:u32=17; pub const DT_RELSZ:u32=18; pub const DT_RELENT:u32=19; pub const DT_PLTREL:u32=20; pub const DT_DEBUG:u32=21; pub const DT_TEXTREL:u32=22; pub const DT_JMPREL:u32=23; pub const DT_ENCODING:u32=32;
+pub const OLD_DT_LOOS:u32=0x60000000; pub const DT_LOOS:u32=0x6000000d; pub const DT_HIOS:u32=0x6ffff000; pub const DT_VALRNGLO:u32=0x6ffffd00; pub const DT_VALRNGHI:u32=0x6ffffdff; pub const DT_ADDRRNGLO:u32=0x6ffffe00; pub const DT_GNU_HASH:u32=0x6ffffef5; pub const DT_ADDRRNGHI:u32=0x6ffffeff; pub const DT_VERSYM:u32=0x6ffffff0; pub const DT_RELACOUNT:u32=0x6ffffff9; pub const DT_RELCOUNT:u32=0x6ffffffa; pub const DT_FLAGS_1:u32=0x6ffffffb; pub const DT_VERDEF:u32=0x6ffffffc; pub const DT_VERDEFNUM:u32=0x6ffffffd; pub const DT_VERNEED:u32=0x6ffffffe; pub const DT_VERNEEDNUM:u32=0x6fffffff; pub const OLD_DT_HIOS:u32=0x6fffffff; pub const DT_LOPROC:u32=0x70000000; pub const DT_HIPROC:u32=0x7fffffff;
+pub const STB_LOCAL:u8=0; pub const STB_GLOBAL:u8=1; pub const STB_WEAK:u8=2; pub const STN_UNDEF:u8=0; pub const STT_NOTYPE:u8=0; pub const STT_OBJECT:u8=1; pub const STT_FUNC:u8=2; pub const STT_SECTION:u8=3; pub const STT_FILE:u8=4; pub const STT_COMMON:u8=5; pub const STT_TLS:u8=6; pub const VER_FLG_BASE:u8=1; pub const VER_FLG_WEAK:u8=2;
+#[inline] pub const fn ELF_ST_BIND(x:u8)->u8{x>>4} #[inline] pub const fn ELF_ST_TYPE(x:u8)->u8{x&0xf}
+pub const EI_NIDENT:usize=16;
+
+#[repr(C)] pub union Elf32_Dyn__d_un { pub d_val: Elf32_Sword, pub d_ptr: Elf32_Addr }
+#[repr(C)] pub struct Elf32_Dyn { pub d_tag: Elf32_Sword, pub d_un: Elf32_Dyn__d_un }
+#[repr(C)] pub union Elf64_Dyn__d_un { pub d_val: Elf64_Xword, pub d_ptr: Elf64_Addr }
+#[repr(C)] pub struct Elf64_Dyn { pub d_tag: Elf64_Sxword, pub d_un: Elf64_Dyn__d_un }
+#[repr(C)] pub struct Elf32_Rel { pub r_offset:Elf32_Addr, pub r_info:Elf32_Word }
+#[repr(C)] pub struct Elf64_Rel { pub r_offset:Elf64_Addr, pub r_info:Elf64_Xword }
+#[repr(C)] pub struct Elf32_Rela { pub r_offset:Elf32_Addr, pub r_info:Elf32_Word, pub r_addend:Elf32_Sword }
+#[repr(C)] pub struct Elf64_Rela { pub r_offset:Elf64_Addr, pub r_info:Elf64_Xword, pub r_addend:Elf64_Sxword }
+#[repr(C)] pub struct Elf32_Sym { pub st_name:Elf32_Word,pub st_value:Elf32_Addr,pub st_size:Elf32_Word,pub st_info:u8,pub st_other:u8,pub st_shndx:Elf32_Half }
+#[repr(C)] pub struct Elf64_Sym { pub st_name:Elf64_Word,pub st_info:u8,pub st_other:u8,pub st_shndx:Elf64_Half,pub st_value:Elf64_Addr,pub st_size:Elf64_Xword }
+#[repr(C)] pub struct Elf32_Ehdr { pub e_ident:[u8;EI_NIDENT],pub e_type:Elf32_Half,pub e_machine:Elf32_Half,pub e_version:Elf32_Word,pub e_entry:Elf32_Addr,pub e_phoff:Elf32_Off,pub e_shoff:Elf32_Off,pub e_flags:Elf32_Word,pub e_ehsize:Elf32_Half,pub e_phentsize:Elf32_Half,pub e_phnum:Elf32_Half,pub e_shentsize:Elf32_Half,pub e_shnum:Elf32_Half,pub e_shstrndx:Elf32_Half }
+#[repr(C)] pub struct Elf64_Ehdr { pub e_ident:[u8;EI_NIDENT],pub e_type:Elf64_Half,pub e_machine:Elf64_Half,pub e_version:Elf64_Word,pub e_entry:Elf64_Addr,pub e_phoff:Elf64_Off,pub e_shoff:Elf64_Off,pub e_flags:Elf64_Word,pub e_ehsize:Elf64_Half,pub e_phentsize:Elf64_Half,pub e_phnum:Elf64_Half,pub e_shentsize:Elf64_Half,pub e_shnum:Elf64_Half,pub e_shstrndx:Elf64_Half }
+pub const PF_R:u32=0x4; pub const PF_W:u32=0x2; pub const PF_X:u32=0x1;
+#[repr(C)] pub struct Elf32_Phdr { pub p_type:Elf32_Word,pub p_offset:Elf32_Off,pub p_vaddr:Elf32_Addr,pub p_paddr:Elf32_Addr,pub p_filesz:Elf32_Word,pub p_memsz:Elf32_Word,pub p_flags:Elf32_Word,pub p_align:Elf32_Word }
+#[repr(C)] pub struct Elf64_Phdr { pub p_type:Elf64_Word,pub p_flags:Elf64_Word,pub p_offset:Elf64_Off,pub p_vaddr:Elf64_Addr,pub p_paddr:Elf64_Addr,pub p_filesz:Elf64_Xword,pub p_memsz:Elf64_Xword,pub p_align:Elf64_Xword }
+pub const SHT_NULL:u32=0; pub const SHT_PROGBITS:u32=1; pub const SHT_SYMTAB:u32=2; pub const SHT_STRTAB:u32=3; pub const SHT_RELA:u32=4; pub const SHT_HASH:u32=5; pub const SHT_DYNAMIC:u32=6; pub const SHT_NOTE:u32=7; pub const SHT_NOBITS:u32=8; pub const SHT_REL:u32=9; pub const SHT_SHLIB:u32=10; pub const SHT_DYNSYM:u32=11; pub const SHT_NUM:u32=12; pub const SHT_LOPROC:u32=0x70000000; pub const SHT_HIPROC:u32=0x7fffffff; pub const SHT_LOUSER:u32=0x80000000; pub const SHT_HIUSER:u32=0xffffffff;
+pub const SHF_WRITE:u32=1; pub const SHF_ALLOC:u32=2; pub const SHF_EXECINSTR:u32=4; pub const SHF_MERGE:u32=0x10; pub const SHF_STRINGS:u32=0x20; pub const SHF_INFO_LINK:u32=0x40; pub const SHF_LINK_ORDER:u32=0x80; pub const SHF_OS_NONCONFORMING:u32=0x100; pub const SHF_GROUP:u32=0x200; pub const SHF_TLS:u32=0x400; pub const SHF_RELA_LIVEPATCH:u32=0x00100000; pub const SHF_RO_AFTER_INIT:u32=0x00200000; pub const SHF_ORDERED:u32=0x04000000; pub const SHF_EXCLUDE:u32=0x08000000; pub const SHF_MASKOS:u32=0x0ff00000; pub const SHF_MASKPROC:u32=0xf0000000;
+pub const SHN_UNDEF:u16=0; pub const SHN_LORESERVE:u16=0xff00; pub const SHN_LOPROC:u16=0xff00; pub const SHN_HIPROC:u16=0xff1f; pub const SHN_LIVEPATCH:u16=0xff20; pub const SHN_ABS:u16=0xfff1; pub const SHN_COMMON:u16=0xfff2; pub const SHN_HIRESERVE:u16=0xffff;
+#[repr(C)] pub struct Elf32_Shdr { pub sh_name:Elf32_Word,pub sh_type:Elf32_Word,pub sh_flags:Elf32_Word,pub sh_addr:Elf32_Addr,pub sh_offset:Elf32_Off,pub sh_size:Elf32_Word,pub sh_link:Elf32_Word,pub sh_info:Elf32_Word,pub sh_addralign:Elf32_Word,pub sh_entsize:Elf32_Word }
+#[repr(C)] pub struct Elf64_Shdr { pub sh_name:Elf64_Word,pub sh_type:Elf64_Word,pub sh_flags:Elf64_Xword,pub sh_addr:Elf64_Addr,pub sh_offset:Elf64_Off,pub sh_size:Elf64_Xword,pub sh_link:Elf64_Word,pub sh_info:Elf64_Word,pub sh_addralign:Elf64_Xword,pub sh_entsize:Elf64_Xword }
+pub const EI_MAG0:usize=0; pub const EI_MAG1:usize=1; pub const EI_MAG2:usize=2; pub const EI_MAG3:usize=3; pub const EI_CLASS:usize=4; pub const EI_DATA:usize=5; pub const EI_VERSION:usize=6; pub const EI_OSABI:usize=7; pub const EI_PAD:usize=8; pub const ELFMAG0:u8=0x7f; pub const ELFMAG1:u8=b'E'; pub const ELFMAG2:u8=b'L'; pub const ELFMAG3:u8=b'F'; pub const ELFMAG:&[u8]=b"\x7fELF"; pub const SELFMAG:usize=4; pub const ELFCLASSNONE:u8=0; pub const ELFCLASS32:u8=1; pub const ELFCLASS64:u8=2; pub const ELFCLASSNUM:u8=3; pub const ELFDATANONE:u8=0; pub const ELFDATA2LSB:u8=1; pub const ELFDATA2MSB:u8=2; pub const EV_NONE:u8=0; pub const EV_CURRENT:u8=1; pub const EV_NUM:u8=2; pub const ELFOSABI_NONE:u8=0; pub const ELFOSABI_LINUX:u8=3; pub const ELF_OSABI:u8=ELFOSABI_NONE;
+pub const NN_GNU_PROPERTY_TYPE_0:&str="GNU"; pub const NT_GNU_PROPERTY_TYPE_0:u32=5;
+#[inline] pub const fn ELF32_ST_BIND(x:u8)->u8{ELF_ST_BIND(x)} #[inline] pub const fn ELF32_ST_TYPE(x:u8)->u8{ELF_ST_TYPE(x)}
+#[inline] pub const fn ELF64_ST_BIND(x:u8)->u8{ELF_ST_BIND(x)} #[inline] pub const fn ELF64_ST_TYPE(x:u8)->u8{ELF_ST_TYPE(x)}
+#[inline] pub const fn ELF32_R_SYM(x:u32)->u32{x>>8} #[inline] pub const fn ELF32_R_TYPE(x:u32)->u32{x&0xff}
+#[inline] pub const fn ELF64_R_SYM(x:u64)->u64{x>>32} #[inline] pub const fn ELF64_R_TYPE(x:u64)->u64{x&0xffffffff}
+pub const NN_PRSTATUS:&str="CORE"; pub const NT_PRSTATUS:u32=1; pub const NN_PRFPREG:&str="CORE"; pub const NT_PRFPREG:u32=2; pub const NN_PRPSINFO:&str="CORE"; pub const NT_PRPSINFO:u32=3; pub const NN_TASKSTRUCT:&str="CORE"; pub const NT_TASKSTRUCT:u32=4; pub const NN_AUXV:&str="CORE"; pub const NT_AUXV:u32=6; pub const NN_SIGINFO:&str="CORE"; pub const NT_SIGINFO:u32=0x53494749; pub const NN_FILE:&str="CORE"; pub const NT_FILE:u32=0x46494c45; pub const NN_PRXFPREG:&str="LINUX"; pub const NT_PRXFPREG:u32=0x46e62b7f;
+pub const NN_PPC_VMX:&str="LINUX"; pub const NT_PPC_VMX:u32=0x100; pub const NN_PPC_SPE:&str="LINUX"; pub const NT_PPC_SPE:u32=0x101; pub const NN_PPC_VSX:&str="LINUX"; pub const NT_PPC_VSX:u32=0x102; pub const NN_PPC_TAR:&str="LINUX"; pub const NT_PPC_TAR:u32=0x103; pub const NN_PPC_PPR:&str="LINUX"; pub const NT_PPC_PPR:u32=0x104; pub const NN_PPC_DSCR:&str="LINUX"; pub const NT_PPC_DSCR:u32=0x105; pub const NN_PPC_EBB:&str="LINUX"; pub const NT_PPC_EBB:u32=0x106; pub const NN_PPC_PMU:&str="LINUX"; pub const NT_PPC_PMU:u32=0x107;
+pub const NN_386_TLS:&str="LINUX"; pub const NT_386_TLS:u32=0x200; pub const NN_386_IOPERM:&str="LINUX"; pub const NT_386_IOPERM:u32=0x201; pub const NN_X86_XSTATE:&str="LINUX"; pub const NT_X86_XSTATE:u32=0x202; pub const NN_X86_SHSTK:&str="LINUX"; pub const NT_X86_SHSTK:u32=0x204; pub const NN_X86_XSAVE_LAYOUT:&str="LINUX"; pub const NT_X86_XSAVE_LAYOUT:u32=0x205;
+pub const NN_ARM_VFP:&str="LINUX"; pub const NT_ARM_VFP:u32=0x400; pub const NN_ARM_TLS:&str="LINUX"; pub const NT_ARM_TLS:u32=0x401; pub const NN_ARM_HW_BREAK:&str="LINUX"; pub const NT_ARM_HW_BREAK:u32=0x402; pub const NN_ARM_HW_WATCH:&str="LINUX"; pub const NT_ARM_HW_WATCH:u32=0x403; pub const NN_ARM_SYSTEM_CALL:&str="LINUX"; pub const NT_ARM_SYSTEM_CALL:u32=0x404; pub const NN_ARM_SVE:&str="LINUX"; pub const NT_ARM_SVE:u32=0x405; pub const NN_ARM_PAC_MASK:&str="LINUX"; pub const NT_ARM_PAC_MASK:u32=0x406; pub const NN_ARM_PACA_KEYS:&str="LINUX"; pub const NT_ARM_PACA_KEYS:u32=0x407; pub const NN_ARM_PACG_KEYS:&str="LINUX"; pub const NT_ARM_PACG_KEYS:u32=0x408; pub const NN_ARM_TAGGED_ADDR_CTRL:&str="LINUX"; pub const NT_ARM_TAGGED_ADDR_CTRL:u32=0x409; pub const NN_ARM_PAC_ENABLED_KEYS:&str="LINUX"; pub const NT_ARM_PAC_ENABLED_KEYS:u32=0x40a; pub const NN_ARM_SSVE:&str="LINUX"; pub const NT_ARM_SSVE:u32=0x40b; pub const NN_ARM_ZA:&str="LINUX"; pub const NT_ARM_ZA:u32=0x40c; pub const NN_ARM_ZT:&str="LINUX"; pub const NT_ARM_ZT:u32=0x40d; pub const NN_ARM_FPMR:&str="LINUX"; pub const NT_ARM_FPMR:u32=0x40e; pub const NN_ARM_POE:&str="LINUX"; pub const NT_ARM_POE:u32=0x40f; pub const NN_ARM_GCS:&str="LINUX"; pub const NT_ARM_GCS:u32=0x410;
+#[repr(C)] pub struct Elf32_Nhdr { pub n_namesz:Elf32_Word,pub n_descsz:Elf32_Word,pub n_type:Elf32_Word }
+#[repr(C)] pub struct Elf64_Nhdr { pub n_namesz:Elf64_Word,pub n_descsz:Elf64_Word,pub n_type:Elf64_Word }
+pub const GNU_PROPERTY_AARCH64_FEATURE_1_AND:u32=0xc0000000; pub const GNU_PROPERTY_AARCH64_FEATURE_1_BTI:u32=1u32<<0;
+#[repr(C)] pub struct Elf32_Verdef {pub vd_version:Elf32_Half,pub vd_flags:Elf32_Half,pub vd_ndx:Elf32_Half,pub vd_cnt:Elf32_Half,pub vd_hash:Elf32_Word,pub vd_aux:Elf32_Word,pub vd_next:Elf32_Word}
+#[repr(C)] pub struct Elf64_Verdef {pub vd_version:Elf64_Half,pub vd_flags:Elf64_Half,pub vd_ndx:Elf64_Half,pub vd_cnt:Elf64_Half,pub vd_hash:Elf64_Word,pub vd_aux:Elf64_Word,pub vd_next:Elf64_Word}
+#[repr(C)] pub struct Elf32_Verdaux {pub vda_name:Elf32_Word,pub vda_next:Elf32_Word}
+#[repr(C)] pub struct Elf64_Verdaux {pub vda_name:Elf64_Word,pub vda_next:Elf64_Word}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1,0 +1,80 @@
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+/* Copyright (C) 2017 Arm Ltd. */
+
+pub const SDEI_1_0_FN_BASE: u64 = 0xC4000020;
+pub const SDEI_1_0_MASK: u64 = 0xFFFFFFE0;
+pub const fn SDEI_1_0_FN(n: u64) -> u64 {
+    SDEI_1_0_FN_BASE + n
+}
+
+pub const SDEI_1_0_FN_SDEI_VERSION: u64 = SDEI_1_0_FN(0x00);
+pub const SDEI_1_0_FN_SDEI_EVENT_REGISTER: u64 = SDEI_1_0_FN(0x01);
+pub const SDEI_1_0_FN_SDEI_EVENT_ENABLE: u64 = SDEI_1_0_FN(0x02);
+pub const SDEI_1_0_FN_SDEI_EVENT_DISABLE: u64 = SDEI_1_0_FN(0x03);
+pub const SDEI_1_0_FN_SDEI_EVENT_CONTEXT: u64 = SDEI_1_0_FN(0x04);
+pub const SDEI_1_0_FN_SDEI_EVENT_COMPLETE: u64 = SDEI_1_0_FN(0x05);
+pub const SDEI_1_0_FN_SDEI_EVENT_COMPLETE_AND_RESUME: u64 = SDEI_1_0_FN(0x06);
+pub const SDEI_1_0_FN_SDEI_EVENT_UNREGISTER: u64 = SDEI_1_0_FN(0x07);
+pub const SDEI_1_0_FN_SDEI_EVENT_STATUS: u64 = SDEI_1_0_FN(0x08);
+pub const SDEI_1_0_FN_SDEI_EVENT_GET_INFO: u64 = SDEI_1_0_FN(0x09);
+pub const SDEI_1_0_FN_SDEI_EVENT_ROUTING_SET: u64 = SDEI_1_0_FN(0x0A);
+pub const SDEI_1_0_FN_SDEI_PE_MASK: u64 = SDEI_1_0_FN(0x0B);
+pub const SDEI_1_0_FN_SDEI_PE_UNMASK: u64 = SDEI_1_0_FN(0x0C);
+pub const SDEI_1_0_FN_SDEI_INTERRUPT_BIND: u64 = SDEI_1_0_FN(0x0D);
+pub const SDEI_1_0_FN_SDEI_INTERRUPT_RELEASE: u64 = SDEI_1_0_FN(0x0E);
+pub const SDEI_1_0_FN_SDEI_EVENT_SIGNAL: u64 = SDEI_1_0_FN(0x0F);
+pub const SDEI_1_0_FN_SDEI_PRIVATE_RESET: u64 = SDEI_1_0_FN(0x11);
+pub const SDEI_1_0_FN_SDEI_SHARED_RESET: u64 = SDEI_1_0_FN(0x12);
+
+pub const SDEI_VERSION_MAJOR_SHIFT: u32 = 48;
+pub const SDEI_VERSION_MAJOR_MASK: u64 = 0x7fff;
+pub const SDEI_VERSION_MINOR_SHIFT: u32 = 32;
+pub const SDEI_VERSION_MINOR_MASK: u64 = 0xffff;
+pub const SDEI_VERSION_VENDOR_SHIFT: u32 = 0;
+pub const SDEI_VERSION_VENDOR_MASK: u64 = 0xffffffff;
+
+pub const fn SDEI_VERSION_MAJOR(x: u64) -> u64 {
+    (x >> SDEI_VERSION_MAJOR_SHIFT) & SDEI_VERSION_MAJOR_MASK
+}
+pub const fn SDEI_VERSION_MINOR(x: u64) -> u64 {
+    (x >> SDEI_VERSION_MINOR_SHIFT) & SDEI_VERSION_MINOR_MASK
+}
+pub const fn SDEI_VERSION_VENDOR(x: u64) -> u64 {
+    (x >> SDEI_VERSION_VENDOR_SHIFT) & SDEI_VERSION_VENDOR_MASK
+}
+
+/* SDEI return values */
+pub const SDEI_SUCCESS: i64 = 0;
+pub const SDEI_NOT_SUPPORTED: i64 = -1;
+pub const SDEI_INVALID_PARAMETERS: i64 = -2;
+pub const SDEI_DENIED: i64 = -3;
+pub const SDEI_PENDING: i64 = -5;
+pub const SDEI_OUT_OF_RESOURCE: i64 = -10;
+
+/* EVENT_REGISTER flags */
+pub const SDEI_EVENT_REGISTER_RM_ANY: i32 = 0;
+pub const SDEI_EVENT_REGISTER_RM_PE: i32 = 1;
+
+/* EVENT_STATUS return value bits */
+pub const SDEI_EVENT_STATUS_RUNNING: i32 = 2;
+pub const SDEI_EVENT_STATUS_ENABLED: i32 = 1;
+pub const SDEI_EVENT_STATUS_REGISTERED: i32 = 0;
+
+/* EVENT_COMPLETE status values */
+pub const SDEI_EV_HANDLED: i32 = 0;
+pub const SDEI_EV_FAILED: i32 = 1;
+
+/* GET_INFO values */
+pub const SDEI_EVENT_INFO_EV_TYPE: i32 = 0;
+pub const SDEI_EVENT_INFO_EV_SIGNALED: i32 = 1;
+pub const SDEI_EVENT_INFO_EV_PRIORITY: i32 = 2;
+pub const SDEI_EVENT_INFO_EV_ROUTING_MODE: i32 = 3;
+pub const SDEI_EVENT_INFO_EV_ROUTING_AFF: i32 = 4;
+
+/* and their results */
+pub const SDEI_EVENT_TYPE_PRIVATE: i32 = 0;
+pub const SDEI_EVENT_TYPE_SHARED: i32 = 1;
+pub const SDEI_EVENT_PRIORITY_NORMAL: i32 = 0;
+pub const SDEI_EVENT_PRIORITY_CRITICAL: i32 = 1;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

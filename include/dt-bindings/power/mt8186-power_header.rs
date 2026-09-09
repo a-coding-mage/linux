@@ -1,0 +1,29 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+/*
+ * Copyright (c) 2022 MediaTek Inc.
+ * Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+ */
+
+pub const MT8186_POWER_DOMAIN_MFG0: u32 = 0;
+pub const MT8186_POWER_DOMAIN_MFG1: u32 = 1;
+pub const MT8186_POWER_DOMAIN_MFG2: u32 = 2;
+pub const MT8186_POWER_DOMAIN_MFG3: u32 = 3;
+pub const MT8186_POWER_DOMAIN_SSUSB: u32 = 4;
+pub const MT8186_POWER_DOMAIN_SSUSB_P1: u32 = 5;
+pub const MT8186_POWER_DOMAIN_DIS: u32 = 6;
+pub const MT8186_POWER_DOMAIN_IMG: u32 = 7;
+pub const MT8186_POWER_DOMAIN_IMG2: u32 = 8;
+pub const MT8186_POWER_DOMAIN_IPE: u32 = 9;
+pub const MT8186_POWER_DOMAIN_CAM: u32 = 10;
+pub const MT8186_POWER_DOMAIN_CAM_RAWA: u32 = 11;
+pub const MT8186_POWER_DOMAIN_CAM_RAWB: u32 = 12;
+pub const MT8186_POWER_DOMAIN_VENC: u32 = 13;
+pub const MT8186_POWER_DOMAIN_VDEC: u32 = 14;
+pub const MT8186_POWER_DOMAIN_WPE: u32 = 15;
+pub const MT8186_POWER_DOMAIN_CONN_ON: u32 = 16;
+pub const MT8186_POWER_DOMAIN_CSIRX_TOP: u32 = 17;
+pub const MT8186_POWER_DOMAIN_ADSP_AO: u32 = 18;
+pub const MT8186_POWER_DOMAIN_ADSP_INFRA: u32 = 19;
+pub const MT8186_POWER_DOMAIN_ADSP_TOP: u32 = 20;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

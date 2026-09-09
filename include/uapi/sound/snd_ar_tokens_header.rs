@@ -1,0 +1,150 @@
+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+
+// Dependency: __le32 is supplied by the Linux types bindings.
+
+pub const APM_SUB_GRAPH_PERF_MODE_LOW_POWER: u32 = 0x1;
+pub const APM_SUB_GRAPH_PERF_MODE_LOW_LATENCY: u32 = 0x2;
+pub const APM_SUB_GRAPH_DIRECTION_TX: u32 = 0x1;
+pub const APM_SUB_GRAPH_DIRECTION_RX: u32 = 0x2;
+pub const APM_SUB_GRAPH_SID_AUDIO_PLAYBACK: u32 = 0x1;
+pub const APM_SUB_GRAPH_SID_AUDIO_RECORD: u32 = 0x2;
+pub const APM_SUB_GRAPH_SID_VOICE_CALL: u32 = 0x3;
+pub const APM_CONTAINER_CAP_ID_PP: u32 = 0x1;
+pub const APM_CONTAINER_CAP_ID_CD: u32 = 0x2;
+pub const APM_CONTAINER_CAP_ID_EP: u32 = 0x3;
+pub const APM_CONTAINER_CAP_ID_OLC: u32 = 0x4;
+pub const APM_CONT_GRAPH_POS_STREAM: u32 = 0x1;
+pub const APM_CONT_GRAPH_POS_PER_STR_PER_DEV: u32 = 0x2;
+pub const APM_CONT_GRAPH_POS_STR_DEV: u32 = 0x3;
+pub const APM_CONT_GRAPH_POS_GLOBAL_DEV: u32 = 0x4;
+pub const APM_PROC_DOMAIN_ID_MDSP: u32 = 0x1;
+pub const APM_PROC_DOMAIN_ID_ADSP: u32 = 0x2;
+pub const APM_PROC_DOMAIN_ID_SDSP: u32 = 0x4;
+pub const APM_PROC_DOMAIN_ID_CDSP: u32 = 0x5;
+pub const PCM_INTERLEAVED: u32 = 1;
+pub const PCM_DEINTERLEAVED_PACKED: u32 = 2;
+pub const PCM_DEINTERLEAVED_UNPACKED: u32 = 3;
+pub const AR_I2S_WS_SRC_EXTERNAL: u32 = 0;
+pub const AR_I2S_WS_SRC_INTERNAL: u32 = 1;
+
+#[repr(i32)]
+pub enum ar_event_types {
+    AR_EVENT_NONE = 0,
+    AR_PGA_DAPM_EVENT,
+}
+
+/* Kcontrol IDs */
+pub const SND_SOC_AR_TPLG_FE_BE_GRAPH_CTL_MIX: u32 = 256;
+pub const SND_SOC_AR_TPLG_VOL_CTL: u32 = 257;
+
+/* DAI Tokens */
+pub const AR_TKN_DAI_INDEX: u32 = 1;
+/* SUB GRAPH Tokens */
+pub const AR_TKN_U32_SUB_GRAPH_INSTANCE_ID: u32 = 2;
+pub const AR_TKN_U32_SUB_GRAPH_PERF_MODE: u32 = 3;
+pub const AR_TKN_U32_SUB_GRAPH_DIRECTION: u32 = 4;
+pub const AR_TKN_U32_SUB_GRAPH_SCENARIO_ID: u32 = 5;
+
+/* Container Tokens */
+pub const AR_TKN_U32_CONTAINER_INSTANCE_ID: u32 = 100;
+pub const AR_TKN_U32_CONTAINER_CAPABILITY_ID: u32 = 101;
+pub const AR_TKN_U32_CONTAINER_STACK_SIZE: u32 = 102;
+pub const AR_TKN_U32_CONTAINER_GRAPH_POS: u32 = 103;
+pub const AR_TKN_U32_CONTAINER_PROC_DOMAIN: u32 = 104;
+
+/* Module Tokens */
+pub const AR_TKN_U32_MODULE_ID: u32 = 200;
+pub const AR_TKN_U32_MODULE_INSTANCE_ID: u32 = 201;
+pub const AR_TKN_U32_MODULE_MAX_IP_PORTS: u32 = 202;
+pub const AR_TKN_U32_MODULE_MAX_OP_PORTS: u32 = 203;
+pub const AR_TKN_U32_MODULE_IN_PORTS: u32 = 204; /* deprecated */
+pub const AR_TKN_U32_MODULE_OUT_PORTS: u32 = 205; /* deprecated */
+pub const AR_TKN_U32_MODULE_SRC_OP_PORT_ID: u32 = 206;
+pub const AR_TKN_U32_MODULE_DST_IN_PORT_ID: u32 = 207;
+pub const AR_TKN_U32_MODULE_SRC_INSTANCE_ID: u32 = 208;
+pub const AR_TKN_U32_MODULE_DST_INSTANCE_ID: u32 = 209;
+
+pub const AR_TKN_U32_MODULE_SRC_OP_PORT_ID1: u32 = 210;
+pub const AR_TKN_U32_MODULE_DST_IN_PORT_ID1: u32 = 211;
+pub const AR_TKN_U32_MODULE_DST_INSTANCE_ID1: u32 = 212;
+pub const AR_TKN_U32_MODULE_SRC_OP_PORT_ID2: u32 = 213;
+pub const AR_TKN_U32_MODULE_DST_IN_PORT_ID2: u32 = 214;
+pub const AR_TKN_U32_MODULE_DST_INSTANCE_ID2: u32 = 215;
+pub const AR_TKN_U32_MODULE_SRC_OP_PORT_ID3: u32 = 216;
+pub const AR_TKN_U32_MODULE_DST_IN_PORT_ID3: u32 = 217;
+pub const AR_TKN_U32_MODULE_DST_INSTANCE_ID3: u32 = 218;
+pub const AR_TKN_U32_MODULE_SRC_OP_PORT_ID4: u32 = 219;
+pub const AR_TKN_U32_MODULE_DST_IN_PORT_ID4: u32 = 220;
+pub const AR_TKN_U32_MODULE_DST_INSTANCE_ID4: u32 = 221;
+pub const AR_TKN_U32_MODULE_SRC_OP_PORT_ID5: u32 = 222;
+pub const AR_TKN_U32_MODULE_DST_IN_PORT_ID5: u32 = 223;
+pub const AR_TKN_U32_MODULE_DST_INSTANCE_ID5: u32 = 224;
+pub const AR_TKN_U32_MODULE_SRC_OP_PORT_ID6: u32 = 225;
+pub const AR_TKN_U32_MODULE_DST_IN_PORT_ID6: u32 = 226;
+pub const AR_TKN_U32_MODULE_DST_INSTANCE_ID6: u32 = 227;
+pub const AR_TKN_U32_MODULE_SRC_OP_PORT_ID7: u32 = 228;
+pub const AR_TKN_U32_MODULE_DST_IN_PORT_ID7: u32 = 229;
+pub const AR_TKN_U32_MODULE_DST_INSTANCE_ID7: u32 = 230;
+
+pub const AR_TKN_U32_MODULE_HW_IF_IDX: u32 = 250;
+pub const AR_TKN_U32_MODULE_HW_IF_TYPE: u32 = 251;
+pub const AR_TKN_U32_MODULE_FMT_INTERLEAVE: u32 = 252;
+pub const AR_TKN_U32_MODULE_FMT_DATA: u32 = 253;
+pub const AR_TKN_U32_MODULE_FMT_SAMPLE_RATE: u32 = 254;
+pub const AR_TKN_U32_MODULE_FMT_BIT_DEPTH: u32 = 255;
+pub const AR_TKN_U32_MODULE_SD_LINE_IDX: u32 = 256;
+pub const AR_TKN_U32_MODULE_WS_SRC: u32 = 257;
+pub const AR_TKN_U32_MODULE_FRAME_SZ_FACTOR: u32 = 258;
+pub const AR_TKN_U32_MODULE_LOG_CODE: u32 = 259;
+pub const AR_TKN_U32_MODULE_LOG_TAP_POINT_ID: u32 = 260;
+pub const AR_TKN_U32_MODULE_LOG_MODE: u32 = 261;
+pub const AR_TKN_U16_MODULE_SYNC_SRC: u32 = 262;
+pub const AR_TKN_U16_MODULE_CTRL_DATA_OUT_ENABLE: u32 = 263;
+pub const AR_TKN_U32_MODULE_SLOT_MASK: u32 = 264;
+pub const AR_TKN_U16_MODULE_NSLOTS_PER_FRAME: u32 = 265;
+pub const AR_TKN_U16_MODULE_SLOT_WIDTH: u32 = 266;
+pub const AR_TKN_U16_MODULE_SYNC_MODE: u32 = 267;
+pub const AR_TKN_U16_MODULE_CTRL_INVERT_SYNC_PULSE: u32 = 268;
+pub const AR_TKN_U16_MODULE_CTRL_SYNC_DATA_DELAY: u32 = 269;
+pub const AR_TKN_U16_MODULE_INTF_MODE: u32 = 270;
+pub const AR_TKN_U16_MODULE_QAIF_TYPE: u32 = 271;
+pub const AR_TKN_U32_MODULE_ACTIVE_LANE_MASK: u32 = 272;
+pub const AR_TKN_U32_MODULE_FRAME_SYNC_RATE: u32 = 273;
+pub const AR_TKN_U16_MODULE_BIT_CLK_TYPE: u32 = 274;
+pub const AR_TKN_U8_MODULE_INV_INT_BIT_CLK: u32 = 275;
+pub const AR_TKN_U8_MODULE_INV_EXT_BIT_CLK: u32 = 276;
+
+pub const AR_AUDIO_IF_SYNC_SRC_EXTERNAL: u32 = 0;
+pub const AR_AUDIO_IF_SYNC_SRC_INTERNAL: u32 = 1;
+pub const AR_AUDIO_IF_CTRL_DATA_OE_DISABLE: u32 = 0;
+pub const AR_AUDIO_IF_CTRL_DATA_OE_ENABLE: u32 = 1;
+pub const AR_AUDIO_IF_INTF_MODE_TDM: u32 = 0;
+pub const AR_AUDIO_IF_INTF_MODE_PCM: u32 = 1;
+pub const AR_AUDIO_IF_INTF_MODE_I2S: u32 = 2;
+pub const AR_AUDIO_IF_QAIF: u32 = 0;
+pub const AR_AUDIO_IF_QAIF_VA: u32 = 1;
+pub const AR_AUDIO_IF_FRAME_SYNC_MODE_SHORT: u32 = 0;
+pub const AR_AUDIO_IF_FRAME_SYNC_MODE_ONE_SLOT: u32 = 1;
+pub const AR_AUDIO_IF_FRAME_SYNC_MODE_LONG: u32 = 2;
+pub const AR_AUDIO_IF_SYNC_NORMAL: u32 = 0;
+pub const AR_AUDIO_IF_SYNC_INVERTED: u32 = 1;
+pub const AR_AUDIO_IF_DATA_DELAY_NONE: u32 = 0;
+pub const AR_AUDIO_IF_DATA_DELAY_1_CYCLE: u32 = 1;
+pub const AR_AUDIO_IF_DATA_DELAY_2_CYCLE: u32 = 2;
+pub const AR_AUDIO_IF_BIT_CLK_INTERNAL: u32 = 0;
+pub const AR_AUDIO_IF_BIT_CLK_EXTERNAL: u32 = 1;
+pub const AR_AUDIO_IF_BIT_CLK_SKIP: u32 = 2;
+pub const AR_AUDIO_IF_CLK_NORMAL: u32 = 0;
+pub const AR_AUDIO_IF_CLK_INVERTED: u32 = 1;
+
+pub const SND_SOC_AR_TPLG_MODULE_CFG_TYPE: u32 = 0x01001006;
+
+#[repr(C)]
+pub struct audioreach_module_priv_data {
+    pub size: __le32, /* size in bytes of the array, including all elements */
+    pub type_: __le32, /* SND_SOC_AR_TPLG_MODULE_CFG_TYPE */
+    pub priv_: [__le32; 2], /* Private data for future expansion */
+    pub data: [__le32; 0], /* config data */
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

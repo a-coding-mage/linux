@@ -1,0 +1,211 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (c) 2016-2017 Linaro Ltd.
+ * Copyright (c) 2016-2017 HiSilicon Technologies Co., Ltd.
+ */
+
+/* fixed rate clocks */
+pub const HI3660_CLKIN_SYS: i32 = 0;
+pub const HI3660_CLKIN_REF: i32 = 1;
+pub const HI3660_CLK_FLL_SRC: i32 = 2;
+pub const HI3660_CLK_PPLL0: i32 = 3;
+pub const HI3660_CLK_PPLL1: i32 = 4;
+pub const HI3660_CLK_PPLL2: i32 = 5;
+pub const HI3660_CLK_PPLL3: i32 = 6;
+pub const HI3660_CLK_SCPLL: i32 = 7;
+pub const HI3660_PCLK: i32 = 8;
+pub const HI3660_CLK_UART0_DBG: i32 = 9;
+pub const HI3660_CLK_UART6: i32 = 10;
+pub const HI3660_OSC32K: i32 = 11;
+pub const HI3660_OSC19M: i32 = 12;
+pub const HI3660_CLK_480M: i32 = 13;
+pub const HI3660_CLK_INV: i32 = 14;
+
+/* clk in crgctrl */
+pub const HI3660_FACTOR_UART3: i32 = 15;
+pub const HI3660_CLK_FACTOR_MMC: i32 = 16;
+pub const HI3660_CLK_GATE_I2C0: i32 = 17;
+pub const HI3660_CLK_GATE_I2C1: i32 = 18;
+pub const HI3660_CLK_GATE_I2C2: i32 = 19;
+pub const HI3660_CLK_GATE_I2C6: i32 = 20;
+pub const HI3660_CLK_DIV_SYSBUS: i32 = 21;
+pub const HI3660_CLK_DIV_320M: i32 = 22;
+pub const HI3660_CLK_DIV_A53: i32 = 23;
+pub const HI3660_CLK_GATE_SPI0: i32 = 24;
+pub const HI3660_CLK_GATE_SPI2: i32 = 25;
+pub const HI3660_PCIEPHY_REF: i32 = 26;
+pub const HI3660_CLK_ABB_USB: i32 = 27;
+pub const HI3660_HCLK_GATE_SDIO0: i32 = 28;
+pub const HI3660_HCLK_GATE_SD: i32 = 29;
+pub const HI3660_CLK_GATE_AOMM: i32 = 30;
+pub const HI3660_PCLK_GPIO0: i32 = 31;
+pub const HI3660_PCLK_GPIO1: i32 = 32;
+pub const HI3660_PCLK_GPIO2: i32 = 33;
+pub const HI3660_PCLK_GPIO3: i32 = 34;
+pub const HI3660_PCLK_GPIO4: i32 = 35;
+pub const HI3660_PCLK_GPIO5: i32 = 36;
+pub const HI3660_PCLK_GPIO6: i32 = 37;
+pub const HI3660_PCLK_GPIO7: i32 = 38;
+pub const HI3660_PCLK_GPIO8: i32 = 39;
+pub const HI3660_PCLK_GPIO9: i32 = 40;
+pub const HI3660_PCLK_GPIO10: i32 = 41;
+pub const HI3660_PCLK_GPIO11: i32 = 42;
+pub const HI3660_PCLK_GPIO12: i32 = 43;
+pub const HI3660_PCLK_GPIO13: i32 = 44;
+pub const HI3660_PCLK_GPIO14: i32 = 45;
+pub const HI3660_PCLK_GPIO15: i32 = 46;
+pub const HI3660_PCLK_GPIO16: i32 = 47;
+pub const HI3660_PCLK_GPIO17: i32 = 48;
+pub const HI3660_PCLK_GPIO18: i32 = 49;
+pub const HI3660_PCLK_GPIO19: i32 = 50;
+pub const HI3660_PCLK_GPIO20: i32 = 51;
+pub const HI3660_PCLK_GPIO21: i32 = 52;
+pub const HI3660_CLK_GATE_SPI3: i32 = 53;
+pub const HI3660_CLK_GATE_I2C7: i32 = 54;
+pub const HI3660_CLK_GATE_I2C3: i32 = 55;
+pub const HI3660_CLK_GATE_SPI1: i32 = 56;
+pub const HI3660_CLK_GATE_UART1: i32 = 57;
+pub const HI3660_CLK_GATE_UART2: i32 = 58;
+pub const HI3660_CLK_GATE_UART4: i32 = 59;
+pub const HI3660_CLK_GATE_UART5: i32 = 60;
+pub const HI3660_CLK_GATE_I2C4: i32 = 61;
+pub const HI3660_CLK_GATE_DMAC: i32 = 62;
+pub const HI3660_PCLK_GATE_DSS: i32 = 63;
+pub const HI3660_ACLK_GATE_DSS: i32 = 64;
+pub const HI3660_CLK_GATE_LDI1: i32 = 65;
+pub const HI3660_CLK_GATE_LDI0: i32 = 66;
+pub const HI3660_CLK_GATE_VIVOBUS: i32 = 67;
+pub const HI3660_CLK_GATE_EDC0: i32 = 68;
+pub const HI3660_CLK_GATE_TXDPHY0_CFG: i32 = 69;
+pub const HI3660_CLK_GATE_TXDPHY0_REF: i32 = 70;
+pub const HI3660_CLK_GATE_TXDPHY1_CFG: i32 = 71;
+pub const HI3660_CLK_GATE_TXDPHY1_REF: i32 = 72;
+pub const HI3660_ACLK_GATE_USB3OTG: i32 = 73;
+pub const HI3660_CLK_GATE_SPI4: i32 = 74;
+pub const HI3660_CLK_GATE_SD: i32 = 75;
+pub const HI3660_CLK_GATE_SDIO0: i32 = 76;
+pub const HI3660_CLK_GATE_UFS_SUBSYS: i32 = 77;
+pub const HI3660_PCLK_GATE_DSI0: i32 = 78;
+pub const HI3660_PCLK_GATE_DSI1: i32 = 79;
+pub const HI3660_ACLK_GATE_PCIE: i32 = 80;
+pub const HI3660_PCLK_GATE_PCIE_SYS: i32 = 81;
+pub const HI3660_CLK_GATE_PCIEAUX: i32 = 82;
+pub const HI3660_PCLK_GATE_PCIE_PHY: i32 = 83;
+pub const HI3660_CLK_ANDGT_LDI0: i32 = 84;
+pub const HI3660_CLK_ANDGT_LDI1: i32 = 85;
+pub const HI3660_CLK_ANDGT_EDC0: i32 = 86;
+pub const HI3660_CLK_GATE_UFSPHY_GT: i32 = 87;
+pub const HI3660_CLK_ANDGT_MMC: i32 = 88;
+pub const HI3660_CLK_ANDGT_SD: i32 = 89;
+pub const HI3660_CLK_A53HPM_ANDGT: i32 = 90;
+pub const HI3660_CLK_ANDGT_SDIO: i32 = 91;
+pub const HI3660_CLK_ANDGT_UART0: i32 = 92;
+pub const HI3660_CLK_ANDGT_UART1: i32 = 93;
+pub const HI3660_CLK_ANDGT_UARTH: i32 = 94;
+pub const HI3660_CLK_ANDGT_SPI: i32 = 95;
+pub const HI3660_CLK_VIVOBUS_ANDGT: i32 = 96;
+pub const HI3660_CLK_AOMM_ANDGT: i32 = 97;
+pub const HI3660_CLK_320M_PLL_GT: i32 = 98;
+pub const HI3660_AUTODIV_EMMC0BUS: i32 = 99;
+pub const HI3660_AUTODIV_SYSBUS: i32 = 100;
+pub const HI3660_CLK_GATE_UFSPHY_CFG: i32 = 101;
+pub const HI3660_CLK_GATE_UFSIO_REF: i32 = 102;
+pub const HI3660_CLK_MUX_SYSBUS: i32 = 103;
+pub const HI3660_CLK_MUX_UART0: i32 = 104;
+pub const HI3660_CLK_MUX_UART1: i32 = 105;
+pub const HI3660_CLK_MUX_UARTH: i32 = 106;
+pub const HI3660_CLK_MUX_SPI: i32 = 107;
+pub const HI3660_CLK_MUX_I2C: i32 = 108;
+pub const HI3660_CLK_MUX_MMC_PLL: i32 = 109;
+pub const HI3660_CLK_MUX_LDI1: i32 = 110;
+pub const HI3660_CLK_MUX_LDI0: i32 = 111;
+pub const HI3660_CLK_MUX_SD_PLL: i32 = 112;
+pub const HI3660_CLK_MUX_SD_SYS: i32 = 113;
+pub const HI3660_CLK_MUX_EDC0: i32 = 114;
+pub const HI3660_CLK_MUX_SDIO_SYS: i32 = 115;
+pub const HI3660_CLK_MUX_SDIO_PLL: i32 = 116;
+pub const HI3660_CLK_MUX_VIVOBUS: i32 = 117;
+pub const HI3660_CLK_MUX_A53HPM: i32 = 118;
+pub const HI3660_CLK_MUX_320M: i32 = 119;
+pub const HI3660_CLK_MUX_IOPERI: i32 = 120;
+pub const HI3660_CLK_DIV_UART0: i32 = 121;
+pub const HI3660_CLK_DIV_UART1: i32 = 122;
+pub const HI3660_CLK_DIV_UARTH: i32 = 123;
+pub const HI3660_CLK_DIV_MMC: i32 = 124;
+pub const HI3660_CLK_DIV_SD: i32 = 125;
+pub const HI3660_CLK_DIV_EDC0: i32 = 126;
+pub const HI3660_CLK_DIV_LDI0: i32 = 127;
+pub const HI3660_CLK_DIV_SDIO: i32 = 128;
+pub const HI3660_CLK_DIV_LDI1: i32 = 129;
+pub const HI3660_CLK_DIV_SPI: i32 = 130;
+pub const HI3660_CLK_DIV_VIVOBUS: i32 = 131;
+pub const HI3660_CLK_DIV_I2C: i32 = 132;
+pub const HI3660_CLK_DIV_UFSPHY: i32 = 133;
+pub const HI3660_CLK_DIV_CFGBUS: i32 = 134;
+pub const HI3660_CLK_DIV_MMC0BUS: i32 = 135;
+pub const HI3660_CLK_DIV_MMC1BUS: i32 = 136;
+pub const HI3660_CLK_DIV_UFSPERI: i32 = 137;
+pub const HI3660_CLK_DIV_AOMM: i32 = 138;
+pub const HI3660_CLK_DIV_IOPERI: i32 = 139;
+pub const HI3660_VENC_VOLT_HOLD: i32 = 140;
+pub const HI3660_PERI_VOLT_HOLD: i32 = 141;
+pub const HI3660_CLK_GATE_VENC: i32 = 142;
+pub const HI3660_CLK_GATE_VDEC: i32 = 143;
+pub const HI3660_CLK_ANDGT_VENC: i32 = 144;
+pub const HI3660_CLK_ANDGT_VDEC: i32 = 145;
+pub const HI3660_CLK_MUX_VENC: i32 = 146;
+pub const HI3660_CLK_MUX_VDEC: i32 = 147;
+pub const HI3660_CLK_DIV_VENC: i32 = 148;
+pub const HI3660_CLK_DIV_VDEC: i32 = 149;
+pub const HI3660_CLK_FAC_ISP_SNCLK: i32 = 150;
+pub const HI3660_CLK_GATE_ISP_SNCLK0: i32 = 151;
+pub const HI3660_CLK_GATE_ISP_SNCLK1: i32 = 152;
+pub const HI3660_CLK_GATE_ISP_SNCLK2: i32 = 153;
+pub const HI3660_CLK_ANGT_ISP_SNCLK: i32 = 154;
+pub const HI3660_CLK_MUX_ISP_SNCLK: i32 = 155;
+pub const HI3660_CLK_DIV_ISP_SNCLK: i32 = 156;
+
+/* clk in pmuctrl */
+pub const HI3660_GATE_ABB_192: i32 = 0;
+
+/* clk in pctrl */
+pub const HI3660_GATE_UFS_TCXO_EN: i32 = 0;
+pub const HI3660_GATE_USB_TCXO_EN: i32 = 1;
+
+/* clk in sctrl */
+pub const HI3660_PCLK_AO_GPIO0: i32 = 0;
+pub const HI3660_PCLK_AO_GPIO1: i32 = 1;
+pub const HI3660_PCLK_AO_GPIO2: i32 = 2;
+pub const HI3660_PCLK_AO_GPIO3: i32 = 3;
+pub const HI3660_PCLK_AO_GPIO4: i32 = 4;
+pub const HI3660_PCLK_AO_GPIO5: i32 = 5;
+pub const HI3660_PCLK_AO_GPIO6: i32 = 6;
+pub const HI3660_PCLK_GATE_MMBUF: i32 = 7;
+pub const HI3660_CLK_GATE_DSS_AXI_MM: i32 = 8;
+pub const HI3660_PCLK_MMBUF_ANDGT: i32 = 9;
+pub const HI3660_CLK_MMBUF_PLL_ANDGT: i32 = 10;
+pub const HI3660_CLK_FLL_MMBUF_ANDGT: i32 = 11;
+pub const HI3660_CLK_SYS_MMBUF_ANDGT: i32 = 12;
+pub const HI3660_CLK_GATE_PCIEPHY_GT: i32 = 13;
+pub const HI3660_ACLK_MUX_MMBUF: i32 = 14;
+pub const HI3660_CLK_SW_MMBUF: i32 = 15;
+pub const HI3660_CLK_DIV_AOBUS: i32 = 16;
+pub const HI3660_PCLK_DIV_MMBUF: i32 = 17;
+pub const HI3660_ACLK_DIV_MMBUF: i32 = 18;
+pub const HI3660_CLK_DIV_PCIEPHY: i32 = 19;
+
+/* clk in iomcu */
+pub const HI3660_CLK_I2C0_IOMCU: i32 = 0;
+pub const HI3660_CLK_I2C1_IOMCU: i32 = 1;
+pub const HI3660_CLK_I2C2_IOMCU: i32 = 2;
+pub const HI3660_CLK_I2C6_IOMCU: i32 = 3;
+pub const HI3660_CLK_IOMCU_PERI0: i32 = 4;
+
+/* clk in stub clock */
+pub const HI3660_CLK_STUB_CLUSTER0: i32 = 0;
+pub const HI3660_CLK_STUB_CLUSTER1: i32 = 1;
+pub const HI3660_CLK_STUB_GPU: i32 = 2;
+pub const HI3660_CLK_STUB_DDR: i32 = 3;
+pub const HI3660_CLK_STUB_NUM: i32 = 4;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

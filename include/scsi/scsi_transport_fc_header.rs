@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* Rust translation of scsi_transport_fc.h. External kernel types and constants
+ * are supplied by the surrounding translation unit. */
+
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub enum fc_port_type { FC_PORTTYPE_UNKNOWN, FC_PORTTYPE_OTHER, FC_PORTTYPE_NOTPRESENT, FC_PORTTYPE_NPORT, FC_PORTTYPE_NLPORT, FC_PORTTYPE_LPORT, FC_PORTTYPE_PTP, FC_PORTTYPE_NPIV }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub enum fc_port_state { FC_PORTSTATE_UNKNOWN, FC_PORTSTATE_NOTPRESENT, FC_PORTSTATE_ONLINE, FC_PORTSTATE_OFFLINE, FC_PORTSTATE_BLOCKED, FC_PORTSTATE_BYPASSED, FC_PORTSTATE_DIAGNOSTICS, FC_PORTSTATE_LINKDOWN, FC_PORTSTATE_ERROR, FC_PORTSTATE_LOOPBACK, FC_PORTSTATE_DELETED, FC_PORTSTATE_MARGINAL }
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub enum fc_vport_state { FC_VPORT_UNKNOWN, FC_VPORT_ACTIVE, FC_VPORT_DISABLED, FC_VPORT_LINKDOWN, FC_VPORT_INITIALIZING, FC_VPORT_NO_FABRIC_SUPP, FC_VPORT_NO_FABRIC_RSCS, FC_VPORT_FABRIC_LOGOUT, FC_VPORT_FABRIC_REJ_WWN, FC_VPORT_FAILED }
+
+pub const FC_COS_UNSPECIFIED:u32=0; pub const FC_COS_CLASS1:u32=2; pub const FC_COS_CLASS2:u32=4; pub const FC_COS_CLASS3:u32=8; pub const FC_COS_CLASS4:u32=0x10; pub const FC_COS_CLASS6:u32=0x40;
+pub const FC_PORTSPEED_UNKNOWN:u32=0; pub const FC_PORTSPEED_1GBIT:u32=1; pub const FC_PORTSPEED_2GBIT:u32=2; pub const FC_PORTSPEED_10GBIT:u32=4; pub const FC_PORTSPEED_4GBIT:u32=8; pub const FC_PORTSPEED_8GBIT:u32=0x10; pub const FC_PORTSPEED_16GBIT:u32=0x20; pub const FC_PORTSPEED_32GBIT:u32=0x40; pub const FC_PORTSPEED_20GBIT:u32=0x80; pub const FC_PORTSPEED_40GBIT:u32=0x100; pub const FC_PORTSPEED_50GBIT:u32=0x200; pub const FC_PORTSPEED_100GBIT:u32=0x400; pub const FC_PORTSPEED_25GBIT:u32=0x800; pub const FC_PORTSPEED_64GBIT:u32=0x1000; pub const FC_PORTSPEED_128GBIT:u32=0x2000; pub const FC_PORTSPEED_256GBIT:u32=0x4000; pub const FC_PORTSPEED_NOT_NEGOTIATED:u32=1<<15;
+#[repr(C)] #[derive(Copy,Clone)] pub enum fc_tgtid_binding_type { FC_TGTID_BIND_NONE, FC_TGTID_BIND_BY_WWPN, FC_TGTID_BIND_BY_WWNN, FC_TGTID_BIND_BY_ID }
+pub const FC_PORT_ROLE_UNKNOWN:u32=0; pub const FC_PORT_ROLE_FCP_TARGET:u32=1; pub const FC_PORT_ROLE_FCP_INITIATOR:u32=2; pub const FC_PORT_ROLE_IP_PORT:u32=4; pub const FC_PORT_ROLE_FCP_DUMMY_INITIATOR:u32=8; pub const FC_PORT_ROLE_NVME_INITIATOR:u32=0x10; pub const FC_PORT_ROLE_NVME_TARGET:u32=0x20; pub const FC_PORT_ROLE_NVME_DISCOVERY:u32=0x40;
+pub const FC_RPORT_ROLE_UNKNOWN:u32=FC_PORT_ROLE_UNKNOWN; pub const FC_RPORT_ROLE_FCP_TARGET:u32=FC_PORT_ROLE_FCP_TARGET; pub const FC_RPORT_ROLE_FCP_INITIATOR:u32=FC_PORT_ROLE_FCP_INITIATOR; pub const FC_RPORT_ROLE_IP_PORT:u32=FC_PORT_ROLE_IP_PORT;
+pub const FC_VPORT_SYMBOLIC_NAMELEN:usize=64; pub const FC_VPORT_CREATING:u8=1; pub const FC_VPORT_DELETING:u8=2; pub const FC_VPORT_DELETED:u8=4; pub const FC_VPORT_DEL:u8=6;
+
+#[repr(C)] pub struct fc_vport_identifiers { pub node_name:u64, pub port_name:u64, pub roles:u32, pub disable:bool, pub vport_type:fc_port_type, pub symbolic_name:[i8;64] }
+#[repr(C)] pub struct fc_fpin_stats { pub dn:u64,pub dn_unknown:u64,pub dn_timeout:u64,pub dn_unable_to_route:u64,pub dn_device_specific:u64,pub li:u64,pub li_failure_unknown:u64,pub li_link_failure_count:u64,pub li_loss_of_sync_count:u64,pub li_loss_of_signals_count:u64,pub li_prim_seq_err_count:u64,pub li_invalid_tx_word_count:u64,pub li_invalid_crc_count:u64,pub li_device_specific:u64,pub cn:u64,pub cn_clear:u64,pub cn_lost_credit:u64,pub cn_credit_stall:u64,pub cn_oversubscription:u64,pub cn_device_specific:u64 }
+#[repr(C)] pub struct fc_encryption_info { pub status:u8 }
+#[repr(C)] pub struct fc_rport_identifiers { pub node_name:u64,pub port_name:u64,pub port_id:u32,pub roles:u32 }
+#[repr(C)] pub struct fc_starget_attrs { pub node_name:u64,pub port_name:u64,pub port_id:u32 }
+#[repr(C)] pub struct fc_vport { pub vport_state:fc_vport_state,pub vport_last_state:fc_vport_state,pub node_name:u64,pub port_name:u64,pub roles:u32,pub vport_id:u32,pub vport_type:fc_port_type,pub symbolic_name:[i8;64],pub dd_data:*mut core::ffi::c_void,pub shost:*mut Scsi_Host,pub channel:u32,pub number:u32,pub flags:u8 }
+
+#[repr(C)] pub struct fc_host_statistics { pub seconds_since_last_reset:u64,pub tx_frames:u64,pub tx_words:u64,pub rx_frames:u64,pub rx_words:u64,pub lip_count:u64,pub nos_count:u64,pub error_frames:u64,pub dumped_frames:u64,pub link_failure_count:u64,pub loss_of_sync_count:u64,pub loss_of_signal_count:u64,pub prim_seq_protocol_err_count:u64,pub invalid_tx_word_count:u64,pub invalid_crc_count:u64,pub fcp_input_requests:u64,pub fcp_output_requests:u64,pub fcp_control_requests:u64,pub fcp_input_megabytes:u64,pub fcp_output_megabytes:u64,pub fcp_packet_alloc_failures:u64,pub fcp_packet_aborts:u64,pub fcp_frame_alloc_failures:u64,pub fc_no_free_exch:u64,pub fc_no_free_exch_xid:u64,pub fc_xid_not_found:u64,pub fc_xid_busy:u64,pub fc_seq_not_found:u64,pub fc_non_bls_resp:u64,pub cn_sig_warn:u64,pub cn_sig_alarm:u64 }
+#[repr(C)] #[derive(Copy,Clone)] pub enum fc_host_event_code { FCH_EVT_LIP=1,FCH_EVT_LINKUP=2,FCH_EVT_LINKDOWN=3,FCH_EVT_LIPRESET=4,FCH_EVT_RSCN=5,FCH_EVT_ADAPTER_CHANGE=0x103,FCH_EVT_PORT_UNKNOWN=0x200,FCH_EVT_PORT_OFFLINE=0x201,FCH_EVT_PORT_ONLINE=0x202,FCH_EVT_PORT_FABRIC=0x204,FCH_EVT_LINK_UNKNOWN=0x500,FCH_EVT_LINK_FPIN=0x501,FCH_EVT_LINK_FPIN_ACK=0x502,FCH_EVT_VENDOR_UNIQUE=0xffff }
+pub const FC_VENDOR_IDENTIFIER:usize=8; pub const FC_FC4_LIST_SIZE:usize=32; pub const FC_SYMBOLIC_NAME_SIZE:usize=256; pub const FC_VERSION_STRING_SIZE:usize=64; pub const FC_SERIAL_NUMBER_SIZE:usize=64;
+#[repr(C)] pub struct fc_host_attrs { pub node_name:u64,pub port_name:u64,pub permanent_port_name:u64,pub supported_classes:u32,pub supported_fc4s:[u8;32],pub supported_speeds:u32,pub maxframe_size:u32,pub max_npiv_vports:u16,pub max_ct_payload:u32,pub num_ports:u32,pub num_discovered_ports:u32,pub bootbios_state:u32,pub serial_number:[i8;64],pub manufacturer:[i8;64],pub model:[i8;256],pub model_description:[i8;256],pub hardware_version:[i8;64],pub driver_version:[i8;64],pub firmware_version:[i8;64],pub optionrom_version:[i8;64],pub vendor_identifier:[i8;8],pub bootbios_version:[i8;256],pub port_id:u32,pub port_type:fc_port_type,pub port_state:fc_port_state,pub active_fc4s:[u8;32],pub speed:u32,pub fabric_name:u64,pub symbolic_name:[i8;256],pub system_hostname:[i8;256],pub dev_loss_tmo:u32,pub fpin_stats:fc_fpin_stats,pub tgtid_bind_type:fc_tgtid_binding_type }
+#[repr(C)] pub struct fc_function_template { pub get_rport_dev_loss_tmo:Option<unsafe extern "C" fn(*mut fc_rport)>,pub set_rport_dev_loss_tmo:Option<unsafe extern "C" fn(*mut fc_rport,u32)>,pub get_fc_host_stats:Option<unsafe extern "C" fn(*mut Scsi_Host)->*mut fc_host_statistics>,pub reset_fc_host_stats:Option<unsafe extern "C" fn(*mut Scsi_Host)>,pub issue_fc_host_lip:Option<unsafe extern "C" fn(*mut Scsi_Host)->i32>,pub max_bsg_segments:u32,pub dd_fcrport_size:u32,pub dd_fcvport_size:u32,pub dd_bsg_size:u32,pub flags:u64 }
+
+/* Kernel-owned structures are intentionally referenced, not redefined here. */
+extern "C" { pub fn fc_attach_transport(t:*mut fc_function_template)->*mut scsi_transport_template; pub fn fc_release_transport(t:*mut scsi_transport_template); pub fn fc_remove_host(h:*mut Scsi_Host); pub fn fc_remote_port_add(h:*mut Scsi_Host, channel:i32, ids:*mut fc_rport_identifiers)->*mut fc_rport; pub fn fc_remote_port_delete(r:*mut fc_rport); pub fn fc_remote_port_rolechg(r:*mut fc_rport, roles:u32); pub fn scsi_is_fc_rport(d:*const device)->bool; pub fn fc_get_event_number()->u32; pub fn fc_host_post_event(h:*mut Scsi_Host,n:u32,e:fc_host_event_code,d:u32); pub fn fc_find_rport_by_wwpn(h:*mut Scsi_Host,w:u64)->*mut fc_rport; }
+
+/* The remaining declarations preserve the header's externally visible API. */
+#[repr(C)] pub struct fc_rport { pub maxframe_size:u32,pub supported_classes:u32,pub dev_loss_tmo:u32,pub fpin_stats:fc_fpin_stats,pub node_name:u64,pub port_name:u64,pub port_id:u32,pub roles:u32,pub enc_info:fc_encryption_info,pub port_state:fc_port_state,pub scsi_target_id:u32,pub fast_io_fail_tmo:u32,pub dd_data:*mut core::ffi::c_void,pub channel:u32,pub number:u32,pub flags:u8 }
+pub const FC_RPORT_DEVLOSS_PENDING:u8=1; pub const FC_RPORT_SCAN_PENDING:u8=2; pub const FC_RPORT_FAST_FAIL_TIMEDOUT:u8=4; pub const FC_RPORT_DEVLOSS_CALLBK_DONE:u8=8;
+#[inline] pub unsafe fn fc_remote_port_chkready(r:*const fc_rport)->i32 { match (*r).port_state { fc_port_state::FC_PORTSTATE_ONLINE|fc_port_state::FC_PORTSTATE_MARGINAL => if (*r).roles&FC_PORT_ROLE_FCP_TARGET != 0 {0} else if (*r).flags&FC_RPORT_DEVLOSS_PENDING != 0 { (DID_IMM_RETRY as i32)<<16 } else {(DID_NO_CONNECT as i32)<<16}, fc_port_state::FC_PORTSTATE_BLOCKED => if (*r).flags&FC_RPORT_FAST_FAIL_TIMEDOUT != 0 {(DID_TRANSPORT_FAILFAST as i32)<<16}else{(DID_IMM_RETRY as i32)<<16}, _ => (DID_NO_CONNECT as i32)<<16 } }
+#[inline] pub unsafe fn wwn_to_u64(w:*const u8)->u64 { u64::from_be_bytes(*(w as *const [u8;8])) }
+#[inline] pub unsafe fn u64_to_wwn(v:u64,w:*mut u8) { *(w as *mut [u8;8])=v.to_be_bytes(); }
+#[inline] pub unsafe fn fc_vport_set_state(v:*mut fc_vport,n:fc_vport_state) { if !matches!(n,fc_vport_state::FC_VPORT_UNKNOWN|fc_vport_state::FC_VPORT_INITIALIZING) { (*v).vport_last_state=(*v).vport_state; } (*v).vport_state=n; }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

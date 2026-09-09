@@ -1,0 +1,88 @@
+// SPDX-License-Identifier: MIT
+/* Copyright © 2022-2024 Advanced Micro Devices, Inc. All rights reserved. */
+
+pub const SMU11_DRIVER_IF_VERSION: u32 = 0x40;
+
+// Only Clks that have DPM descriptors are listed here
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum PPCLK_e {
+    PPCLK_GFXCLK = 0,
+    PPCLK_SOCCLK,
+    PPCLK_UCLK,
+    PPCLK_FCLK,
+    PPCLK_DCLK_0,
+    PPCLK_VCLK_0,
+    PPCLK_DCLK_1,
+    PPCLK_VCLK_1,
+    PPCLK_DCEFCLK,
+    PPCLK_DISPCLK,
+    PPCLK_PIXCLK,
+    PPCLK_PHYCLK,
+    PPCLK_DTBCLK,
+    PPCLK_COUNT,
+}
+
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct WatermarkRowGeneric_t {
+    pub MinClock: u16, // This is either DCEFCLK or SOCCLK (in MHz)
+    pub MaxClock: u16, // This is either DCEFCLK or SOCCLK (in MHz)
+    pub MinUclk: u16,
+    pub MaxUclk: u16,
+
+    pub WmSetting: u8,
+    pub Flags: u8,
+    pub Padding: [u8; 2],
+}
+
+pub const NUM_WM_RANGES: usize = 4;
+
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum WM_CLOCK_e {
+    WM_SOCCLK = 0,
+    WM_DCEFCLK,
+    WM_COUNT,
+}
+
+#[repr(C)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub enum WATERMARKS_FLAGS_e {
+    WATERMARKS_CLOCK_RANGE = 0,
+    WATERMARKS_DUMMY_PSTATE,
+    WATERMARKS_MALL,
+    WATERMARKS_COUNT,
+}
+
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct Watermarks_t {
+    // Watermarks
+    pub WatermarkRow: [[WatermarkRowGeneric_t; NUM_WM_RANGES]; 2],
+}
+
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct WatermarksExternal_t {
+    pub Watermarks: Watermarks_t,
+
+    pub MmHubPadding: [u32; 8], // SMU internal use
+}
+
+// Table types
+pub const TABLE_PPTABLE: u32 = 0;
+pub const TABLE_WATERMARKS: u32 = 1;
+pub const TABLE_AVFS_PSM_DEBUG: u32 = 2;
+pub const TABLE_AVFS_FUSE_OVERRIDE: u32 = 3;
+pub const TABLE_PMSTATUSLOG: u32 = 4;
+pub const TABLE_SMU_METRICS: u32 = 5;
+pub const TABLE_DRIVER_SMU_CONFIG: u32 = 6;
+pub const TABLE_ACTIVITY_MONITOR_COEFF: u32 = 7;
+pub const TABLE_OVERDRIVE: u32 = 8;
+pub const TABLE_I2C_COMMANDS: u32 = 9;
+pub const TABLE_PACE: u32 = 10;
+pub const TABLE_ECCINFO: u32 = 11;
+pub const TABLE_COUNT: u32 = 12;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

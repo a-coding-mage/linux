@@ -1,0 +1,155 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (c) 2017 - 2022: Samsung Electronics Co., Ltd.
+ *             https://www.samsung.com
+ * Copyright (c) 2017-2022 Tesla, Inc.
+ *             https://www.tesla.com
+ *
+ * The constants defined in this header are being used in dts
+ * and fsd platform driver.
+ */
+
+/* _DT_BINDINGS_CLOCK_FSD_H */
+
+/* CMU */
+pub const DOUT_CMU_PLL_SHARED0_DIV4: u32 = 1;
+pub const DOUT_CMU_PERIC_SHARED1DIV36: u32 = 2;
+pub const DOUT_CMU_PERIC_SHARED0DIV3_TBUCLK: u32 = 3;
+pub const DOUT_CMU_PERIC_SHARED0DIV20: u32 = 4;
+pub const DOUT_CMU_PERIC_SHARED1DIV4_DMACLK: u32 = 5;
+pub const DOUT_CMU_PLL_SHARED0_DIV6: u32 = 6;
+pub const DOUT_CMU_FSYS0_SHARED1DIV4: u32 = 7;
+pub const DOUT_CMU_FSYS0_SHARED0DIV4: u32 = 8;
+pub const DOUT_CMU_FSYS1_SHARED0DIV8: u32 = 9;
+pub const DOUT_CMU_FSYS1_SHARED0DIV4: u32 = 10;
+pub const CMU_CPUCL_SWITCH_GATE: u32 = 11;
+pub const DOUT_CMU_IMEM_TCUCLK: u32 = 12;
+pub const DOUT_CMU_IMEM_ACLK: u32 = 13;
+pub const DOUT_CMU_IMEM_DMACLK: u32 = 14;
+pub const GAT_CMU_FSYS0_SHARED0DIV4: u32 = 15;
+
+/* PERIC */
+pub const PERIC_SCLK_UART0: u32 = 1;
+pub const PERIC_PCLK_UART0: u32 = 2;
+pub const PERIC_SCLK_UART1: u32 = 3;
+pub const PERIC_PCLK_UART1: u32 = 4;
+pub const PERIC_DMA0_IPCLKPORT_ACLK: u32 = 5;
+pub const PERIC_DMA1_IPCLKPORT_ACLK: u32 = 6;
+pub const PERIC_PWM0_IPCLKPORT_I_PCLK_S0: u32 = 7;
+pub const PERIC_PWM1_IPCLKPORT_I_PCLK_S0: u32 = 8;
+pub const PERIC_PCLK_SPI0: u32 = 9;
+pub const PERIC_SCLK_SPI0: u32 = 10;
+pub const PERIC_PCLK_SPI1: u32 = 11;
+pub const PERIC_SCLK_SPI1: u32 = 12;
+pub const PERIC_PCLK_SPI2: u32 = 13;
+pub const PERIC_SCLK_SPI2: u32 = 14;
+pub const PERIC_PCLK_TDM0: u32 = 15;
+pub const PERIC_PCLK_HSI2C0: u32 = 16;
+pub const PERIC_PCLK_HSI2C1: u32 = 17;
+pub const PERIC_PCLK_HSI2C2: u32 = 18;
+pub const PERIC_PCLK_HSI2C3: u32 = 19;
+pub const PERIC_PCLK_HSI2C4: u32 = 20;
+pub const PERIC_PCLK_HSI2C5: u32 = 21;
+pub const PERIC_PCLK_HSI2C6: u32 = 22;
+pub const PERIC_PCLK_HSI2C7: u32 = 23;
+pub const PERIC_MCAN0_IPCLKPORT_CCLK: u32 = 24;
+pub const PERIC_MCAN0_IPCLKPORT_PCLK: u32 = 25;
+pub const PERIC_MCAN1_IPCLKPORT_CCLK: u32 = 26;
+pub const PERIC_MCAN1_IPCLKPORT_PCLK: u32 = 27;
+pub const PERIC_MCAN2_IPCLKPORT_CCLK: u32 = 28;
+pub const PERIC_MCAN2_IPCLKPORT_PCLK: u32 = 29;
+pub const PERIC_MCAN3_IPCLKPORT_CCLK: u32 = 30;
+pub const PERIC_MCAN3_IPCLKPORT_PCLK: u32 = 31;
+pub const PERIC_PCLK_ADCIF: u32 = 32;
+pub const PERIC_EQOS_TOP_IPCLKPORT_CLK_PTP_REF_I: u32 = 33;
+pub const PERIC_EQOS_TOP_IPCLKPORT_ACLK_I: u32 = 34;
+pub const PERIC_EQOS_TOP_IPCLKPORT_HCLK_I: u32 = 35;
+pub const PERIC_EQOS_TOP_IPCLKPORT_RGMII_CLK_I: u32 = 36;
+pub const PERIC_EQOS_TOP_IPCLKPORT_CLK_RX_I: u32 = 37;
+pub const PERIC_BUS_D_PERIC_IPCLKPORT_EQOSCLK: u32 = 38;
+pub const PERIC_BUS_P_PERIC_IPCLKPORT_EQOSCLK: u32 = 39;
+pub const PERIC_HCLK_TDM0: u32 = 40;
+pub const PERIC_PCLK_TDM1: u32 = 41;
+pub const PERIC_HCLK_TDM1: u32 = 42;
+pub const PERIC_EQOS_PHYRXCLK_MUX: u32 = 43;
+pub const PERIC_EQOS_PHYRXCLK: u32 = 44;
+pub const PERIC_DOUT_RGMII_CLK: u32 = 45;
+
+/* FSYS0 */
+pub const UFS0_MPHY_REFCLK_IXTAL24: u32 = 1;
+pub const UFS0_MPHY_REFCLK_IXTAL26: u32 = 2;
+pub const UFS1_MPHY_REFCLK_IXTAL24: u32 = 3;
+pub const UFS1_MPHY_REFCLK_IXTAL26: u32 = 4;
+pub const UFS0_TOP0_HCLK_BUS: u32 = 5;
+pub const UFS0_TOP0_ACLK: u32 = 6;
+pub const UFS0_TOP0_CLK_UNIPRO: u32 = 7;
+pub const UFS0_TOP0_FMP_CLK: u32 = 8;
+pub const UFS1_TOP1_HCLK_BUS: u32 = 9;
+pub const UFS1_TOP1_ACLK: u32 = 10;
+pub const UFS1_TOP1_CLK_UNIPRO: u32 = 11;
+pub const UFS1_TOP1_FMP_CLK: u32 = 12;
+pub const PCIE_SUBCTRL_INST0_DBI_ACLK_SOC: u32 = 13;
+pub const PCIE_SUBCTRL_INST0_AUX_CLK_SOC: u32 = 14;
+pub const PCIE_SUBCTRL_INST0_MSTR_ACLK_SOC: u32 = 15;
+pub const PCIE_SUBCTRL_INST0_SLV_ACLK_SOC: u32 = 16;
+pub const FSYS0_EQOS_TOP0_IPCLKPORT_CLK_PTP_REF_I: u32 = 17;
+pub const FSYS0_EQOS_TOP0_IPCLKPORT_ACLK_I: u32 = 18;
+pub const FSYS0_EQOS_TOP0_IPCLKPORT_HCLK_I: u32 = 19;
+pub const FSYS0_EQOS_TOP0_IPCLKPORT_RGMII_CLK_I: u32 = 20;
+pub const FSYS0_EQOS_TOP0_IPCLKPORT_CLK_RX_I: u32 = 21;
+pub const FSYS0_DOUT_FSYS0_PERIBUS_GRP: u32 = 22;
+
+/* FSYS1 */
+pub const PCIE_LINK0_IPCLKPORT_DBI_ACLK: u32 = 1;
+pub const PCIE_LINK0_IPCLKPORT_AUX_ACLK: u32 = 2;
+pub const PCIE_LINK0_IPCLKPORT_MSTR_ACLK: u32 = 3;
+pub const PCIE_LINK0_IPCLKPORT_SLV_ACLK: u32 = 4;
+pub const PCIE_LINK1_IPCLKPORT_DBI_ACLK: u32 = 5;
+pub const PCIE_LINK1_IPCLKPORT_AUX_ACLK: u32 = 6;
+pub const PCIE_LINK1_IPCLKPORT_MSTR_ACLK: u32 = 7;
+pub const PCIE_LINK1_IPCLKPORT_SLV_ACLK: u32 = 8;
+
+/* IMEM */
+pub const IMEM_DMA0_IPCLKPORT_ACLK: u32 = 1;
+pub const IMEM_DMA1_IPCLKPORT_ACLK: u32 = 2;
+pub const IMEM_WDT0_IPCLKPORT_PCLK: u32 = 3;
+pub const IMEM_WDT1_IPCLKPORT_PCLK: u32 = 4;
+pub const IMEM_WDT2_IPCLKPORT_PCLK: u32 = 5;
+pub const IMEM_MCT_PCLK: u32 = 6;
+pub const IMEM_TMU_CPU0_IPCLKPORT_I_CLK_TS: u32 = 7;
+pub const IMEM_TMU_CPU2_IPCLKPORT_I_CLK_TS: u32 = 8;
+pub const IMEM_TMU_TOP_IPCLKPORT_I_CLK_TS: u32 = 9;
+pub const IMEM_TMU_GPU_IPCLKPORT_I_CLK_TS: u32 = 10;
+pub const IMEM_TMU_GT_IPCLKPORT_I_CLK_TS: u32 = 11;
+
+/* MFC */
+pub const MFC_MFC_IPCLKPORT_ACLK: u32 = 1;
+
+/* CAM_CSI */
+pub const CAM_CSI0_0_IPCLKPORT_I_ACLK: u32 = 1;
+pub const CAM_CSI0_1_IPCLKPORT_I_ACLK: u32 = 2;
+pub const CAM_CSI0_2_IPCLKPORT_I_ACLK: u32 = 3;
+pub const CAM_CSI0_3_IPCLKPORT_I_ACLK: u32 = 4;
+pub const CAM_CSI1_0_IPCLKPORT_I_ACLK: u32 = 5;
+pub const CAM_CSI1_1_IPCLKPORT_I_ACLK: u32 = 6;
+pub const CAM_CSI1_2_IPCLKPORT_I_ACLK: u32 = 7;
+pub const CAM_CSI1_3_IPCLKPORT_I_ACLK: u32 = 8;
+pub const CAM_CSI2_0_IPCLKPORT_I_ACLK: u32 = 9;
+pub const CAM_CSI2_1_IPCLKPORT_I_ACLK: u32 = 10;
+pub const CAM_CSI2_2_IPCLKPORT_I_ACLK: u32 = 11;
+pub const CAM_CSI2_3_IPCLKPORT_I_ACLK: u32 = 12;
+pub const CAM_CSI_PLL: u32 = 13;
+pub const CAM_CSI0_0_IPCLKPORT_I_PCLK: u32 = 14;
+pub const CAM_CSI0_1_IPCLKPORT_I_PCLK: u32 = 15;
+pub const CAM_CSI0_2_IPCLKPORT_I_PCLK: u32 = 16;
+pub const CAM_CSI0_3_IPCLKPORT_I_PCLK: u32 = 17;
+pub const CAM_CSI1_0_IPCLKPORT_I_PCLK: u32 = 18;
+pub const CAM_CSI1_1_IPCLKPORT_I_PCLK: u32 = 19;
+pub const CAM_CSI1_2_IPCLKPORT_I_PCLK: u32 = 20;
+pub const CAM_CSI1_3_IPCLKPORT_I_PCLK: u32 = 21;
+pub const CAM_CSI2_0_IPCLKPORT_I_PCLK: u32 = 22;
+pub const CAM_CSI2_1_IPCLKPORT_I_PCLK: u32 = 23;
+pub const CAM_CSI2_2_IPCLKPORT_I_PCLK: u32 = 24;
+pub const CAM_CSI2_3_IPCLKPORT_I_PCLK: u32 = 25;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

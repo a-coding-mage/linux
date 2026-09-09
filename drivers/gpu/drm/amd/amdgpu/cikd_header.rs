@@ -1,0 +1,93 @@
+/*
+ * Copyright 2012 Advanced Micro Devices, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software.
+ */
+
+pub const MC_SEQ_MISC0_MT_MASK: u32 = 0xf0000000;
+pub const MC_SEQ_MISC0_MT_GDDR1: u32 = 0x10000000;
+pub const MC_SEQ_MISC0_MT_DDR2: u32 = 0x20000000;
+pub const MC_SEQ_MISC0_MT_GDDR3: u32 = 0x30000000;
+pub const MC_SEQ_MISC0_MT_GDDR4: u32 = 0x40000000;
+pub const MC_SEQ_MISC0_MT_GDDR5: u32 = 0x50000000;
+pub const MC_SEQ_MISC0_MT_HBM: u32 = 0x60000000;
+pub const MC_SEQ_MISC0_MT_DDR3: u32 = 0xB0000000;
+pub const CP_ME_TABLE_SIZE: u32 = 96;
+
+pub const CRTC0_REGISTER_OFFSET: u32 = 0x1b7c - 0x1b7c;
+pub const CRTC1_REGISTER_OFFSET: u32 = 0x1e7c - 0x1b7c;
+pub const CRTC2_REGISTER_OFFSET: u32 = 0x417c - 0x1b7c;
+pub const CRTC3_REGISTER_OFFSET: u32 = 0x447c - 0x1b7c;
+pub const CRTC4_REGISTER_OFFSET: u32 = 0x477c - 0x1b7c;
+pub const CRTC5_REGISTER_OFFSET: u32 = 0x4a7c - 0x1b7c;
+pub const HPD0_REGISTER_OFFSET: u32 = 0x1807 - 0x1807;
+pub const HPD1_REGISTER_OFFSET: u32 = 0x180a - 0x1807;
+pub const HPD2_REGISTER_OFFSET: u32 = 0x180d - 0x1807;
+pub const HPD3_REGISTER_OFFSET: u32 = 0x1810 - 0x1807;
+pub const HPD4_REGISTER_OFFSET: u32 = 0x1813 - 0x1807;
+pub const HPD5_REGISTER_OFFSET: u32 = 0x1816 - 0x1807;
+pub const AUD0_REGISTER_OFFSET: u32 = 0x1780 - 0x1780;
+pub const AUD1_REGISTER_OFFSET: u32 = 0x1786 - 0x1780;
+pub const AUD2_REGISTER_OFFSET: u32 = 0x178c - 0x1780;
+pub const AUD3_REGISTER_OFFSET: u32 = 0x1792 - 0x1780;
+pub const AUD4_REGISTER_OFFSET: u32 = 0x1798 - 0x1780;
+pub const AUD5_REGISTER_OFFSET: u32 = 0x179d - 0x1780;
+pub const AUD6_REGISTER_OFFSET: u32 = 0x17a4 - 0x1780;
+
+macro_rules! shift { ($name:ident, $n:expr) => { pub const fn $name(x: u32) -> u32 { x << $n } }; }
+shift!(PIPEID, 0); shift!(MEID, 2); shift!(VMID, 4); shift!(QUEUEID, 8);
+pub const MMCC_DRM_ID_STRAPS: u32 = 0x1559;
+pub const CC_DRM_ID_STRAPS_ATI_REV_ID_MASK: u32 = 0xf0000000;
+pub const MMCHUB_CONTROL: u32 = 0x619;
+pub const BYPASS_VM: u32 = 1 << 0;
+pub const SYSTEM_APERTURE_UNMAPPED_ACCESS_PASS_THRU: u32 = 0;
+pub const MMGRPH_LUT_10BIT_BYPASS_CONTROL: u32 = 0x1a02;
+pub const LUT_10BIT_BYPASS_EN: u32 = 1 << 8;
+
+// Display, cursor, color, tiling, and HDMI enumerations.
+pub const CURSOR_MONO: u32=0; pub const CURSOR_24_1: u32=1; pub const CURSOR_24_8_PRE_MULT: u32=2; pub const CURSOR_24_8_UNPRE_MULT: u32=3;
+pub const CURSOR_URGENT_ALWAYS: u32=0; pub const CURSOR_URGENT_1_8: u32=1; pub const CURSOR_URGENT_1_4: u32=2; pub const CURSOR_URGENT_3_8: u32=3; pub const CURSOR_URGENT_1_2: u32=4;
+pub const GRPH_DEPTH_8BPP:u32=0; pub const GRPH_DEPTH_16BPP:u32=1; pub const GRPH_DEPTH_32BPP:u32=2;
+pub const GRPH_FORMAT_INDEXED:u32=0; pub const GRPH_FORMAT_ARGB1555:u32=0; pub const GRPH_FORMAT_ARGB565:u32=1; pub const GRPH_FORMAT_ARGB4444:u32=2; pub const GRPH_FORMAT_AI88:u32=3; pub const GRPH_FORMAT_MONO16:u32=4; pub const GRPH_FORMAT_BGRA5551:u32=5;
+pub const GRPH_FORMAT_ARGB8888:u32=0; pub const GRPH_FORMAT_ARGB2101010:u32=1; pub const GRPH_FORMAT_32BPP_DIG:u32=2; pub const GRPH_FORMAT_8B_ARGB2101010:u32=3; pub const GRPH_FORMAT_BGRA1010102:u32=4; pub const GRPH_FORMAT_8B_BGRA1010102:u32=5; pub const GRPH_FORMAT_RGB111110:u32=6; pub const GRPH_FORMAT_BGR101111:u32=7;
+pub const ADDR_SURF_MACRO_TILE_ASPECT_1:u32=0; pub const ADDR_SURF_MACRO_TILE_ASPECT_2:u32=1; pub const ADDR_SURF_MACRO_TILE_ASPECT_4:u32=2; pub const ADDR_SURF_MACRO_TILE_ASPECT_8:u32=3;
+pub const GRPH_ARRAY_LINEAR_GENERAL:u32=0; pub const GRPH_ARRAY_LINEAR_ALIGNED:u32=1; pub const GRPH_ARRAY_1D_TILED_THIN1:u32=2; pub const GRPH_ARRAY_2D_TILED_THIN1:u32=4;
+pub const DISPLAY_MICRO_TILING:u32=0; pub const THIN_MICRO_TILING:u32=1; pub const DEPTH_MICRO_TILING:u32=2; pub const ROTATED_MICRO_TILING:u32=4;
+pub const GRPH_ENDIAN_NONE:u32=0; pub const GRPH_ENDIAN_8IN16:u32=1; pub const GRPH_ENDIAN_8IN32:u32=2; pub const GRPH_ENDIAN_8IN64:u32=3;
+pub const GRPH_RED_SEL_R:u32=0; pub const GRPH_RED_SEL_G:u32=1; pub const GRPH_RED_SEL_B:u32=2; pub const GRPH_RED_SEL_A:u32=3; pub const GRPH_GREEN_SEL_G:u32=0; pub const GRPH_GREEN_SEL_B:u32=1; pub const GRPH_GREEN_SEL_A:u32=2; pub const GRPH_GREEN_SEL_R:u32=3; pub const GRPH_BLUE_SEL_B:u32=0; pub const GRPH_BLUE_SEL_A:u32=1; pub const GRPH_BLUE_SEL_R:u32=2; pub const GRPH_BLUE_SEL_G:u32=3; pub const GRPH_ALPHA_SEL_A:u32=0; pub const GRPH_ALPHA_SEL_R:u32=1; pub const GRPH_ALPHA_SEL_G:u32=2; pub const GRPH_ALPHA_SEL_B:u32=3;
+pub const INPUT_GAMMA_USE_LUT:u32=0; pub const INPUT_GAMMA_BYPASS:u32=1; pub const INPUT_GAMMA_SRGB_24:u32=2; pub const INPUT_GAMMA_XVYCC_222:u32=3; pub const INPUT_CSC_BYPASS:u32=0; pub const INPUT_CSC_PROG_COEFF:u32=1; pub const INPUT_CSC_PROG_SHARED_MATRIXA:u32=2;
+pub const OUTPUT_CSC_BYPASS:u32=0; pub const OUTPUT_CSC_TV_RGB:u32=1; pub const OUTPUT_CSC_YCBCR_601:u32=2; pub const OUTPUT_CSC_YCBCR_709:u32=3; pub const OUTPUT_CSC_PROG_COEFF:u32=4; pub const OUTPUT_CSC_PROG_SHARED_MATRIXB:u32=5;
+pub const DEGAMMA_BYPASS:u32=0; pub const DEGAMMA_SRGB_24:u32=1; pub const DEGAMMA_XVYCC_222:u32=2; pub const GAMUT_REMAP_BYPASS:u32=0; pub const GAMUT_REMAP_PROG_COEFF:u32=1; pub const GAMUT_REMAP_PROG_SHARED_MATRIXA:u32=2; pub const GAMUT_REMAP_PROG_SHARED_MATRIXB:u32=3; pub const REGAMMA_BYPASS:u32=0; pub const REGAMMA_SRGB_24:u32=1; pub const REGAMMA_XVYCC_222:u32=2; pub const REGAMMA_PROG_A:u32=3; pub const REGAMMA_PROG_B:u32=4;
+pub const FMT_CLAMP_6BPC:u32=0; pub const FMT_CLAMP_8BPC:u32=1; pub const FMT_CLAMP_10BPC:u32=2; pub const HDMI_24BIT_DEEP_COLOR:u32=0; pub const HDMI_30BIT_DEEP_COLOR:u32=1; pub const HDMI_36BIT_DEEP_COLOR:u32=2; pub const HDMI_ACR_HW:u32=0; pub const HDMI_ACR_32:u32=1; pub const HDMI_ACR_44:u32=2; pub const HDMI_ACR_48:u32=3; pub const HDMI_ACR_X1:u32=1; pub const HDMI_ACR_X2:u32=2; pub const HDMI_ACR_X4:u32=4; pub const AFMT_AVI_INFO_Y_RGB:u32=0; pub const AFMT_AVI_INFO_Y_YCBCR422:u32=1; pub const AFMT_AVI_INFO_Y_YCBCR444:u32=2;
+
+pub const NO_AUTO:u32=0; pub const ES_AUTO:u32=1; pub const GS_AUTO:u32=2; pub const ES_AND_GS_AUTO:u32=3;
+shift!(ARRAY_MODE,2); shift!(PIPE_CONFIG,6); shift!(TILE_SPLIT,11); shift!(MICRO_TILE_MODE_NEW,22); shift!(SAMPLE_SPLIT,25); shift!(BANK_WIDTH,0); shift!(BANK_HEIGHT,2); shift!(MACRO_TILE_ASPECT,4); shift!(NUM_BANKS,6);
+pub const MSG_ENTER_RLC_SAFE_MODE:u32=1; pub const MSG_EXIT_RLC_SAFE_MODE:u32=0;
+pub const PACKET_TYPE0:u32=0; pub const PACKET_TYPE1:u32=1; pub const PACKET_TYPE2:u32=2; pub const PACKET_TYPE3:u32=3;
+pub const fn CP_PACKET_GET_TYPE(h:u32)->u32 {(h>>30)&3} pub const fn CP_PACKET_GET_COUNT(h:u32)->u32 {(h>>16)&0x3fff} pub const fn CP_PACKET0_GET_REG(h:u32)->u32 {h&0xffff} pub const fn CP_PACKET3_GET_OPCODE(h:u32)->u32 {(h>>8)&0xff}
+pub const fn PACKET0(reg:u32,n:u32)->u32 {(PACKET_TYPE0<<30)|(reg&0xffff)|((n&0x3fff)<<16)} pub const CP_PACKET2:u32=0x80000000; pub const PACKET2_PAD_SHIFT:u32=0; pub const PACKET2_PAD_MASK:u32=0x3fffffff; pub const fn PACKET2(v:u32)->u32 { CP_PACKET2 | v } pub const fn PACKET3(op:u32,n:u32)->u32 {(PACKET_TYPE3<<30)|((op&0xff)<<8)|((n&0x3fff)<<16)} pub const fn PACKET3_COMPUTE(op:u32,n:u32)->u32 {PACKET3(op,n)|(1<<1)}
+
+// PM4 packet opcodes and fields.
+pub const PACKET3_NOP:u32=0x10; pub const PACKET3_SET_BASE:u32=0x11; pub const fn PACKET3_BASE_INDEX(x:u32)->u32{x}; pub const CE_PARTITION_BASE:u32=3; pub const PACKET3_CLEAR_STATE:u32=0x12; pub const PACKET3_INDEX_BUFFER_SIZE:u32=0x13; pub const PACKET3_DISPATCH_DIRECT:u32=0x15; pub const PACKET3_DISPATCH_INDIRECT:u32=0x16; pub const PACKET3_ATOMIC_GDS:u32=0x1d; pub const PACKET3_ATOMIC_MEM:u32=0x1e; pub const PACKET3_OCCLUSION_QUERY:u32=0x1f; pub const PACKET3_SET_PREDICATION:u32=0x20; pub const PACKET3_REG_RMW:u32=0x21; pub const PACKET3_COND_EXEC:u32=0x22; pub const PACKET3_PRED_EXEC:u32=0x23; pub const PACKET3_DRAW_INDIRECT:u32=0x24; pub const PACKET3_DRAW_INDEX_INDIRECT:u32=0x25; pub const PACKET3_INDEX_BASE:u32=0x26; pub const PACKET3_DRAW_INDEX_2:u32=0x27; pub const PACKET3_CONTEXT_CONTROL:u32=0x28; pub const PACKET3_INDEX_TYPE:u32=0x2a; pub const PACKET3_DRAW_INDIRECT_MULTI:u32=0x2c; pub const PACKET3_DRAW_INDEX_AUTO:u32=0x2d; pub const PACKET3_NUM_INSTANCES:u32=0x2f; pub const PACKET3_DRAW_INDEX_MULTI_AUTO:u32=0x30; pub const PACKET3_INDIRECT_BUFFER_CONST:u32=0x33; pub const PACKET3_STRMOUT_BUFFER_UPDATE:u32=0x34; pub const PACKET3_DRAW_INDEX_OFFSET_2:u32=0x35; pub const PACKET3_DRAW_PREAMBLE:u32=0x36; pub const PACKET3_WRITE_DATA:u32=0x37;
+shift!(WRITE_DATA_DST_SEL,8); pub const WR_ONE_ADDR:u32=1<<16; pub const WR_CONFIRM:u32=1<<20; shift!(WRITE_DATA_CACHE_POLICY,25); shift!(WRITE_DATA_ENGINE_SEL,30);
+pub const PACKET3_DRAW_INDEX_INDIRECT_MULTI:u32=0x38; pub const PACKET3_MEM_SEMAPHORE:u32=0x39; pub const PACKET3_SEM_USE_MAILBOX:u32=1<<16; pub const PACKET3_SEM_SEL_SIGNAL_TYPE:u32=1<<20; pub const fn PACKET3_SEM_CLIENT_CODE(x:u32)->u32{x<<24}; pub const PACKET3_SEM_SEL_SIGNAL:u32=6<<29; pub const PACKET3_SEM_SEL_WAIT:u32=7<<29; pub const PACKET3_COPY_DW:u32=0x3b; pub const PACKET3_WAIT_REG_MEM:u32=0x3c; shift!(WAIT_REG_MEM_FUNCTION,0); shift!(WAIT_REG_MEM_MEM_SPACE,4); shift!(WAIT_REG_MEM_OPERATION,6); shift!(WAIT_REG_MEM_ENGINE,8); pub const PACKET3_INDIRECT_BUFFER:u32=0x3f; pub const INDIRECT_BUFFER_TCL2_VOLATILE:u32=1<<22; pub const INDIRECT_BUFFER_VALID:u32=1<<23; shift!(INDIRECT_BUFFER_CACHE_POLICY,28);
+pub const PACKET3_COPY_DATA:u32=0x40; pub const PACKET3_PFP_SYNC_ME:u32=0x42; pub const PACKET3_SURFACE_SYNC:u32=0x43;
+pub const PACKET3_DEST_BASE_0_ENA:u32=1<<0; pub const PACKET3_DEST_BASE_1_ENA:u32=1<<1; pub const PACKET3_CB0_DEST_BASE_ENA:u32=1<<6; pub const PACKET3_CB1_DEST_BASE_ENA:u32=1<<7; pub const PACKET3_CB2_DEST_BASE_ENA:u32=1<<8; pub const PACKET3_CB3_DEST_BASE_ENA:u32=1<<9; pub const PACKET3_CB4_DEST_BASE_ENA:u32=1<<10; pub const PACKET3_CB5_DEST_BASE_ENA:u32=1<<11; pub const PACKET3_CB6_DEST_BASE_ENA:u32=1<<12; pub const PACKET3_CB7_DEST_BASE_ENA:u32=1<<13; pub const PACKET3_DB_DEST_BASE_ENA:u32=1<<14; pub const PACKET3_TCL1_VOL_ACTION_ENA:u32=1<<15; pub const PACKET3_TC_VOL_ACTION_ENA:u32=1<<16; pub const PACKET3_TC_WB_ACTION_ENA:u32=1<<18; pub const PACKET3_DEST_BASE_2_ENA:u32=1<<19; pub const PACKET3_DEST_BASE_3_ENA:u32=1<<21; pub const PACKET3_TCL1_ACTION_ENA:u32=1<<22; pub const PACKET3_TC_ACTION_ENA:u32=1<<23; pub const PACKET3_CB_ACTION_ENA:u32=1<<25; pub const PACKET3_DB_ACTION_ENA:u32=1<<26; pub const PACKET3_SH_KCACHE_ACTION_ENA:u32=1<<27; pub const PACKET3_SH_KCACHE_VOL_ACTION_ENA:u32=1<<28; pub const PACKET3_SH_ICACHE_ACTION_ENA:u32=1<<29;
+pub const PACKET3_COND_WRITE:u32=0x45; pub const PACKET3_EVENT_WRITE:u32=0x46; shift!(EVENT_TYPE,0); shift!(EVENT_INDEX,8); pub const PACKET3_EVENT_WRITE_EOP:u32=0x47; pub const EOP_TCL1_VOL_ACTION_EN:u32=1<<12; pub const EOP_TC_VOL_ACTION_EN:u32=1<<13; pub const EOP_TC_WB_ACTION_EN:u32=1<<15; pub const EOP_TCL1_ACTION_EN:u32=1<<16; pub const EOP_TC_ACTION_EN:u32=1<<17; pub const EOP_TCL2_VOLATILE:u32=1<<24; shift!(EOP_CACHE_POLICY,25); pub const EOP_EXEC:u32=1<<28; shift!(DATA_SEL,29); shift!(INT_SEL,24); shift!(DST_SEL,16); pub const PACKET3_EVENT_WRITE_EOS:u32=0x48; pub const PACKET3_RELEASE_MEM:u32=0x49; pub const PACKET3_PREAMBLE_CNTL:u32=0x4a; pub const PACKET3_PREAMBLE_BEGIN_CLEAR_STATE:u32=2<<28; pub const PACKET3_PREAMBLE_END_CLEAR_STATE:u32=3<<28;
+pub const PACKET3_DMA_DATA:u32=0x50; shift!(PACKET3_DMA_DATA_ENGINE,0); shift!(PACKET3_DMA_DATA_SRC_CACHE_POLICY,13); pub const PACKET3_DMA_DATA_SRC_VOLATILE:u32=1<<15; shift!(PACKET3_DMA_DATA_DST_SEL,20); shift!(PACKET3_DMA_DATA_DST_CACHE_POLICY,25); pub const PACKET3_DMA_DATA_DST_VOLATILE:u32=1<<27; shift!(PACKET3_DMA_DATA_SRC_SEL,29); pub const PACKET3_DMA_DATA_CP_SYNC:u32=1<<31; pub const PACKET3_DMA_DATA_DIS_WC:u32=1<<21; shift!(PACKET3_DMA_DATA_CMD_SRC_SWAP,22); shift!(PACKET3_DMA_DATA_CMD_DST_SWAP,24); pub const PACKET3_DMA_DATA_CMD_SAS:u32=1<<26; pub const PACKET3_DMA_DATA_CMD_DAS:u32=1<<27; pub const PACKET3_DMA_DATA_CMD_SAIC:u32=1<<28; pub const PACKET3_DMA_DATA_CMD_DAIC:u32=1<<29; pub const PACKET3_DMA_DATA_CMD_RAW_WAIT:u32=1<<30;
+pub const PACKET3_ACQUIRE_MEM:u32=0x58; pub const PACKET3_REWIND:u32=0x59; pub const PACKET3_LOAD_UCONFIG_REG:u32=0x5e; pub const PACKET3_LOAD_SH_REG:u32=0x5f; pub const PACKET3_LOAD_CONFIG_REG:u32=0x60; pub const PACKET3_LOAD_CONTEXT_REG:u32=0x61; pub const PACKET3_SET_CONFIG_REG:u32=0x68; pub const PACKET3_SET_CONFIG_REG_START:u32=0x2000; pub const PACKET3_SET_CONFIG_REG_END:u32=0x2c00; pub const PACKET3_SET_CONTEXT_REG:u32=0x69; pub const PACKET3_SET_CONTEXT_REG_START:u32=0xa000; pub const PACKET3_SET_CONTEXT_REG_END:u32=0xa400; pub const PACKET3_SET_CONTEXT_REG_INDIRECT:u32=0x73; pub const PACKET3_SET_SH_REG:u32=0x76; pub const PACKET3_SET_SH_REG_START:u32=0x2c00; pub const PACKET3_SET_SH_REG_END:u32=0x3000; pub const PACKET3_SET_SH_REG_OFFSET:u32=0x77; pub const PACKET3_SET_QUEUE_REG:u32=0x78; pub const PACKET3_SET_UCONFIG_REG:u32=0x79; pub const PACKET3_SET_UCONFIG_REG_START:u32=0xc000; pub const PACKET3_SET_UCONFIG_REG_END:u32=0xc400; pub const PACKET3_SCRATCH_RAM_WRITE:u32=0x7d; pub const PACKET3_SCRATCH_RAM_READ:u32=0x7e; pub const PACKET3_LOAD_CONST_RAM:u32=0x80; pub const PACKET3_WRITE_CONST_RAM:u32=0x81; pub const PACKET3_DUMP_CONST_RAM:u32=0x83; pub const PACKET3_INCREMENT_CE_COUNTER:u32=0x84; pub const PACKET3_INCREMENT_DE_COUNTER:u32=0x85; pub const PACKET3_WAIT_ON_CE_COUNTER:u32=0x86; pub const PACKET3_WAIT_ON_DE_COUNTER_DIFF:u32=0x88; pub const PACKET3_SWITCH_BUFFER:u32=0x8b;
+
+pub const SDMA0_REGISTER_OFFSET:u32=0; pub const SDMA1_REGISTER_OFFSET:u32=0x200; pub const SDMA_MAX_INSTANCE:u32=2; pub const fn SDMA_PACKET(op:u32,sub_op:u32,e:u32)->u32 {((e&0xffff)<<16)|((sub_op&0xff)<<8)|(op&0xff)}
+pub const SDMA_OPCODE_NOP:u32=0; pub const fn SDMA_NOP_COUNT(x:u32)->u32{(x&0x3fff)<<16}; pub const SDMA_OPCODE_COPY:u32=1; pub const SDMA_COPY_SUB_OPCODE_LINEAR:u32=0; pub const SDMA_COPY_SUB_OPCODE_TILED:u32=1; pub const SDMA_COPY_SUB_OPCODE_SOA:u32=3; pub const SDMA_COPY_SUB_OPCODE_LINEAR_SUB_WINDOW:u32=4; pub const SDMA_COPY_SUB_OPCODE_TILED_SUB_WINDOW:u32=5; pub const SDMA_COPY_SUB_OPCODE_T2T_SUB_WINDOW:u32=6; pub const SDMA_OPCODE_WRITE:u32=2; pub const SDMA_WRITE_SUB_OPCODE_LINEAR:u32=0; pub const SDMA_WRITE_SUB_OPCODE_TILED:u32=1; pub const SDMA_OPCODE_INDIRECT_BUFFER:u32=4; pub const SDMA_OPCODE_FENCE:u32=5; pub const SDMA_OPCODE_TRAP:u32=6; pub const SDMA_OPCODE_SEMAPHORE:u32=7; pub const SDMA_SEMAPHORE_EXTRA_O:u32=1<<13; pub const SDMA_SEMAPHORE_EXTRA_S:u32=1<<14; pub const SDMA_SEMAPHORE_EXTRA_M:u32=1<<15; pub const SDMA_OPCODE_POLL_REG_MEM:u32=8; shift!(SDMA_POLL_REG_MEM_EXTRA_OP,10); shift!(SDMA_POLL_REG_MEM_EXTRA_FUNC,12); pub const SDMA_POLL_REG_MEM_EXTRA_M:u32=1<<15; pub const SDMA_OPCODE_COND_EXEC:u32=9; pub const SDMA_OPCODE_CONSTANT_FILL:u32=11; shift!(SDMA_CONSTANT_FILL_EXTRA_SIZE,14); pub const SDMA_OPCODE_GENERATE_PTE_PDE:u32=12; pub const SDMA_OPCODE_TIMESTAMP:u32=13; pub const SDMA_TIMESTAMP_SUB_OPCODE_SET_LOCAL:u32=0; pub const SDMA_TIMESTAMP_SUB_OPCODE_GET_LOCAL:u32=1; pub const SDMA_TIMESTAMP_SUB_OPCODE_GET_GLOBAL:u32=2; pub const SDMA_OPCODE_SRBM_WRITE:u32=14; shift!(SDMA_SRBM_WRITE_EXTRA_BYTE_ENABLE,12);
+pub const VCE_CMD_NO_OP:u32=0; pub const VCE_CMD_END:u32=1; pub const VCE_CMD_IB:u32=2; pub const VCE_CMD_FENCE:u32=3; pub const VCE_CMD_TRAP:u32=4; pub const VCE_CMD_IB_AUTO:u32=5; pub const VCE_CMD_SEMAPHORE:u32=6; shift!(PRIVATE_BASE,0); shift!(SHARED_BASE,16);
+// External register definitions are supplied by dependent headers.
+pub const fn KFD_CIK_SDMA_QUEUE_OFFSET(mm_sdma0_rlc1_rb_cntl:u32, mm_sdma0_rlc0_rb_cntl:u32)->u32 {mm_sdma0_rlc1_rb_cntl-mm_sdma0_rlc0_rb_cntl}
+pub const MTYPE_CACHED:u32=0; pub const MTYPE_NONCACHED:u32=3;
+shift!(RB_MAP_PKR0,0); pub const RB_MAP_PKR0_MASK:u32=0x3; shift!(RB_MAP_PKR1,2); pub const RB_MAP_PKR1_MASK:u32=0x3<<2; shift!(RB_XSEL2,4); pub const RB_XSEL2_MASK:u32=0x3<<4; pub const RB_XSEL:u32=1<<6; pub const RB_YSEL:u32=1<<7; shift!(PKR_MAP,8); pub const PKR_MAP_MASK:u32=0x3<<8; shift!(PKR_XSEL,10); pub const PKR_XSEL_MASK:u32=0x3<<10; shift!(PKR_YSEL,12); pub const PKR_YSEL_MASK:u32=0x3<<12; shift!(SC_MAP,16); pub const SC_MAP_MASK:u32=0x3<<16; shift!(SC_XSEL,18); pub const SC_XSEL_MASK:u32=0x3<<18; shift!(SC_YSEL,20); pub const SC_YSEL_MASK:u32=0x3<<20; shift!(SE_MAP,24); pub const SE_MAP_MASK:u32=0x3<<24; shift!(SE_XSEL,26); pub const SE_XSEL_MASK:u32=0x3<<26; shift!(SE_YSEL,28); pub const SE_YSEL_MASK:u32=0x3<<28;
+shift!(SE_PAIR_MAP,0); pub const SE_PAIR_MAP_MASK:u32=0x3; shift!(SE_PAIR_XSEL,2); pub const SE_PAIR_XSEL_MASK:u32=0x3<<2; shift!(SE_PAIR_YSEL,4); pub const SE_PAIR_YSEL_MASK:u32=0x3<<4;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1,0 +1,11 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+
+pub const MT6735_POWER_DOMAIN_MD1: u32 = 0;
+pub const MT6735_POWER_DOMAIN_CONN: u32 = 1;
+pub const MT6735_POWER_DOMAIN_DIS: u32 = 2;
+pub const MT6735_POWER_DOMAIN_MFG: u32 = 3;
+pub const MT6735_POWER_DOMAIN_ISP: u32 = 4;
+pub const MT6735_POWER_DOMAIN_VDE: u32 = 5;
+pub const MT6735_POWER_DOMAIN_VEN: u32 = 6;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

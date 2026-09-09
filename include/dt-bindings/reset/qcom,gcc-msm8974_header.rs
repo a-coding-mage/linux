@@ -1,0 +1,85 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2013, The Linux Foundation. All rights reserved.
+ */
+
+pub const GCC_SYSTEM_NOC_BCR: u32 = 0;
+pub const GCC_CONFIG_NOC_BCR: u32 = 1;
+pub const GCC_PERIPH_NOC_BCR: u32 = 2;
+pub const GCC_IMEM_BCR: u32 = 3;
+pub const GCC_MMSS_BCR: u32 = 4;
+pub const GCC_QDSS_BCR: u32 = 5;
+pub const GCC_USB_30_BCR: u32 = 6;
+pub const GCC_USB3_PHY_BCR: u32 = 7;
+pub const GCC_USB_HS_HSIC_BCR: u32 = 8;
+pub const GCC_USB_HS_BCR: u32 = 9;
+pub const GCC_USB2A_PHY_BCR: u32 = 10;
+pub const GCC_USB2B_PHY_BCR: u32 = 11;
+pub const GCC_SDCC1_BCR: u32 = 12;
+pub const GCC_SDCC2_BCR: u32 = 13;
+pub const GCC_SDCC3_BCR: u32 = 14;
+pub const GCC_SDCC4_BCR: u32 = 15;
+pub const GCC_BLSP1_BCR: u32 = 16;
+pub const GCC_BLSP1_QUP1_BCR: u32 = 17;
+pub const GCC_BLSP1_UART1_BCR: u32 = 18;
+pub const GCC_BLSP1_QUP2_BCR: u32 = 19;
+pub const GCC_BLSP1_UART2_BCR: u32 = 20;
+pub const GCC_BLSP1_QUP3_BCR: u32 = 21;
+pub const GCC_BLSP1_UART3_BCR: u32 = 22;
+pub const GCC_BLSP1_QUP4_BCR: u32 = 23;
+pub const GCC_BLSP1_UART4_BCR: u32 = 24;
+pub const GCC_BLSP1_QUP5_BCR: u32 = 25;
+pub const GCC_BLSP1_UART5_BCR: u32 = 26;
+pub const GCC_BLSP1_QUP6_BCR: u32 = 27;
+pub const GCC_BLSP1_UART6_BCR: u32 = 28;
+pub const GCC_BLSP2_BCR: u32 = 29;
+pub const GCC_BLSP2_QUP1_BCR: u32 = 30;
+pub const GCC_BLSP2_UART1_BCR: u32 = 31;
+pub const GCC_BLSP2_QUP2_BCR: u32 = 32;
+pub const GCC_BLSP2_UART2_BCR: u32 = 33;
+pub const GCC_BLSP2_QUP3_BCR: u32 = 34;
+pub const GCC_BLSP2_UART3_BCR: u32 = 35;
+pub const GCC_BLSP2_QUP4_BCR: u32 = 36;
+pub const GCC_BLSP2_UART4_BCR: u32 = 37;
+pub const GCC_BLSP2_QUP5_BCR: u32 = 38;
+pub const GCC_BLSP2_UART5_BCR: u32 = 39;
+pub const GCC_BLSP2_QUP6_BCR: u32 = 40;
+pub const GCC_BLSP2_UART6_BCR: u32 = 41;
+pub const GCC_PDM_BCR: u32 = 42;
+pub const GCC_BAM_DMA_BCR: u32 = 43;
+pub const GCC_TSIF_BCR: u32 = 44;
+pub const GCC_TCSR_BCR: u32 = 45;
+pub const GCC_BOOT_ROM_BCR: u32 = 46;
+pub const GCC_MSG_RAM_BCR: u32 = 47;
+pub const GCC_TLMM_BCR: u32 = 48;
+pub const GCC_MPM_BCR: u32 = 49;
+pub const GCC_SEC_CTRL_BCR: u32 = 50;
+pub const GCC_SPMI_BCR: u32 = 51;
+pub const GCC_SPDM_BCR: u32 = 52;
+pub const GCC_CE1_BCR: u32 = 53;
+pub const GCC_CE2_BCR: u32 = 54;
+pub const GCC_BIMC_BCR: u32 = 55;
+pub const GCC_MPM_NON_AHB_RESET: u32 = 56;
+pub const GCC_MPM_AHB_RESET: u32 = 57;
+pub const GCC_SNOC_BUS_TIMEOUT0_BCR: u32 = 58;
+pub const GCC_SNOC_BUS_TIMEOUT2_BCR: u32 = 59;
+pub const GCC_PNOC_BUS_TIMEOUT0_BCR: u32 = 60;
+pub const GCC_PNOC_BUS_TIMEOUT1_BCR: u32 = 61;
+pub const GCC_PNOC_BUS_TIMEOUT2_BCR: u32 = 62;
+pub const GCC_PNOC_BUS_TIMEOUT3_BCR: u32 = 63;
+pub const GCC_PNOC_BUS_TIMEOUT4_BCR: u32 = 64;
+pub const GCC_CNOC_BUS_TIMEOUT0_BCR: u32 = 65;
+pub const GCC_CNOC_BUS_TIMEOUT1_BCR: u32 = 66;
+pub const GCC_CNOC_BUS_TIMEOUT2_BCR: u32 = 67;
+pub const GCC_CNOC_BUS_TIMEOUT3_BCR: u32 = 68;
+pub const GCC_CNOC_BUS_TIMEOUT4_BCR: u32 = 69;
+pub const GCC_CNOC_BUS_TIMEOUT5_BCR: u32 = 70;
+pub const GCC_CNOC_BUS_TIMEOUT6_BCR: u32 = 71;
+pub const GCC_DEHR_BCR: u32 = 72;
+pub const GCC_RBCPR_BCR: u32 = 73;
+pub const GCC_MSS_RESTART: u32 = 74;
+pub const GCC_LPASS_RESTART: u32 = 75;
+pub const GCC_WCSS_RESTART: u32 = 76;
+pub const GCC_VENUS_RESTART: u32 = 77;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

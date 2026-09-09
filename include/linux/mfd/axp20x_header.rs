@@ -1,0 +1,1030 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+// Direct source-level Rust translation of axp20x.h.
+/*
+ * Functions and registers to access AXP20X power management chip.
+ *
+ * Copyright (C) 2013, Carlo Caione <carlo@caione.org>
+ */
+
+// Header guard omitted in Rust.
+
+
+// Dependency: Linux regmap and device declarations are supplied externally.
+
+public enum axp20x_variants {
+	AXP152_ID = 0,
+	AXP192_ID,
+	AXP202_ID,
+	AXP209_ID,
+	AXP221_ID,
+	AXP223_ID,
+	AXP288_ID,
+	AXP313A_ID,
+	AXP323_ID,
+	AXP717_ID,
+	AXP803_ID,
+	AXP806_ID,
+	AXP809_ID,
+	AXP813_ID,
+	AXP15060_ID,
+	NR_AXP20X_VARIANTS,
+};
+
+pub const fn AXP192_DATACACHE(m: u32) -> u32 { 0x06 + (m) }
+pub const fn AXP20X_DATACACHE(m: u32) -> u32 { 0x04 + (m) }
+
+/* Power supply */
+pub const AXP152_PWR_OP_MODE: u32 = 0x01;
+pub const AXP152_LDO3456_DC1234_CTRL: u32 = 0x12;
+pub const AXP152_ALDO_OP_MODE: u32 = 0x13;
+pub const AXP152_LDO0_CTRL: u32 = 0x15;
+pub const AXP152_DCDC2_V_OUT: u32 = 0x23;
+pub const AXP152_DCDC2_V_RAMP: u32 = 0x25;
+pub const AXP152_DCDC1_V_OUT: u32 = 0x26;
+pub const AXP152_DCDC3_V_OUT: u32 = 0x27;
+pub const AXP152_ALDO12_V_OUT: u32 = 0x28;
+pub const AXP152_DLDO1_V_OUT: u32 = 0x29;
+pub const AXP152_DLDO2_V_OUT: u32 = 0x2a;
+pub const AXP152_DCDC4_V_OUT: u32 = 0x2b;
+pub const AXP152_V_OFF: u32 = 0x31;
+pub const AXP152_OFF_CTRL: u32 = 0x32;
+pub const AXP152_PEK_KEY: u32 = 0x36;
+pub const AXP152_DCDC_FREQ: u32 = 0x37;
+pub const AXP152_DCDC_MODE: u32 = 0x80;
+
+pub const AXP192_USB_OTG_STATUS: u32 = 0x04;
+pub const AXP192_PWR_OUT_CTRL: u32 = 0x12;
+pub const AXP192_DCDC2_V_OUT: u32 = 0x23;
+pub const AXP192_DCDC1_V_OUT: u32 = 0x26;
+pub const AXP192_DCDC3_V_OUT: u32 = 0x27;
+pub const AXP192_LDO2_3_V_OUT: u32 = 0x28;
+
+pub const AXP20X_PWR_INPUT_STATUS: u32 = 0x00;
+pub const AXP20X_PWR_OP_MODE: u32 = 0x01;
+pub const AXP20X_USB_OTG_STATUS: u32 = 0x02;
+pub const AXP20X_PWR_OUT_CTRL: u32 = 0x12;
+pub const AXP20X_DCDC2_V_OUT: u32 = 0x23;
+pub const AXP20X_DCDC2_LDO3_V_RAMP: u32 = 0x25;
+pub const AXP20X_DCDC3_V_OUT: u32 = 0x27;
+pub const AXP20X_LDO24_V_OUT: u32 = 0x28;
+pub const AXP20X_LDO3_V_OUT: u32 = 0x29;
+pub const AXP20X_VBUS_IPSOUT_MGMT: u32 = 0x30;
+pub const AXP20X_V_OFF: u32 = 0x31;
+pub const AXP20X_OFF_CTRL: u32 = 0x32;
+pub const AXP20X_CHRG_CTRL1: u32 = 0x33;
+pub const AXP20X_CHRG_CTRL2: u32 = 0x34;
+pub const AXP20X_CHRG_BAK_CTRL: u32 = 0x35;
+pub const AXP20X_PEK_KEY: u32 = 0x36;
+pub const AXP20X_DCDC_FREQ: u32 = 0x37;
+pub const AXP20X_V_LTF_CHRG: u32 = 0x38;
+pub const AXP20X_V_HTF_CHRG: u32 = 0x39;
+pub const AXP20X_APS_WARN_L1: u32 = 0x3a;
+pub const AXP20X_APS_WARN_L2: u32 = 0x3b;
+pub const AXP20X_V_LTF_DISCHRG: u32 = 0x3c;
+pub const AXP20X_V_HTF_DISCHRG: u32 = 0x3d;
+
+pub const AXP22X_PWR_OUT_CTRL1: u32 = 0x10;
+pub const AXP22X_PWR_OUT_CTRL2: u32 = 0x12;
+pub const AXP22X_PWR_OUT_CTRL3: u32 = 0x13;
+pub const AXP22X_DLDO1_V_OUT: u32 = 0x15;
+pub const AXP22X_DLDO2_V_OUT: u32 = 0x16;
+pub const AXP22X_DLDO3_V_OUT: u32 = 0x17;
+pub const AXP22X_DLDO4_V_OUT: u32 = 0x18;
+pub const AXP22X_ELDO1_V_OUT: u32 = 0x19;
+pub const AXP22X_ELDO2_V_OUT: u32 = 0x1a;
+pub const AXP22X_ELDO3_V_OUT: u32 = 0x1b;
+pub const AXP22X_DC5LDO_V_OUT: u32 = 0x1c;
+pub const AXP22X_DCDC1_V_OUT: u32 = 0x21;
+pub const AXP22X_DCDC2_V_OUT: u32 = 0x22;
+pub const AXP22X_DCDC3_V_OUT: u32 = 0x23;
+pub const AXP22X_DCDC4_V_OUT: u32 = 0x24;
+pub const AXP22X_DCDC5_V_OUT: u32 = 0x25;
+pub const AXP22X_DCDC23_V_RAMP_CTRL: u32 = 0x27;
+pub const AXP22X_ALDO1_V_OUT: u32 = 0x28;
+pub const AXP22X_ALDO2_V_OUT: u32 = 0x29;
+pub const AXP22X_ALDO3_V_OUT: u32 = 0x2a;
+pub const AXP22X_CHRG_CTRL3: u32 = 0x35;
+
+pub const AXP313A_ON_INDICATE: u32 = 0x00;
+pub const AXP313A_OUTPUT_CONTROL: u32 = 0x10;
+pub const AXP313A_DCDC1_CONTROL: u32 = 0x13;
+pub const AXP313A_DCDC2_CONTROL: u32 = 0x14;
+pub const AXP313A_DCDC3_CONTROL: u32 = 0x15;
+pub const AXP313A_ALDO1_CONTROL: u32 = 0x16;
+pub const AXP313A_DLDO1_CONTROL: u32 = 0x17;
+pub const AXP313A_SHUTDOWN_CTRL: u32 = 0x1a;
+pub const AXP313A_IRQ_EN: u32 = 0x20;
+pub const AXP313A_IRQ_STATE: u32 = 0x21;
+pub const AXP323_DCDC_MODE_CTRL2: u32 = 0x22;
+
+pub const AXP717_ON_INDICATE: u32 = 0x00;
+pub const AXP717_PMU_STATUS_2: u32 = 0x01;
+pub const AXP717_BC_DETECT: u32 = 0x05;
+pub const AXP717_PMU_FAULT: u32 = 0x08;
+pub const AXP717_MODULE_EN_CONTROL_1: u32 = 0x0b;
+pub const AXP717_MIN_SYS_V_CONTROL: u32 = 0x15;
+pub const AXP717_INPUT_VOL_LIMIT_CTRL: u32 = 0x16;
+pub const AXP717_INPUT_CUR_LIMIT_CTRL: u32 = 0x17;
+pub const AXP717_MODULE_EN_CONTROL_2: u32 = 0x19;
+pub const AXP717_BOOST_CONTROL: u32 = 0x1e;
+pub const AXP717_VSYS_V_POWEROFF: u32 = 0x24;
+pub const AXP717_IRQ0_EN: u32 = 0x40;
+pub const AXP717_IRQ1_EN: u32 = 0x41;
+pub const AXP717_IRQ2_EN: u32 = 0x42;
+pub const AXP717_IRQ3_EN: u32 = 0x43;
+pub const AXP717_IRQ4_EN: u32 = 0x44;
+pub const AXP717_IRQ0_STATE: u32 = 0x48;
+pub const AXP717_IRQ1_STATE: u32 = 0x49;
+pub const AXP717_IRQ2_STATE: u32 = 0x4a;
+pub const AXP717_IRQ3_STATE: u32 = 0x4b;
+pub const AXP717_IRQ4_STATE: u32 = 0x4c;
+pub const AXP717_TS_PIN_CFG: u32 = 0x50;
+pub const AXP717_ICC_CHG_SET: u32 = 0x62;
+pub const AXP717_ITERM_CHG_SET: u32 = 0x63;
+pub const AXP717_CV_CHG_SET: u32 = 0x64;
+pub const AXP717_DCDC_OUTPUT_CONTROL: u32 = 0x80;
+pub const AXP717_DCDC1_CONTROL: u32 = 0x83;
+pub const AXP717_DCDC2_CONTROL: u32 = 0x84;
+pub const AXP717_DCDC3_CONTROL: u32 = 0x85;
+pub const AXP717_DCDC4_CONTROL: u32 = 0x86;
+pub const AXP717_LDO0_OUTPUT_CONTROL: u32 = 0x90;
+pub const AXP717_LDO1_OUTPUT_CONTROL: u32 = 0x91;
+pub const AXP717_ALDO1_CONTROL: u32 = 0x93;
+pub const AXP717_ALDO2_CONTROL: u32 = 0x94;
+pub const AXP717_ALDO3_CONTROL: u32 = 0x95;
+pub const AXP717_ALDO4_CONTROL: u32 = 0x96;
+pub const AXP717_BLDO1_CONTROL: u32 = 0x97;
+pub const AXP717_BLDO2_CONTROL: u32 = 0x98;
+pub const AXP717_BLDO3_CONTROL: u32 = 0x99;
+pub const AXP717_BLDO4_CONTROL: u32 = 0x9a;
+pub const AXP717_CLDO1_CONTROL: u32 = 0x9b;
+pub const AXP717_CLDO2_CONTROL: u32 = 0x9c;
+pub const AXP717_CLDO3_CONTROL: u32 = 0x9d;
+pub const AXP717_CLDO4_CONTROL: u32 = 0x9e;
+pub const AXP717_CPUSLDO_CONTROL: u32 = 0x9f;
+pub const AXP717_BATT_PERCENT_DATA: u32 = 0xa4;
+pub const AXP717_ADC_CH_EN_CONTROL: u32 = 0xc0;
+pub const AXP717_BATT_V_H: u32 = 0xc4;
+pub const AXP717_BATT_V_L: u32 = 0xc5;
+pub const AXP717_VBUS_V_H: u32 = 0xc6;
+pub const AXP717_VBUS_V_L: u32 = 0xc7;
+pub const AXP717_VSYS_V_H: u32 = 0xc8;
+pub const AXP717_VSYS_V_L: u32 = 0xc9;
+pub const AXP717_BATT_CHRG_I_H: u32 = 0xca;
+pub const AXP717_BATT_CHRG_I_L: u32 = 0xcb;
+pub const AXP717_ADC_DATA_SEL: u32 = 0xcd;
+pub const AXP717_ADC_DATA_H: u32 = 0xce;
+pub const AXP717_ADC_DATA_L: u32 = 0xcf;
+pub const AXP717_TYPEC_CC_AA_EN: u32 = 0xe1;
+pub const AXP717_TYPEC_CC_MODE_CONTROL: u32 = 0xe3;
+pub const AXP717_TYPEC_CC_STATUS: u32 = 0xe7;
+
+pub const AXP806_STARTUP_SRC: u32 = 0x00;
+pub const AXP806_CHIP_ID: u32 = 0x03;
+pub const AXP806_PWR_OUT_CTRL1: u32 = 0x10;
+pub const AXP806_PWR_OUT_CTRL2: u32 = 0x11;
+pub const AXP806_DCDCA_V_CTRL: u32 = 0x12;
+pub const AXP806_DCDCB_V_CTRL: u32 = 0x13;
+pub const AXP806_DCDCC_V_CTRL: u32 = 0x14;
+pub const AXP806_DCDCD_V_CTRL: u32 = 0x15;
+pub const AXP806_DCDCE_V_CTRL: u32 = 0x16;
+pub const AXP806_ALDO1_V_CTRL: u32 = 0x17;
+pub const AXP806_ALDO2_V_CTRL: u32 = 0x18;
+pub const AXP806_ALDO3_V_CTRL: u32 = 0x19;
+pub const AXP806_DCDC_MODE_CTRL1: u32 = 0x1a;
+pub const AXP806_DCDC_MODE_CTRL2: u32 = 0x1b;
+pub const AXP806_DCDC_FREQ_CTRL: u32 = 0x1c;
+pub const AXP806_BLDO1_V_CTRL: u32 = 0x20;
+pub const AXP806_BLDO2_V_CTRL: u32 = 0x21;
+pub const AXP806_BLDO3_V_CTRL: u32 = 0x22;
+pub const AXP806_BLDO4_V_CTRL: u32 = 0x23;
+pub const AXP806_CLDO1_V_CTRL: u32 = 0x24;
+pub const AXP806_CLDO2_V_CTRL: u32 = 0x25;
+pub const AXP806_CLDO3_V_CTRL: u32 = 0x26;
+pub const AXP806_VREF_TEMP_WARN_L: u32 = 0xf3;
+pub const AXP806_BUS_ADDR_EXT: u32 = 0xfe;
+pub const AXP806_REG_ADDR_EXT: u32 = 0xff;
+
+pub const AXP803_POLYPHASE_CTRL: u32 = 0x14;
+pub const AXP803_FLDO1_V_OUT: u32 = 0x1c;
+pub const AXP803_FLDO2_V_OUT: u32 = 0x1d;
+pub const AXP803_DCDC1_V_OUT: u32 = 0x20;
+pub const AXP803_DCDC2_V_OUT: u32 = 0x21;
+pub const AXP803_DCDC3_V_OUT: u32 = 0x22;
+pub const AXP803_DCDC4_V_OUT: u32 = 0x23;
+pub const AXP803_DCDC5_V_OUT: u32 = 0x24;
+pub const AXP803_DCDC6_V_OUT: u32 = 0x25;
+pub const AXP803_DCDC_FREQ_CTRL: u32 = 0x3b;
+
+/* Other DCDC regulator control registers are the same as AXP803 */
+pub const AXP813_DCDC7_V_OUT: u32 = 0x26;
+
+pub const AXP15060_STARTUP_SRC: u32 = 0x00;
+pub const AXP15060_PWR_OUT_CTRL1: u32 = 0x10;
+pub const AXP15060_PWR_OUT_CTRL2: u32 = 0x11;
+pub const AXP15060_PWR_OUT_CTRL3: u32 = 0x12;
+pub const AXP15060_DCDC1_V_CTRL: u32 = 0x13;
+pub const AXP15060_DCDC2_V_CTRL: u32 = 0x14;
+pub const AXP15060_DCDC3_V_CTRL: u32 = 0x15;
+pub const AXP15060_DCDC4_V_CTRL: u32 = 0x16;
+pub const AXP15060_DCDC5_V_CTRL: u32 = 0x17;
+pub const AXP15060_DCDC6_V_CTRL: u32 = 0x18;
+pub const AXP15060_ALDO1_V_CTRL: u32 = 0x19;
+pub const AXP15060_DCDC_MODE_CTRL1: u32 = 0x1a;
+pub const AXP15060_DCDC_MODE_CTRL2: u32 = 0x1b;
+pub const AXP15060_OUTPUT_MONITOR_DISCHARGE: u32 = 0x1e;
+pub const AXP15060_IRQ_PWROK_VOFF: u32 = 0x1f;
+pub const AXP15060_ALDO2_V_CTRL: u32 = 0x20;
+pub const AXP15060_ALDO3_V_CTRL: u32 = 0x21;
+pub const AXP15060_ALDO4_V_CTRL: u32 = 0x22;
+pub const AXP15060_ALDO5_V_CTRL: u32 = 0x23;
+pub const AXP15060_BLDO1_V_CTRL: u32 = 0x24;
+pub const AXP15060_BLDO2_V_CTRL: u32 = 0x25;
+pub const AXP15060_BLDO3_V_CTRL: u32 = 0x26;
+pub const AXP15060_BLDO4_V_CTRL: u32 = 0x27;
+pub const AXP15060_BLDO5_V_CTRL: u32 = 0x28;
+pub const AXP15060_CLDO1_V_CTRL: u32 = 0x29;
+pub const AXP15060_CLDO2_V_CTRL: u32 = 0x2a;
+pub const AXP15060_CLDO3_V_CTRL: u32 = 0x2b;
+pub const AXP15060_CLDO4_V_CTRL: u32 = 0x2d;
+pub const AXP15060_CPUSLDO_V_CTRL: u32 = 0x2e;
+pub const AXP15060_PWR_WAKEUP_CTRL: u32 = 0x31;
+pub const AXP15060_PWR_DISABLE_DOWN_SEQ: u32 = 0x32;
+pub const AXP15060_PEK_KEY: u32 = 0x36;
+
+/* Interrupt */
+pub const AXP152_IRQ1_EN: u32 = 0x40;
+pub const AXP152_IRQ2_EN: u32 = 0x41;
+pub const AXP152_IRQ3_EN: u32 = 0x42;
+pub const AXP152_IRQ1_STATE: u32 = 0x48;
+pub const AXP152_IRQ2_STATE: u32 = 0x49;
+pub const AXP152_IRQ3_STATE: u32 = 0x4a;
+
+pub const AXP192_IRQ1_EN: u32 = 0x40;
+pub const AXP192_IRQ2_EN: u32 = 0x41;
+pub const AXP192_IRQ3_EN: u32 = 0x42;
+pub const AXP192_IRQ4_EN: u32 = 0x43;
+pub const AXP192_IRQ1_STATE: u32 = 0x44;
+pub const AXP192_IRQ2_STATE: u32 = 0x45;
+pub const AXP192_IRQ3_STATE: u32 = 0x46;
+pub const AXP192_IRQ4_STATE: u32 = 0x47;
+pub const AXP192_IRQ5_EN: u32 = 0x4a;
+pub const AXP192_IRQ5_STATE: u32 = 0x4d;
+
+pub const AXP20X_IRQ1_EN: u32 = 0x40;
+pub const AXP20X_IRQ2_EN: u32 = 0x41;
+pub const AXP20X_IRQ3_EN: u32 = 0x42;
+pub const AXP20X_IRQ4_EN: u32 = 0x43;
+pub const AXP20X_IRQ5_EN: u32 = 0x44;
+pub const AXP20X_IRQ6_EN: u32 = 0x45;
+pub const AXP20X_IRQ1_STATE: u32 = 0x48;
+pub const AXP20X_IRQ2_STATE: u32 = 0x49;
+pub const AXP20X_IRQ3_STATE: u32 = 0x4a;
+pub const AXP20X_IRQ4_STATE: u32 = 0x4b;
+pub const AXP20X_IRQ5_STATE: u32 = 0x4c;
+pub const AXP20X_IRQ6_STATE: u32 = 0x4d;
+
+pub const AXP15060_IRQ1_EN: u32 = 0x40;
+pub const AXP15060_IRQ2_EN: u32 = 0x41;
+pub const AXP15060_IRQ1_STATE: u32 = 0x48;
+pub const AXP15060_IRQ2_STATE: u32 = 0x49;
+
+/* ADC */
+pub const AXP192_GPIO2_V_ADC_H: u32 = 0x68;
+pub const AXP192_GPIO2_V_ADC_L: u32 = 0x69;
+pub const AXP192_GPIO3_V_ADC_H: u32 = 0x6a;
+pub const AXP192_GPIO3_V_ADC_L: u32 = 0x6b;
+
+pub const AXP20X_ACIN_V_ADC_H: u32 = 0x56;
+pub const AXP20X_ACIN_V_ADC_L: u32 = 0x57;
+pub const AXP20X_ACIN_I_ADC_H: u32 = 0x58;
+pub const AXP20X_ACIN_I_ADC_L: u32 = 0x59;
+pub const AXP20X_VBUS_V_ADC_H: u32 = 0x5a;
+pub const AXP20X_VBUS_V_ADC_L: u32 = 0x5b;
+pub const AXP20X_VBUS_I_ADC_H: u32 = 0x5c;
+pub const AXP20X_VBUS_I_ADC_L: u32 = 0x5d;
+pub const AXP20X_TEMP_ADC_H: u32 = 0x5e;
+pub const AXP20X_TEMP_ADC_L: u32 = 0x5f;
+pub const AXP20X_TS_IN_H: u32 = 0x62;
+pub const AXP20X_TS_IN_L: u32 = 0x63;
+pub const AXP20X_GPIO0_V_ADC_H: u32 = 0x64;
+pub const AXP20X_GPIO0_V_ADC_L: u32 = 0x65;
+pub const AXP20X_GPIO1_V_ADC_H: u32 = 0x66;
+pub const AXP20X_GPIO1_V_ADC_L: u32 = 0x67;
+pub const AXP20X_PWR_BATT_H: u32 = 0x70;
+pub const AXP20X_PWR_BATT_M: u32 = 0x71;
+pub const AXP20X_PWR_BATT_L: u32 = 0x72;
+pub const AXP20X_BATT_V_H: u32 = 0x78;
+pub const AXP20X_BATT_V_L: u32 = 0x79;
+pub const AXP20X_BATT_CHRG_I_H: u32 = 0x7a;
+pub const AXP20X_BATT_CHRG_I_L: u32 = 0x7b;
+pub const AXP20X_BATT_DISCHRG_I_H: u32 = 0x7c;
+pub const AXP20X_BATT_DISCHRG_I_L: u32 = 0x7d;
+pub const AXP20X_IPSOUT_V_HIGH_H: u32 = 0x7e;
+pub const AXP20X_IPSOUT_V_HIGH_L: u32 = 0x7f;
+
+/* Power supply */
+pub const AXP192_GPIO30_IN_RANGE: u32 = 0x85;
+
+pub const AXP20X_DCDC_MODE: u32 = 0x80;
+pub const AXP20X_ADC_EN1: u32 = 0x82;
+pub const AXP20X_ADC_EN2: u32 = 0x83;
+pub const AXP20X_ADC_RATE: u32 = 0x84;
+pub const AXP20X_GPIO10_IN_RANGE: u32 = 0x85;
+pub const AXP20X_GPIO1_ADC_IRQ_RIS: u32 = 0x86;
+pub const AXP20X_GPIO1_ADC_IRQ_FAL: u32 = 0x87;
+pub const AXP20X_TIMER_CTRL: u32 = 0x8a;
+pub const AXP20X_VBUS_MON: u32 = 0x8b;
+pub const AXP20X_OVER_TMP: u32 = 0x8f;
+
+pub const AXP22X_PWREN_CTRL1: u32 = 0x8c;
+pub const AXP22X_PWREN_CTRL2: u32 = 0x8d;
+
+/* GPIO */
+pub const AXP152_GPIO0_CTRL: u32 = 0x90;
+pub const AXP152_GPIO1_CTRL: u32 = 0x91;
+pub const AXP152_GPIO2_CTRL: u32 = 0x92;
+pub const AXP152_GPIO3_CTRL: u32 = 0x93;
+pub const AXP152_LDOGPIO2_V_OUT: u32 = 0x96;
+pub const AXP152_GPIO_INPUT: u32 = 0x97;
+pub const AXP152_PWM0_FREQ_X: u32 = 0x98;
+pub const AXP152_PWM0_FREQ_Y: u32 = 0x99;
+pub const AXP152_PWM0_DUTY_CYCLE: u32 = 0x9a;
+pub const AXP152_PWM1_FREQ_X: u32 = 0x9b;
+pub const AXP152_PWM1_FREQ_Y: u32 = 0x9c;
+pub const AXP152_PWM1_DUTY_CYCLE: u32 = 0x9d;
+
+pub const AXP192_GPIO0_CTRL: u32 = 0x90;
+pub const AXP192_LDO_IO0_V_OUT: u32 = 0x91;
+pub const AXP192_GPIO1_CTRL: u32 = 0x92;
+pub const AXP192_GPIO2_CTRL: u32 = 0x93;
+pub const AXP192_GPIO2_0_STATE: u32 = 0x94;
+pub const AXP192_GPIO4_3_CTRL: u32 = 0x95;
+pub const AXP192_GPIO4_3_STATE: u32 = 0x96;
+pub const AXP192_GPIO2_0_PULL: u32 = 0x97;
+pub const AXP192_N_RSTO_CTRL: u32 = 0x9e;
+
+pub const AXP20X_GPIO0_CTRL: u32 = 0x90;
+pub const AXP20X_LDO5_V_OUT: u32 = 0x91;
+pub const AXP20X_GPIO1_CTRL: u32 = 0x92;
+pub const AXP20X_GPIO2_CTRL: u32 = 0x93;
+pub const AXP20X_GPIO20_SS: u32 = 0x94;
+pub const AXP20X_GPIO3_CTRL: u32 = 0x95;
+
+pub const AXP22X_LDO_IO0_V_OUT: u32 = 0x91;
+pub const AXP22X_LDO_IO1_V_OUT: u32 = 0x93;
+pub const AXP22X_GPIO_STATE: u32 = 0x94;
+pub const AXP22X_GPIO_PULL_DOWN: u32 = 0x95;
+
+pub const AXP15060_CLDO4_GPIO2_MODESET: u32 = 0x2c;
+
+/* Battery */
+pub const AXP20X_CHRG_CC_31_24: u32 = 0xb0;
+pub const AXP20X_CHRG_CC_23_16: u32 = 0xb1;
+pub const AXP20X_CHRG_CC_15_8: u32 = 0xb2;
+pub const AXP20X_CHRG_CC_7_0: u32 = 0xb3;
+pub const AXP20X_DISCHRG_CC_31_24: u32 = 0xb4;
+pub const AXP20X_DISCHRG_CC_23_16: u32 = 0xb5;
+pub const AXP20X_DISCHRG_CC_15_8: u32 = 0xb6;
+pub const AXP20X_DISCHRG_CC_7_0: u32 = 0xb7;
+pub const AXP20X_CC_CTRL: u32 = 0xb8;
+pub const AXP20X_FG_RES: u32 = 0xb9;
+
+/* OCV */
+pub const AXP20X_RDC_H: u32 = 0xba;
+pub const AXP20X_RDC_L: u32 = 0xbb;
+pub const fn AXP20X_OCV(m: u32) -> u32 { 0xc0 + (m) }
+pub const AXP20X_OCV_MAX: u32 = 0xf;
+
+/* AXP22X specific registers */
+pub const AXP22X_PMIC_TEMP_H: u32 = 0x56;
+pub const AXP22X_PMIC_TEMP_L: u32 = 0x57;
+pub const AXP22X_TS_ADC_H: u32 = 0x58;
+pub const AXP22X_TS_ADC_L: u32 = 0x59;
+pub const AXP22X_BATLOW_THRES1: u32 = 0xe6;
+
+/* AXP288/AXP803 specific registers */
+pub const AXP288_POWER_REASON: u32 = 0x02;
+pub const AXP288_BC_GLOBAL: u32 = 0x2c;
+pub const AXP288_BC_VBUS_CNTL: u32 = 0x2d;
+pub const AXP288_BC_USB_STAT: u32 = 0x2e;
+pub const AXP288_BC_DET_STAT: u32 = 0x2f;
+pub const AXP288_PMIC_ADC_H: u32 = 0x56;
+pub const AXP288_PMIC_ADC_L: u32 = 0x57;
+pub const AXP288_TS_ADC_H: u32 = 0x58;
+pub const AXP288_TS_ADC_L: u32 = 0x59;
+pub const AXP288_GP_ADC_H: u32 = 0x5a;
+pub const AXP288_GP_ADC_L: u32 = 0x5b;
+pub const AXP288_ADC_TS_PIN_CTRL: u32 = 0x84;
+pub const AXP288_RT_BATT_V_H: u32 = 0xa0;
+pub const AXP288_RT_BATT_V_L: u32 = 0xa1;
+
+pub const AXP813_ACIN_PATH_CTRL: u32 = 0x3a;
+pub const AXP813_ADC_RATE: u32 = 0x85;
+
+/* Fuel Gauge */
+pub const AXP288_FG_RDC1_REG: u32 = 0xba;
+pub const AXP288_FG_RDC0_REG: u32 = 0xbb;
+pub const AXP288_FG_OCVH_REG: u32 = 0xbc;
+pub const AXP288_FG_OCVL_REG: u32 = 0xbd;
+pub const AXP288_FG_OCV_CURVE_REG: u32 = 0xc0;
+pub const AXP288_FG_DES_CAP1_REG: u32 = 0xe0;
+pub const AXP288_FG_DES_CAP0_REG: u32 = 0xe1;
+pub const AXP288_FG_CC_MTR1_REG: u32 = 0xe2;
+pub const AXP288_FG_CC_MTR0_REG: u32 = 0xe3;
+pub const AXP288_FG_OCV_CAP_REG: u32 = 0xe4;
+pub const AXP288_FG_CC_CAP_REG: u32 = 0xe5;
+pub const AXP288_FG_LOW_CAP_REG: u32 = 0xe6;
+pub const AXP288_FG_TUNE0: u32 = 0xe8;
+pub const AXP288_FG_TUNE1: u32 = 0xe9;
+pub const AXP288_FG_TUNE2: u32 = 0xea;
+pub const AXP288_FG_TUNE3: u32 = 0xeb;
+pub const AXP288_FG_TUNE4: u32 = 0xec;
+pub const AXP288_FG_TUNE5: u32 = 0xed;
+
+/* Regulators IDs */
+pub enum axp20x_anonymous_enum {
+	AXP192_DCDC1 = 0,
+	AXP192_DCDC2,
+	AXP192_DCDC3,
+	AXP192_LDO1,
+	AXP192_LDO2,
+	AXP192_LDO3,
+	AXP192_LDO_IO0,
+	AXP192_REG_ID_MAX
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP20X_LDO1 = 0,
+	AXP20X_LDO2,
+	AXP20X_LDO3,
+	AXP20X_LDO4,
+	AXP20X_LDO5,
+	AXP20X_DCDC2,
+	AXP20X_DCDC3,
+	AXP20X_REG_ID_MAX,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP22X_DCDC1 = 0,
+	AXP22X_DCDC2,
+	AXP22X_DCDC3,
+	AXP22X_DCDC4,
+	AXP22X_DCDC5,
+	AXP22X_DC1SW,
+	AXP22X_DC5LDO,
+	AXP22X_ALDO1,
+	AXP22X_ALDO2,
+	AXP22X_ALDO3,
+	AXP22X_ELDO1,
+	AXP22X_ELDO2,
+	AXP22X_ELDO3,
+	AXP22X_DLDO1,
+	AXP22X_DLDO2,
+	AXP22X_DLDO3,
+	AXP22X_DLDO4,
+	AXP22X_RTC_LDO,
+	AXP22X_LDO_IO0,
+	AXP22X_LDO_IO1,
+	AXP22X_REG_ID_MAX,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP313A_DCDC1 = 0,
+	AXP313A_DCDC2,
+	AXP313A_DCDC3,
+	AXP313A_ALDO1,
+	AXP313A_DLDO1,
+	AXP313A_RTC_LDO,
+	AXP313A_REG_ID_MAX,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP717_DCDC1 = 0,
+	AXP717_DCDC2,
+	AXP717_DCDC3,
+	AXP717_DCDC4,
+	AXP717_ALDO1,
+	AXP717_ALDO2,
+	AXP717_ALDO3,
+	AXP717_ALDO4,
+	AXP717_BLDO1,
+	AXP717_BLDO2,
+	AXP717_BLDO3,
+	AXP717_BLDO4,
+	AXP717_CLDO1,
+	AXP717_CLDO2,
+	AXP717_CLDO3,
+	AXP717_CLDO4,
+	AXP717_CPUSLDO,
+	AXP717_BOOST,
+	AXP717_REG_ID_MAX,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP806_DCDCA = 0,
+	AXP806_DCDCB,
+	AXP806_DCDCC,
+	AXP806_DCDCD,
+	AXP806_DCDCE,
+	AXP806_ALDO1,
+	AXP806_ALDO2,
+	AXP806_ALDO3,
+	AXP806_BLDO1,
+	AXP806_BLDO2,
+	AXP806_BLDO3,
+	AXP806_BLDO4,
+	AXP806_CLDO1,
+	AXP806_CLDO2,
+	AXP806_CLDO3,
+	AXP806_SW,
+	AXP806_REG_ID_MAX,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP809_DCDC1 = 0,
+	AXP809_DCDC2,
+	AXP809_DCDC3,
+	AXP809_DCDC4,
+	AXP809_DCDC5,
+	AXP809_DC1SW,
+	AXP809_DC5LDO,
+	AXP809_ALDO1,
+	AXP809_ALDO2,
+	AXP809_ALDO3,
+	AXP809_ELDO1,
+	AXP809_ELDO2,
+	AXP809_ELDO3,
+	AXP809_DLDO1,
+	AXP809_DLDO2,
+	AXP809_RTC_LDO,
+	AXP809_LDO_IO0,
+	AXP809_LDO_IO1,
+	AXP809_SW,
+	AXP809_REG_ID_MAX,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP803_DCDC1 = 0,
+	AXP803_DCDC2,
+	AXP803_DCDC3,
+	AXP803_DCDC4,
+	AXP803_DCDC5,
+	AXP803_DCDC6,
+	AXP803_DC1SW,
+	AXP803_ALDO1,
+	AXP803_ALDO2,
+	AXP803_ALDO3,
+	AXP803_DLDO1,
+	AXP803_DLDO2,
+	AXP803_DLDO3,
+	AXP803_DLDO4,
+	AXP803_ELDO1,
+	AXP803_ELDO2,
+	AXP803_ELDO3,
+	AXP803_FLDO1,
+	AXP803_FLDO2,
+	AXP803_RTC_LDO,
+	AXP803_LDO_IO0,
+	AXP803_LDO_IO1,
+	AXP803_REG_ID_MAX,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP813_DCDC1 = 0,
+	AXP813_DCDC2,
+	AXP813_DCDC3,
+	AXP813_DCDC4,
+	AXP813_DCDC5,
+	AXP813_DCDC6,
+	AXP813_DCDC7,
+	AXP813_ALDO1,
+	AXP813_ALDO2,
+	AXP813_ALDO3,
+	AXP813_DLDO1,
+	AXP813_DLDO2,
+	AXP813_DLDO3,
+	AXP813_DLDO4,
+	AXP813_ELDO1,
+	AXP813_ELDO2,
+	AXP813_ELDO3,
+	AXP813_FLDO1,
+	AXP813_FLDO2,
+	AXP813_FLDO3,
+	AXP813_RTC_LDO,
+	AXP813_LDO_IO0,
+	AXP813_LDO_IO1,
+	AXP813_SW,
+	AXP813_REG_ID_MAX,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP15060_DCDC1 = 0,
+	AXP15060_DCDC2,
+	AXP15060_DCDC3,
+	AXP15060_DCDC4,
+	AXP15060_DCDC5,
+	AXP15060_DCDC6,
+	AXP15060_ALDO1,
+	AXP15060_ALDO2,
+	AXP15060_ALDO3,
+	AXP15060_ALDO4,
+	AXP15060_ALDO5,
+	AXP15060_BLDO1,
+	AXP15060_BLDO2,
+	AXP15060_BLDO3,
+	AXP15060_BLDO4,
+	AXP15060_BLDO5,
+	AXP15060_CLDO1,
+	AXP15060_CLDO2,
+	AXP15060_CLDO3,
+	AXP15060_CLDO4,
+	AXP15060_CPUSLDO,
+	AXP15060_SW,
+	AXP15060_RTC_LDO,
+	AXP15060_REG_ID_MAX,
+};
+
+/* IRQs */
+pub enum axp20x_anonymous_enum {
+	AXP152_IRQ_LDO0IN_CONNECT = 1,
+	AXP152_IRQ_LDO0IN_REMOVAL,
+	AXP152_IRQ_ALDO0IN_CONNECT,
+	AXP152_IRQ_ALDO0IN_REMOVAL,
+	AXP152_IRQ_DCDC1_V_LOW,
+	AXP152_IRQ_DCDC2_V_LOW,
+	AXP152_IRQ_DCDC3_V_LOW,
+	AXP152_IRQ_DCDC4_V_LOW,
+	AXP152_IRQ_PEK_SHORT,
+	AXP152_IRQ_PEK_LONG,
+	AXP152_IRQ_TIMER,
+	/* out of bit order to make sure the press event is handled first */
+	AXP152_IRQ_PEK_FAL_EDGE,
+	AXP152_IRQ_PEK_RIS_EDGE,
+	AXP152_IRQ_GPIO3_INPUT,
+	AXP152_IRQ_GPIO2_INPUT,
+	AXP152_IRQ_GPIO1_INPUT,
+	AXP152_IRQ_GPIO0_INPUT,
+};
+
+public enum axp192_irqs {
+	AXP192_IRQ_ACIN_OVER_V = 1,
+	AXP192_IRQ_ACIN_PLUGIN,
+	AXP192_IRQ_ACIN_REMOVAL,
+	AXP192_IRQ_VBUS_OVER_V,
+	AXP192_IRQ_VBUS_PLUGIN,
+	AXP192_IRQ_VBUS_REMOVAL,
+	AXP192_IRQ_VBUS_V_LOW,
+	AXP192_IRQ_BATT_PLUGIN,
+	AXP192_IRQ_BATT_REMOVAL,
+	AXP192_IRQ_BATT_ENT_ACT_MODE,
+	AXP192_IRQ_BATT_EXIT_ACT_MODE,
+	AXP192_IRQ_CHARG,
+	AXP192_IRQ_CHARG_DONE,
+	AXP192_IRQ_BATT_TEMP_HIGH,
+	AXP192_IRQ_BATT_TEMP_LOW,
+	AXP192_IRQ_DIE_TEMP_HIGH,
+	AXP192_IRQ_CHARG_I_LOW,
+	AXP192_IRQ_DCDC1_V_LONG,
+	AXP192_IRQ_DCDC2_V_LONG,
+	AXP192_IRQ_DCDC3_V_LONG,
+	AXP192_IRQ_PEK_SHORT = 22,
+	AXP192_IRQ_PEK_LONG,
+	AXP192_IRQ_N_OE_PWR_ON,
+	AXP192_IRQ_N_OE_PWR_OFF,
+	AXP192_IRQ_VBUS_VALID,
+	AXP192_IRQ_VBUS_NOT_VALID,
+	AXP192_IRQ_VBUS_SESS_VALID,
+	AXP192_IRQ_VBUS_SESS_END,
+	AXP192_IRQ_LOW_PWR_LVL = 31,
+	AXP192_IRQ_TIMER,
+	AXP192_IRQ_GPIO2_INPUT = 37,
+	AXP192_IRQ_GPIO1_INPUT,
+	AXP192_IRQ_GPIO0_INPUT,
+};
+
+pub enum axp20x_anonymous_enum {
+	AXP20X_IRQ_ACIN_OVER_V = 1,
+	AXP20X_IRQ_ACIN_PLUGIN,
+	AXP20X_IRQ_ACIN_REMOVAL,
+	AXP20X_IRQ_VBUS_OVER_V,
+	AXP20X_IRQ_VBUS_PLUGIN,
+	AXP20X_IRQ_VBUS_REMOVAL,
+	AXP20X_IRQ_VBUS_V_LOW,
+	AXP20X_IRQ_BATT_PLUGIN,
+	AXP20X_IRQ_BATT_REMOVAL,
+	AXP20X_IRQ_BATT_ENT_ACT_MODE,
+	AXP20X_IRQ_BATT_EXIT_ACT_MODE,
+	AXP20X_IRQ_CHARG,
+	AXP20X_IRQ_CHARG_DONE,
+	AXP20X_IRQ_BATT_TEMP_HIGH,
+	AXP20X_IRQ_BATT_TEMP_LOW,
+	AXP20X_IRQ_DIE_TEMP_HIGH,
+	AXP20X_IRQ_CHARG_I_LOW,
+	AXP20X_IRQ_DCDC1_V_LONG,
+	AXP20X_IRQ_DCDC2_V_LONG,
+	AXP20X_IRQ_DCDC3_V_LONG,
+	AXP20X_IRQ_PEK_SHORT = 22,
+	AXP20X_IRQ_PEK_LONG,
+	AXP20X_IRQ_N_OE_PWR_ON,
+	AXP20X_IRQ_N_OE_PWR_OFF,
+	AXP20X_IRQ_VBUS_VALID,
+	AXP20X_IRQ_VBUS_NOT_VALID,
+	AXP20X_IRQ_VBUS_SESS_VALID,
+	AXP20X_IRQ_VBUS_SESS_END,
+	AXP20X_IRQ_LOW_PWR_LVL1,
+	AXP20X_IRQ_LOW_PWR_LVL2,
+	AXP20X_IRQ_TIMER,
+	/* out of bit order to make sure the press event is handled first */
+	AXP20X_IRQ_PEK_FAL_EDGE,
+	AXP20X_IRQ_PEK_RIS_EDGE,
+	AXP20X_IRQ_GPIO3_INPUT,
+	AXP20X_IRQ_GPIO2_INPUT,
+	AXP20X_IRQ_GPIO1_INPUT,
+	AXP20X_IRQ_GPIO0_INPUT,
+};
+
+public enum axp22x_irqs {
+	AXP22X_IRQ_ACIN_OVER_V = 1,
+	AXP22X_IRQ_ACIN_PLUGIN,
+	AXP22X_IRQ_ACIN_REMOVAL,
+	AXP22X_IRQ_VBUS_OVER_V,
+	AXP22X_IRQ_VBUS_PLUGIN,
+	AXP22X_IRQ_VBUS_REMOVAL,
+	AXP22X_IRQ_VBUS_V_LOW,
+	AXP22X_IRQ_BATT_PLUGIN,
+	AXP22X_IRQ_BATT_REMOVAL,
+	AXP22X_IRQ_BATT_ENT_ACT_MODE,
+	AXP22X_IRQ_BATT_EXIT_ACT_MODE,
+	AXP22X_IRQ_CHARG,
+	AXP22X_IRQ_CHARG_DONE,
+	AXP22X_IRQ_BATT_TEMP_HIGH,
+	AXP22X_IRQ_BATT_TEMP_LOW,
+	AXP22X_IRQ_DIE_TEMP_HIGH,
+	AXP22X_IRQ_PEK_SHORT,
+	AXP22X_IRQ_PEK_LONG,
+	AXP22X_IRQ_LOW_PWR_LVL1,
+	AXP22X_IRQ_LOW_PWR_LVL2,
+	AXP22X_IRQ_TIMER,
+	/* out of bit order to make sure the press event is handled first */
+	AXP22X_IRQ_PEK_FAL_EDGE,
+	AXP22X_IRQ_PEK_RIS_EDGE,
+	AXP22X_IRQ_GPIO1_INPUT,
+	AXP22X_IRQ_GPIO0_INPUT,
+};
+
+public enum axp288_irqs {
+	AXP288_IRQ_VBUS_FALL     = 2,
+	AXP288_IRQ_VBUS_RISE,
+	AXP288_IRQ_OV,
+	AXP288_IRQ_FALLING_ALT,
+	AXP288_IRQ_RISING_ALT,
+	AXP288_IRQ_OV_ALT,
+	AXP288_IRQ_DONE          = 10,
+	AXP288_IRQ_CHARGING,
+	AXP288_IRQ_SAFE_QUIT,
+	AXP288_IRQ_SAFE_ENTER,
+	AXP288_IRQ_ABSENT,
+	AXP288_IRQ_APPEND,
+	AXP288_IRQ_QWBTU,
+	AXP288_IRQ_WBTU,
+	AXP288_IRQ_QWBTO,
+	AXP288_IRQ_WBTO,
+	AXP288_IRQ_QCBTU,
+	AXP288_IRQ_CBTU,
+	AXP288_IRQ_QCBTO,
+	AXP288_IRQ_CBTO,
+	AXP288_IRQ_WL2,
+	AXP288_IRQ_WL1,
+	AXP288_IRQ_GPADC,
+	AXP288_IRQ_OT            = 31,
+	AXP288_IRQ_GPIO0,
+	AXP288_IRQ_GPIO1,
+	AXP288_IRQ_POKO,
+	AXP288_IRQ_POKL,
+	AXP288_IRQ_POKS,
+	AXP288_IRQ_POKN,
+	AXP288_IRQ_POKP,
+	AXP288_IRQ_TIMER,
+	AXP288_IRQ_MV_CHNG,
+	AXP288_IRQ_BC_USB_CHNG,
+};
+
+public enum axp313a_irqs {
+	AXP313A_IRQ_DIE_TEMP_HIGH,
+	AXP313A_IRQ_DCDC2_V_LOW = 2,
+	AXP313A_IRQ_DCDC3_V_LOW,
+	AXP313A_IRQ_PEK_LONG,
+	AXP313A_IRQ_PEK_SHORT,
+	AXP313A_IRQ_PEK_FAL_EDGE,
+	AXP313A_IRQ_PEK_RIS_EDGE,
+};
+
+public enum axp717_irqs {
+	AXP717_IRQ_VBUS_FAULT,
+	AXP717_IRQ_VBUS_OVER_V,
+	AXP717_IRQ_BOOST_OVER_V,
+	AXP717_IRQ_GAUGE_NEW_SOC = 4,
+	AXP717_IRQ_SOC_DROP_LVL1 = 6,
+	AXP717_IRQ_SOC_DROP_LVL2,
+	AXP717_IRQ_PEK_RIS_EDGE,
+	AXP717_IRQ_PEK_FAL_EDGE,
+	AXP717_IRQ_PEK_LONG,
+	AXP717_IRQ_PEK_SHORT,
+	AXP717_IRQ_BATT_REMOVAL,
+	AXP717_IRQ_BATT_PLUGIN,
+	AXP717_IRQ_VBUS_REMOVAL,
+	AXP717_IRQ_VBUS_PLUGIN,
+	AXP717_IRQ_BATT_OVER_V,
+	AXP717_IRQ_CHARG_TIMER,
+	AXP717_IRQ_DIE_TEMP_HIGH,
+	AXP717_IRQ_CHARG,
+	AXP717_IRQ_CHARG_DONE,
+	AXP717_IRQ_BATT_OVER_CURR,
+	AXP717_IRQ_LDO_OVER_CURR,
+	AXP717_IRQ_WDOG_EXPIRE,
+	AXP717_IRQ_BATT_ACT_TEMP_LOW,
+	AXP717_IRQ_BATT_ACT_TEMP_HIGH,
+	AXP717_IRQ_BATT_CHG_TEMP_LOW,
+	AXP717_IRQ_BATT_CHG_TEMP_HIGH,
+	AXP717_IRQ_BATT_QUIT_TEMP_HIGH,
+	AXP717_IRQ_BC_USB_CHNG = 30,
+	AXP717_IRQ_BC_USB_DONE,
+	AXP717_IRQ_TYPEC_PLUGIN = 37,
+	AXP717_IRQ_TYPEC_REMOVE,
+};
+
+public enum axp803_irqs {
+	AXP803_IRQ_ACIN_OVER_V = 1,
+	AXP803_IRQ_ACIN_PLUGIN,
+	AXP803_IRQ_ACIN_REMOVAL,
+	AXP803_IRQ_VBUS_OVER_V,
+	AXP803_IRQ_VBUS_PLUGIN,
+	AXP803_IRQ_VBUS_REMOVAL,
+	AXP803_IRQ_BATT_PLUGIN,
+	AXP803_IRQ_BATT_REMOVAL,
+	AXP803_IRQ_BATT_ENT_ACT_MODE,
+	AXP803_IRQ_BATT_EXIT_ACT_MODE,
+	AXP803_IRQ_CHARG,
+	AXP803_IRQ_CHARG_DONE,
+	AXP803_IRQ_BATT_CHG_TEMP_HIGH,
+	AXP803_IRQ_BATT_CHG_TEMP_HIGH_END,
+	AXP803_IRQ_BATT_CHG_TEMP_LOW,
+	AXP803_IRQ_BATT_CHG_TEMP_LOW_END,
+	AXP803_IRQ_BATT_ACT_TEMP_HIGH,
+	AXP803_IRQ_BATT_ACT_TEMP_HIGH_END,
+	AXP803_IRQ_BATT_ACT_TEMP_LOW,
+	AXP803_IRQ_BATT_ACT_TEMP_LOW_END,
+	AXP803_IRQ_DIE_TEMP_HIGH,
+	AXP803_IRQ_GPADC,
+	AXP803_IRQ_LOW_PWR_LVL1,
+	AXP803_IRQ_LOW_PWR_LVL2,
+	AXP803_IRQ_TIMER,
+	/* out of bit order to make sure the press event is handled first */
+	AXP803_IRQ_PEK_FAL_EDGE,
+	AXP803_IRQ_PEK_RIS_EDGE,
+	AXP803_IRQ_PEK_SHORT,
+	AXP803_IRQ_PEK_LONG,
+	AXP803_IRQ_PEK_OVER_OFF,
+	AXP803_IRQ_GPIO1_INPUT,
+	AXP803_IRQ_GPIO0_INPUT,
+	AXP803_IRQ_BC_USB_CHNG,
+	AXP803_IRQ_MV_CHNG,
+};
+
+public enum axp806_irqs {
+	AXP806_IRQ_DIE_TEMP_HIGH_LV1,
+	AXP806_IRQ_DIE_TEMP_HIGH_LV2,
+	AXP806_IRQ_DCDCA_V_LOW,
+	AXP806_IRQ_DCDCB_V_LOW,
+	AXP806_IRQ_DCDCC_V_LOW,
+	AXP806_IRQ_DCDCD_V_LOW,
+	AXP806_IRQ_DCDCE_V_LOW,
+	AXP806_IRQ_POK_LONG,
+	AXP806_IRQ_POK_SHORT,
+	AXP806_IRQ_WAKEUP,
+	AXP806_IRQ_POK_FALL,
+	AXP806_IRQ_POK_RISE,
+};
+
+public enum axp809_irqs {
+	AXP809_IRQ_ACIN_OVER_V = 1,
+	AXP809_IRQ_ACIN_PLUGIN,
+	AXP809_IRQ_ACIN_REMOVAL,
+	AXP809_IRQ_VBUS_OVER_V,
+	AXP809_IRQ_VBUS_PLUGIN,
+	AXP809_IRQ_VBUS_REMOVAL,
+	AXP809_IRQ_VBUS_V_LOW,
+	AXP809_IRQ_BATT_PLUGIN,
+	AXP809_IRQ_BATT_REMOVAL,
+	AXP809_IRQ_BATT_ENT_ACT_MODE,
+	AXP809_IRQ_BATT_EXIT_ACT_MODE,
+	AXP809_IRQ_CHARG,
+	AXP809_IRQ_CHARG_DONE,
+	AXP809_IRQ_BATT_CHG_TEMP_HIGH,
+	AXP809_IRQ_BATT_CHG_TEMP_HIGH_END,
+	AXP809_IRQ_BATT_CHG_TEMP_LOW,
+	AXP809_IRQ_BATT_CHG_TEMP_LOW_END,
+	AXP809_IRQ_BATT_ACT_TEMP_HIGH,
+	AXP809_IRQ_BATT_ACT_TEMP_HIGH_END,
+	AXP809_IRQ_BATT_ACT_TEMP_LOW,
+	AXP809_IRQ_BATT_ACT_TEMP_LOW_END,
+	AXP809_IRQ_DIE_TEMP_HIGH,
+	AXP809_IRQ_LOW_PWR_LVL1,
+	AXP809_IRQ_LOW_PWR_LVL2,
+	AXP809_IRQ_TIMER,
+	/* out of bit order to make sure the press event is handled first */
+	AXP809_IRQ_PEK_FAL_EDGE,
+	AXP809_IRQ_PEK_RIS_EDGE,
+	AXP809_IRQ_PEK_SHORT,
+	AXP809_IRQ_PEK_LONG,
+	AXP809_IRQ_PEK_OVER_OFF,
+	AXP809_IRQ_GPIO1_INPUT,
+	AXP809_IRQ_GPIO0_INPUT,
+};
+
+public enum axp15060_irqs {
+	AXP15060_IRQ_DIE_TEMP_HIGH_LV1 = 1,
+	AXP15060_IRQ_DIE_TEMP_HIGH_LV2,
+	AXP15060_IRQ_DCDC1_V_LOW,
+	AXP15060_IRQ_DCDC2_V_LOW,
+	AXP15060_IRQ_DCDC3_V_LOW,
+	AXP15060_IRQ_DCDC4_V_LOW,
+	AXP15060_IRQ_DCDC5_V_LOW,
+	AXP15060_IRQ_DCDC6_V_LOW,
+	AXP15060_IRQ_PEK_LONG,
+	AXP15060_IRQ_PEK_SHORT,
+	AXP15060_IRQ_GPIO1_INPUT,
+	AXP15060_IRQ_PEK_FAL_EDGE,
+	AXP15060_IRQ_PEK_RIS_EDGE,
+	AXP15060_IRQ_GPIO2_INPUT,
+};
+
+pub struct axp20x_dev {
+	// external: device *dev;
+	i32				irq;
+	u64			irq_flags;
+	// external: regmap *mut regmap;
+	// external: regmap_irq_chip_data *mut regmap_irqc;
+	axp20x_variants variant;
+	i32                             nr_cells;
+	// external: const mfd_cell *cells;
+	// external: const regmap_config *mut regmap_cfg;
+	// external: const regmap_irq_chip *mut regmap_irq_chip;
+};
+
+/* generic helper function for reading 9-16 bit wide regs */
+pub unsafe fn i32 axp20x_read_variable_width(// external: regmap *mut regmap,
+	unsigned i32 reg, unsigned i32 width)
+{
+	unsigned i32 reg_val, result;
+	i32 err;
+
+	err = regmap_read(regmap, reg, &reg_val);
+	if (err)
+		return err;
+
+	result = reg_val << (width - 8);
+
+	err = regmap_read(regmap, reg + 1, &reg_val);
+	if (err)
+		return err;
+
+	result |= reg_val;
+
+	return result;
+}
+
+/**
+ * axp20x_match_device(): Setup axp20x variant related fields
+ *
+ * @axp20x: axp20x device to setup (.dev field must be set)
+ * @dev: device associated with this axp20x device
+ *
+ * This lets the axp20x core configure the mfd cells and register maps
+ * for later use.
+ */
+i32 axp20x_match_device(struct axp20x_dev *mut axp20x);
+
+/**
+ * axp20x_device_probe(): Probe a configured axp20x device
+ *
+ * @axp20x: axp20x device to probe (must be configured)
+ *
+ * This function lets the axp20x core register the axp20x mfd devices
+ * and irqchip. The axp20x device passed in must be fully configured
+ * with axp20x_match_device, its irq set, and regmap created.
+ */
+i32 axp20x_device_probe(struct axp20x_dev *mut axp20x);
+
+/**
+ * axp20x_device_remove(): Remove a axp20x device
+ *
+ * @axp20x: axp20x device to remove
+ *
+ * This tells the axp20x core to remove the associated mfd devices
+ */
+pub unsafe fn axp20x_device_remove(struct axp20x_dev *mut axp20x);
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

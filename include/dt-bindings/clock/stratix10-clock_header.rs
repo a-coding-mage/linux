@@ -1,0 +1,83 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (C) 2017, Intel Corporation
+ */
+
+/* fixed rate clocks */
+pub const STRATIX10_OSC1: i32 = 0;
+pub const STRATIX10_CB_INTOSC_HS_DIV2_CLK: i32 = 1;
+pub const STRATIX10_CB_INTOSC_LS_CLK: i32 = 2;
+pub const STRATIX10_F2S_FREE_CLK: i32 = 3;
+
+/* fixed factor clocks */
+pub const STRATIX10_L4_SYS_FREE_CLK: i32 = 4;
+pub const STRATIX10_MPU_PERIPH_CLK: i32 = 5;
+pub const STRATIX10_MPU_L2RAM_CLK: i32 = 6;
+pub const STRATIX10_SDMMC_CIU_CLK: i32 = 7;
+
+/* PLL clocks */
+pub const STRATIX10_MAIN_PLL_CLK: i32 = 8;
+pub const STRATIX10_PERIPH_PLL_CLK: i32 = 9;
+pub const STRATIX10_BOOT_CLK: i32 = 10;
+
+/* Periph clocks */
+pub const STRATIX10_MAIN_MPU_BASE_CLK: i32 = 11;
+pub const STRATIX10_MAIN_NOC_BASE_CLK: i32 = 12;
+pub const STRATIX10_MAIN_EMACA_CLK: i32 = 13;
+pub const STRATIX10_MAIN_EMACB_CLK: i32 = 14;
+pub const STRATIX10_MAIN_EMAC_PTP_CLK: i32 = 15;
+pub const STRATIX10_MAIN_GPIO_DB_CLK: i32 = 16;
+pub const STRATIX10_MAIN_SDMMC_CLK: i32 = 17;
+pub const STRATIX10_MAIN_S2F_USR0_CLK: i32 = 18;
+pub const STRATIX10_MAIN_S2F_USR1_CLK: i32 = 19;
+pub const STRATIX10_MAIN_PSI_REF_CLK: i32 = 20;
+
+pub const STRATIX10_PERI_MPU_BASE_CLK: i32 = 21;
+pub const STRATIX10_PERI_NOC_BASE_CLK: i32 = 22;
+pub const STRATIX10_PERI_EMACA_CLK: i32 = 23;
+pub const STRATIX10_PERI_EMACB_CLK: i32 = 24;
+pub const STRATIX10_PERI_EMAC_PTP_CLK: i32 = 25;
+pub const STRATIX10_PERI_GPIO_DB_CLK: i32 = 26;
+pub const STRATIX10_PERI_SDMMC_CLK: i32 = 27;
+pub const STRATIX10_PERI_S2F_USR0_CLK: i32 = 28;
+pub const STRATIX10_PERI_S2F_USR1_CLK: i32 = 29;
+pub const STRATIX10_PERI_PSI_REF_CLK: i32 = 30;
+
+pub const STRATIX10_MPU_FREE_CLK: i32 = 31;
+pub const STRATIX10_NOC_FREE_CLK: i32 = 32;
+pub const STRATIX10_S2F_USR0_CLK: i32 = 33;
+pub const STRATIX10_NOC_CLK: i32 = 34;
+pub const STRATIX10_EMAC_A_FREE_CLK: i32 = 35;
+pub const STRATIX10_EMAC_B_FREE_CLK: i32 = 36;
+pub const STRATIX10_EMAC_PTP_FREE_CLK: i32 = 37;
+pub const STRATIX10_GPIO_DB_FREE_CLK: i32 = 38;
+pub const STRATIX10_SDMMC_FREE_CLK: i32 = 39;
+pub const STRATIX10_S2F_USER1_FREE_CLK: i32 = 40;
+pub const STRATIX10_PSI_REF_FREE_CLK: i32 = 41;
+
+/* Gate clocks */
+pub const STRATIX10_MPU_CLK: i32 = 42;
+pub const STRATIX10_L4_MAIN_CLK: i32 = 43;
+pub const STRATIX10_L4_MP_CLK: i32 = 44;
+pub const STRATIX10_L4_SP_CLK: i32 = 45;
+pub const STRATIX10_CS_AT_CLK: i32 = 46;
+pub const STRATIX10_CS_TRACE_CLK: i32 = 47;
+pub const STRATIX10_CS_PDBG_CLK: i32 = 48;
+pub const STRATIX10_CS_TIMER_CLK: i32 = 49;
+pub const STRATIX10_S2F_USER0_CLK: i32 = 50;
+pub const STRATIX10_S2F_USER1_CLK: i32 = 51;
+pub const STRATIX10_EMAC0_CLK: i32 = 52;
+pub const STRATIX10_EMAC1_CLK: i32 = 53;
+pub const STRATIX10_EMAC2_CLK: i32 = 54;
+pub const STRATIX10_EMAC_PTP_CLK: i32 = 55;
+pub const STRATIX10_GPIO_DB_CLK: i32 = 56;
+pub const STRATIX10_SDMMC_CLK: i32 = 57;
+pub const STRATIX10_PSI_REF_CLK: i32 = 58;
+pub const STRATIX10_USB_CLK: i32 = 59;
+pub const STRATIX10_SPI_M_CLK: i32 = 60;
+pub const STRATIX10_NAND_CLK: i32 = 61;
+pub const STRATIX10_NAND_X_CLK: i32 = 62;
+pub const STRATIX10_NAND_ECC_CLK: i32 = 63;
+pub const STRATIX10_NUM_CLKS: i32 = 64;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

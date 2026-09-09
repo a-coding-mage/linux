@@ -1,0 +1,10 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+
+// Header guard: _DT_BINDINGS_ADI_AD7768_1_H
+
+pub const AD7768_TRIGGER_SOURCE_SYNC_OUT: i32 = 0;
+pub const AD7768_TRIGGER_SOURCE_GPIO3: i32 = 1;
+pub const AD7768_TRIGGER_SOURCE_DRDY: i32 = 2;
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

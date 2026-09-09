@@ -1,0 +1,141 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Defines macros and constants for Renesas RZ/N1 pin controller pin
+ * muxing functions.
+ */
+
+/// Equivalent to the C preprocessor macro `RZN1_PINMUX`.
+pub const fn rzn1_pinmux(gpio: i32, func: i32) -> i32 {
+    (func << 8) | gpio
+}
+
+/*
+ * Given the different levels of muxing on the SoC, it was decided to
+ * 'linearize' them into one numerical space. So mux level 1, 2 and the MDIO
+ * muxes are all represented by one single value.
+ *
+ * You can derive the hardware value pretty easily too, as
+ * 0...9   are Level 1
+ * 10...71 are Level 2. The Level 2 mux will be set to this
+ *         value - RZN1_FUNC_L2_OFFSET, and the Level 1 mux will be
+ *         set accordingly.
+ * 72...103 are for the 2 MDIO muxes.
+ */
+pub const RZN1_FUNC_HIGHZ: i32 = 0;
+pub const RZN1_FUNC_0L: i32 = 1;
+pub const RZN1_FUNC_CLK_ETH_MII_RGMII_RMII: i32 = 2;
+pub const RZN1_FUNC_CLK_ETH_NAND: i32 = 3;
+pub const RZN1_FUNC_QSPI: i32 = 4;
+pub const RZN1_FUNC_SDIO: i32 = 5;
+pub const RZN1_FUNC_LCD: i32 = 6;
+pub const RZN1_FUNC_LCD_E: i32 = 7;
+pub const RZN1_FUNC_MSEBIM: i32 = 8;
+pub const RZN1_FUNC_MSEBIS: i32 = 9;
+pub const RZN1_FUNC_L2_OFFSET: i32 = 10; /* I'm Special */
+
+pub const RZN1_FUNC_HIGHZ1: i32 = RZN1_FUNC_L2_OFFSET + 0;
+pub const RZN1_FUNC_ETHERCAT: i32 = RZN1_FUNC_L2_OFFSET + 1;
+pub const RZN1_FUNC_SERCOS3: i32 = RZN1_FUNC_L2_OFFSET + 2;
+pub const RZN1_FUNC_SDIO_E: i32 = RZN1_FUNC_L2_OFFSET + 3;
+pub const RZN1_FUNC_ETH_MDIO: i32 = RZN1_FUNC_L2_OFFSET + 4;
+pub const RZN1_FUNC_ETH_MDIO_E1: i32 = RZN1_FUNC_L2_OFFSET + 5;
+pub const RZN1_FUNC_USB: i32 = RZN1_FUNC_L2_OFFSET + 6;
+pub const RZN1_FUNC_MSEBIM_E: i32 = RZN1_FUNC_L2_OFFSET + 7;
+pub const RZN1_FUNC_MSEBIS_E: i32 = RZN1_FUNC_L2_OFFSET + 8;
+pub const RZN1_FUNC_RSV: i32 = RZN1_FUNC_L2_OFFSET + 9;
+pub const RZN1_FUNC_RSV_E: i32 = RZN1_FUNC_L2_OFFSET + 10;
+pub const RZN1_FUNC_RSV_E1: i32 = RZN1_FUNC_L2_OFFSET + 11;
+pub const RZN1_FUNC_UART0_I: i32 = RZN1_FUNC_L2_OFFSET + 12;
+pub const RZN1_FUNC_UART0_I_E: i32 = RZN1_FUNC_L2_OFFSET + 13;
+pub const RZN1_FUNC_UART1_I: i32 = RZN1_FUNC_L2_OFFSET + 14;
+pub const RZN1_FUNC_UART1_I_E: i32 = RZN1_FUNC_L2_OFFSET + 15;
+pub const RZN1_FUNC_UART2_I: i32 = RZN1_FUNC_L2_OFFSET + 16;
+pub const RZN1_FUNC_UART2_I_E: i32 = RZN1_FUNC_L2_OFFSET + 17;
+pub const RZN1_FUNC_UART0: i32 = RZN1_FUNC_L2_OFFSET + 18;
+pub const RZN1_FUNC_UART0_E: i32 = RZN1_FUNC_L2_OFFSET + 19;
+pub const RZN1_FUNC_UART1: i32 = RZN1_FUNC_L2_OFFSET + 20;
+pub const RZN1_FUNC_UART1_E: i32 = RZN1_FUNC_L2_OFFSET + 21;
+pub const RZN1_FUNC_UART2: i32 = RZN1_FUNC_L2_OFFSET + 22;
+pub const RZN1_FUNC_UART2_E: i32 = RZN1_FUNC_L2_OFFSET + 23;
+pub const RZN1_FUNC_UART3: i32 = RZN1_FUNC_L2_OFFSET + 24;
+pub const RZN1_FUNC_UART3_E: i32 = RZN1_FUNC_L2_OFFSET + 25;
+pub const RZN1_FUNC_UART4: i32 = RZN1_FUNC_L2_OFFSET + 26;
+pub const RZN1_FUNC_UART4_E: i32 = RZN1_FUNC_L2_OFFSET + 27;
+pub const RZN1_FUNC_UART5: i32 = RZN1_FUNC_L2_OFFSET + 28;
+pub const RZN1_FUNC_UART5_E: i32 = RZN1_FUNC_L2_OFFSET + 29;
+pub const RZN1_FUNC_UART6: i32 = RZN1_FUNC_L2_OFFSET + 30;
+pub const RZN1_FUNC_UART6_E: i32 = RZN1_FUNC_L2_OFFSET + 31;
+pub const RZN1_FUNC_UART7: i32 = RZN1_FUNC_L2_OFFSET + 32;
+pub const RZN1_FUNC_UART7_E: i32 = RZN1_FUNC_L2_OFFSET + 33;
+pub const RZN1_FUNC_SPI0_M: i32 = RZN1_FUNC_L2_OFFSET + 34;
+pub const RZN1_FUNC_SPI0_M_E: i32 = RZN1_FUNC_L2_OFFSET + 35;
+pub const RZN1_FUNC_SPI1_M: i32 = RZN1_FUNC_L2_OFFSET + 36;
+pub const RZN1_FUNC_SPI1_M_E: i32 = RZN1_FUNC_L2_OFFSET + 37;
+pub const RZN1_FUNC_SPI2_M: i32 = RZN1_FUNC_L2_OFFSET + 38;
+pub const RZN1_FUNC_SPI2_M_E: i32 = RZN1_FUNC_L2_OFFSET + 39;
+pub const RZN1_FUNC_SPI3_M: i32 = RZN1_FUNC_L2_OFFSET + 40;
+pub const RZN1_FUNC_SPI3_M_E: i32 = RZN1_FUNC_L2_OFFSET + 41;
+pub const RZN1_FUNC_SPI4_S: i32 = RZN1_FUNC_L2_OFFSET + 42;
+pub const RZN1_FUNC_SPI4_S_E: i32 = RZN1_FUNC_L2_OFFSET + 43;
+pub const RZN1_FUNC_SPI5_S: i32 = RZN1_FUNC_L2_OFFSET + 44;
+pub const RZN1_FUNC_SPI5_S_E: i32 = RZN1_FUNC_L2_OFFSET + 45;
+pub const RZN1_FUNC_SGPIO0_M: i32 = RZN1_FUNC_L2_OFFSET + 46;
+pub const RZN1_FUNC_SGPIO1_M: i32 = RZN1_FUNC_L2_OFFSET + 47;
+pub const RZN1_FUNC_GPIO: i32 = RZN1_FUNC_L2_OFFSET + 48;
+pub const RZN1_FUNC_CAN: i32 = RZN1_FUNC_L2_OFFSET + 49;
+pub const RZN1_FUNC_I2C: i32 = RZN1_FUNC_L2_OFFSET + 50;
+pub const RZN1_FUNC_SAFE: i32 = RZN1_FUNC_L2_OFFSET + 51;
+pub const RZN1_FUNC_PTO_PWM: i32 = RZN1_FUNC_L2_OFFSET + 52;
+pub const RZN1_FUNC_PTO_PWM1: i32 = RZN1_FUNC_L2_OFFSET + 53;
+pub const RZN1_FUNC_PTO_PWM2: i32 = RZN1_FUNC_L2_OFFSET + 54;
+pub const RZN1_FUNC_PTO_PWM3: i32 = RZN1_FUNC_L2_OFFSET + 55;
+pub const RZN1_FUNC_PTO_PWM4: i32 = RZN1_FUNC_L2_OFFSET + 56;
+pub const RZN1_FUNC_DELTA_SIGMA: i32 = RZN1_FUNC_L2_OFFSET + 57;
+pub const RZN1_FUNC_SGPIO2_M: i32 = RZN1_FUNC_L2_OFFSET + 58;
+pub const RZN1_FUNC_SGPIO3_M: i32 = RZN1_FUNC_L2_OFFSET + 59;
+pub const RZN1_FUNC_SGPIO4_S: i32 = RZN1_FUNC_L2_OFFSET + 60;
+pub const RZN1_FUNC_MAC_MTIP_SWITCH: i32 = RZN1_FUNC_L2_OFFSET + 61;
+
+pub const RZN1_FUNC_MDIO_OFFSET: i32 = RZN1_FUNC_L2_OFFSET + 62;
+
+/* These are MDIO0 peripherals for the RZN1_FUNC_ETH_MDIO function */
+pub const RZN1_FUNC_MDIO0_HIGHZ: i32 = RZN1_FUNC_MDIO_OFFSET + 0;
+pub const RZN1_FUNC_MDIO0_GMAC0: i32 = RZN1_FUNC_MDIO_OFFSET + 1;
+pub const RZN1_FUNC_MDIO0_GMAC1: i32 = RZN1_FUNC_MDIO_OFFSET + 2;
+pub const RZN1_FUNC_MDIO0_ECAT: i32 = RZN1_FUNC_MDIO_OFFSET + 3;
+pub const RZN1_FUNC_MDIO0_S3_MDIO0: i32 = RZN1_FUNC_MDIO_OFFSET + 4;
+pub const RZN1_FUNC_MDIO0_S3_MDIO1: i32 = RZN1_FUNC_MDIO_OFFSET + 5;
+pub const RZN1_FUNC_MDIO0_HWRTOS: i32 = RZN1_FUNC_MDIO_OFFSET + 6;
+pub const RZN1_FUNC_MDIO0_SWITCH: i32 = RZN1_FUNC_MDIO_OFFSET + 7;
+/* These are MDIO0 peripherals for the RZN1_FUNC_ETH_MDIO_E1 function */
+pub const RZN1_FUNC_MDIO0_E1_HIGHZ: i32 = RZN1_FUNC_MDIO_OFFSET + 8;
+pub const RZN1_FUNC_MDIO0_E1_GMAC0: i32 = RZN1_FUNC_MDIO_OFFSET + 9;
+pub const RZN1_FUNC_MDIO0_E1_GMAC1: i32 = RZN1_FUNC_MDIO_OFFSET + 10;
+pub const RZN1_FUNC_MDIO0_E1_ECAT: i32 = RZN1_FUNC_MDIO_OFFSET + 11;
+pub const RZN1_FUNC_MDIO0_E1_S3_MDIO0: i32 = RZN1_FUNC_MDIO_OFFSET + 12;
+pub const RZN1_FUNC_MDIO0_E1_S3_MDIO1: i32 = RZN1_FUNC_MDIO_OFFSET + 13;
+pub const RZN1_FUNC_MDIO0_E1_HWRTOS: i32 = RZN1_FUNC_MDIO_OFFSET + 14;
+pub const RZN1_FUNC_MDIO0_E1_SWITCH: i32 = RZN1_FUNC_MDIO_OFFSET + 15;
+
+/* These are MDIO1 peripherals for the RZN1_FUNC_ETH_MDIO function */
+pub const RZN1_FUNC_MDIO1_HIGHZ: i32 = RZN1_FUNC_MDIO_OFFSET + 16;
+pub const RZN1_FUNC_MDIO1_GMAC0: i32 = RZN1_FUNC_MDIO_OFFSET + 17;
+pub const RZN1_FUNC_MDIO1_GMAC1: i32 = RZN1_FUNC_MDIO_OFFSET + 18;
+pub const RZN1_FUNC_MDIO1_ECAT: i32 = RZN1_FUNC_MDIO_OFFSET + 19;
+pub const RZN1_FUNC_MDIO1_S3_MDIO0: i32 = RZN1_FUNC_MDIO_OFFSET + 20;
+pub const RZN1_FUNC_MDIO1_S3_MDIO1: i32 = RZN1_FUNC_MDIO_OFFSET + 21;
+pub const RZN1_FUNC_MDIO1_HWRTOS: i32 = RZN1_FUNC_MDIO_OFFSET + 22;
+pub const RZN1_FUNC_MDIO1_SWITCH: i32 = RZN1_FUNC_MDIO_OFFSET + 23;
+/* These are MDIO1 peripherals for the RZN1_FUNC_ETH_MDIO_E1 function */
+pub const RZN1_FUNC_MDIO1_E1_HIGHZ: i32 = RZN1_FUNC_MDIO_OFFSET + 24;
+pub const RZN1_FUNC_MDIO1_E1_GMAC0: i32 = RZN1_FUNC_MDIO_OFFSET + 25;
+pub const RZN1_FUNC_MDIO1_E1_GMAC1: i32 = RZN1_FUNC_MDIO_OFFSET + 26;
+pub const RZN1_FUNC_MDIO1_E1_ECAT: i32 = RZN1_FUNC_MDIO_OFFSET + 27;
+pub const RZN1_FUNC_MDIO1_E1_S3_MDIO0: i32 = RZN1_FUNC_MDIO_OFFSET + 28;
+pub const RZN1_FUNC_MDIO1_E1_S3_MDIO1: i32 = RZN1_FUNC_MDIO_OFFSET + 29;
+pub const RZN1_FUNC_MDIO1_E1_HWRTOS: i32 = RZN1_FUNC_MDIO_OFFSET + 30;
+pub const RZN1_FUNC_MDIO1_E1_SWITCH: i32 = RZN1_FUNC_MDIO_OFFSET + 31;
+
+pub const RZN1_FUNC_MAX: i32 = RZN1_FUNC_MDIO_OFFSET + 32;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

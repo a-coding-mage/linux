@@ -1,0 +1,193 @@
+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
+/* Translation of acutils.h: common ACPICA utility declarations. */
+
+extern "C" {
+    pub static acpi_gbl_resource_aml_sizes: *const u8;
+    pub static acpi_gbl_resource_aml_serial_bus_sizes: *const u8;
+
+    /* Present when ACPI_DEBUG_OUTPUT, ACPI_DISASSEMBLER, or ACPI_DEBUGGER is enabled. */
+    pub static acpi_gbl_bm_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_config_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_consume_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_dec_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_he_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_io_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_ll_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_max_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_mem_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_min_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_mtp_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_phy_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_rng_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_rw_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_shr_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_siz_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_trs_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_ttp_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_typ_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_ppc_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_ior_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_dts_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_ct_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_sbt_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_am_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_sm_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_wm_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_cph_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_cpo_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_dp_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_ed_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_bpb_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_sb_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_fc_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_pt_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_ptyp_decode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_clock_input_mode: *const *const ::core::ffi::c_char;
+    pub static acpi_gbl_clock_input_scale: *const *const ::core::ffi::c_char;
+}
+
+pub const ACPI_MSG_ERROR: &str = "ACPI Error: ";
+pub const ACPI_MSG_WARNING: &str = "ACPI Warning: ";
+pub const ACPI_MSG_INFO: &str = "ACPI: ";
+pub const ACPI_MSG_BIOS_ERROR: &str = "Firmware Error (ACPI): ";
+pub const ACPI_MSG_BIOS_WARNING: &str = "Firmware Warning (ACPI): ";
+pub const ACPI_IMPLICIT_CONVERSION: bool = true;
+pub const ACPI_NO_IMPLICIT_CONVERSION: bool = false;
+pub const ACPI_INVALID_RESOURCE: u32 = 0;
+pub const ACPI_FIXED_LENGTH: u32 = 1;
+pub const ACPI_VARIABLE_LENGTH: u32 = 2;
+pub const ACPI_SMALL_VARIABLE_LENGTH: u32 = 3;
+pub const REF_INCREMENT: u16 = 0;
+pub const REF_DECREMENT: u16 = 1;
+pub const DB_BYTE_DISPLAY: u32 = 0x01;
+pub const DB_WORD_DISPLAY: u32 = 0x02;
+pub const DB_DWORD_DISPLAY: u32 = 0x04;
+pub const DB_QWORD_DISPLAY: u32 = 0x08;
+pub const DB_DISPLAY_DATA_ONLY: u32 = 0x10;
+pub const ACPI_ANY_BASE: u32 = 0;
+
+pub type acpi_walk_aml_callback = unsafe extern "C" fn(*mut u8, u32, u32, u8, *mut *mut ::core::ffi::c_void) -> acpi_status;
+pub type acpi_pkg_callback = unsafe extern "C" fn(u8, *mut acpi_operand_object, *mut acpi_generic_state, *mut ::core::ffi::c_void) -> acpi_status;
+
+#[repr(C)]
+pub struct acpi_pkg_info { pub free_space: *mut u8, pub length: acpi_size, pub object_space: u32, pub num_packages: u32 }
+
+extern "C" {
+    pub fn acpi_ut_valid_nameseg(signature: *mut ::core::ffi::c_char) -> u8;
+    pub fn acpi_ut_valid_name_char(character: ::core::ffi::c_char, position: u32) -> u8;
+    pub fn acpi_ut_check_and_repair_ascii(name: *mut u8, repaired_name: *mut ::core::ffi::c_char, count: u32);
+    pub fn acpi_ut_generate_checksum(table: *mut ::core::ffi::c_void, length: u32, original_checksum: u8) -> u8;
+    pub fn acpi_ut_checksum(buffer: *mut u8, length: u32) -> u8;
+    pub fn acpi_ut_verify_cdat_checksum(cdat_table: *mut acpi_table_cdat, length: u32) -> acpi_status;
+    pub fn acpi_ut_verify_checksum(table: *mut acpi_table_header, length: u32) -> acpi_status;
+    pub fn acpi_ut_strupr(src_string: *mut ::core::ffi::c_char);
+    pub fn acpi_ut_strlwr(src_string: *mut ::core::ffi::c_char);
+    pub fn acpi_ut_stricmp(string1: *mut ::core::ffi::c_char, string2: *mut ::core::ffi::c_char) -> ::core::ffi::c_int;
+    pub fn acpi_ut_convert_octal_string(string: *mut ::core::ffi::c_char, return_value: *mut u64) -> acpi_status;
+    pub fn acpi_ut_convert_decimal_string(string: *mut ::core::ffi::c_char, return_value_ptr: *mut u64) -> acpi_status;
+    pub fn acpi_ut_convert_hex_string(string: *mut ::core::ffi::c_char, return_value_ptr: *mut u64) -> acpi_status;
+    pub fn acpi_ut_remove_whitespace(string: *mut *mut ::core::ffi::c_char) -> ::core::ffi::c_char;
+    pub fn acpi_ut_remove_leading_zeros(string: *mut *mut ::core::ffi::c_char) -> ::core::ffi::c_char;
+    pub fn acpi_ut_detect_hex_prefix(string: *mut *mut ::core::ffi::c_char) -> u8;
+    pub fn acpi_ut_remove_hex_prefix(string: *mut *mut ::core::ffi::c_char);
+    pub fn acpi_ut_detect_octal_prefix(string: *mut *mut ::core::ffi::c_char) -> u8;
+    pub fn acpi_ut_strtoul64(string: *mut ::core::ffi::c_char, ret_integer: *mut u64) -> acpi_status;
+    pub fn acpi_ut_explicit_strtoul64(string: *mut ::core::ffi::c_char) -> u64;
+    pub fn acpi_ut_implicit_strtoul64(string: *mut ::core::ffi::c_char) -> u64;
+    pub fn acpi_ut_init_globals() -> acpi_status;
+    pub fn acpi_ut_get_mutex_name(mutex_id: u32) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_get_type_name(type_: acpi_object_type) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_get_node_name(object: *mut ::core::ffi::c_void) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_get_descriptor_name(object: *mut ::core::ffi::c_void) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_get_reference_name(object: *mut acpi_operand_object) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_get_object_type_name(obj_desc: *mut acpi_operand_object) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_get_region_name(space_id: u8) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_get_event_name(event_id: u32) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_get_argument_type_name(arg_type: u32) -> *const ::core::ffi::c_char;
+    pub fn acpi_ut_hex_to_ascii_char(integer: u64, position: u32) -> ::core::ffi::c_char;
+    pub fn acpi_ut_ascii_to_hex_byte(two_ascii_chars: *mut ::core::ffi::c_char, return_byte: *mut u8) -> acpi_status;
+    pub fn acpi_ut_ascii_char_to_hex(hex_char: ::core::ffi::c_int) -> u8;
+    pub fn acpi_ut_valid_object_type(type_: acpi_object_type) -> u8;
+    pub fn acpi_ut_hardware_initialize() -> acpi_status;
+    pub fn acpi_ut_subsystem_shutdown();
+    pub fn acpi_ut_build_simple_object(obj: *mut acpi_operand_object, user_obj: *mut acpi_object, data_space: *mut u8, buffer_space_used: *mut u32) -> acpi_status;
+    pub fn acpi_ut_build_package_object(obj: *mut acpi_operand_object, buffer: *mut u8, space_used: *mut u32) -> acpi_status;
+    pub fn acpi_ut_copy_iobject_to_eobject(obj: *mut acpi_operand_object, ret_buffer: *mut acpi_buffer) -> acpi_status;
+    pub fn acpi_ut_copy_eobject_to_iobject(obj: *mut acpi_object, internal_obj: *mut *mut acpi_operand_object) -> acpi_status;
+    pub fn acpi_ut_copy_isimple_to_isimple(source_obj: *mut acpi_operand_object, dest_obj: *mut acpi_operand_object) -> acpi_status;
+    pub fn acpi_ut_copy_iobject_to_iobject(source_desc: *mut acpi_operand_object, dest_desc: *mut *mut acpi_operand_object, walk_state: *mut acpi_walk_state) -> acpi_status;
+    pub fn acpi_ut_update_object_reference(object: *mut acpi_operand_object, action: u16) -> acpi_status;
+    pub fn acpi_ut_init_stack_ptr_trace(); pub fn acpi_ut_track_stack_ptr();
+    pub fn acpi_ut_trace(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32);
+    pub fn acpi_ut_trace_ptr(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32, pointer: *const ::core::ffi::c_void);
+    pub fn acpi_ut_trace_u32(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32, integer: u32);
+    pub fn acpi_ut_trace_str(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32, string: *const ::core::ffi::c_char);
+    pub fn acpi_ut_exit(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32);
+    pub fn acpi_ut_status_exit(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32, status: acpi_status);
+    pub fn acpi_ut_value_exit(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32, value: u64);
+    pub fn acpi_ut_ptr_exit(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32, ptr: *mut u8);
+    pub fn acpi_ut_str_exit(line_number: u32, function_name: *const ::core::ffi::c_char, module_name: *const ::core::ffi::c_char, component_id: u32, string: *const ::core::ffi::c_char);
+    pub fn acpi_ut_debug_dump_buffer(buffer: *mut u8, count: u32, display: u32, component_id: u32);
+    pub fn acpi_ut_dump_buffer(buffer: *mut u8, count: u32, display: u32, offset: u32);
+    pub fn acpi_ut_report_error(module_name: *mut ::core::ffi::c_char, line_number: u32);
+    pub fn acpi_ut_report_info(module_name: *mut ::core::ffi::c_char, line_number: u32);
+    pub fn acpi_ut_report_warning(module_name: *mut ::core::ffi::c_char, line_number: u32);
+    pub fn acpi_ut_add_reference(object: *mut acpi_operand_object); pub fn acpi_ut_remove_reference(object: *mut acpi_operand_object);
+    pub fn acpi_ut_delete_internal_package_object(object: *mut acpi_operand_object); pub fn acpi_ut_delete_internal_simple_object(object: *mut acpi_operand_object); pub fn acpi_ut_delete_internal_object_list(obj_list: *mut *mut acpi_operand_object);
+    pub fn acpi_ut_evaluate_object(prefix_node: *mut acpi_namespace_node, path: *const ::core::ffi::c_char, expected_return_btypes: u32, return_desc: *mut *mut acpi_operand_object) -> acpi_status;
+    pub fn acpi_ut_evaluate_numeric_object(object_name: *const ::core::ffi::c_char, device_node: *mut acpi_namespace_node, value: *mut u64) -> acpi_status;
+    pub fn acpi_ut_execute_STA(device_node: *mut acpi_namespace_node, status_flags: *mut u32) -> acpi_status;
+    pub fn acpi_ut_execute_power_methods(device_node: *mut acpi_namespace_node, method_names: *const *const ::core::ffi::c_char, method_count: u8, out_values: *mut u8) -> acpi_status;
+    pub fn acpi_ut_execute_HID(device_node: *mut acpi_namespace_node, return_id: *mut *mut acpi_pnp_device_id) -> acpi_status;
+    pub fn acpi_ut_execute_UID(device_node: *mut acpi_namespace_node, return_id: *mut *mut acpi_pnp_device_id) -> acpi_status;
+    pub fn acpi_ut_execute_CID(device_node: *mut acpi_namespace_node, return_cid_list: *mut *mut acpi_pnp_device_id_list) -> acpi_status;
+    pub fn acpi_ut_execute_CLS(device_node: *mut acpi_namespace_node, return_id: *mut *mut acpi_pnp_device_id) -> acpi_status;
+    pub fn acpi_ut_create_rw_lock(lock: *mut acpi_rw_lock) -> acpi_status; pub fn acpi_ut_delete_rw_lock(lock: *mut acpi_rw_lock);
+    pub fn acpi_ut_acquire_read_lock(lock: *mut acpi_rw_lock) -> acpi_status; pub fn acpi_ut_release_read_lock(lock: *mut acpi_rw_lock) -> acpi_status;
+    pub fn acpi_ut_acquire_write_lock(lock: *mut acpi_rw_lock) -> acpi_status; pub fn acpi_ut_release_write_lock(lock: *mut acpi_rw_lock);
+    pub fn acpi_ut_create_internal_object_dbg(module_name: *const ::core::ffi::c_char, line_number: u32, component_id: u32, type_: acpi_object_type) -> *mut acpi_operand_object;
+    pub fn acpi_ut_allocate_object_desc_dbg(module_name: *const ::core::ffi::c_char, line_number: u32, component_id: u32) -> *mut ::core::ffi::c_void;
+    pub fn acpi_ut_delete_object_desc(object: *mut acpi_operand_object); pub fn acpi_ut_valid_internal_object(object: *mut ::core::ffi::c_void) -> u8;
+    pub fn acpi_ut_create_package_object(count: u32) -> *mut acpi_operand_object; pub fn acpi_ut_create_integer_object(value: u64) -> *mut acpi_operand_object;
+    pub fn acpi_ut_create_buffer_object(buffer_size: acpi_size) -> *mut acpi_operand_object; pub fn acpi_ut_create_string_object(string_size: acpi_size) -> *mut acpi_operand_object;
+    pub fn acpi_ut_get_object_size(obj: *mut acpi_operand_object, obj_length: *mut acpi_size) -> acpi_status;
+    pub fn acpi_ut_initialize_interfaces() -> acpi_status; pub fn acpi_ut_interface_terminate() -> acpi_status;
+    pub fn acpi_ut_install_interface(interface_name: acpi_string) -> acpi_status; pub fn acpi_ut_remove_interface(interface_name: acpi_string) -> acpi_status; pub fn acpi_ut_update_interfaces(action: u8) -> acpi_status;
+    pub fn acpi_ut_get_interface(interface_name: acpi_string) -> *mut acpi_interface_info; pub fn acpi_ut_osi_implementation(walk_state: *mut acpi_walk_state) -> acpi_status;
+    pub fn acpi_ut_get_next_predefined_method(this_name: *const acpi_predefined_info) -> *const acpi_predefined_info;
+    pub fn acpi_ut_match_predefined_method(name: *mut ::core::ffi::c_char) -> *const acpi_predefined_info;
+    pub fn acpi_ut_get_expected_return_types(buffer: *mut ::core::ffi::c_char, expected_btypes: u32);
+    pub fn acpi_ut_push_generic_state(list_head: *mut *mut acpi_generic_state, state: *mut acpi_generic_state);
+    pub fn acpi_ut_pop_generic_state(list_head: *mut *mut acpi_generic_state) -> *mut acpi_generic_state;
+    pub fn acpi_ut_create_generic_state() -> *mut acpi_generic_state; pub fn acpi_ut_create_thread_state() -> *mut acpi_thread_state;
+    pub fn acpi_ut_create_update_state(object: *mut acpi_operand_object, action: u16) -> *mut acpi_generic_state;
+    pub fn acpi_ut_create_pkg_state(internal_object: *mut ::core::ffi::c_void, external_object: *mut ::core::ffi::c_void, index: u32) -> *mut acpi_generic_state;
+    pub fn acpi_ut_create_update_state_and_push(object: *mut acpi_operand_object, action: u16, state_list: *mut *mut acpi_generic_state) -> acpi_status;
+    pub fn acpi_ut_create_control_state() -> *mut acpi_generic_state; pub fn acpi_ut_delete_generic_state(state: *mut acpi_generic_state);
+    pub fn acpi_ut_divide(in_dividend: u64, in_divisor: u64, out_quotient: *mut u64, out_remainder: *mut u64) -> acpi_status;
+    pub fn acpi_ut_short_divide(in_dividend: u64, divisor: u32, out_quotient: *mut u64, out_remainder: *mut u32) -> acpi_status;
+    pub fn acpi_ut_short_multiply(in_multiplicand: u64, multiplier: u32, outproduct: *mut u64) -> acpi_status;
+    pub fn acpi_ut_short_shift_left(operand: u64, count: u32, out_result: *mut u64) -> acpi_status; pub fn acpi_ut_short_shift_right(operand: u64, count: u32, out_result: *mut u64) -> acpi_status;
+    pub fn acpi_ut_validate_exception(status: acpi_status) -> *const acpi_exception_info; pub fn acpi_ut_is_pci_root_bridge(id: *mut ::core::ffi::c_char) -> u8;
+    pub fn acpi_ut_walk_package_tree(source_object: *mut acpi_operand_object, target_object: *mut ::core::ffi::c_void, walk_callback: acpi_pkg_callback, context: *mut ::core::ffi::c_void) -> acpi_status;
+    pub fn acpi_ut_dword_byte_swap(value: u32) -> u32; pub fn acpi_ut_set_integer_width(revision: u8);
+    pub fn acpi_ut_allocate_owner_id(owner_id: *mut acpi_owner_id) -> acpi_status; pub fn acpi_ut_release_owner_id(owner_id: *mut acpi_owner_id);
+    pub fn acpi_ut_walk_aml_resources(walk_state: *mut acpi_walk_state, aml: *mut u8, aml_length: acpi_size, user_function: acpi_walk_aml_callback, context: *mut *mut ::core::ffi::c_void) -> acpi_status;
+    pub fn acpi_ut_validate_resource(walk_state: *mut acpi_walk_state, aml: *mut ::core::ffi::c_void, return_index: *mut u8) -> acpi_status;
+    pub fn acpi_ut_get_descriptor_length(aml: *mut ::core::ffi::c_void) -> u32; pub fn acpi_ut_get_resource_length(aml: *mut ::core::ffi::c_void) -> u16; pub fn acpi_ut_get_resource_header_length(aml: *mut ::core::ffi::c_void) -> u8; pub fn acpi_ut_get_resource_type(aml: *mut ::core::ffi::c_void) -> u8;
+    pub fn acpi_ut_get_resource_end_tag(obj_desc: *mut acpi_operand_object, end_tag: *mut *mut u8) -> acpi_status;
+    pub fn acpi_ut_print_string(string: *mut ::core::ffi::c_char, max_length: u16); pub fn acpi_ut_repair_name(name: *mut ::core::ffi::c_char);
+    pub fn acpi_ut_mutex_initialize() -> acpi_status; pub fn acpi_ut_mutex_terminate(); pub fn acpi_ut_acquire_mutex(mutex_id: acpi_mutex_handle) -> acpi_status; pub fn acpi_ut_release_mutex(mutex_id: acpi_mutex_handle) -> acpi_status;
+    pub fn acpi_ut_create_caches() -> acpi_status; pub fn acpi_ut_delete_caches() -> acpi_status; pub fn acpi_ut_validate_buffer(buffer: *mut acpi_buffer) -> acpi_status; pub fn acpi_ut_initialize_buffer(buffer: *mut acpi_buffer, required_length: acpi_size) -> acpi_status;
+    pub fn acpi_ut_add_address_range(space_id: acpi_adr_space_type, address: acpi_physical_address, length: u32, region_node: *mut acpi_namespace_node) -> acpi_status;
+    pub fn acpi_ut_remove_address_range(space_id: acpi_adr_space_type, region_node: *mut acpi_namespace_node); pub fn acpi_ut_check_address_range(space_id: acpi_adr_space_type, address: acpi_physical_address, length: u32, warn: u8) -> u32; pub fn acpi_ut_delete_address_lists();
+    pub fn acpi_ut_predefined_warning(module_name: *const ::core::ffi::c_char, line_number: u32, pathname: *mut ::core::ffi::c_char, node_flags: u16, format: *const ::core::ffi::c_char, ...);
+    pub fn acpi_ut_predefined_info(module_name: *const ::core::ffi::c_char, line_number: u32, pathname: *mut ::core::ffi::c_char, node_flags: u16, format: *const ::core::ffi::c_char, ...);
+    pub fn acpi_ut_predefined_bios_error(module_name: *const ::core::ffi::c_char, line_number: u32, pathname: *mut ::core::ffi::c_char, node_flags: u16, format: *const ::core::ffi::c_char, ...);
+    pub fn acpi_ut_prefixed_namespace_error(module_name: *const ::core::ffi::c_char, line_number: u32, prefix_scope: *mut acpi_generic_state, internal_name: *const ::core::ffi::c_char, lookup_status: acpi_status);
+    pub fn acpi_ut_method_error(module_name: *const ::core::ffi::c_char, line_number: u32, message: *const ::core::ffi::c_char, node: *mut acpi_namespace_node, path: *const ::core::ffi::c_char, lookup_status: acpi_status);
+    pub fn acpi_ah_match_predefined_name(nameseg: *mut ::core::ffi::c_char) -> *const ah_predefined_name; pub fn acpi_ah_match_hardware_id(hid: *mut ::core::ffi::c_char) -> *const ah_device_id; pub fn acpi_ah_match_uuid(data: *mut u8) -> *const ::core::ffi::c_char;
+}
+
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

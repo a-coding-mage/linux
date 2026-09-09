@@ -1,0 +1,90 @@
+// SPDX-License-Identifier: GPL-2.0
+// The errno constants and CONFIG_* conditions are supplied by the surrounding
+// kernel bindings.
+
+use core::ffi::c_char;
+
+static NAMES_0: &[(u32, &str)] = &[
+    (E2BIG, "-E2BIG"), (EACCES, "-EACCES"), (EADDRINUSE, "-EADDRINUSE"),
+    (EADDRNOTAVAIL, "-EADDRNOTAVAIL"), (EADV, "-EADV"),
+    (EAFNOSUPPORT, "-EAFNOSUPPORT"), (EAGAIN, "-EAGAIN"),
+    (EALREADY, "-EALREADY"), (EBADE, "-EBADE"), (EBADF, "-EBADF"),
+    (EBADFD, "-EBADFD"), (EBADMSG, "-EBADMSG"), (EBADR, "-EBADR"),
+    (EBADRQC, "-EBADRQC"), (EBADSLT, "-EBADSLT"), (EBFONT, "-EBFONT"),
+    (EBUSY, "-EBUSY"), (ECANCELED, "-ECANCELED"), (ECHILD, "-ECHILD"),
+    (ECHRNG, "-ECHRNG"), (ECOMM, "-ECOMM"), (ECONNABORTED, "-ECONNABORTED"),
+    (ECONNREFUSED, "-ECONNREFUSED"), (ECONNRESET, "-ECONNRESET"),
+    (EDEADLK, "-EDEADLK"), (EDEADLOCK, "-EDEADLOCK"),
+    (EDESTADDRREQ, "-EDESTADDRREQ"), (EDOM, "-EDOM"), (EDOTDOT, "-EDOTDOT"),
+    // E(EDQUOT) is omitted when CONFIG_MIPS is enabled.
+    (EDQUOT, "-EDQUOT"), (EEXIST, "-EEXIST"), (EFAULT, "-EFAULT"),
+    (EFBIG, "-EFBIG"), (EHOSTDOWN, "-EHOSTDOWN"), (EHOSTUNREACH, "-EHOSTUNREACH"),
+    (EHWPOISON, "-EHWPOISON"), (EIDRM, "-EIDRM"), (EILSEQ, "-EILSEQ"),
+    (EINIT, "-EINIT"),
+    (EINPROGRESS, "-EINPROGRESS"), (EINTR, "-EINTR"), (EINVAL, "-EINVAL"),
+    (EIO, "-EIO"), (EISCONN, "-EISCONN"), (EISDIR, "-EISDIR"),
+    (EISNAM, "-EISNAM"), (EKEYEXPIRED, "-EKEYEXPIRED"),
+    (EKEYREJECTED, "-EKEYREJECTED"), (EKEYREVOKED, "-EKEYREVOKED"),
+    (EL2HLT, "-EL2HLT"), (EL2NSYNC, "-EL2NSYNC"), (EL3HLT, "-EL3HLT"),
+    (EL3RST, "-EL3RST"), (ELIBACC, "-ELIBACC"), (ELIBBAD, "-ELIBBAD"),
+    (ELIBEXEC, "-ELIBEXEC"), (ELIBMAX, "-ELIBMAX"), (ELIBSCN, "-ELIBSCN"),
+    (ELNRNG, "-ELNRNG"), (ELOOP, "-ELOOP"), (EMEDIUMTYPE, "-EMEDIUMTYPE"),
+    (EMFILE, "-EMFILE"), (EMLINK, "-EMLINK"), (EMSGSIZE, "-EMSGSIZE"),
+    (EMULTIHOP, "-EMULTIHOP"), (ENAMETOOLONG, "-ENAMETOOLONG"),
+    (ENAVAIL, "-ENAVAIL"), (ENETDOWN, "-ENETDOWN"), (ENETRESET, "-ENETRESET"),
+    (ENETUNREACH, "-ENETUNREACH"), (ENFILE, "-ENFILE"), (ENOANO, "-ENOANO"),
+    (ENOBUFS, "-ENOBUFS"), (ENOCSI, "-ENOCSI"), (ENODATA, "-ENODATA"),
+    (ENODEV, "-ENODEV"), (ENOENT, "-ENOENT"), (ENOEXEC, "-ENOEXEC"),
+    (ENOKEY, "-ENOKEY"), (ENOLCK, "-ENOLCK"), (ENOLINK, "-ENOLINK"),
+    (ENOMEDIUM, "-ENOMEDIUM"), (ENOMEM, "-ENOMEM"), (ENOMSG, "-ENOMSG"),
+    (ENONET, "-ENONET"), (ENOPKG, "-ENOPKG"), (ENOPROTOOPT, "-ENOPROTOOPT"),
+    (ENOSPC, "-ENOSPC"), (ENOSR, "-ENOSR"), (ENOSTR, "-ENOSTR"),
+    (ENOSYS, "-ENOSYS"), (ENOTBLK, "-ENOTBLK"), (ENOTCONN, "-ENOTCONN"),
+    (ENOTDIR, "-ENOTDIR"), (ENOTEMPTY, "-ENOTEMPTY"), (ENOTNAM, "-ENOTNAM"),
+    (ENOTRECOVERABLE, "-ENOTRECOVERABLE"), (ENOTSOCK, "-ENOTSOCK"),
+    (ENOTTY, "-ENOTTY"), (ENOTUNIQ, "-ENOTUNIQ"), (ENXIO, "-ENXIO"),
+    (EOPNOTSUPP, "-EOPNOTSUPP"), (EOVERFLOW, "-EOVERFLOW"),
+    (EOWNERDEAD, "-EOWNERDEAD"), (EPERM, "-EPERM"), (EPFNOSUPPORT, "-EPFNOSUPPORT"),
+    (EPIPE, "-EPIPE"), (EPROTO, "-EPROTO"), (EPROTONOSUPPORT, "-EPROTONOSUPPORT"),
+    (EPROTOTYPE, "-EPROTOTYPE"), (ERANGE, "-ERANGE"), (EREMCHG, "-EREMCHG"),
+    (EREMOTE, "-EREMOTE"), (EREMOTEIO, "-EREMOTEIO"), (ERESTART, "-ERESTART"),
+    (ERFKILL, "-ERFKILL"), (EROFS, "-EROFS"), (ESHUTDOWN, "-ESHUTDOWN"),
+    (ESOCKTNOSUPPORT, "-ESOCKTNOSUPPORT"), (ESPIPE, "-ESPIPE"),
+    (ESRCH, "-ESRCH"), (ESRMNT, "-ESRMNT"), (ESTALE, "-ESTALE"),
+    (ESTRPIPE, "-ESTRPIPE"), (ETIME, "-ETIME"), (ETIMEDOUT, "-ETIMEDOUT"),
+    (ETOOMANYREFS, "-ETOOMANYREFS"), (ETXTBSY, "-ETXTBSY"), (EUCLEAN, "-EUCLEAN"),
+    (EUNATCH, "-EUNATCH"), (EUSERS, "-EUSERS"), (EXDEV, "-EXDEV"),
+    (EXFULL, "-EXFULL"),
+];
+
+static NAMES_512: &[(u32, &str)] = &[
+    (ERESTARTSYS, "-ERESTARTSYS"), (ERESTARTNOINTR, "-ERESTARTNOINTR"),
+    (ERESTARTNOHAND, "-ERESTARTNOHAND"), (ENOIOCTLCMD, "-ENOIOCTLCMD"),
+    (ERESTART_RESTARTBLOCK, "-ERESTART_RESTARTBLOCK"), (EPROBE_DEFER, "-EPROBE_DEFER"),
+    (EOPENSTALE, "-EOPENSTALE"), (ENOPARAM, "-ENOPARAM"),
+    (EBADHANDLE, "-EBADHANDLE"), (ENOTSYNC, "-ENOTSYNC"),
+    (EBADCOOKIE, "-EBADCOOKIE"), (ENOTSUPP, "-ENOTSUPP"),
+    (ETOOSMALL, "-ETOOSMALL"), (ESERVERFAULT, "-ESERVERFAULT"),
+    (EBADTYPE, "-EBADTYPE"), (EJUKEBOX, "-EJUKEBOX"),
+    (EIOCBQUEUED, "-EIOCBQUEUED"), (ERECALLCONFLICT, "-ERECALLCONFLICT"),
+];
+
+unsafe fn __errname(err: u32) -> *const c_char {
+    for &(number, name) in NAMES_0 {
+        if err == number { return name.as_ptr() as *const c_char; }
+    }
+    for &(number, name) in NAMES_512 {
+        if err == number { return name.as_ptr() as *const c_char; }
+    }
+    // But why? CONFIG_MIPS and EDQUOT == 1133.
+    if err == EDQUOT { return c"-EDQUOT".as_ptr() as *const c_char; }
+    core::ptr::null()
+}
+
+pub unsafe extern "C" fn errname(err: i32) -> *const c_char {
+    let name = __errname(err.wrapping_abs() as u32);
+    if name.is_null() { return core::ptr::null(); }
+    if err > 0 { name.add(1) } else { name }
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1,0 +1,19 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+// Header guard: __DT_TAS2552_H
+
+pub const TAS2552_PLL_CLKIN: i32 = 0;
+pub const TAS2552_PDM_CLK: i32 = 1;
+pub const TAS2552_CLK_TARGET_MASK: i32 = 1;
+
+pub const TAS2552_PLL_CLKIN_MCLK: i32 = ((0_i32 << 1) | TAS2552_PLL_CLKIN);
+pub const TAS2552_PLL_CLKIN_BCLK: i32 = ((1_i32 << 1) | TAS2552_PLL_CLKIN);
+pub const TAS2552_PLL_CLKIN_IVCLKIN: i32 = ((2_i32 << 1) | TAS2552_PLL_CLKIN);
+pub const TAS2552_PLL_CLKIN_1_8_FIXED: i32 = ((3_i32 << 1) | TAS2552_PLL_CLKIN);
+
+pub const TAS2552_PDM_CLK_PLL: i32 = ((0_i32 << 1) | TAS2552_PDM_CLK);
+pub const TAS2552_PDM_CLK_IVCLKIN: i32 = ((1_i32 << 1) | TAS2552_PDM_CLK);
+pub const TAS2552_PDM_CLK_BCLK: i32 = ((2_i32 << 1) | TAS2552_PDM_CLK);
+pub const TAS2552_PDM_CLK_MCLK: i32 = ((3_i32 << 1) | TAS2552_PDM_CLK);
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

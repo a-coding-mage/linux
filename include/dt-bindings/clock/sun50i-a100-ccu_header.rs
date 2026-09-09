@@ -1,0 +1,113 @@
+/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
+/*
+ * Copyright (c) 2020 Yangtao Li <frank@allwinnertech.com>
+ */
+
+pub const CLK_PLL_PERIPH0: u32 = 3;
+
+pub const CLK_CPUX: u32 = 24;
+
+pub const CLK_APB1: u32 = 29;
+
+pub const CLK_MBUS: u32 = 31;
+pub const CLK_DE: u32 = 32;
+pub const CLK_BUS_DE: u32 = 33;
+pub const CLK_G2D: u32 = 34;
+pub const CLK_BUS_G2D: u32 = 35;
+pub const CLK_GPU: u32 = 36;
+pub const CLK_BUS_GPU: u32 = 37;
+pub const CLK_CE: u32 = 38;
+pub const CLK_BUS_CE: u32 = 39;
+pub const CLK_VE: u32 = 40;
+pub const CLK_BUS_VE: u32 = 41;
+pub const CLK_BUS_DMA: u32 = 42;
+pub const CLK_BUS_MSGBOX: u32 = 43;
+pub const CLK_BUS_SPINLOCK: u32 = 44;
+pub const CLK_BUS_HSTIMER: u32 = 45;
+pub const CLK_AVS: u32 = 46;
+pub const CLK_BUS_DBG: u32 = 47;
+pub const CLK_BUS_PSI: u32 = 48;
+pub const CLK_BUS_PWM: u32 = 49;
+pub const CLK_BUS_IOMMU: u32 = 50;
+pub const CLK_MBUS_DMA: u32 = 51;
+pub const CLK_MBUS_VE: u32 = 52;
+pub const CLK_MBUS_CE: u32 = 53;
+pub const CLK_MBUS_NAND: u32 = 54;
+pub const CLK_MBUS_CSI: u32 = 55;
+pub const CLK_MBUS_ISP: u32 = 56;
+pub const CLK_MBUS_G2D: u32 = 57;
+
+pub const CLK_NAND0: u32 = 59;
+pub const CLK_NAND1: u32 = 60;
+pub const CLK_BUS_NAND: u32 = 61;
+pub const CLK_MMC0: u32 = 62;
+pub const CLK_MMC1: u32 = 63;
+pub const CLK_MMC2: u32 = 64;
+pub const CLK_MMC3: u32 = 65;
+pub const CLK_BUS_MMC0: u32 = 66;
+pub const CLK_BUS_MMC1: u32 = 67;
+pub const CLK_BUS_MMC2: u32 = 68;
+pub const CLK_BUS_UART0: u32 = 69;
+pub const CLK_BUS_UART1: u32 = 70;
+pub const CLK_BUS_UART2: u32 = 71;
+pub const CLK_BUS_UART3: u32 = 72;
+pub const CLK_BUS_UART4: u32 = 73;
+pub const CLK_BUS_I2C0: u32 = 74;
+pub const CLK_BUS_I2C1: u32 = 75;
+pub const CLK_BUS_I2C2: u32 = 76;
+pub const CLK_BUS_I2C3: u32 = 77;
+pub const CLK_SPI0: u32 = 78;
+pub const CLK_SPI1: u32 = 79;
+pub const CLK_SPI2: u32 = 80;
+pub const CLK_BUS_SPI0: u32 = 81;
+pub const CLK_BUS_SPI1: u32 = 82;
+pub const CLK_BUS_SPI2: u32 = 83;
+pub const CLK_EMAC_25M: u32 = 84;
+pub const CLK_BUS_EMAC: u32 = 85;
+pub const CLK_IR_RX: u32 = 86;
+pub const CLK_BUS_IR_RX: u32 = 87;
+pub const CLK_IR_TX: u32 = 88;
+pub const CLK_BUS_IR_TX: u32 = 89;
+pub const CLK_BUS_GPADC: u32 = 90;
+pub const CLK_BUS_THS: u32 = 91;
+pub const CLK_I2S0: u32 = 92;
+pub const CLK_I2S1: u32 = 93;
+pub const CLK_I2S2: u32 = 94;
+pub const CLK_I2S3: u32 = 95;
+pub const CLK_BUS_I2S0: u32 = 96;
+pub const CLK_BUS_I2S1: u32 = 97;
+pub const CLK_BUS_I2S2: u32 = 98;
+pub const CLK_BUS_I2S3: u32 = 99;
+pub const CLK_SPDIF: u32 = 100;
+pub const CLK_BUS_SPDIF: u32 = 101;
+pub const CLK_DMIC: u32 = 102;
+pub const CLK_BUS_DMIC: u32 = 103;
+pub const CLK_AUDIO_DAC: u32 = 104;
+pub const CLK_AUDIO_ADC: u32 = 105;
+pub const CLK_AUDIO_4X: u32 = 106;
+pub const CLK_BUS_AUDIO_CODEC: u32 = 107;
+pub const CLK_USB_OHCI0: u32 = 108;
+pub const CLK_USB_PHY0: u32 = 109;
+pub const CLK_USB_OHCI1: u32 = 110;
+pub const CLK_USB_PHY1: u32 = 111;
+pub const CLK_BUS_OHCI0: u32 = 112;
+pub const CLK_BUS_OHCI1: u32 = 113;
+pub const CLK_BUS_EHCI0: u32 = 114;
+pub const CLK_BUS_EHCI1: u32 = 115;
+pub const CLK_BUS_OTG: u32 = 116;
+pub const CLK_BUS_LRADC: u32 = 117;
+pub const CLK_BUS_DPSS_TOP0: u32 = 118;
+pub const CLK_BUS_DPSS_TOP1: u32 = 119;
+pub const CLK_MIPI_DSI: u32 = 120;
+pub const CLK_BUS_MIPI_DSI: u32 = 121;
+pub const CLK_TCON_LCD: u32 = 122;
+pub const CLK_BUS_TCON_LCD: u32 = 123;
+pub const CLK_LEDC: u32 = 124;
+pub const CLK_BUS_LEDC: u32 = 125;
+pub const CLK_CSI_TOP: u32 = 126;
+pub const CLK_CSI0_MCLK: u32 = 127;
+pub const CLK_CSI1_MCLK: u32 = 128;
+pub const CLK_BUS_CSI: u32 = 129;
+pub const CLK_CSI_ISP: u32 = 130;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

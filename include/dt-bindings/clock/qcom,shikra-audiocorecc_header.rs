@@ -1,0 +1,46 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/* AUDIO_CORE_CC clocks */
+pub const AUDIO_CORE_CC_DIG_PLL_OUT_AUX: u32 = 0;
+pub const AUDIO_CORE_CC_DIG_PLL_OUT_AUX2: u32 = 1;
+pub const AUDIO_CORE_CC_DIG_PLL: u32 = 2;
+pub const AUDIO_CORE_CC_AIF_IF0_CLK_SRC: u32 = 3;
+pub const AUDIO_CORE_CC_AIF_IF0_EBIT_CLK: u32 = 4;
+pub const AUDIO_CORE_CC_AIF_IF0_IBIT_CLK: u32 = 5;
+pub const AUDIO_CORE_CC_AIF_IF1_CLK_SRC: u32 = 6;
+pub const AUDIO_CORE_CC_AIF_IF1_EBIT_CLK: u32 = 7;
+pub const AUDIO_CORE_CC_AIF_IF1_IBIT_CLK: u32 = 8;
+pub const AUDIO_CORE_CC_AIF_IF2_CLK_SRC: u32 = 9;
+pub const AUDIO_CORE_CC_AIF_IF2_EBIT_CLK: u32 = 10;
+pub const AUDIO_CORE_CC_AIF_IF2_IBIT_CLK: u32 = 11;
+pub const AUDIO_CORE_CC_AIF_IF3_CLK_SRC: u32 = 12;
+pub const AUDIO_CORE_CC_AIF_IF3_EBIT_CLK: u32 = 13;
+pub const AUDIO_CORE_CC_AIF_IF3_IBIT_CLK: u32 = 14;
+pub const AUDIO_CORE_CC_AUD_DMA_CLK: u32 = 15;
+pub const AUDIO_CORE_CC_AUD_DMA_CLK_SRC: u32 = 16;
+pub const AUDIO_CORE_CC_AUD_DMA_MEM_CLK: u32 = 17;
+pub const AUDIO_CORE_CC_BUS_CLK: u32 = 18;
+pub const AUDIO_CORE_CC_BUS_CLK_SRC: u32 = 19;
+pub const AUDIO_CORE_CC_CDIV_TX_MCLK_DIV_CLK_SRC: u32 = 20;
+pub const AUDIO_CORE_CC_EXT_MCLKA_CLK_SRC: u32 = 21;
+pub const AUDIO_CORE_CC_EXT_MCLKA_OUT_CLK: u32 = 22;
+pub const AUDIO_CORE_CC_EXT_MCLKB_CLK_SRC: u32 = 23;
+pub const AUDIO_CORE_CC_EXT_MCLKB_OUT_CLK: u32 = 24;
+pub const AUDIO_CORE_CC_IM_SLEEP_CLK: u32 = 25;
+pub const AUDIO_CORE_CC_LPAIF_PCMOE_CLK: u32 = 26;
+pub const AUDIO_CORE_CC_LPAIF_PCMOE_CLK_SRC: u32 = 27;
+pub const AUDIO_CORE_CC_RX_MCLK_2X_CLK: u32 = 28;
+pub const AUDIO_CORE_CC_RX_MCLK_CLK: u32 = 29;
+pub const AUDIO_CORE_CC_SAMPLING_CLK: u32 = 30;
+pub const AUDIO_CORE_CC_TX_MCLK_2X_CLK: u32 = 31;
+pub const AUDIO_CORE_CC_TX_MCLK_CLK: u32 = 32;
+pub const AUDIO_CORE_CC_TX_MCLK_RCG_CLK_SRC: u32 = 33;
+
+/* AUDIO_CORE_CSR resets */
+pub const AUDIO_CORE_CSR_RX_SWR_CGCR: u32 = 0;
+pub const AUDIO_CORE_CSR_TX_SWR_CGCR: u32 = 1;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1,0 +1,207 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (C) 2016 Freescale Semiconductor, Inc.
+ * Copyright 2017-2018 NXP.
+ *
+ */
+
+pub const IMX6SLL_CLK_DUMMY: u32 = 0;
+pub const IMX6SLL_CLK_CKIL: u32 = 1;
+pub const IMX6SLL_CLK_OSC: u32 = 2;
+pub const IMX6SLL_PLL1_BYPASS_SRC: u32 = 3;
+pub const IMX6SLL_PLL2_BYPASS_SRC: u32 = 4;
+pub const IMX6SLL_PLL3_BYPASS_SRC: u32 = 5;
+pub const IMX6SLL_PLL4_BYPASS_SRC: u32 = 6;
+pub const IMX6SLL_PLL5_BYPASS_SRC: u32 = 7;
+pub const IMX6SLL_PLL6_BYPASS_SRC: u32 = 8;
+pub const IMX6SLL_PLL7_BYPASS_SRC: u32 = 9;
+pub const IMX6SLL_CLK_PLL1: u32 = 10;
+pub const IMX6SLL_CLK_PLL2: u32 = 11;
+pub const IMX6SLL_CLK_PLL3: u32 = 12;
+pub const IMX6SLL_CLK_PLL4: u32 = 13;
+pub const IMX6SLL_CLK_PLL5: u32 = 14;
+pub const IMX6SLL_CLK_PLL6: u32 = 15;
+pub const IMX6SLL_CLK_PLL7: u32 = 16;
+pub const IMX6SLL_PLL1_BYPASS: u32 = 17;
+pub const IMX6SLL_PLL2_BYPASS: u32 = 18;
+pub const IMX6SLL_PLL3_BYPASS: u32 = 19;
+pub const IMX6SLL_PLL4_BYPASS: u32 = 20;
+pub const IMX6SLL_PLL5_BYPASS: u32 = 21;
+pub const IMX6SLL_PLL6_BYPASS: u32 = 22;
+pub const IMX6SLL_PLL7_BYPASS: u32 = 23;
+pub const IMX6SLL_CLK_PLL1_SYS: u32 = 24;
+pub const IMX6SLL_CLK_PLL2_BUS: u32 = 25;
+pub const IMX6SLL_CLK_PLL3_USB_OTG: u32 = 26;
+pub const IMX6SLL_CLK_PLL4_AUDIO: u32 = 27;
+pub const IMX6SLL_CLK_PLL5_VIDEO: u32 = 28;
+pub const IMX6SLL_CLK_PLL6_ENET: u32 = 29;
+pub const IMX6SLL_CLK_PLL7_USB_HOST: u32 = 30;
+pub const IMX6SLL_CLK_USBPHY1: u32 = 31;
+pub const IMX6SLL_CLK_USBPHY2: u32 = 32;
+pub const IMX6SLL_CLK_USBPHY1_GATE: u32 = 33;
+pub const IMX6SLL_CLK_USBPHY2_GATE: u32 = 34;
+pub const IMX6SLL_CLK_PLL2_PFD0: u32 = 35;
+pub const IMX6SLL_CLK_PLL2_PFD1: u32 = 36;
+pub const IMX6SLL_CLK_PLL2_PFD2: u32 = 37;
+pub const IMX6SLL_CLK_PLL2_PFD3: u32 = 38;
+pub const IMX6SLL_CLK_PLL3_PFD0: u32 = 39;
+pub const IMX6SLL_CLK_PLL3_PFD1: u32 = 40;
+pub const IMX6SLL_CLK_PLL3_PFD2: u32 = 41;
+pub const IMX6SLL_CLK_PLL3_PFD3: u32 = 42;
+pub const IMX6SLL_CLK_PLL4_POST_DIV: u32 = 43;
+pub const IMX6SLL_CLK_PLL4_AUDIO_DIV: u32 = 44;
+pub const IMX6SLL_CLK_PLL5_POST_DIV: u32 = 45;
+pub const IMX6SLL_CLK_PLL5_VIDEO_DIV: u32 = 46;
+pub const IMX6SLL_CLK_PLL2_198M: u32 = 47;
+pub const IMX6SLL_CLK_PLL3_120M: u32 = 48;
+pub const IMX6SLL_CLK_PLL3_80M: u32 = 49;
+pub const IMX6SLL_CLK_PLL3_60M: u32 = 50;
+pub const IMX6SLL_CLK_STEP: u32 = 51;
+pub const IMX6SLL_CLK_PLL1_SW: u32 = 52;
+pub const IMX6SLL_CLK_AXI_ALT_SEL: u32 = 53;
+pub const IMX6SLL_CLK_AXI_SEL: u32 = 54;
+pub const IMX6SLL_CLK_PERIPH_PRE: u32 = 55;
+pub const IMX6SLL_CLK_PERIPH2_PRE: u32 = 56;
+pub const IMX6SLL_CLK_PERIPH_CLK2_SEL: u32 = 57;
+pub const IMX6SLL_CLK_PERIPH2_CLK2_SEL: u32 = 58;
+pub const IMX6SLL_CLK_PERCLK_SEL: u32 = 59;
+pub const IMX6SLL_CLK_USDHC1_SEL: u32 = 60;
+pub const IMX6SLL_CLK_USDHC2_SEL: u32 = 61;
+pub const IMX6SLL_CLK_USDHC3_SEL: u32 = 62;
+pub const IMX6SLL_CLK_SSI1_SEL: u32 = 63;
+pub const IMX6SLL_CLK_SSI2_SEL: u32 = 64;
+pub const IMX6SLL_CLK_SSI3_SEL: u32 = 65;
+pub const IMX6SLL_CLK_PXP_SEL: u32 = 66;
+pub const IMX6SLL_CLK_LCDIF_PRE_SEL: u32 = 67;
+pub const IMX6SLL_CLK_LCDIF_SEL: u32 = 68;
+pub const IMX6SLL_CLK_EPDC_PRE_SEL: u32 = 69;
+pub const IMX6SLL_CLK_SPDIF_SEL: u32 = 70;
+pub const IMX6SLL_CLK_ECSPI_SEL: u32 = 71;
+pub const IMX6SLL_CLK_UART_SEL: u32 = 72;
+pub const IMX6SLL_CLK_ARM: u32 = 73;
+pub const IMX6SLL_CLK_PERIPH: u32 = 74;
+pub const IMX6SLL_CLK_PERIPH2: u32 = 75;
+pub const IMX6SLL_CLK_PERIPH2_CLK2: u32 = 76;
+pub const IMX6SLL_CLK_PERIPH_CLK2: u32 = 77;
+pub const IMX6SLL_CLK_MMDC_PODF: u32 = 78;
+pub const IMX6SLL_CLK_AXI_PODF: u32 = 79;
+pub const IMX6SLL_CLK_AHB: u32 = 80;
+pub const IMX6SLL_CLK_IPG: u32 = 81;
+pub const IMX6SLL_CLK_PERCLK: u32 = 82;
+pub const IMX6SLL_CLK_USDHC1_PODF: u32 = 83;
+pub const IMX6SLL_CLK_USDHC2_PODF: u32 = 84;
+pub const IMX6SLL_CLK_USDHC3_PODF: u32 = 85;
+pub const IMX6SLL_CLK_SSI1_PRED: u32 = 86;
+pub const IMX6SLL_CLK_SSI2_PRED: u32 = 87;
+pub const IMX6SLL_CLK_SSI3_PRED: u32 = 88;
+pub const IMX6SLL_CLK_SSI1_PODF: u32 = 89;
+pub const IMX6SLL_CLK_SSI2_PODF: u32 = 90;
+pub const IMX6SLL_CLK_SSI3_PODF: u32 = 91;
+pub const IMX6SLL_CLK_PXP_PODF: u32 = 92;
+pub const IMX6SLL_CLK_LCDIF_PRED: u32 = 93;
+pub const IMX6SLL_CLK_LCDIF_PODF: u32 = 94;
+pub const IMX6SLL_CLK_EPDC_SEL: u32 = 95;
+pub const IMX6SLL_CLK_EPDC_PODF: u32 = 96;
+pub const IMX6SLL_CLK_SPDIF_PRED: u32 = 97;
+pub const IMX6SLL_CLK_SPDIF_PODF: u32 = 98;
+pub const IMX6SLL_CLK_ECSPI_PODF: u32 = 99;
+pub const IMX6SLL_CLK_UART_PODF: u32 = 100;
+
+/* CCGR 0 */
+pub const IMX6SLL_CLK_AIPSTZ1: u32 = 101;
+pub const IMX6SLL_CLK_AIPSTZ2: u32 = 102;
+pub const IMX6SLL_CLK_DCP: u32 = 103;
+pub const IMX6SLL_CLK_UART2_IPG: u32 = 104;
+pub const IMX6SLL_CLK_UART2_SERIAL: u32 = 105;
+
+/* CCGR 1 */
+pub const IMX6SLL_CLK_ECSPI1: u32 = 106;
+pub const IMX6SLL_CLK_ECSPI2: u32 = 107;
+pub const IMX6SLL_CLK_ECSPI3: u32 = 108;
+pub const IMX6SLL_CLK_ECSPI4: u32 = 109;
+pub const IMX6SLL_CLK_UART3_IPG: u32 = 110;
+pub const IMX6SLL_CLK_UART3_SERIAL: u32 = 111;
+pub const IMX6SLL_CLK_UART4_IPG: u32 = 112;
+pub const IMX6SLL_CLK_UART4_SERIAL: u32 = 113;
+pub const IMX6SLL_CLK_EPIT1: u32 = 114;
+pub const IMX6SLL_CLK_EPIT2: u32 = 115;
+pub const IMX6SLL_CLK_GPT_BUS: u32 = 116;
+pub const IMX6SLL_CLK_GPT_SERIAL: u32 = 117;
+
+/* CCGR2 */
+pub const IMX6SLL_CLK_CSI: u32 = 118;
+pub const IMX6SLL_CLK_I2C1: u32 = 119;
+pub const IMX6SLL_CLK_I2C2: u32 = 120;
+pub const IMX6SLL_CLK_I2C3: u32 = 121;
+pub const IMX6SLL_CLK_OCOTP: u32 = 122;
+pub const IMX6SLL_CLK_LCDIF_APB: u32 = 123;
+pub const IMX6SLL_CLK_PXP: u32 = 124;
+
+/* CCGR3 */
+pub const IMX6SLL_CLK_UART5_IPG: u32 = 125;
+pub const IMX6SLL_CLK_UART5_SERIAL: u32 = 126;
+pub const IMX6SLL_CLK_EPDC_AXI: u32 = 127;
+pub const IMX6SLL_CLK_EPDC_PIX: u32 = 128;
+pub const IMX6SLL_CLK_LCDIF_PIX: u32 = 129;
+pub const IMX6SLL_CLK_WDOG1: u32 = 130;
+pub const IMX6SLL_CLK_MMDC_P0_FAST: u32 = 131;
+pub const IMX6SLL_CLK_MMDC_P0_IPG: u32 = 132;
+pub const IMX6SLL_CLK_OCRAM: u32 = 133;
+
+/* CCGR4 */
+pub const IMX6SLL_CLK_PWM1: u32 = 134;
+pub const IMX6SLL_CLK_PWM2: u32 = 135;
+pub const IMX6SLL_CLK_PWM3: u32 = 136;
+pub const IMX6SLL_CLK_PWM4: u32 = 137;
+
+/* CCGR 5 */
+pub const IMX6SLL_CLK_ROM: u32 = 138;
+pub const IMX6SLL_CLK_SDMA: u32 = 139;
+pub const IMX6SLL_CLK_KPP: u32 = 140;
+pub const IMX6SLL_CLK_WDOG2: u32 = 141;
+pub const IMX6SLL_CLK_SPBA: u32 = 142;
+pub const IMX6SLL_CLK_SPDIF: u32 = 143;
+pub const IMX6SLL_CLK_SPDIF_GCLK: u32 = 144;
+pub const IMX6SLL_CLK_SSI1: u32 = 145;
+pub const IMX6SLL_CLK_SSI1_IPG: u32 = 146;
+pub const IMX6SLL_CLK_SSI2: u32 = 147;
+pub const IMX6SLL_CLK_SSI2_IPG: u32 = 148;
+pub const IMX6SLL_CLK_SSI3: u32 = 149;
+pub const IMX6SLL_CLK_SSI3_IPG: u32 = 150;
+pub const IMX6SLL_CLK_UART1_IPG: u32 = 151;
+pub const IMX6SLL_CLK_UART1_SERIAL: u32 = 152;
+
+/* CCGR 6 */
+pub const IMX6SLL_CLK_USBOH3: u32 = 153;
+pub const IMX6SLL_CLK_USDHC1: u32 = 154;
+pub const IMX6SLL_CLK_USDHC2: u32 = 155;
+pub const IMX6SLL_CLK_USDHC3: u32 = 156;
+
+pub const IMX6SLL_CLK_IPP_DI0: u32 = 157;
+pub const IMX6SLL_CLK_IPP_DI1: u32 = 158;
+pub const IMX6SLL_CLK_LDB_DI0_SEL: u32 = 159;
+pub const IMX6SLL_CLK_LDB_DI0_DIV_3_5: u32 = 160;
+pub const IMX6SLL_CLK_LDB_DI0_DIV_7: u32 = 161;
+pub const IMX6SLL_CLK_LDB_DI0_DIV_SEL: u32 = 162;
+pub const IMX6SLL_CLK_LDB_DI0: u32 = 163;
+pub const IMX6SLL_CLK_LDB_DI1_SEL: u32 = 164;
+pub const IMX6SLL_CLK_LDB_DI1_DIV_3_5: u32 = 165;
+pub const IMX6SLL_CLK_LDB_DI1_DIV_7: u32 = 166;
+pub const IMX6SLL_CLK_LDB_DI1_DIV_SEL: u32 = 167;
+pub const IMX6SLL_CLK_LDB_DI1: u32 = 168;
+pub const IMX6SLL_CLK_EXTERN_AUDIO_SEL: u32 = 169;
+pub const IMX6SLL_CLK_EXTERN_AUDIO_PRED: u32 = 170;
+pub const IMX6SLL_CLK_EXTERN_AUDIO_PODF: u32 = 171;
+pub const IMX6SLL_CLK_EXTERN_AUDIO: u32 = 172;
+
+pub const IMX6SLL_CLK_GPIO1: u32 = 173;
+pub const IMX6SLL_CLK_GPIO2: u32 = 174;
+pub const IMX6SLL_CLK_GPIO3: u32 = 175;
+pub const IMX6SLL_CLK_GPIO4: u32 = 176;
+pub const IMX6SLL_CLK_GPIO5: u32 = 177;
+pub const IMX6SLL_CLK_GPIO6: u32 = 178;
+pub const IMX6SLL_CLK_MMDC_P1_IPG: u32 = 179;
+
+pub const IMX6SLL_CLK_END: u32 = 180;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

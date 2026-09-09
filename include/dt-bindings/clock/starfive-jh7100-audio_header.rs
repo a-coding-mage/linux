@@ -1,0 +1,40 @@
+/* SPDX-License-Identifier: GPL-2.0 OR MIT */
+/*
+ * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
+ */
+
+// Header guard: __DT_BINDINGS_CLOCK_STARFIVE_JH7100_AUDIO_H__
+
+pub const JH7100_AUDCLK_ADC_MCLK: u32 = 0;
+pub const JH7100_AUDCLK_I2S1_MCLK: u32 = 1;
+pub const JH7100_AUDCLK_I2SADC_APB: u32 = 2;
+pub const JH7100_AUDCLK_I2SADC_BCLK: u32 = 3;
+pub const JH7100_AUDCLK_I2SADC_BCLK_N: u32 = 4;
+pub const JH7100_AUDCLK_I2SADC_LRCLK: u32 = 5;
+pub const JH7100_AUDCLK_PDM_APB: u32 = 6;
+pub const JH7100_AUDCLK_PDM_MCLK: u32 = 7;
+pub const JH7100_AUDCLK_I2SVAD_APB: u32 = 8;
+pub const JH7100_AUDCLK_SPDIF: u32 = 9;
+pub const JH7100_AUDCLK_SPDIF_APB: u32 = 10;
+pub const JH7100_AUDCLK_PWMDAC_APB: u32 = 11;
+pub const JH7100_AUDCLK_DAC_MCLK: u32 = 12;
+pub const JH7100_AUDCLK_I2SDAC_APB: u32 = 13;
+pub const JH7100_AUDCLK_I2SDAC_BCLK: u32 = 14;
+pub const JH7100_AUDCLK_I2SDAC_BCLK_N: u32 = 15;
+pub const JH7100_AUDCLK_I2SDAC_LRCLK: u32 = 16;
+pub const JH7100_AUDCLK_I2S1_APB: u32 = 17;
+pub const JH7100_AUDCLK_I2S1_BCLK: u32 = 18;
+pub const JH7100_AUDCLK_I2S1_BCLK_N: u32 = 19;
+pub const JH7100_AUDCLK_I2S1_LRCLK: u32 = 20;
+pub const JH7100_AUDCLK_I2SDAC16K_APB: u32 = 21;
+pub const JH7100_AUDCLK_APB0_BUS: u32 = 22;
+pub const JH7100_AUDCLK_DMA1P_AHB: u32 = 23;
+pub const JH7100_AUDCLK_USB_APB: u32 = 24;
+pub const JH7100_AUDCLK_USB_LPM: u32 = 25;
+pub const JH7100_AUDCLK_USB_STB: u32 = 26;
+pub const JH7100_AUDCLK_APB_EN: u32 = 27;
+pub const JH7100_AUDCLK_VAD_MEM: u32 = 28;
+
+pub const JH7100_AUDCLK_END: u32 = 29;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -1,0 +1,192 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright © 2015 Broadcom */
+
+// C dependencies: linux/types.h and linux/of_device.h.
+
+pub struct rpi_firmware;
+
+#[repr(u32)]
+pub enum rpi_firmware_property_status {
+    RPI_FIRMWARE_STATUS_REQUEST = 0,
+    RPI_FIRMWARE_STATUS_SUCCESS = 0x8000_0000,
+    RPI_FIRMWARE_STATUS_ERROR = 0x8000_0001,
+}
+
+#[repr(C)]
+pub struct rpi_firmware_property_tag_header {
+    pub tag: u32,
+    pub buf_size: u32,
+    pub req_resp_size: u32,
+}
+
+#[repr(u32)]
+pub enum rpi_firmware_property_tag {
+    RPI_FIRMWARE_PROPERTY_END = 0,
+    RPI_FIRMWARE_GET_FIRMWARE_REVISION = 0x0000_0001,
+    RPI_FIRMWARE_SET_CURSOR_INFO = 0x0000_8010,
+    RPI_FIRMWARE_SET_CURSOR_STATE = 0x0000_8011,
+    RPI_FIRMWARE_GET_BOARD_MODEL = 0x0001_0001,
+    RPI_FIRMWARE_GET_BOARD_REVISION = 0x0001_0002,
+    RPI_FIRMWARE_GET_BOARD_MAC_ADDRESS = 0x0001_0003,
+    RPI_FIRMWARE_GET_BOARD_SERIAL = 0x0001_0004,
+    RPI_FIRMWARE_GET_ARM_MEMORY = 0x0001_0005,
+    RPI_FIRMWARE_GET_VC_MEMORY = 0x0001_0006,
+    RPI_FIRMWARE_GET_CLOCKS = 0x0001_0007,
+    RPI_FIRMWARE_GET_POWER_STATE = 0x0002_0001,
+    RPI_FIRMWARE_GET_TIMING = 0x0002_0002,
+    RPI_FIRMWARE_SET_POWER_STATE = 0x0002_8001,
+    RPI_FIRMWARE_GET_CLOCK_STATE = 0x0003_0001,
+    RPI_FIRMWARE_GET_CLOCK_RATE = 0x0003_0002,
+    RPI_FIRMWARE_GET_VOLTAGE = 0x0003_0003,
+    RPI_FIRMWARE_GET_MAX_CLOCK_RATE = 0x0003_0004,
+    RPI_FIRMWARE_GET_MAX_VOLTAGE = 0x0003_0005,
+    RPI_FIRMWARE_GET_TEMPERATURE = 0x0003_0006,
+    RPI_FIRMWARE_GET_MIN_CLOCK_RATE = 0x0003_0007,
+    RPI_FIRMWARE_GET_MIN_VOLTAGE = 0x0003_0008,
+    RPI_FIRMWARE_GET_TURBO = 0x0003_0009,
+    RPI_FIRMWARE_GET_MAX_TEMPERATURE = 0x0003_000a,
+    RPI_FIRMWARE_GET_STC = 0x0003_000b,
+    RPI_FIRMWARE_ALLOCATE_MEMORY = 0x0003_000c,
+    RPI_FIRMWARE_LOCK_MEMORY = 0x0003_000d,
+    RPI_FIRMWARE_UNLOCK_MEMORY = 0x0003_000e,
+    RPI_FIRMWARE_RELEASE_MEMORY = 0x0003_000f,
+    RPI_FIRMWARE_EXECUTE_CODE = 0x0003_0010,
+    RPI_FIRMWARE_EXECUTE_QPU = 0x0003_0011,
+    RPI_FIRMWARE_SET_ENABLE_QPU = 0x0003_0012,
+    RPI_FIRMWARE_GET_DISPMANX_RESOURCE_MEM_HANDLE = 0x0003_0014,
+    RPI_FIRMWARE_GET_EDID_BLOCK = 0x0003_0020,
+    RPI_FIRMWARE_GET_CUSTOMER_OTP = 0x0003_0021,
+    RPI_FIRMWARE_GET_DOMAIN_STATE = 0x0003_0030,
+    RPI_FIRMWARE_GET_THROTTLED = 0x0003_0046,
+    RPI_FIRMWARE_GET_CLOCK_MEASURED = 0x0003_0047,
+    RPI_FIRMWARE_NOTIFY_REBOOT = 0x0003_0048,
+    RPI_FIRMWARE_SET_CLOCK_STATE = 0x0003_8001,
+    RPI_FIRMWARE_SET_CLOCK_RATE = 0x0003_8002,
+    RPI_FIRMWARE_SET_VOLTAGE = 0x0003_8003,
+    RPI_FIRMWARE_SET_TURBO = 0x0003_8009,
+    RPI_FIRMWARE_SET_CUSTOMER_OTP = 0x0003_8021,
+    RPI_FIRMWARE_SET_DOMAIN_STATE = 0x0003_8030,
+    RPI_FIRMWARE_GET_GPIO_STATE = 0x0003_0041,
+    RPI_FIRMWARE_SET_GPIO_STATE = 0x0003_8041,
+    RPI_FIRMWARE_SET_SDHOST_CLOCK = 0x0003_8042,
+    RPI_FIRMWARE_GET_GPIO_CONFIG = 0x0003_0043,
+    RPI_FIRMWARE_SET_GPIO_CONFIG = 0x0003_8043,
+    RPI_FIRMWARE_GET_PERIPH_REG = 0x0003_0045,
+    RPI_FIRMWARE_SET_PERIPH_REG = 0x0003_8045,
+    RPI_FIRMWARE_GET_POE_HAT_VAL = 0x0003_0049,
+    RPI_FIRMWARE_SET_POE_HAT_VAL = 0x0003_0050,
+    RPI_FIRMWARE_NOTIFY_XHCI_RESET = 0x0003_0058,
+    RPI_FIRMWARE_NOTIFY_DISPLAY_DONE = 0x0003_0066,
+    RPI_FIRMWARE_FRAMEBUFFER_ALLOCATE = 0x0004_0001,
+    RPI_FIRMWARE_FRAMEBUFFER_BLANK = 0x0004_0002,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_PHYSICAL_WIDTH_HEIGHT = 0x0004_0003,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_VIRTUAL_WIDTH_HEIGHT = 0x0004_0004,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_DEPTH = 0x0004_0005,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_PIXEL_ORDER = 0x0004_0006,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_ALPHA_MODE = 0x0004_0007,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_PITCH = 0x0004_0008,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_VIRTUAL_OFFSET = 0x0004_0009,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_OVERSCAN = 0x0004_000a,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_PALETTE = 0x0004_000b,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_TOUCHBUF = 0x0004_000f,
+    RPI_FIRMWARE_FRAMEBUFFER_GET_GPIOVIRTBUF = 0x0004_0010,
+    RPI_FIRMWARE_FRAMEBUFFER_RELEASE = 0x0004_8001,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_PHYSICAL_WIDTH_HEIGHT = 0x0004_4003,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_VIRTUAL_WIDTH_HEIGHT = 0x0004_4004,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_DEPTH = 0x0004_4005,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_PIXEL_ORDER = 0x0004_4006,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_ALPHA_MODE = 0x0004_4007,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_VIRTUAL_OFFSET = 0x0004_4009,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_OVERSCAN = 0x0004_400a,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_PALETTE = 0x0004_400b,
+    RPI_FIRMWARE_FRAMEBUFFER_TEST_VSYNC = 0x0004_400e,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_PHYSICAL_WIDTH_HEIGHT = 0x0004_8003,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_VIRTUAL_WIDTH_HEIGHT = 0x0004_8004,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_DEPTH = 0x0004_8005,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_PIXEL_ORDER = 0x0004_8006,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_ALPHA_MODE = 0x0004_8007,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_VIRTUAL_OFFSET = 0x0004_8009,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_OVERSCAN = 0x0004_800a,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_PALETTE = 0x0004_800b,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_TOUCHBUF = 0x0004_801f,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_GPIOVIRTBUF = 0x0004_8020,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_VSYNC = 0x0004_800e,
+    RPI_FIRMWARE_FRAMEBUFFER_SET_BACKLIGHT = 0x0004_800f,
+    RPI_FIRMWARE_VCHIQ_INIT = 0x0004_8010,
+    RPI_FIRMWARE_GET_COMMAND_LINE = 0x0005_0001,
+    RPI_FIRMWARE_GET_DMA_CHANNELS = 0x0006_0001,
+}
+
+#[repr(u32)]
+pub enum rpi_firmware_clk_id {
+    RPI_FIRMWARE_EMMC_CLK_ID = 1,
+    RPI_FIRMWARE_UART_CLK_ID,
+    RPI_FIRMWARE_ARM_CLK_ID,
+    RPI_FIRMWARE_CORE_CLK_ID,
+    RPI_FIRMWARE_V3D_CLK_ID,
+    RPI_FIRMWARE_H264_CLK_ID,
+    RPI_FIRMWARE_ISP_CLK_ID,
+    RPI_FIRMWARE_SDRAM_CLK_ID,
+    RPI_FIRMWARE_PIXEL_CLK_ID,
+    RPI_FIRMWARE_PWM_CLK_ID,
+    RPI_FIRMWARE_HEVC_CLK_ID,
+    RPI_FIRMWARE_EMMC2_CLK_ID,
+    RPI_FIRMWARE_M2MC_CLK_ID,
+    RPI_FIRMWARE_PIXEL_BVB_CLK_ID,
+    RPI_FIRMWARE_VEC_CLK_ID,
+    RPI_FIRMWARE_DISP_CLK_ID,
+    RPI_FIRMWARE_NUM_CLK_ID,
+}
+
+#[repr(u32)]
+pub enum rpi_firmware_volt_id {
+    RPI_FIRMWARE_VOLT_ID_CORE = 1,
+    RPI_FIRMWARE_VOLT_ID_SDRAM_C = 2,
+    RPI_FIRMWARE_VOLT_ID_SDRAM_P = 3,
+    RPI_FIRMWARE_VOLT_ID_SDRAM_I = 4,
+    RPI_FIRMWARE_NUM_VOLT_ID,
+}
+
+#[repr(C, packed)]
+pub struct rpi_firmware_get_voltage_request { pub id: __le32, pub value: __le32 }
+
+pub const fn RPI_FIRMWARE_GET_VOLTAGE_REQUEST(id: __le32) -> rpi_firmware_get_voltage_request {
+    rpi_firmware_get_voltage_request { id, value: 0 as __le32 }
+}
+
+#[repr(C, packed)]
+pub struct rpi_firmware_clk_rate_request { pub id: __le32, pub rate: __le32 }
+
+pub const fn RPI_FIRMWARE_CLK_RATE_REQUEST(id: __le32) -> rpi_firmware_clk_rate_request {
+    rpi_firmware_clk_rate_request { id, rate: 0 as __le32 }
+}
+
+// CONFIG_RASPBERRYPI_FIRMWARE selects external declarations; the disabled
+// configuration is represented by the inline fallbacks below.
+#[cfg(feature = "CONFIG_RASPBERRYPI_FIRMWARE")]
+extern "C" {
+    pub fn rpi_firmware_property(fw: *mut rpi_firmware, tag: u32, data: *mut core::ffi::c_void, len: usize) -> i32;
+    pub fn rpi_firmware_property_list(fw: *mut rpi_firmware, data: *mut core::ffi::c_void, tag_size: usize) -> i32;
+    pub fn rpi_firmware_put(fw: *mut rpi_firmware);
+    pub fn rpi_firmware_clk_get_max_rate(fw: *mut rpi_firmware, id: u32) -> u32;
+    pub fn rpi_firmware_find_node() -> *mut device_node;
+    pub fn rpi_firmware_get(firmware_node: *mut device_node) -> *mut rpi_firmware;
+    pub fn devm_rpi_firmware_get(dev: *mut device, firmware_node: *mut device_node) -> *mut rpi_firmware;
+}
+
+#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+pub unsafe fn rpi_firmware_property(_: *mut rpi_firmware, _: u32, _: *mut core::ffi::c_void, _: usize) -> i32 { -38 }
+#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+pub unsafe fn rpi_firmware_property_list(_: *mut rpi_firmware, _: *mut core::ffi::c_void, _: usize) -> i32 { -38 }
+#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+pub unsafe fn rpi_firmware_put(_: *mut rpi_firmware) {}
+#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+pub unsafe fn rpi_firmware_clk_get_max_rate(_: *mut rpi_firmware, _: u32) -> u32 { u32::MAX }
+#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+pub unsafe fn rpi_firmware_find_node() -> *mut device_node { core::ptr::null_mut() }
+#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+pub unsafe fn rpi_firmware_get(_: *mut device_node) -> *mut rpi_firmware { core::ptr::null_mut() }
+#[cfg(not(feature = "CONFIG_RASPBERRYPI_FIRMWARE"))]
+pub unsafe fn devm_rpi_firmware_get(_: *mut device, _: *mut device_node) -> *mut rpi_firmware { core::ptr::null_mut() }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

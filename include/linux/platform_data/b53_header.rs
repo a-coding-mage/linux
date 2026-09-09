@@ -1,0 +1,38 @@
+/*
+ * B53 platform data
+ *
+ * Copyright (C) 2013 Jonas Gorski <jogo@openwrt.org>
+ *
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+ * IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+// Dependency equivalents supplied by the surrounding platform code:
+// - linux/types.h
+// - linux/platform_data/dsa.h (`dsa_chip_data`)
+
+use core::ffi::c_void;
+
+#[repr(C)]
+pub struct b53_platform_data {
+	/* Must be first such that dsa_register_switch() can access it */
+	pub cd: dsa_chip_data,
+
+	pub chip_id: u32,
+	pub enabled_ports: u16,
+
+	/* only used by MMAP'd driver */
+	pub big_endian: u32,
+	pub regs: *mut c_void,
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

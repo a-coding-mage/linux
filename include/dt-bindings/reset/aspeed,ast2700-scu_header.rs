@@ -1,0 +1,121 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+/*
+ * Device Tree binding constants for AST2700 reset controller.
+ *
+ * Copyright (c) 2024 Aspeed Technology Inc.
+ */
+
+/* SOC0 */
+pub const SCU0_RESET_SDRAM: u32 = 0;
+pub const SCU0_RESET_DDRPHY: u32 = 1;
+pub const SCU0_RESET_RSA: u32 = 2;
+pub const SCU0_RESET_SHA3: u32 = 3;
+pub const SCU0_RESET_HACE: u32 = 4;
+pub const SCU0_RESET_SOC: u32 = 5;
+pub const SCU0_RESET_VIDEO: u32 = 6;
+pub const SCU0_RESET_2D: u32 = 7;
+pub const SCU0_RESET_PCIS: u32 = 8;
+pub const SCU0_RESET_RVAS0: u32 = 9;
+pub const SCU0_RESET_RVAS1: u32 = 10;
+pub const SCU0_RESET_SM3: u32 = 11;
+pub const SCU0_RESET_SM4: u32 = 12;
+pub const SCU0_RESET_CRT0: u32 = 13;
+pub const SCU0_RESET_ECC: u32 = 14;
+pub const SCU0_RESET_DP_PCI: u32 = 15;
+pub const SCU0_RESET_UFS: u32 = 16;
+pub const SCU0_RESET_EMMC: u32 = 17;
+pub const SCU0_RESET_PCIE1RST: u32 = 18;
+pub const SCU0_RESET_PCIE1RSTOE: u32 = 19;
+pub const SCU0_RESET_PCIE0RST: u32 = 20;
+pub const SCU0_RESET_PCIE0RSTOE: u32 = 21;
+pub const SCU0_RESET_JTAG: u32 = 22;
+pub const SCU0_RESET_MCTP0: u32 = 23;
+pub const SCU0_RESET_MCTP1: u32 = 24;
+pub const SCU0_RESET_XDMA0: u32 = 25;
+pub const SCU0_RESET_XDMA1: u32 = 26;
+pub const SCU0_RESET_H2X1: u32 = 27;
+pub const SCU0_RESET_DP: u32 = 28;
+pub const SCU0_RESET_DP_MCU: u32 = 29;
+pub const SCU0_RESET_SSP: u32 = 30;
+pub const SCU0_RESET_H2X0: u32 = 31;
+pub const SCU0_RESET_PORTA_VHUB: u32 = 32;
+pub const SCU0_RESET_PORTA_PHY3: u32 = 33;
+pub const SCU0_RESET_PORTA_XHCI: u32 = 34;
+pub const SCU0_RESET_PORTB_VHUB: u32 = 35;
+pub const SCU0_RESET_PORTB_PHY3: u32 = 36;
+pub const SCU0_RESET_PORTB_XHCI: u32 = 37;
+pub const SCU0_RESET_PORTA_VHUB_EHCI: u32 = 38;
+pub const SCU0_RESET_PORTB_VHUB_EHCI: u32 = 39;
+pub const SCU0_RESET_UHCI: u32 = 40;
+pub const SCU0_RESET_TSP: u32 = 41;
+pub const SCU0_RESET_E2M0: u32 = 42;
+pub const SCU0_RESET_E2M1: u32 = 43;
+pub const SCU0_RESET_VLINK: u32 = 44;
+
+/* SOC1 */
+pub const SCU1_RESET_LPC0: u32 = 0;
+pub const SCU1_RESET_LPC1: u32 = 1;
+pub const SCU1_RESET_MII: u32 = 2;
+pub const SCU1_RESET_PECI: u32 = 3;
+pub const SCU1_RESET_PWM: u32 = 4;
+pub const SCU1_RESET_MAC0: u32 = 5;
+pub const SCU1_RESET_MAC1: u32 = 6;
+pub const SCU1_RESET_MAC2: u32 = 7;
+pub const SCU1_RESET_ADC: u32 = 8;
+pub const SCU1_RESET_SD: u32 = 9;
+pub const SCU1_RESET_ESPI0: u32 = 10;
+pub const SCU1_RESET_ESPI1: u32 = 11;
+pub const SCU1_RESET_JTAG1: u32 = 12;
+pub const SCU1_RESET_SPI0: u32 = 13;
+pub const SCU1_RESET_SPI1: u32 = 14;
+pub const SCU1_RESET_SPI2: u32 = 15;
+pub const SCU1_RESET_I3C0: u32 = 16;
+pub const SCU1_RESET_I3C1: u32 = 17;
+pub const SCU1_RESET_I3C2: u32 = 18;
+pub const SCU1_RESET_I3C3: u32 = 19;
+pub const SCU1_RESET_I3C4: u32 = 20;
+pub const SCU1_RESET_I3C5: u32 = 21;
+pub const SCU1_RESET_I3C6: u32 = 22;
+pub const SCU1_RESET_I3C7: u32 = 23;
+pub const SCU1_RESET_I3C8: u32 = 24;
+pub const SCU1_RESET_I3C9: u32 = 25;
+pub const SCU1_RESET_I3C10: u32 = 26;
+pub const SCU1_RESET_I3C11: u32 = 27;
+pub const SCU1_RESET_I3C12: u32 = 28;
+pub const SCU1_RESET_I3C13: u32 = 29;
+pub const SCU1_RESET_I3C14: u32 = 30;
+pub const SCU1_RESET_I3C15: u32 = 31;
+pub const SCU1_RESET_MCU0: u32 = 32;
+pub const SCU1_RESET_MCU1: u32 = 33;
+pub const SCU1_RESET_H2A_SPI1: u32 = 34;
+pub const SCU1_RESET_H2A_SPI2: u32 = 35;
+pub const SCU1_RESET_UART0: u32 = 36;
+pub const SCU1_RESET_UART1: u32 = 37;
+pub const SCU1_RESET_UART2: u32 = 38;
+pub const SCU1_RESET_UART3: u32 = 39;
+pub const SCU1_RESET_I2C_FILTER: u32 = 40;
+pub const SCU1_RESET_CALIPTRA: u32 = 41;
+pub const SCU1_RESET_XDMA: u32 = 42;
+pub const SCU1_RESET_FSI: u32 = 43;
+pub const SCU1_RESET_CAN: u32 = 44;
+pub const SCU1_RESET_MCTP: u32 = 45;
+pub const SCU1_RESET_I2C: u32 = 46;
+pub const SCU1_RESET_UART6: u32 = 47;
+pub const SCU1_RESET_UART7: u32 = 48;
+pub const SCU1_RESET_UART8: u32 = 49;
+pub const SCU1_RESET_UART9: u32 = 50;
+pub const SCU1_RESET_LTPI0: u32 = 51;
+pub const SCU1_RESET_VGAL: u32 = 52;
+pub const SCU1_RESET_LTPI1: u32 = 53;
+pub const SCU1_RESET_ACE: u32 = 54;
+pub const SCU1_RESET_E2M: u32 = 55;
+pub const SCU1_RESET_UHCI: u32 = 56;
+pub const SCU1_RESET_PORTC_USB2UART: u32 = 57;
+pub const SCU1_RESET_PORTC_VHUB_EHCI: u32 = 58;
+pub const SCU1_RESET_PORTD_USB2UART: u32 = 59;
+pub const SCU1_RESET_PORTD_VHUB_EHCI: u32 = 60;
+pub const SCU1_RESET_H2X: u32 = 61;
+pub const SCU1_RESET_I3CDMA: u32 = 62;
+pub const SCU1_RESET_PCIE2RST: u32 = 63;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

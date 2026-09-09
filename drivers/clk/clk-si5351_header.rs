@@ -1,0 +1,164 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * clk-si5351.h: Skyworks / Silicon Labs Si5351A/B/C I2C Clock Generator
+ *
+ * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
+ * Rabeeh Khoury <rabeeh@solid-run.com>
+ */
+
+pub const SI5351_BUS_BASE_ADDR: i32 = 0x60;
+
+pub const SI5351_PLL_VCO_MIN: i32 = 600000000;
+pub const SI5351_PLL_VCO_MAX: i32 = 900000000;
+pub const SI5351_MULTISYNTH_MIN_FREQ: i32 = 1000000;
+pub const SI5351_MULTISYNTH_DIVBY4_FREQ: i32 = 150000000;
+pub const SI5351_MULTISYNTH_MAX_FREQ: i32 = 160000000;
+pub const SI5351_MULTISYNTH67_MAX_FREQ: i32 = SI5351_MULTISYNTH_DIVBY4_FREQ;
+pub const SI5351_CLKOUT_MIN_FREQ: i32 = 8000;
+pub const SI5351_CLKOUT_MAX_FREQ: i32 = SI5351_MULTISYNTH_MAX_FREQ;
+pub const SI5351_CLKOUT67_MAX_FREQ: i32 = SI5351_MULTISYNTH67_MAX_FREQ;
+
+pub const SI5351_PLL_A_MIN: i32 = 15;
+pub const SI5351_PLL_A_MAX: i32 = 90;
+pub const SI5351_PLL_B_MAX: i32 = SI5351_PLL_C_MAX - 1;
+pub const SI5351_PLL_C_MAX: i32 = 1048575;
+pub const SI5351_MULTISYNTH_A_MIN: i32 = 6;
+pub const SI5351_MULTISYNTH_A_MAX: i32 = 1800;
+pub const SI5351_MULTISYNTH67_A_MAX: i32 = 254;
+pub const SI5351_MULTISYNTH_B_MAX: i32 = SI5351_MULTISYNTH_C_MAX - 1;
+pub const SI5351_MULTISYNTH_C_MAX: i32 = 1048575;
+pub const SI5351_MULTISYNTH_P1_MAX: i32 = (1 << 18) - 1;
+pub const SI5351_MULTISYNTH_P2_MAX: i32 = (1 << 20) - 1;
+pub const SI5351_MULTISYNTH_P3_MAX: i32 = (1 << 20) - 1;
+
+pub const SI5351_DEVICE_STATUS: i32 = 0;
+pub const SI5351_INTERRUPT_STATUS: i32 = 1;
+pub const SI5351_INTERRUPT_MASK: i32 = 2;
+pub const SI5351_STATUS_SYS_INIT: i32 = 1 << 7;
+pub const SI5351_STATUS_LOL_B: i32 = 1 << 6;
+pub const SI5351_STATUS_LOL_A: i32 = 1 << 5;
+pub const SI5351_STATUS_LOS: i32 = 1 << 4;
+pub const SI5351_OUTPUT_ENABLE_CTRL: i32 = 3;
+pub const SI5351_OEB_PIN_ENABLE_CTRL: i32 = 9;
+pub const SI5351_PLL_INPUT_SOURCE: i32 = 15;
+pub const SI5351_CLKIN_DIV_MASK: i32 = 3 << 6;
+pub const SI5351_CLKIN_DIV_1: i32 = 0 << 6;
+pub const SI5351_CLKIN_DIV_2: i32 = 1 << 6;
+pub const SI5351_CLKIN_DIV_4: i32 = 2 << 6;
+pub const SI5351_CLKIN_DIV_8: i32 = 3 << 6;
+pub const SI5351_PLLB_SOURCE: i32 = 1 << 3;
+pub const SI5351_PLLA_SOURCE: i32 = 1 << 2;
+
+pub const SI5351_CLK0_CTRL: i32 = 16;
+pub const SI5351_CLK1_CTRL: i32 = 17;
+pub const SI5351_CLK2_CTRL: i32 = 18;
+pub const SI5351_CLK3_CTRL: i32 = 19;
+pub const SI5351_CLK4_CTRL: i32 = 20;
+pub const SI5351_CLK5_CTRL: i32 = 21;
+pub const SI5351_CLK6_CTRL: i32 = 22;
+pub const SI5351_CLK7_CTRL: i32 = 23;
+pub const SI5351_CLK_POWERDOWN: i32 = 1 << 7;
+pub const SI5351_CLK_INTEGER_MODE: i32 = 1 << 6;
+pub const SI5351_CLK_PLL_SELECT: i32 = 1 << 5;
+pub const SI5351_CLK_INVERT: i32 = 1 << 4;
+pub const SI5351_CLK_INPUT_MASK: i32 = 3 << 2;
+pub const SI5351_CLK_INPUT_XTAL: i32 = 0 << 2;
+pub const SI5351_CLK_INPUT_CLKIN: i32 = 1 << 2;
+pub const SI5351_CLK_INPUT_MULTISYNTH_0_4: i32 = 2 << 2;
+pub const SI5351_CLK_INPUT_MULTISYNTH_N: i32 = 3 << 2;
+pub const SI5351_CLK_DRIVE_STRENGTH_MASK: i32 = 3 << 0;
+pub const SI5351_CLK_DRIVE_STRENGTH_2MA: i32 = 0 << 0;
+pub const SI5351_CLK_DRIVE_STRENGTH_4MA: i32 = 1 << 0;
+pub const SI5351_CLK_DRIVE_STRENGTH_6MA: i32 = 2 << 0;
+pub const SI5351_CLK_DRIVE_STRENGTH_8MA: i32 = 3 << 0;
+
+pub const SI5351_CLK3_0_DISABLE_STATE: i32 = 24;
+pub const SI5351_CLK7_4_DISABLE_STATE: i32 = 25;
+pub const SI5351_CLK_DISABLE_STATE_MASK: i32 = 3;
+pub const SI5351_CLK_DISABLE_STATE_LOW: i32 = 0;
+pub const SI5351_CLK_DISABLE_STATE_HIGH: i32 = 1;
+pub const SI5351_CLK_DISABLE_STATE_FLOAT: i32 = 2;
+pub const SI5351_CLK_DISABLE_STATE_NEVER: i32 = 3;
+
+pub const SI5351_PARAMETERS_LENGTH: i32 = 8;
+pub const SI5351_PLLA_PARAMETERS: i32 = 26;
+pub const SI5351_PLLB_PARAMETERS: i32 = 34;
+pub const SI5351_CLK0_PARAMETERS: i32 = 42;
+pub const SI5351_CLK1_PARAMETERS: i32 = 50;
+pub const SI5351_CLK2_PARAMETERS: i32 = 58;
+pub const SI5351_CLK3_PARAMETERS: i32 = 66;
+pub const SI5351_CLK4_PARAMETERS: i32 = 74;
+pub const SI5351_CLK5_PARAMETERS: i32 = 82;
+pub const SI5351_CLK6_PARAMETERS: i32 = 90;
+pub const SI5351_CLK7_PARAMETERS: i32 = 91;
+pub const SI5351_CLK6_7_OUTPUT_DIVIDER: i32 = 92;
+pub const SI5351_OUTPUT_CLK_DIV_MASK: i32 = 7 << 4;
+pub const SI5351_OUTPUT_CLK6_DIV_MASK: i32 = 7 << 0;
+pub const SI5351_OUTPUT_CLK_DIV_SHIFT: i32 = 4;
+pub const SI5351_OUTPUT_CLK_DIV6_SHIFT: i32 = 0;
+pub const SI5351_OUTPUT_CLK_DIV_1: i32 = 0;
+pub const SI5351_OUTPUT_CLK_DIV_2: i32 = 1;
+pub const SI5351_OUTPUT_CLK_DIV_4: i32 = 2;
+pub const SI5351_OUTPUT_CLK_DIV_8: i32 = 3;
+pub const SI5351_OUTPUT_CLK_DIV_16: i32 = 4;
+pub const SI5351_OUTPUT_CLK_DIV_32: i32 = 5;
+pub const SI5351_OUTPUT_CLK_DIV_64: i32 = 6;
+pub const SI5351_OUTPUT_CLK_DIV_128: i32 = 7;
+pub const SI5351_OUTPUT_CLK_DIVBY4: i32 = 3 << 2;
+
+pub const SI5351_SSC_PARAM0: i32 = 149;
+pub const SI5351_SSC_PARAM1: i32 = 150;
+pub const SI5351_SSC_PARAM2: i32 = 151;
+pub const SI5351_SSC_PARAM3: i32 = 152;
+pub const SI5351_SSC_PARAM4: i32 = 153;
+pub const SI5351_SSC_PARAM5: i32 = 154;
+pub const SI5351_SSC_PARAM6: i32 = 155;
+pub const SI5351_SSC_PARAM7: i32 = 156;
+pub const SI5351_SSC_PARAM8: i32 = 157;
+pub const SI5351_SSC_PARAM9: i32 = 158;
+pub const SI5351_SSC_PARAM10: i32 = 159;
+pub const SI5351_SSC_PARAM11: i32 = 160;
+pub const SI5351_SSC_PARAM12: i32 = 161;
+
+pub const SI5351_VXCO_PARAMETERS_LOW: i32 = 162;
+pub const SI5351_VXCO_PARAMETERS_MID: i32 = 163;
+pub const SI5351_VXCO_PARAMETERS_HIGH: i32 = 164;
+
+pub const SI5351_CLK0_PHASE_OFFSET: i32 = 165;
+pub const SI5351_CLK1_PHASE_OFFSET: i32 = 166;
+pub const SI5351_CLK2_PHASE_OFFSET: i32 = 167;
+pub const SI5351_CLK3_PHASE_OFFSET: i32 = 168;
+pub const SI5351_CLK4_PHASE_OFFSET: i32 = 169;
+pub const SI5351_CLK5_PHASE_OFFSET: i32 = 170;
+
+pub const SI5351_PLL_RESET: i32 = 177;
+pub const SI5351_PLL_RESET_B: i32 = 1 << 7;
+pub const SI5351_PLL_RESET_A: i32 = 1 << 5;
+
+pub const SI5351_CRYSTAL_LOAD: i32 = 183;
+pub const SI5351_CRYSTAL_LOAD_MASK: i32 = 3 << 6;
+pub const SI5351_CRYSTAL_LOAD_6PF: i32 = 1 << 6;
+pub const SI5351_CRYSTAL_LOAD_8PF: i32 = 2 << 6;
+pub const SI5351_CRYSTAL_LOAD_10PF: i32 = 3 << 6;
+
+pub const SI5351_FANOUT_ENABLE: i32 = 187;
+pub const SI5351_CLKIN_ENABLE: i32 = 1 << 7;
+pub const SI5351_XTAL_ENABLE: i32 = 1 << 6;
+pub const SI5351_MULTISYNTH_ENABLE: i32 = 1 << 4;
+
+/**
+ * enum si5351_variant - SiLabs Si5351 chip variant
+ * @SI5351_VARIANT_A: Si5351A (8 output clocks, XTAL input)
+ * @SI5351_VARIANT_A3: Si5351A MSOP10 (3 output clocks, XTAL input)
+ * @SI5351_VARIANT_B: Si5351B (8 output clocks, XTAL/VXCO input)
+ * @SI5351_VARIANT_C: Si5351C (8 output clocks, XTAL/CLKIN input)
+ */
+#[repr(i32)]
+pub enum si5351_variant {
+    SI5351_VARIANT_A = 1,
+    SI5351_VARIANT_A3 = 2,
+    SI5351_VARIANT_B = 3,
+    SI5351_VARIANT_C = 4,
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

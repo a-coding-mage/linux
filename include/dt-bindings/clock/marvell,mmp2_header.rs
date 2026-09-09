@@ -1,0 +1,92 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+/* fixed clocks and plls */
+pub const MMP2_CLK_CLK32: u32 = 1;
+pub const MMP2_CLK_VCTCXO: u32 = 2;
+pub const MMP2_CLK_PLL1: u32 = 3;
+pub const MMP2_CLK_PLL1_2: u32 = 8;
+pub const MMP2_CLK_PLL1_4: u32 = 9;
+pub const MMP2_CLK_PLL1_8: u32 = 10;
+pub const MMP2_CLK_PLL1_16: u32 = 11;
+pub const MMP2_CLK_PLL1_3: u32 = 12;
+pub const MMP2_CLK_PLL1_6: u32 = 13;
+pub const MMP2_CLK_PLL1_12: u32 = 14;
+pub const MMP2_CLK_PLL1_20: u32 = 15;
+pub const MMP2_CLK_PLL2: u32 = 16;
+pub const MMP2_CLK_PLL2_2: u32 = 17;
+pub const MMP2_CLK_PLL2_4: u32 = 18;
+pub const MMP2_CLK_PLL2_8: u32 = 19;
+pub const MMP2_CLK_PLL2_16: u32 = 20;
+pub const MMP2_CLK_PLL2_3: u32 = 21;
+pub const MMP2_CLK_PLL2_6: u32 = 22;
+pub const MMP2_CLK_PLL2_12: u32 = 23;
+pub const MMP2_CLK_VCTCXO_2: u32 = 24;
+pub const MMP2_CLK_VCTCXO_4: u32 = 25;
+pub const MMP2_CLK_UART_PLL: u32 = 26;
+pub const MMP2_CLK_USB_PLL: u32 = 27;
+pub const MMP3_CLK_PLL1_P: u32 = 28;
+pub const MMP3_CLK_PLL2_P: u32 = 29;
+pub const MMP3_CLK_PLL3: u32 = 30;
+pub const MMP2_CLK_I2S0: u32 = 31;
+pub const MMP2_CLK_I2S1: u32 = 32;
+
+/* apb peripherals */
+pub const MMP2_CLK_TWSI0: u32 = 60;
+pub const MMP2_CLK_TWSI1: u32 = 61;
+pub const MMP2_CLK_TWSI2: u32 = 62;
+pub const MMP2_CLK_TWSI3: u32 = 63;
+pub const MMP2_CLK_TWSI4: u32 = 64;
+pub const MMP2_CLK_TWSI5: u32 = 65;
+pub const MMP2_CLK_GPIO: u32 = 66;
+pub const MMP2_CLK_KPC: u32 = 67;
+pub const MMP2_CLK_RTC: u32 = 68;
+pub const MMP2_CLK_PWM0: u32 = 69;
+pub const MMP2_CLK_PWM1: u32 = 70;
+pub const MMP2_CLK_PWM2: u32 = 71;
+pub const MMP2_CLK_PWM3: u32 = 72;
+pub const MMP2_CLK_UART0: u32 = 73;
+pub const MMP2_CLK_UART1: u32 = 74;
+pub const MMP2_CLK_UART2: u32 = 75;
+pub const MMP2_CLK_UART3: u32 = 76;
+pub const MMP2_CLK_SSP0: u32 = 77;
+pub const MMP2_CLK_SSP1: u32 = 78;
+pub const MMP2_CLK_SSP2: u32 = 79;
+pub const MMP2_CLK_SSP3: u32 = 80;
+pub const MMP2_CLK_TIMER: u32 = 81;
+pub const MMP2_CLK_THERMAL0: u32 = 82;
+pub const MMP3_CLK_THERMAL1: u32 = 83;
+pub const MMP3_CLK_THERMAL2: u32 = 84;
+pub const MMP3_CLK_THERMAL3: u32 = 85;
+
+/* axi peripherals */
+pub const MMP2_CLK_SDH0: u32 = 101;
+pub const MMP2_CLK_SDH1: u32 = 102;
+pub const MMP2_CLK_SDH2: u32 = 103;
+pub const MMP2_CLK_SDH3: u32 = 104;
+pub const MMP2_CLK_USB: u32 = 105;
+pub const MMP2_CLK_DISP0: u32 = 106;
+pub const MMP2_CLK_DISP0_MUX: u32 = 107;
+pub const MMP2_CLK_DISP0_SPHY: u32 = 108;
+pub const MMP2_CLK_DISP1: u32 = 109;
+pub const MMP2_CLK_DISP1_MUX: u32 = 110;
+pub const MMP2_CLK_CCIC_ARBITER: u32 = 111;
+pub const MMP2_CLK_CCIC0: u32 = 112;
+pub const MMP2_CLK_CCIC0_MIX: u32 = 113;
+pub const MMP2_CLK_CCIC0_PHY: u32 = 114;
+pub const MMP2_CLK_CCIC0_SPHY: u32 = 115;
+pub const MMP2_CLK_CCIC1: u32 = 116;
+pub const MMP2_CLK_CCIC1_MIX: u32 = 117;
+pub const MMP2_CLK_CCIC1_PHY: u32 = 118;
+pub const MMP2_CLK_CCIC1_SPHY: u32 = 119;
+pub const MMP2_CLK_DISP0_LCDC: u32 = 120;
+pub const MMP2_CLK_USBHSIC0: u32 = 121;
+pub const MMP2_CLK_USBHSIC1: u32 = 122;
+pub const MMP2_CLK_GPU_BUS: u32 = 123;
+pub const MMP3_CLK_GPU_BUS: u32 = MMP2_CLK_GPU_BUS;
+pub const MMP2_CLK_GPU_3D: u32 = 124;
+pub const MMP3_CLK_GPU_3D: u32 = MMP2_CLK_GPU_3D;
+pub const MMP3_CLK_GPU_2D: u32 = 125;
+pub const MMP3_CLK_SDH4: u32 = 126;
+pub const MMP2_CLK_AUDIO: u32 = 127;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

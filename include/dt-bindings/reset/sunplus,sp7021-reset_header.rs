@@ -1,0 +1,85 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+/*
+ * Copyright (C) Sunplus Technology Co., Ltd.
+ *       All rights reserved.
+ */
+
+pub const RST_SYSTEM: u32 = 0;
+pub const RST_RTC: u32 = 1;
+pub const RST_IOCTL: u32 = 2;
+pub const RST_IOP: u32 = 3;
+pub const RST_OTPRX: u32 = 4;
+pub const RST_NOC: u32 = 5;
+pub const RST_BR: u32 = 6;
+pub const RST_RBUS_L00: u32 = 7;
+pub const RST_SPIFL: u32 = 8;
+pub const RST_SDCTRL0: u32 = 9;
+pub const RST_PERI0: u32 = 10;
+pub const RST_A926: u32 = 11;
+pub const RST_UMCTL2: u32 = 12;
+pub const RST_PERI1: u32 = 13;
+pub const RST_DDR_PHY0: u32 = 14;
+pub const RST_ACHIP: u32 = 15;
+pub const RST_STC0: u32 = 16;
+pub const RST_STC_AV0: u32 = 17;
+pub const RST_STC_AV1: u32 = 18;
+pub const RST_STC_AV2: u32 = 19;
+pub const RST_UA0: u32 = 20;
+pub const RST_UA1: u32 = 21;
+pub const RST_UA2: u32 = 22;
+pub const RST_UA3: u32 = 23;
+pub const RST_UA4: u32 = 24;
+pub const RST_HWUA: u32 = 25;
+pub const RST_DDC0: u32 = 26;
+pub const RST_UADMA: u32 = 27;
+pub const RST_CBDMA0: u32 = 28;
+pub const RST_CBDMA1: u32 = 29;
+pub const RST_SPI_COMBO_0: u32 = 30;
+pub const RST_SPI_COMBO_1: u32 = 31;
+pub const RST_SPI_COMBO_2: u32 = 32;
+pub const RST_SPI_COMBO_3: u32 = 33;
+pub const RST_AUD: u32 = 34;
+pub const RST_USBC0: u32 = 35;
+pub const RST_USBC1: u32 = 36;
+pub const RST_UPHY0: u32 = 37;
+pub const RST_UPHY1: u32 = 38;
+pub const RST_I2CM0: u32 = 39;
+pub const RST_I2CM1: u32 = 40;
+pub const RST_I2CM2: u32 = 41;
+pub const RST_I2CM3: u32 = 42;
+pub const RST_PMC: u32 = 43;
+pub const RST_CARD_CTL0: u32 = 44;
+pub const RST_CARD_CTL1: u32 = 45;
+pub const RST_CARD_CTL4: u32 = 46;
+pub const RST_BCH: u32 = 47;
+pub const RST_DDFCH: u32 = 48;
+pub const RST_CSIIW0: u32 = 49;
+pub const RST_CSIIW1: u32 = 50;
+pub const RST_MIPICSI0: u32 = 51;
+pub const RST_MIPICSI1: u32 = 52;
+pub const RST_HDMI_TX: u32 = 53;
+pub const RST_VPOST: u32 = 54;
+pub const RST_TGEN: u32 = 55;
+pub const RST_DMIX: u32 = 56;
+pub const RST_TCON: u32 = 57;
+pub const RST_INTERRUPT: u32 = 58;
+pub const RST_RGST: u32 = 59;
+pub const RST_GPIO: u32 = 60;
+pub const RST_RBUS_TOP: u32 = 61;
+pub const RST_MAILBOX: u32 = 62;
+pub const RST_SPIND: u32 = 63;
+pub const RST_I2C2CBUS: u32 = 64;
+pub const RST_SEC: u32 = 65;
+pub const RST_DVE: u32 = 66;
+pub const RST_GPOST0: u32 = 67;
+pub const RST_OSD0: u32 = 68;
+pub const RST_DISP_PWM: u32 = 69;
+pub const RST_UADBG: u32 = 70;
+pub const RST_DUMMY_MASTER: u32 = 71;
+pub const RST_FIO_CTL: u32 = 72;
+pub const RST_FPGA: u32 = 73;
+pub const RST_L2SW: u32 = 74;
+pub const RST_ICM: u32 = 75;
+pub const RST_AXI_GLOBAL: u32 = 76;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

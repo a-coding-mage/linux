@@ -1,0 +1,16 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+
+// Header guard: _DT_BINDINGS_POWER_MT6795_POWER_H
+
+pub const MT6795_POWER_DOMAIN_MM: i32 = 0;
+pub const MT6795_POWER_DOMAIN_VDEC: i32 = 1;
+pub const MT6795_POWER_DOMAIN_VENC: i32 = 2;
+pub const MT6795_POWER_DOMAIN_ISP: i32 = 3;
+pub const MT6795_POWER_DOMAIN_MJC: i32 = 4;
+pub const MT6795_POWER_DOMAIN_AUDIO: i32 = 5;
+pub const MT6795_POWER_DOMAIN_MFG_ASYNC: i32 = 6;
+pub const MT6795_POWER_DOMAIN_MFG_2D: i32 = 7;
+pub const MT6795_POWER_DOMAIN_MFG: i32 = 8;
+pub const MT6795_POWER_DOMAIN_MODEM: i32 = 9;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

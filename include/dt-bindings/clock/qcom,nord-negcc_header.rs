@@ -1,0 +1,122 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+/*
+ * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
+ */
+
+/* NE_GCC clocks */
+pub const NE_GCC_AGGRE_NOC_UFS_PHY_AXI_CLK: u32 = 0;
+pub const NE_GCC_AGGRE_NOC_USB2_AXI_CLK: u32 = 1;
+pub const NE_GCC_AGGRE_NOC_USB3_PRIM_AXI_CLK: u32 = 2;
+pub const NE_GCC_AGGRE_NOC_USB3_SEC_AXI_CLK: u32 = 3;
+pub const NE_GCC_AHB2PHY_CLK: u32 = 4;
+pub const NE_GCC_CNOC_USB2_AXI_CLK: u32 = 5;
+pub const NE_GCC_CNOC_USB3_PRIM_AXI_CLK: u32 = 6;
+pub const NE_GCC_CNOC_USB3_SEC_AXI_CLK: u32 = 7;
+pub const NE_GCC_FRQ_MEASURE_REF_CLK: u32 = 8;
+pub const NE_GCC_GP1_CLK: u32 = 9;
+pub const NE_GCC_GP1_CLK_SRC: u32 = 10;
+pub const NE_GCC_GP2_CLK: u32 = 11;
+pub const NE_GCC_GP2_CLK_SRC: u32 = 12;
+pub const NE_GCC_GPLL0: u32 = 13;
+pub const NE_GCC_GPLL0_OUT_EVEN: u32 = 14;
+pub const NE_GCC_GPLL2: u32 = 15;
+pub const NE_GCC_GPU_2_CFG_CLK: u32 = 16;
+pub const NE_GCC_GPU_2_GPLL0_CLK_SRC: u32 = 17;
+pub const NE_GCC_GPU_2_GPLL0_DIV_CLK_SRC: u32 = 18;
+pub const NE_GCC_GPU_2_HSCNOC_GFX_CLK: u32 = 19;
+pub const NE_GCC_GPU_2_SMMU_VOTE_CLK: u32 = 20;
+pub const NE_GCC_QUPV3_WRAP2_CORE_2X_CLK: u32 = 21;
+pub const NE_GCC_QUPV3_WRAP2_CORE_CLK: u32 = 22;
+pub const NE_GCC_QUPV3_WRAP2_M_AHB_CLK: u32 = 23;
+pub const NE_GCC_QUPV3_WRAP2_S0_CLK: u32 = 24;
+pub const NE_GCC_QUPV3_WRAP2_S0_CLK_SRC: u32 = 25;
+pub const NE_GCC_QUPV3_WRAP2_S1_CLK: u32 = 26;
+pub const NE_GCC_QUPV3_WRAP2_S1_CLK_SRC: u32 = 27;
+pub const NE_GCC_QUPV3_WRAP2_S2_CLK: u32 = 28;
+pub const NE_GCC_QUPV3_WRAP2_S2_CLK_SRC: u32 = 29;
+pub const NE_GCC_QUPV3_WRAP2_S3_CLK: u32 = 30;
+pub const NE_GCC_QUPV3_WRAP2_S3_CLK_SRC: u32 = 31;
+pub const NE_GCC_QUPV3_WRAP2_S4_CLK: u32 = 32;
+pub const NE_GCC_QUPV3_WRAP2_S4_CLK_SRC: u32 = 33;
+pub const NE_GCC_QUPV3_WRAP2_S5_CLK: u32 = 34;
+pub const NE_GCC_QUPV3_WRAP2_S5_CLK_SRC: u32 = 35;
+pub const NE_GCC_QUPV3_WRAP2_S6_CLK: u32 = 36;
+pub const NE_GCC_QUPV3_WRAP2_S6_CLK_SRC: u32 = 37;
+pub const NE_GCC_QUPV3_WRAP2_S_AHB_CLK: u32 = 38;
+pub const NE_GCC_SDCC4_APPS_CLK: u32 = 39;
+pub const NE_GCC_SDCC4_APPS_CLK_SRC: u32 = 40;
+pub const NE_GCC_SDCC4_AXI_CLK: u32 = 41;
+pub const NE_GCC_UFS_PHY_AHB_CLK: u32 = 42;
+pub const NE_GCC_UFS_PHY_AXI_CLK: u32 = 43;
+pub const NE_GCC_UFS_PHY_AXI_CLK_SRC: u32 = 44;
+pub const NE_GCC_UFS_PHY_ICE_CORE_CLK: u32 = 45;
+pub const NE_GCC_UFS_PHY_ICE_CORE_CLK_SRC: u32 = 46;
+pub const NE_GCC_UFS_PHY_PHY_AUX_CLK: u32 = 47;
+pub const NE_GCC_UFS_PHY_PHY_AUX_CLK_SRC: u32 = 48;
+pub const NE_GCC_UFS_PHY_RX_SYMBOL_0_CLK: u32 = 49;
+pub const NE_GCC_UFS_PHY_RX_SYMBOL_0_CLK_SRC: u32 = 50;
+pub const NE_GCC_UFS_PHY_RX_SYMBOL_1_CLK: u32 = 51;
+pub const NE_GCC_UFS_PHY_RX_SYMBOL_1_CLK_SRC: u32 = 52;
+pub const NE_GCC_UFS_PHY_TX_SYMBOL_0_CLK: u32 = 53;
+pub const NE_GCC_UFS_PHY_TX_SYMBOL_0_CLK_SRC: u32 = 54;
+pub const NE_GCC_UFS_PHY_UNIPRO_CORE_CLK: u32 = 55;
+pub const NE_GCC_UFS_PHY_UNIPRO_CORE_CLK_SRC: u32 = 56;
+pub const NE_GCC_USB20_MASTER_CLK: u32 = 57;
+pub const NE_GCC_USB20_MASTER_CLK_SRC: u32 = 58;
+pub const NE_GCC_USB20_MOCK_UTMI_CLK: u32 = 59;
+pub const NE_GCC_USB20_MOCK_UTMI_CLK_SRC: u32 = 60;
+pub const NE_GCC_USB20_MOCK_UTMI_POSTDIV_CLK_SRC: u32 = 61;
+pub const NE_GCC_USB20_SLEEP_CLK: u32 = 62;
+pub const NE_GCC_USB31_PRIM_ATB_CLK: u32 = 63;
+pub const NE_GCC_USB31_PRIM_EUD_AHB_CLK: u32 = 64;
+pub const NE_GCC_USB31_PRIM_MASTER_CLK: u32 = 65;
+pub const NE_GCC_USB31_PRIM_MASTER_CLK_SRC: u32 = 66;
+pub const NE_GCC_USB31_PRIM_MOCK_UTMI_CLK: u32 = 67;
+pub const NE_GCC_USB31_PRIM_MOCK_UTMI_CLK_SRC: u32 = 68;
+pub const NE_GCC_USB31_PRIM_MOCK_UTMI_POSTDIV_CLK_SRC: u32 = 69;
+pub const NE_GCC_USB31_PRIM_SLEEP_CLK: u32 = 70;
+pub const NE_GCC_USB31_SEC_ATB_CLK: u32 = 71;
+pub const NE_GCC_USB31_SEC_EUD_AHB_CLK: u32 = 72;
+pub const NE_GCC_USB31_SEC_MASTER_CLK: u32 = 73;
+pub const NE_GCC_USB31_SEC_MASTER_CLK_SRC: u32 = 74;
+pub const NE_GCC_USB31_SEC_MOCK_UTMI_CLK: u32 = 75;
+pub const NE_GCC_USB31_SEC_MOCK_UTMI_CLK_SRC: u32 = 76;
+pub const NE_GCC_USB31_SEC_MOCK_UTMI_POSTDIV_CLK_SRC: u32 = 77;
+pub const NE_GCC_USB31_SEC_SLEEP_CLK: u32 = 78;
+pub const NE_GCC_USB3_PRIM_PHY_AUX_CLK: u32 = 79;
+pub const NE_GCC_USB3_PRIM_PHY_AUX_CLK_SRC: u32 = 80;
+pub const NE_GCC_USB3_PRIM_PHY_COM_AUX_CLK: u32 = 81;
+pub const NE_GCC_USB3_PRIM_PHY_PIPE_CLK: u32 = 82;
+pub const NE_GCC_USB3_PRIM_PHY_PIPE_CLK_SRC: u32 = 83;
+pub const NE_GCC_USB3_SEC_PHY_AUX_CLK: u32 = 84;
+pub const NE_GCC_USB3_SEC_PHY_AUX_CLK_SRC: u32 = 85;
+pub const NE_GCC_USB3_SEC_PHY_COM_AUX_CLK: u32 = 86;
+pub const NE_GCC_USB3_SEC_PHY_PIPE_CLK: u32 = 87;
+pub const NE_GCC_USB3_SEC_PHY_PIPE_CLK_SRC: u32 = 88;
+
+/* NE_GCC power domains */
+pub const NE_GCC_UFS_MEM_PHY_GDSC: u32 = 0;
+pub const NE_GCC_UFS_PHY_GDSC: u32 = 1;
+pub const NE_GCC_USB20_PRIM_GDSC: u32 = 2;
+pub const NE_GCC_USB31_PRIM_GDSC: u32 = 3;
+pub const NE_GCC_USB31_SEC_GDSC: u32 = 4;
+pub const NE_GCC_USB3_PHY_GDSC: u32 = 5;
+pub const NE_GCC_USB3_SEC_PHY_GDSC: u32 = 6;
+
+/* NE_GCC resets */
+pub const NE_GCC_GPU_2_BCR: u32 = 0;
+pub const NE_GCC_QUPV3_WRAPPER_2_BCR: u32 = 1;
+pub const NE_GCC_SDCC4_BCR: u32 = 2;
+pub const NE_GCC_UFS_PHY_BCR: u32 = 3;
+pub const NE_GCC_USB20_PRIM_BCR: u32 = 4;
+pub const NE_GCC_USB31_PRIM_BCR: u32 = 5;
+pub const NE_GCC_USB31_SEC_BCR: u32 = 6;
+pub const NE_GCC_USB3_DP_PHY_PRIM_BCR: u32 = 7;
+pub const NE_GCC_USB3_DP_PHY_SEC_BCR: u32 = 8;
+pub const NE_GCC_USB3_PHY_PRIM_BCR: u32 = 9;
+pub const NE_GCC_USB3_PHY_SEC_BCR: u32 = 10;
+pub const NE_GCC_USB3PHY_PHY_PRIM_BCR: u32 = 11;
+pub const NE_GCC_USB3PHY_PHY_SEC_BCR: u32 = 12;
+pub const NE_GCC_QUSB2PHY_PRIM_BCR: u32 = 13;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

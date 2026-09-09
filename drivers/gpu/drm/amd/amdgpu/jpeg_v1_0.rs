@@ -1,0 +1,79 @@
+/* Translated from jpeg_v1_0.c; external types, constants, and functions are supplied by dependencies. */
+
+unsafe fn jpeg_v1_0_decode_ring_patch_wreg(ring: *mut amdgpu_ring, ptr: *mut u32, reg_offset: u32, val: u32) {
+    let _adev = (*ring).adev;
+    (*ring).ring[(*ptr) as usize] = PACKETJ(SOC15_REG_OFFSET(JPEG, 0, mmUVD_JRBC_EXTERNAL_REG_BASE), 0, 0, PACKETJ_TYPE0); *ptr += 1;
+    if (reg_offset >= 0x1f800 && reg_offset <= 0x21fff) || (reg_offset >= 0x1e000 && reg_offset <= 0x1e1ff) {
+        (*ring).ring[(*ptr) as usize] = 0; *ptr += 1;
+        (*ring).ring[(*ptr) as usize] = PACKETJ(reg_offset >> 2, 0, 0, PACKETJ_TYPE0); *ptr += 1;
+    } else {
+        (*ring).ring[(*ptr) as usize] = reg_offset; *ptr += 1;
+        (*ring).ring[(*ptr) as usize] = PACKETJ(0, 0, 0, PACKETJ_TYPE0); *ptr += 1;
+    }
+    (*ring).ring[(*ptr) as usize] = val; *ptr += 1;
+}
+
+unsafe fn jpeg_v1_0_decode_ring_set_patch_ring(ring: *mut amdgpu_ring, mut ptr: u32) {
+    let _adev = (*ring).adev; let (mut reg, mut reg_offset, mut val, mut mask, mut i): (u32,u32,u32,u32,u32);
+    reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_LOW); reg_offset = reg << 2; val = lower_32_bits((*ring).gpu_addr); jpeg_v1_0_decode_ring_patch_wreg(ring, &mut ptr, reg_offset, val);
+    reg = SOC15_REG_OFFSET(JPEG, 0, mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_HIGH); reg_offset = reg << 2; val = upper_32_bits((*ring).gpu_addr); jpeg_v1_0_decode_ring_patch_wreg(ring, &mut ptr, reg_offset, val);
+    i=0; while i<=2 { (*ring).ring[ptr as usize]=PACKETJ(0,0,0,PACKETJ_TYPE2); ptr+=1; (*ring).ring[ptr as usize]=0; ptr+=1; i+=1; }
+    reg=SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_CNTL); reg_offset=reg<<2; val=0x13; jpeg_v1_0_decode_ring_patch_wreg(ring,&mut ptr,reg_offset,val);
+    reg=SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_REF_DATA); reg_offset=reg<<2; val=1; jpeg_v1_0_decode_ring_patch_wreg(ring,&mut ptr,reg_offset,val);
+    reg=SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_CNTL); reg_offset=reg<<2; val=1; mask=1;
+    (*ring).ring[ptr as usize]=PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_COND_RD_TIMER),0,0,PACKETJ_TYPE0); ptr+=1; (*ring).ring[ptr as usize]=0x01400200; ptr+=1;
+    (*ring).ring[ptr as usize]=PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_REF_DATA),0,0,PACKETJ_TYPE0); ptr+=1; (*ring).ring[ptr as usize]=val; ptr+=1;
+    (*ring).ring[ptr as usize]=PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_EXTERNAL_REG_BASE),0,0,PACKETJ_TYPE0); ptr+=1;
+    if (reg_offset>=0x1f800 && reg_offset<=0x21fff)||(reg_offset>=0x1e000&&reg_offset<=0x1e1ff) { (*ring).ring[ptr as usize]=0;ptr+=1;(*ring).ring[ptr as usize]=PACKETJ(reg_offset>>2,0,0,PACKETJ_TYPE3);ptr+=1; } else { (*ring).ring[ptr as usize]=reg_offset;ptr+=1;(*ring).ring[ptr as usize]=PACKETJ(0,0,0,PACKETJ_TYPE3);ptr+=1; }
+    (*ring).ring[ptr as usize]=mask;ptr+=1; i=0; while i<=12 { (*ring).ring[ptr as usize]=PACKETJ(0,0,0,PACKETJ_TYPE6);ptr+=1;(*ring).ring[ptr as usize]=0;ptr+=1;i+=1; }
+    reg=SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_RPTR);reg_offset=reg<<2;val=0;jpeg_v1_0_decode_ring_patch_wreg(ring,&mut ptr,reg_offset,val);
+    reg=SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_CNTL);reg_offset=reg<<2;val=0x12;jpeg_v1_0_decode_ring_patch_wreg(ring,&mut ptr,reg_offset,val);
+}
+
+unsafe fn jpeg_v1_0_decode_ring_get_rptr(ring:*mut amdgpu_ring)->u64 { let _adev=(*ring).adev; RREG32_SOC15(JPEG,0,mmUVD_JRBC_RB_RPTR) }
+unsafe fn jpeg_v1_0_decode_ring_get_wptr(ring:*mut amdgpu_ring)->u64 { let _adev=(*ring).adev; RREG32_SOC15(JPEG,0,mmUVD_JRBC_RB_WPTR) }
+unsafe fn jpeg_v1_0_decode_ring_set_wptr(ring:*mut amdgpu_ring) { let _adev=(*ring).adev; WREG32_SOC15(JPEG,0,mmUVD_JRBC_RB_WPTR,lower_32_bits((*ring).wptr)); }
+unsafe fn jpeg_v1_0_decode_ring_insert_start(ring:*mut amdgpu_ring) { let _adev=(*ring).adev; amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_EXTERNAL_REG_BASE),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,0x68e04);amdgpu_ring_write(ring,PACKETJ(0,0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,0x80010000); }
+unsafe fn jpeg_v1_0_decode_ring_insert_end(ring:*mut amdgpu_ring) { let _adev=(*ring).adev; amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_EXTERNAL_REG_BASE),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,0x68e04);amdgpu_ring_write(ring,PACKETJ(0,0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,0x10000); }
+
+unsafe fn jpeg_v1_0_decode_ring_emit_fence(ring:*mut amdgpu_ring, addr:u64, seq:u64, flags:u32) { let _adev=(*ring).adev; WARN_ON(flags & AMDGPU_FENCE_FLAG_64BIT); amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JPEG_GPCOM_DATA0),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,seq);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JPEG_GPCOM_DATA1),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,seq);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_RB_MEM_WR_64BIT_BAR_LOW),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,lower_32_bits(addr));amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_RB_MEM_WR_64BIT_BAR_HIGH),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,upper_32_bits(addr));amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JPEG_GPCOM_CMD),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,8);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JPEG_GPCOM_CMD),0,PACKETJ_CONDITION_CHECK0,PACKETJ_TYPE4));amdgpu_ring_write(ring,0);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_COND_RD_TIMER),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,0x01400200);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_REF_DATA),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,seq);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_LOW),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,lower_32_bits(addr));amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_HIGH),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,upper_32_bits(addr));amdgpu_ring_write(ring,PACKETJ(0,0,PACKETJ_CONDITION_CHECK3,PACKETJ_TYPE2));amdgpu_ring_write(ring,0xffffffff);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_EXTERNAL_REG_BASE),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,0x3fbc);amdgpu_ring_write(ring,PACKETJ(0,0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,1);amdgpu_ring_write(ring,PACKETJ(0,0,0,PACKETJ_TYPE7));amdgpu_ring_write(ring,0); }
+
+unsafe fn jpeg_v1_0_decode_ring_emit_ib(ring:*mut amdgpu_ring, job:*mut amdgpu_job, ib:*mut amdgpu_ib, _flags:u32) { let _adev=(*ring).adev; let vmid=AMDGPU_JOB_GET_VMID(job); amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_IB_VMID),0,0,PACKETJ_TYPE0)); if !(*ring).funcs.is_null() && (*(*ring).funcs).parse_cs.is_some() {amdgpu_ring_write(ring,0)} else {amdgpu_ring_write(ring,vmid|(vmid<<4))}; amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JPEG_VMID),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,vmid|(vmid<<4));amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_IB_64BIT_BAR_LOW),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,lower_32_bits((*ib).gpu_addr));amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_IB_64BIT_BAR_HIGH),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,upper_32_bits((*ib).gpu_addr));amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_IB_SIZE),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,(*ib).length_dw);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_LOW),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,lower_32_bits((*ring).gpu_addr));amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_LMI_JRBC_RB_MEM_RD_64BIT_BAR_HIGH),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,upper_32_bits((*ring).gpu_addr));amdgpu_ring_write(ring,PACKETJ(0,0,PACKETJ_CONDITION_CHECK0,PACKETJ_TYPE2));amdgpu_ring_write(ring,0);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_COND_RD_TIMER),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,0x01400200);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_REF_DATA),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,2);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_STATUS),0,PACKETJ_CONDITION_CHECK3,PACKETJ_TYPE3));amdgpu_ring_write(ring,2); }
+
+unsafe fn jpeg_v1_0_decode_ring_emit_reg_wait(ring:*mut amdgpu_ring, reg:u32, val:u32, mask:u32) { let _adev=(*ring).adev; let reg_offset=reg<<2;amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_COND_RD_TIMER),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,0x01400200);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_RB_REF_DATA),0,0,PACKETJ_TYPE0));amdgpu_ring_write(ring,val);amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_EXTERNAL_REG_BASE),0,0,PACKETJ_TYPE0));if(reg_offset>=0x1f800&&reg_offset<=0x21fff||reg_offset>=0x1e000&&reg_offset<=0x1e1ff){amdgpu_ring_write(ring,0);amdgpu_ring_write(ring,PACKETJ(reg_offset>>2,0,0,PACKETJ_TYPE3));}else{amdgpu_ring_write(ring,reg_offset);amdgpu_ring_write(ring,PACKETJ(0,0,0,PACKETJ_TYPE3));}amdgpu_ring_write(ring,mask); }
+
+unsafe fn jpeg_v1_0_decode_ring_emit_vm_flush(ring:*mut amdgpu_ring, vmid:u32, mut pd_addr:u64) { let hub=&mut (*ring).adev.vmhub[(*ring).vm_hub as usize]; let (data0,data1,mask);pd_addr=amdgpu_gmc_emit_flush_gpu_tlb(ring,vmid,pd_addr);data0=hub.ctx0_ptb_addr_lo32+vmid*hub.ctx_addr_distance;data1=lower_32_bits(pd_addr);mask=0xffffffff;jpeg_v1_0_decode_ring_emit_reg_wait(ring,data0,data1,mask); }
+unsafe fn jpeg_v1_0_decode_ring_emit_wreg(ring:*mut amdgpu_ring, reg:u32, val:u32) { let _adev=(*ring).adev;let reg_offset=reg<<2;amdgpu_ring_write(ring,PACKETJ(SOC15_REG_OFFSET(JPEG,0,mmUVD_JRBC_EXTERNAL_REG_BASE),0,0,PACKETJ_TYPE0));if(reg_offset>=0x1f800&&reg_offset<=0x21fff||reg_offset>=0x1e000&&reg_offset<=0x1e1ff){amdgpu_ring_write(ring,0);amdgpu_ring_write(ring,PACKETJ(reg_offset>>2,0,0,PACKETJ_TYPE0));}else{amdgpu_ring_write(ring,reg_offset);amdgpu_ring_write(ring,PACKETJ(0,0,0,PACKETJ_TYPE0));}amdgpu_ring_write(ring,val); }
+unsafe fn jpeg_v1_0_decode_ring_nop(ring:*mut amdgpu_ring, count:u32) { WARN_ON((*ring).wptr%2!=0||count%2!=0);let mut i=0;while i<count/2{amdgpu_ring_write(ring,PACKETJ(0,0,0,PACKETJ_TYPE6));amdgpu_ring_write(ring,0);i+=1;} }
+
+unsafe fn jpeg_v1_0_set_interrupt_state(_adev:*mut amdgpu_device,_source:*mut amdgpu_irq_src,_type:u32,_state:amdgpu_interrupt_state)->i32{0}
+unsafe fn jpeg_v1_0_process_interrupt(adev:*mut amdgpu_device,_source:*mut amdgpu_irq_src,entry:*mut amdgpu_iv_entry)->i32 { DRM_DEBUG!("IH: JPEG decode TRAP\n");match (*entry).src_id{126=>{amdgpu_fence_process((*(*adev).jpeg.inst).ring_dec);},_=>{DRM_ERROR!("Unhandled interrupt: %d %d\n",(*entry).src_id,(*entry).src_data[0]);}}0 }
+
+pub unsafe fn jpeg_v1_0_early_init(ip_block:*mut amdgpu_ip_block)->i32 { let adev=(*ip_block).adev;(*adev).jpeg.num_jpeg_inst=1;(*adev).jpeg.num_jpeg_rings=1;jpeg_v1_0_set_dec_ring_funcs(adev);jpeg_v1_0_set_irq_funcs(adev);0 }
+pub unsafe fn jpeg_v1_0_sw_init(ip_block:*mut amdgpu_ip_block)->i32 { let adev=(*ip_block).adev;let ring=(*(*adev).jpeg.inst).ring_dec;let mut r=amdgpu_irq_add_id(adev,SOC15_IH_CLIENTID_VCN,126,&mut (*(*adev).jpeg.inst).irq);if r!=0{return r;}(*ring).vm_hub=AMDGPU_MMHUB0(0);sprintf((*ring).name.as_mut_ptr(),"jpeg_dec");r=amdgpu_ring_init(adev,ring,512,&mut (*(*adev).jpeg.inst).irq,0,AMDGPU_RING_PRIO_DEFAULT,core::ptr::null_mut());if r!=0{return r;}(*(*adev).jpeg.internal).jpeg_pitch[0]=(*(*adev).jpeg.inst).external.jpeg_pitch[0]=SOC15_REG_OFFSET(JPEG,0,mmUVD_JPEG_PITCH);0 }
+pub unsafe fn jpeg_v1_0_sw_fini(ip_block:*mut amdgpu_ip_block){let adev=(*ip_block).adev;amdgpu_ring_fini((*(*adev).jpeg.inst).ring_dec);}
+pub unsafe fn jpeg_v1_0_start(adev:*mut amdgpu_device,mode:i32){let ring=(*(*adev).jpeg.inst).ring_dec;if mode==0{WREG32_SOC15(JPEG,0,mmUVD_LMI_JRBC_RB_VMID,0);WREG32_SOC15(JPEG,0,mmUVD_JRBC_RB_CNTL,UVD_JRBC_RB_CNTL__RB_NO_FETCH_MASK|UVD_JRBC_RB_CNTL__RB_RPTR_WR_EN_MASK);WREG32_SOC15(JPEG,0,mmUVD_LMI_JRBC_RB_64BIT_BAR_LOW,lower_32_bits((*ring).gpu_addr));WREG32_SOC15(JPEG,0,mmUVD_LMI_JRBC_RB_64BIT_BAR_HIGH,upper_32_bits((*ring).gpu_addr));WREG32_SOC15(JPEG,0,mmUVD_JRBC_RB_RPTR,0);WREG32_SOC15(JPEG,0,mmUVD_JRBC_RB_WPTR,0);WREG32_SOC15(JPEG,0,mmUVD_JRBC_RB_CNTL,UVD_JRBC_RB_CNTL__RB_RPTR_WR_EN_MASK);}(*ring).wptr=RREG32_SOC15(JPEG,0,mmUVD_JRBC_RB_WPTR);jpeg_v1_0_decode_ring_set_patch_ring(ring,(*ring).wptr+(*ring).max_dw*amdgpu_sched_hw_submission);}
+
+static mut jpeg_v1_0_decode_ring_vm_funcs: amdgpu_ring_funcs = amdgpu_ring_funcs {
+    type_: AMDGPU_RING_TYPE_VCN_JPEG, align_mask: 0xf, nop: PACKET0(0x81ff, 0),
+    support_64bit_ptrs: false, no_user_fence: true, extra_bytes: 256,
+    get_rptr: Some(jpeg_v1_0_decode_ring_get_rptr), get_wptr: Some(jpeg_v1_0_decode_ring_get_wptr),
+    set_wptr: Some(jpeg_v1_0_decode_ring_set_wptr), parse_cs: Some(jpeg_v1_dec_ring_parse_cs),
+    emit_frame_size: 6 + 6 + SOC15_FLUSH_GPU_TLB_NUM_WREG * 6 + SOC15_FLUSH_GPU_TLB_NUM_REG_WAIT * 8 + 8 + 26 + 26 + 6,
+    emit_ib_size: 22, emit_ib: Some(jpeg_v1_0_decode_ring_emit_ib), emit_fence: Some(jpeg_v1_0_decode_ring_emit_fence),
+    emit_vm_flush: Some(jpeg_v1_0_decode_ring_emit_vm_flush), test_ring: Some(amdgpu_jpeg_dec_ring_test_ring),
+    test_ib: Some(amdgpu_jpeg_dec_ring_test_ib), insert_nop: Some(jpeg_v1_0_decode_ring_nop),
+    insert_start: Some(jpeg_v1_0_decode_ring_insert_start), insert_end: Some(jpeg_v1_0_decode_ring_insert_end),
+    pad_ib: Some(amdgpu_ring_generic_pad_ib), begin_use: Some(jpeg_v1_0_ring_begin_use), end_use: Some(vcn_v1_0_ring_end_use),
+    emit_wreg: Some(jpeg_v1_0_decode_ring_emit_wreg), emit_reg_wait: Some(jpeg_v1_0_decode_ring_emit_reg_wait),
+    emit_reg_write_reg_wait: Some(amdgpu_ring_emit_reg_write_reg_wait_helper),
+};
+static mut jpeg_v1_0_irq_funcs: amdgpu_irq_src_funcs = amdgpu_irq_src_funcs { set: Some(jpeg_v1_0_set_interrupt_state), process: Some(jpeg_v1_0_process_interrupt) };
+
+unsafe fn jpeg_v1_0_set_dec_ring_funcs(adev:*mut amdgpu_device){(*(*adev).jpeg.inst).ring_dec.funcs=&jpeg_v1_0_decode_ring_vm_funcs;}
+unsafe fn jpeg_v1_0_set_irq_funcs(adev:*mut amdgpu_device){(*(*adev).jpeg.inst).irq.funcs=&jpeg_v1_0_irq_funcs;}
+unsafe fn jpeg_v1_0_ring_begin_use(ring:*mut amdgpu_ring){let adev=(*ring).adev;let set_clocks=!cancel_delayed_work_sync(&mut (*(*adev).vcn.inst[0]).idle_work);mutex_lock(&mut (*(*adev).vcn.inst[0]).vcn1_jpeg1_workaround);if amdgpu_fence_wait_empty(&(*(*adev).vcn.inst).ring_dec)!=0{DRM_ERROR!("JPEG dec: vcn dec ring may not be empty\n");}let mut cnt=0;while cnt<(*(*adev).vcn.inst[0]).num_enc_rings{if amdgpu_fence_wait_empty(&(*(*adev).vcn.inst[0]).ring_enc[cnt as usize])!=0{DRM_ERROR!("JPEG dec: vcn enc ring[%d] may not be empty\n",cnt);}cnt+=1;}vcn_v1_0_set_pg_for_begin_use(ring,set_clocks);}
+
+unsafe fn jpeg_v1_dec_ring_parse_cs(parser:*mut amdgpu_cs_parser,_job:*mut amdgpu_job,ib:*mut amdgpu_ib)->i32{let adev=(*parser).adev;let mut i=0;while i<(*ib).length_dw{let reg=CP_PACKETJ_GET_REG((*ib).ptr[i as usize]);let res=CP_PACKETJ_GET_RES((*ib).ptr[i as usize]);let cond=CP_PACKETJ_GET_COND((*ib).ptr[i as usize]);let typ=CP_PACKETJ_GET_TYPE((*ib).ptr[i as usize]);if res!=0||cond!=PACKETJ_CONDITION_CHECK0{return -EINVAL;}if reg>=JPEG_V1_REG_RANGE_START&&reg<=JPEG_V1_REG_RANGE_END{i+=2;continue;}let mut ret=0;match typ{PACKETJ_TYPE0=>if reg!=JPEG_V1_LMI_JPEG_WRITE_64BIT_BAR_HIGH&&reg!=JPEG_V1_LMI_JPEG_WRITE_64BIT_BAR_LOW&&reg!=JPEG_V1_LMI_JPEG_READ_64BIT_BAR_HIGH&&reg!=JPEG_V1_LMI_JPEG_READ_64BIT_BAR_LOW&&reg!=JPEG_V1_REG_CTX_INDEX&&reg!=JPEG_V1_REG_CTX_DATA{ret=-EINVAL;},PACKETJ_TYPE1=>if reg!=JPEG_V1_REG_CTX_DATA{ret=-EINVAL;},PACKETJ_TYPE3=>if reg!=JPEG_V1_REG_SOFT_RESET{ret=-EINVAL;},PACKETJ_TYPE6=>if (*ib).ptr[i as usize]!=CP_PACKETJ_NOP{ret=-EINVAL;},_=>ret=-EINVAL}if ret!=0{dev_err((*adev).dev,"Invalid packet [0x%08x]!\n",(*ib).ptr[i as usize]);return ret;}i+=2;}0}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

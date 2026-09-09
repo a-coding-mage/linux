@@ -1,0 +1,70 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+/* Realtime Reverse Mapping Btree Repair.  Translated from rtrmap_repair.c. */
+
+use core::ffi::c_void;
+
+/* Types and constants are supplied by the XFS support modules. */
+#[repr(C)] pub struct xrep_newbt { pub bload: xfs_btree_bload, pub ifake: xfs_btree_ifakeroot }
+#[repr(C)] pub struct xrep_rtrmap { pub new_btree: xrep_newbt, pub lock: mutex, pub rtrmap_btree: xfbtree, pub sc: *mut xfs_scrub, pub old_rtrmapbt_blocks: xfsb_bitmap, pub rhook: xfs_rmap_hook, pub iscan: xchk_iscan, pub mcur: *mut xfs_btree_cur, pub nr_records: u64 }
+#[repr(C)] pub struct xrep_rtrmap_ifork { pub accum: xfs_rmap_irec, pub rr: *mut xrep_rtrmap }
+#[repr(C)] pub struct xrep_rtrmap_stash_run { pub rr: *mut xrep_rtrmap, pub owner: u64 }
+#[repr(C)] pub struct mutex;
+#[repr(C)] pub struct xfbtree;
+#[repr(C)] pub struct xfsb_bitmap;
+#[repr(C)] pub struct xrgb_bitmap;
+#[repr(C)] pub struct xchk_iscan;
+#[repr(C)] pub struct xfs_scrub { pub mp: *mut xfs_mount, pub tp: *mut xfs_trans, pub ip: *mut xfs_inode, pub buf: *mut c_void, pub sr: xfs_scrub_rt, pub sa: xfs_scrub_ag, pub xmbtp: *mut c_void, pub flags: u32 }
+#[repr(C)] pub struct xfs_scrub_rt { pub rtg: *mut xfs_rtgroup, pub refc_cur: *mut xfs_btree_cur }
+#[repr(C)] pub struct xfs_scrub_ag { pub rmap_cur: *mut xfs_btree_cur }
+#[repr(C)] pub struct xfs_mount { pub m_sb: xfs_sb }
+#[repr(C)] pub struct xfs_sb { pub sb_rextsize: u32 }
+#[repr(C)] pub struct xfs_rtgroup;
+#[repr(C)] pub struct xfs_inode;
+#[repr(C)] pub struct xfs_perag;
+#[repr(C)] pub struct xfs_trans;
+#[repr(C)] pub struct xfs_btree_cur { pub bc_group: *mut c_void, pub bc_rec: xfs_btree_rec_union, pub bc_ops: *mut xfs_btree_ops }
+#[repr(C)] pub struct xfs_btree_ops { pub init_rec_from_cur: Option<unsafe extern "C" fn(*mut xfs_btree_cur,*mut xfs_btree_rec_union)> }
+#[repr(C)] pub struct xfs_btree_rec_union;
+#[repr(C)] pub struct xfs_btree_block;
+#[repr(C)] pub struct xfs_btree_ptr;
+#[repr(C)] pub struct xfs_btree_bload { pub get_records: Option<unsafe extern "C" fn(*mut xfs_btree_cur,u32,*mut xfs_btree_block,u32,*mut c_void)->i32>, pub claim_block: Option<unsafe extern "C" fn(*mut xfs_btree_cur,*mut xfs_btree_ptr,*mut c_void)->i32>, pub iroot_size: Option<unsafe extern "C" fn(*mut xfs_btree_cur,u32,u32,*mut c_void)->usize>, pub nr_blocks: u64 }
+#[repr(C)] pub struct xfs_btree_ifakeroot { pub if_fork: *mut xfs_ifork, pub if_blocks: u64 }
+#[repr(C)] pub struct xfs_ifork { pub if_format: i32 }
+#[repr(C)] pub struct xfs_rmap_irec { pub rm_startblock:u64, pub rm_blockcount:u64, pub rm_owner:u64, pub rm_offset:u64, pub rm_flags:u32 }
+#[repr(C)] pub struct xfs_bmbt_irec { pub br_startblock:u64, pub br_blockcount:u64, pub br_startoff:u64, pub br_state:i32 }
+#[repr(C)] pub struct xfs_refcount_irec { pub rc_startblock:u32, pub rc_blockcount:u32, pub rc_domain:i32 }
+#[repr(C)] pub struct xfs_owner_info { pub oi_owner:u64 }
+#[repr(C)] pub struct xfs_rmap_hook { pub rmap_hook: notifier_block }
+#[repr(C)] pub struct notifier_block;
+#[repr(C)] pub struct xfs_iext_cursor;
+
+const XFS_RMAP_UNWRITTEN:u32=1; const XFS_EXT_UNWRITTEN:i32=1; const XFS_DINODE_FMT_BTREE:i32=2; const XFS_DINODE_FMT_EXTENTS:i32=1; const XFS_DINODE_FMT_META_BTREE:i32=3; const XFS_REFC_DOMAIN_COW:i32=1; const XCHK_RTGLOCK_ALL:u32=0xffff; const NOTIFY_DONE:i32=0;
+
+pub unsafe fn xrep_setup_rtrmapbt(sc:*mut xfs_scrub)->i32 { xchk_fsgates_enable(sc); let rr= kzalloc_obj(); if rr.is_null(){return -12;} (*rr).sc=sc; (*sc).buf=rr as *mut c_void; 0 }
+unsafe fn xrep_rtrmap_check_mapping(sc:*mut xfs_scrub, rec:*const xfs_rmap_irec)->i32 { if !xfs_rtrmap_check_irec((*sc).sr.rtg,rec).is_null(){return -990;} xrep_require_rtext_inuse(sc,(*rec).rm_startblock,(*rec).rm_blockcount) }
+unsafe fn xrep_rtrmap_stash(rr:*mut xrep_rtrmap,startblock:u64,blockcount:u64,owner:u64,offset:u64,flags:u32)->i32 { let r=xfs_rmap_irec{rm_startblock:startblock,rm_blockcount:blockcount,rm_owner:owner,rm_offset:offset,rm_flags:flags}; let sc=(*rr).sc; let mut e=0; if xchk_should_terminate(sc,&mut e){return e;} if xchk_iscan_aborted(&mut (*rr).iscan){return -990;} trace_xrep_rtrmap_found((*sc).mp,&r); mutex_lock(&mut (*rr).lock); let m=xfs_rtrmapbt_mem_cursor((*sc).sr.rtg,(*sc).tp,&mut (*rr).rtrmap_btree); e=xfs_rmap_map_raw(m,&r); xfs_btree_del_cursor(m,e); if e!=0 {xfbtree_trans_cancel(&mut (*rr).rtrmap_btree,(*sc).tp); xchk_iscan_abort(&mut (*rr).iscan); mutex_unlock(&mut (*rr).lock); return e;} e=xfbtree_trans_commit(&mut (*rr).rtrmap_btree,(*sc).tp); if e!=0 {xfbtree_trans_cancel(&mut (*rr).rtrmap_btree,(*sc).tp); xchk_iscan_abort(&mut (*rr).iscan); mutex_unlock(&mut (*rr).lock); return e;} mutex_unlock(&mut (*rr).lock); 0 }
+unsafe fn xrep_rtrmap_stash_accumulated(rf:*mut xrep_rtrmap_ifork)->i32 { if (*rf).accum.rm_blockcount==0 {0} else {let a=&(*rf).accum; xrep_rtrmap_stash((*rf).rr,a.rm_startblock,a.rm_blockcount,a.rm_owner,a.rm_offset,a.rm_flags)} }
+unsafe fn xrep_rtrmap_visit_bmbt(_cur:*mut xfs_btree_cur,rec:*mut xfs_bmbt_irec,priv_:*mut c_void)->i32 { let rf=priv_ as *mut xrep_rtrmap_ifork; let a=&mut (*rf).accum; let mp=(*(*rf).rr).sc; let mut fl=0; if xfs_rtb_to_rgno((*mp).mp,(*rec).br_startblock)!=rtg_rgno((*mp).sr.rtg){return 0;} if (*rec).br_state==XFS_EXT_UNWRITTEN{fl|=XFS_RMAP_UNWRITTEN;} let rgb=xfs_rtb_to_rgbno((*mp).mp,(*rec).br_startblock); if a.rm_blockcount>0 && (*rec).br_startoff==a.rm_offset+a.rm_blockcount && rgb==a.rm_startblock+a.rm_blockcount && fl==a.rm_flags {a.rm_blockcount+=(*rec).br_blockcount;return 0;} let e=xrep_rtrmap_stash_accumulated(rf); if e!=0{return e;} a.rm_startblock=rgb;a.rm_blockcount=(*rec).br_blockcount;a.rm_offset=(*rec).br_startoff;a.rm_flags=fl;0 }
+unsafe fn xrep_rtrmap_scan_bmbt(rf:*mut xrep_rtrmap_ifork,ip:*mut xfs_inode,done:*mut bool)->i32 { *done=false; let rr=(*rf).rr; let ifp=xfs_ifork_ptr(ip); if !xfs_need_iread_extents(ifp){return 0;} let c=xfs_bmbt_init_cursor((*(*rr).sc).mp,(*(*rr).sc).tp,ip); let e=xfs_bmap_query_all(c,xrep_rtrmap_visit_bmbt,rf as *mut c_void); xfs_btree_del_cursor(c,e); if e!=0{return e;} *done=true;xrep_rtrmap_stash_accumulated(rf) }
+unsafe fn xrep_rtrmap_scan_iext(rf:*mut xrep_rtrmap_ifork,ifp:*mut xfs_ifork)->i32 { let mut c=xfs_iext_cursor{}; let mut r=xfs_bmbt_irec{br_startblock:0,br_blockcount:0,br_startoff:0,br_state:0}; while for_each_xfs_iext(ifp,&mut c,&mut r){ if isnullstartblock(r.br_startblock){continue;} let e=xrep_rtrmap_visit_bmbt(core::ptr::null_mut(),&mut r,rf as *mut c_void);if e!=0{return e;}} xrep_rtrmap_stash_accumulated(rf) }
+unsafe fn xrep_rtrmap_scan_dfork(rr:*mut xrep_rtrmap,ip:*mut xfs_inode)->i32 { let mut rf=xrep_rtrmap_ifork{accum:xfs_rmap_irec{rm_startblock:0,rm_blockcount:0,rm_owner:I_INO(ip),rm_offset:0,rm_flags:0},rr}; let ifp=xfs_ifork_ptr(ip); if (*ifp).if_format==XFS_DINODE_FMT_BTREE {let mut d=false;let e=xrep_rtrmap_scan_bmbt(&mut rf,ip,&mut d);if e!=0||d{return e;}} else if (*ifp).if_format!=XFS_DINODE_FMT_EXTENTS{return -990;} xrep_rtrmap_scan_iext(&mut rf,ifp) }
+unsafe fn xrep_rtrmap_scan_inode(rr:*mut xrep_rtrmap,ip:*mut xfs_inode)->i32 {if (*(*rr).sc).ip==ip{return 0;}let lm=xfs_ilock_data_map_shared(ip);let mut e=0;if XFS_IS_REALTIME_INODE(ip){e=xrep_rtrmap_scan_dfork(rr,ip);}if e==0{xchk_iscan_mark_visited(&mut (*rr).iscan,ip);}xfs_iunlock(ip,lm);e}
+unsafe fn xrep_rtrmap_walk_rmap(cur:*mut xfs_btree_cur,rec:*const xfs_rmap_irec,priv_:*mut c_void)->i32 {let rr=priv_ as *mut xrep_rtrmap;let mut e=0;if xchk_should_terminate((*rr).sc,&mut e){return e;}if (*rec).rm_owner!=I_INO((*(*rr).sc).ip){return 0;}e=xrep_check_ino_btree_mapping((*rr).sc,rec);if e!=0{return e;}xfsb_bitmap_set(&mut (*rr).old_rtrmapbt_blocks,xfs_gbno_to_fsb((*cur).bc_group,(*rec).rm_startblock),(*rec).rm_blockcount as u32)}
+unsafe fn xrep_rtrmap_stash_run(start:u32,len:u32,priv_:*mut c_void)->i32 {let r=priv_ as *mut xrep_rtrmap_stash_run;xrep_rtrmap_stash((*r).rr,start as u64,len as u64,(*r).owner,0,0)}
+unsafe fn xrep_rtrmap_stash_bitmap(rr:*mut xrep_rtrmap,b:*mut xrgb_bitmap,o:*const xfs_owner_info)->i32 {let mut r=xrep_rtrmap_stash_run{rr,owner:(*o).oi_owner};xrgb_bitmap_walk(b,xrep_rtrmap_stash_run,&mut r as *mut _ as *mut c_void)}
+unsafe fn xrep_rtrmap_walk_cowblocks(_cur:*mut xfs_btree_cur,ir:*const xfs_refcount_irec,p:*mut c_void)->i32 {if !xfs_refcount_check_domain(ir)||(*ir).rc_domain!=XFS_REFC_DOMAIN_COW{return -990;}xrgb_bitmap_set(p as *mut xrgb_bitmap,(*ir).rc_startblock,(*ir).rc_blockcount)}
+unsafe fn xrep_rtrmap_find_refcount_rmaps(rr:*mut xrep_rtrmap)->i32 {if !xfs_has_rtreflink((*(*rr).sc).mp){return 0;}let mut b=xrgb_bitmap{};xrgb_bitmap_init(&mut b);let l=xfs_refcount_irec{rc_startblock:0,rc_blockcount:0,rc_domain:XFS_REFC_DOMAIN_COW};let h=xfs_refcount_irec{rc_startblock:u32::MAX,rc_blockcount:0,rc_domain:XFS_REFC_DOMAIN_COW};let mut e=xfs_refcount_query_range((*(*rr).sc).sr.refc_cur,&l,&h,xrep_rtrmap_walk_cowblocks,&mut b as *mut _ as *mut c_void);if e==0{e=xrep_rtrmap_stash_bitmap(rr,&mut b,&XFS_RMAP_OINFO_COW);}xrgb_bitmap_destroy(&mut b);e}
+unsafe fn xrep_rtrmap_check_record(_c:*mut xfs_btree_cur,r:*const xfs_rmap_irec,p:*mut c_void)->i32 {let rr=p as *mut xrep_rtrmap;let e=xrep_rtrmap_check_mapping((*rr).sc,r);if e!=0{return e;}(*rr).nr_records+=1;0}
+unsafe fn xrep_rtrmap_get_records(cur:*mut xfs_btree_cur,_idx:u32,_b:*mut xfs_btree_block,n:u32,p:*mut c_void)->i32 {let rr=p as *mut xrep_rtrmap;for _ in 0..n{let mut s=0;if xfs_btree_increment((*rr).mcur,0,&mut s)!=0||s==0{return -990;}if xfs_rmap_get_rec((*rr).mcur,&mut (*cur).bc_rec,&mut s)!=0||s==0{return -990;}}n as i32}
+unsafe fn xrep_rtrmap_claim_block(c:*mut xfs_btree_cur,p:*mut xfs_btree_ptr,v:*mut c_void)->i32{xrep_newbt_claim_block(c,&mut (*(v as *mut xrep_rtrmap)).new_btree,p)}
+unsafe fn xrep_rtrmap_iroot_size(c:*mut xfs_btree_cur,l:u32,n:u32,_:*mut c_void)->usize{xfs_rtrmap_broot_space_calc((*c).bc_group,l,n)}
+unsafe fn xrep_rtrmap_setup_scan(rr:*mut xrep_rtrmap)->i32 {mutex_init(&mut (*rr).lock);xfsb_bitmap_init(&mut (*rr).old_rtrmapbt_blocks);let e=xfs_rtrmapbt_mem_init((*(*rr).sc).mp,&mut (*rr).rtrmap_btree,(*(*rr).sc).xmbtp,rtg_rgno((*(*rr).sc).sr.rtg));if e!=0{xfsb_bitmap_destroy(&mut (*rr).old_rtrmapbt_blocks);mutex_destroy(&mut (*rr).lock);return e;}xchk_iscan_start((*rr).sc,30000,100,&mut (*rr).iscan);xfs_rmap_hook_setup(&mut (*rr).rhook);xfs_rmap_hook_add(rtg_group((*(*rr).sc).sr.rtg),&mut (*rr).rhook)}
+unsafe fn xrep_rtrmap_teardown(rr:*mut xrep_rtrmap){xchk_iscan_abort(&mut (*rr).iscan);xfs_rmap_hook_del(rtg_group((*(*rr).sc).sr.rtg),&mut (*rr).rhook);xchk_iscan_teardown(&mut (*rr).iscan);xfbtree_destroy(&mut (*rr).rtrmap_btree);xfsb_bitmap_destroy(&mut (*rr).old_rtrmapbt_blocks);mutex_destroy(&mut (*rr).lock)}
+unsafe fn xrep_rtrmapbt_want_live_update(iscan:*mut xchk_iscan,oi:*const xfs_owner_info)->bool {if xchk_iscan_aborted(iscan){return false;}if XFS_RMAP_NON_INODE_OWNER((*oi).oi_owner){return true;}xchk_iscan_want_live_update(iscan,(*oi).oi_owner)}
+unsafe fn xrep_rtrmapbt_live_update(_nb:*mut notifier_block,_action:usize,_data:*mut c_void)->i32 {NOTIFY_DONE}
+unsafe fn xrep_rtrmap_scan_ag(rr:*mut xrep_rtrmap,pag:*mut xfs_perag)->i32 {let sc=(*rr).sc;let e=xrep_ag_init(sc,pag,&mut (*sc).sa);if e!=0{return e;}let e=xfs_rmap_query_all((*sc).sa.rmap_cur,xrep_rtrmap_walk_rmap,rr as *mut c_void);xchk_ag_free(sc,&mut (*sc).sa);e}
+unsafe fn xrep_rtrmap_find_rmaps(rr:*mut xrep_rtrmap)->i32 {let sc=(*rr).sc;if xfs_has_rtsb((*sc).mp)&&rtg_rgno((*sc).sr.rtg)==0{let e=xrep_rtrmap_stash(rr,0,(*sc).mp.as_ref().unwrap().m_sb.sb_rextsize as u64,XFS_RMAP_OWN_FS,0,0);if e!=0{return e;}}xrep_rtgroup_btcur_init(sc,&mut (*sc).sr);let mut e=xrep_rtrmap_find_refcount_rmaps(rr);xchk_rtgroup_btcur_free(&mut (*sc).sr);if e!=0{return e;}xchk_trans_cancel(sc);xchk_rtgroup_unlock(&mut (*sc).sr);xchk_trans_alloc_empty(sc);let mut ip=core::ptr::null_mut();while xchk_iscan_iter(&mut (*rr).iscan,&mut ip)==1{e=xrep_rtrmap_scan_inode(rr,ip);xchk_irele(sc,ip);if e!=0||xchk_should_terminate(sc,&mut e){break;}}xchk_iscan_iter_finish(&mut (*rr).iscan);if e!=0{return e;}xchk_trans_cancel(sc);e=xchk_setup_rt(sc);if e!=0{return e;}e=xchk_rtgroup_lock(sc,&mut (*sc).sr,XCHK_RTGLOCK_ALL);if e!=0{return e;}if xchk_iscan_aborted(&mut (*rr).iscan){return -990;}let mut pag=core::ptr::null_mut();while {pag=xfs_perag_next((*sc).mp,pag);!pag.is_null()}{e=xrep_rtrmap_scan_ag(rr,pag);if e!=0{return e;}}let c=xfs_rtrmapbt_mem_cursor((*sc).sr.rtg,core::ptr::null_mut(),&mut (*rr).rtrmap_btree);(*rr).nr_records=0;e=xfs_rmap_query_all(c,xrep_rtrmap_check_record,rr as *mut c_void);xfs_btree_del_cursor(c,e);e}
+unsafe fn xrep_rtrmap_build_new_tree(rr:*mut xrep_rtrmap)->i32 {let sc=(*rr).sc;let rtg=(*sc).sr.rtg;let e=xrep_newbt_init_metadir_inode(&mut (*rr).new_btree,sc);if e!=0{return e;}let c=xfs_rtrmapbt_init_cursor(core::ptr::null_mut(),rtg);xfs_btree_stage_ifakeroot(c,&mut (*rr).new_btree.ifake);let e=xfs_btree_bload_compute_geometry(c,&mut (*rr).new_btree.bload,(*rr).nr_records);if e!=0{xfs_btree_del_cursor(c,e);return e;}let e=xrep_newbt_alloc_blocks(&mut (*rr).new_btree,(*rr).new_btree.bload.nr_blocks);if e!=0{xfs_btree_del_cursor(c,e);return e;}(*rr).mcur=xfs_rtrmapbt_mem_cursor((*sc).sr.rtg,core::ptr::null_mut(),&mut (*rr).rtrmap_btree);let e=xfs_btree_goto_left_edge((*rr).mcur);if e!=0{return e;}let e=xfs_btree_bload(c,&mut (*rr).new_btree.bload,rr as *mut c_void);if e!=0{return e;}xfs_rtrmapbt_commit_staged_btree(c,(*sc).tp);xrep_inode_set_nblocks(sc,(*rr).new_btree.ifake.if_blocks);xfs_btree_del_cursor(c,0);xfs_btree_del_cursor((*rr).mcur,0);(*rr).mcur=core::ptr::null_mut();xchk_iscan_abort(&mut (*rr).iscan);let e=xrep_newbt_commit(&mut (*rr).new_btree);if e!=0{return e;}xrep_roll_trans(sc)}
+pub unsafe fn xrep_rtrmapbt(sc:*mut xfs_scrub)->i32 {let rr=(*sc).buf as *mut xrep_rtrmap;let mut e=xrep_metadata_inode_forks(sc);if e!=0{return e;}e=xrep_rtrmap_setup_scan(rr);if e!=0{return e;}e=xrep_rtrmap_find_rmaps(rr);if e==0{e=xrep_rtrmap_build_new_tree(rr);}if e==0{e=xrep_reap_metadir_fsblocks(sc,&mut (*rr).old_rtrmapbt_blocks);}xrep_rtrmap_teardown(rr);e}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

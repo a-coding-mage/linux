@@ -1,0 +1,199 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2020 Google Inc.
+ * Copyright 2025 Linaro Ltd.
+ *
+ * Maxim MAX77759 core driver
+ */
+
+// C dependencies: linux/completion.h, linux/mutex.h, linux/regmap.h
+
+pub const MAX77759_PMIC_REG_PMIC_ID: u32 = 0x00;
+pub const MAX77759_PMIC_REG_PMIC_REVISION: u32 = 0x01;
+pub const MAX77759_PMIC_REG_OTP_REVISION: u32 = 0x02;
+pub const MAX77759_PMIC_REG_INTSRC: u32 = 0x22;
+pub const MAX77759_PMIC_REG_INTSRCMASK: u32 = 0x23;
+pub const MAX77759_PMIC_REG_INTSRC_MAXQ: u32 = 1 << 3;
+pub const MAX77759_PMIC_REG_INTSRC_TOPSYS: u32 = 1 << 1;
+pub const MAX77759_PMIC_REG_INTSRC_CHGR: u32 = 1 << 0;
+pub const MAX77759_PMIC_REG_TOPSYS_INT: u32 = 0x24;
+pub const MAX77759_PMIC_REG_TOPSYS_INT_MASK: u32 = 0x26;
+pub const MAX77759_PMIC_REG_TOPSYS_INT_TSHDN: u32 = 1 << 6;
+pub const MAX77759_PMIC_REG_TOPSYS_INT_SYSOVLO: u32 = 1 << 5;
+pub const MAX77759_PMIC_REG_TOPSYS_INT_SYSUVLO: u32 = 1 << 4;
+pub const MAX77759_PMIC_REG_TOPSYS_INT_FSHIP: u32 = 1 << 0;
+pub const MAX77759_PMIC_REG_I2C_CNFG: u32 = 0x40;
+pub const MAX77759_PMIC_REG_SWRESET: u32 = 0x50;
+pub const MAX77759_PMIC_REG_CONTROL_FG: u32 = 0x51;
+
+pub const MAX77759_MAXQ_REG_UIC_INT1: u32 = 0x64;
+pub const MAX77759_MAXQ_REG_UIC_INT1_APCMDRESI: u32 = 1 << 7;
+pub const MAX77759_MAXQ_REG_UIC_INT1_SYSMSGI: u32 = 1 << 6;
+pub const MAX77759_MAXQ_REG_UIC_INT1_GPIO6I: u32 = 1 << 1;
+pub const MAX77759_MAXQ_REG_UIC_INT1_GPIO5I: u32 = 1 << 0;
+pub const fn MAX77759_MAXQ_REG_UIC_INT1_GPIOxI(offs: u32, en: u32) -> u32 { (en & 1) << offs }
+pub const fn MAX77759_MAXQ_REG_UIC_INT1_GPIOxI_MASK(offs: u32) -> u32 { MAX77759_MAXQ_REG_UIC_INT1_GPIOxI(offs, !0) }
+pub const MAX77759_MAXQ_REG_UIC_INT2: u32 = 0x65;
+pub const MAX77759_MAXQ_REG_UIC_INT3: u32 = 0x66;
+pub const MAX77759_MAXQ_REG_UIC_INT4: u32 = 0x67;
+pub const MAX77759_MAXQ_REG_UIC_UIC_STATUS1: u32 = 0x68;
+pub const MAX77759_MAXQ_REG_UIC_UIC_STATUS2: u32 = 0x69;
+pub const MAX77759_MAXQ_REG_UIC_UIC_STATUS3: u32 = 0x6a;
+pub const MAX77759_MAXQ_REG_UIC_UIC_STATUS4: u32 = 0x6b;
+pub const MAX77759_MAXQ_REG_UIC_UIC_STATUS5: u32 = 0x6c;
+pub const MAX77759_MAXQ_REG_UIC_UIC_STATUS6: u32 = 0x6d;
+pub const MAX77759_MAXQ_REG_UIC_UIC_STATUS7: u32 = 0x6f;
+pub const MAX77759_MAXQ_REG_UIC_UIC_STATUS8: u32 = 0x6f;
+pub const MAX77759_MAXQ_REG_UIC_INT1_M: u32 = 0x70;
+pub const MAX77759_MAXQ_REG_UIC_INT2_M: u32 = 0x71;
+pub const MAX77759_MAXQ_REG_UIC_INT3_M: u32 = 0x72;
+pub const MAX77759_MAXQ_REG_UIC_INT4_M: u32 = 0x73;
+pub const MAX77759_MAXQ_REG_AP_DATAOUT0: u32 = 0x81;
+pub const MAX77759_MAXQ_REG_AP_DATAOUT32: u32 = 0xa1;
+pub const MAX77759_MAXQ_REG_AP_DATAIN0: u32 = 0xb1;
+pub const MAX77759_MAXQ_REG_UIC_SWRST: u32 = 0xe0;
+
+pub const MAX77759_CHGR_REG_CHG_INT: u32 = 0xb0;
+pub const MAX77759_CHGR_REG_CHG_INT_AICL: u32 = 1 << 7;
+pub const MAX77759_CHGR_REG_CHG_INT_CHGIN: u32 = 1 << 6;
+pub const MAX77759_CHGR_REG_CHG_INT_WCIN: u32 = 1 << 5;
+pub const MAX77759_CHGR_REG_CHG_INT_CHG: u32 = 1 << 4;
+pub const MAX77759_CHGR_REG_CHG_INT_BAT: u32 = 1 << 3;
+pub const MAX77759_CHGR_REG_CHG_INT_INLIM: u32 = 1 << 2;
+pub const MAX77759_CHGR_REG_CHG_INT_THM2: u32 = 1 << 1;
+pub const MAX77759_CHGR_REG_CHG_INT_BYP: u32 = 1 << 0;
+pub const MAX77759_CHGR_REG_CHG_INT2: u32 = 0xb1;
+pub const MAX77759_CHGR_REG_CHG_INT2_INSEL: u32 = 1 << 7;
+pub const MAX77759_CHGR_REG_CHG_INT2_SYS_UVLO1: u32 = 1 << 6;
+pub const MAX77759_CHGR_REG_CHG_INT2_SYS_UVLO2: u32 = 1 << 5;
+pub const MAX77759_CHGR_REG_CHG_INT2_BAT_OILO: u32 = 1 << 4;
+pub const MAX77759_CHGR_REG_CHG_INT2_CHG_STA_CC: u32 = 1 << 3;
+pub const MAX77759_CHGR_REG_CHG_INT2_CHG_STA_CV: u32 = 1 << 2;
+pub const MAX77759_CHGR_REG_CHG_INT2_CHG_STA_TO: u32 = 1 << 1;
+pub const MAX77759_CHGR_REG_CHG_INT2_CHG_STA_DONE: u32 = 1 << 0;
+pub const MAX77759_CHGR_REG_CHG_INT_MASK: u32 = 0xb2;
+pub const MAX77759_CHGR_REG_CHG_INT2_MASK: u32 = 0xb3;
+pub const MAX77759_CHGR_REG_CHG_INT_OK: u32 = 0xb4;
+pub const MAX77759_CHGR_REG_CHG_DETAILS_00: u32 = 0xb5;
+pub const MAX77759_CHGR_REG_CHG_DETAILS_00_CHGIN_DTLS: u32 = ((1 << (6 - 5 + 1)) - 1) << 5;
+pub const MAX77759_CHGR_REG_CHG_DETAILS_01: u32 = 0xb6;
+pub const MAX77759_CHGR_REG_CHG_DETAILS_01_BAT_DTLS: u32 = ((1 << (6 - 4 + 1)) - 1) << 4;
+pub const MAX77759_CHGR_REG_CHG_DETAILS_01_CHG_DTLS: u32 = (1 << (3 + 1)) - 1;
+pub const MAX77759_CHGR_REG_CHG_DETAILS_02: u32 = 0xb7;
+pub const MAX77759_CHGR_REG_CHG_DETAILS_02_CHGIN_STS: u32 = 1 << 5;
+pub const MAX77759_CHGR_REG_CHG_DETAILS_03: u32 = 0xb8;
+pub const MAX77759_CHGR_REG_CHG_CNFG_00: u32 = 0xb9;
+pub const MAX77759_CHGR_REG_CHG_CNFG_00_MODE: u32 = (1 << 4) - 1;
+pub const MAX77759_CHGR_REG_CHG_CNFG_01: u32 = 0xba;
+pub const MAX77759_CHGR_REG_CHG_CNFG_02: u32 = 0xbb;
+pub const MAX77759_CHGR_REG_CHG_CNFG_02_CHGCC: u32 = ((1 << 6) - 1);
+pub const MAX77759_CHGR_REG_CHG_CNFG_03: u32 = 0xbc;
+pub const MAX77759_CHGR_REG_CHG_CNFG_04: u32 = 0xbd;
+pub const MAX77759_CHGR_REG_CHG_CNFG_04_CHG_CV_PRM: u32 = ((1 << 6) - 1);
+pub const MAX77759_CHGR_REG_CHG_CNFG_05: u32 = 0xbe;
+pub const MAX77759_CHGR_REG_CHG_CNFG_06: u32 = 0xbf;
+pub const MAX77759_CHGR_REG_CHG_CNFG_06_CHGPROT: u32 = ((1 << 2) - 1) << 2;
+pub const MAX77759_CHGR_REG_CHG_CNFG_07: u32 = 0xc0;
+pub const MAX77759_CHGR_REG_CHG_CNFG_08: u32 = 0xc1;
+pub const MAX77759_CHGR_REG_CHG_CNFG_09: u32 = 0xc2;
+pub const MAX77759_CHGR_REG_CHG_CNFG_09_CHGIN_ILIM: u32 = ((1 << 7) - 1);
+pub const MAX77759_CHGR_REG_CHG_CNFG_10: u32 = 0xc3;
+pub const MAX77759_CHGR_REG_CHG_CNFG_11: u32 = 0xc4;
+pub const MAX77759_CHGR_REG_CHG_CNFG_12: u32 = 0xc5;
+/* Setting this enables the Wireless Charging input channel. */
+pub const MAX77759_CHGR_REG_CHG_CNFG_12_WCINSEL: u32 = 1 << 6;
+/* Setting this enables the CHGIN/USB input channel. */
+pub const MAX77759_CHGR_REG_CHG_CNFG_12_CHGINSEL: u32 = 1 << 5;
+pub const MAX77759_CHGR_REG_CHG_CNFG_13: u32 = 0xc6;
+pub const MAX77759_CHGR_REG_CHG_CNFG_14: u32 = 0xc7;
+pub const MAX77759_CHGR_REG_CHG_CNFG_15: u32 = 0xc8;
+pub const MAX77759_CHGR_REG_CHG_CNFG_16: u32 = 0xc9;
+pub const MAX77759_CHGR_REG_CHG_CNFG_17: u32 = 0xca;
+pub const MAX77759_CHGR_REG_CHG_CNFG_18: u32 = 0xcb;
+pub const MAX77759_CHGR_REG_CHG_CNFG_18_WDTEN: u32 = 1 << 0;
+pub const MAX77759_CHGR_REG_CHG_CNFG_19: u32 = 0xcc;
+
+/* MaxQ opcodes for max77759_maxq_command() */
+pub const MAX77759_MAXQ_OPCODE_MAXLENGTH: u32 = MAX77759_MAXQ_REG_AP_DATAOUT32 - MAX77759_MAXQ_REG_AP_DATAOUT0 + 1;
+pub const MAX77759_MAXQ_OPCODE_GPIO_TRIGGER_READ: u32 = 0x21;
+pub const MAX77759_MAXQ_OPCODE_GPIO_TRIGGER_WRITE: u32 = 0x22;
+pub const MAX77759_MAXQ_OPCODE_GPIO_CONTROL_READ: u32 = 0x23;
+pub const MAX77759_MAXQ_OPCODE_GPIO_CONTROL_WRITE: u32 = 0x24;
+pub const MAX77759_MAXQ_OPCODE_USER_SPACE_READ: u32 = 0x81;
+pub const MAX77759_MAXQ_OPCODE_USER_SPACE_WRITE: u32 = 0x82;
+
+#[repr(i32)]
+pub enum max77759_chgr_chgin_dtls_status {
+    MAX77759_CHGR_CHGIN_DTLS_VBUS_UNDERVOLTAGE,
+    MAX77759_CHGR_CHGIN_DTLS_VBUS_MARGINAL_VOLTAGE,
+    MAX77759_CHGR_CHGIN_DTLS_VBUS_OVERVOLTAGE,
+    MAX77759_CHGR_CHGIN_DTLS_VBUS_VALID,
+}
+
+#[repr(i32)]
+pub enum max77759_chgr_bat_dtls_states {
+    MAX77759_CHGR_BAT_DTLS_NO_BATT_CHG_SUSP,
+    MAX77759_CHGR_BAT_DTLS_DEAD_BATTERY,
+    MAX77759_CHGR_BAT_DTLS_BAT_CHG_TIMER_FAULT,
+    MAX77759_CHGR_BAT_DTLS_BAT_OKAY,
+    MAX77759_CHGR_BAT_DTLS_BAT_UNDERVOLTAGE,
+    MAX77759_CHGR_BAT_DTLS_BAT_OVERVOLTAGE,
+    MAX77759_CHGR_BAT_DTLS_BAT_OVERCURRENT,
+    MAX77759_CHGR_BAT_DTLS_BAT_ONLY_MODE,
+}
+
+#[repr(i32)]
+pub enum max77759_chgr_chg_dtls_states {
+    MAX77759_CHGR_CHG_DTLS_PREQUAL,
+    MAX77759_CHGR_CHG_DTLS_CC,
+    MAX77759_CHGR_CHG_DTLS_CV,
+    MAX77759_CHGR_CHG_DTLS_TO,
+    MAX77759_CHGR_CHG_DTLS_DONE,
+    MAX77759_CHGR_CHG_DTLS_RSVD_1,
+    MAX77759_CHGR_CHG_DTLS_TIMER_FAULT,
+    MAX77759_CHGR_CHG_DTLS_SUSP_BATT_THM,
+    MAX77759_CHGR_CHG_DTLS_OFF,
+    MAX77759_CHGR_CHG_DTLS_RSVD_2,
+    MAX77759_CHGR_CHG_DTLS_RSVD_3,
+    MAX77759_CHGR_CHG_DTLS_OFF_WDOG_TIMER,
+    MAX77759_CHGR_CHG_DTLS_SUSP_JEITA,
+}
+
+#[repr(i32)]
+pub enum max77759_chgr_mode {
+    MAX77759_CHGR_MODE_OFF = 0x0,
+    MAX77759_CHGR_MODE_CHG_BUCK_ON = 0x5,
+    MAX77759_CHGR_MODE_OTG_BOOST_ON = 0xA,
+}
+
+#[repr(C)]
+pub struct max77759 {
+    pub regmap_top: *mut regmap,
+    // This protects MaxQ commands - only one can be active
+    pub maxq_lock: mutex,
+    pub regmap_maxq: *mut regmap,
+    pub cmd_done: completion,
+    pub regmap_charger: *mut regmap,
+}
+
+#[repr(C)]
+pub struct max77759_maxq_command {
+    pub length: u8,
+    pub cmd: [u8; 0],
+}
+
+#[repr(C)]
+pub struct max77759_maxq_response {
+    pub length: u8,
+    pub rsp: [u8; 0],
+}
+
+extern "C" {
+    pub fn max77759_maxq_command(
+        max77759: *mut max77759,
+        cmd: *const max77759_maxq_command,
+        rsp: *mut max77759_maxq_response,
+    ) -> i32;
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

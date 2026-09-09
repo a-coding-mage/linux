@@ -1,0 +1,48 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+   BlueZ - Bluetooth protocol stack for Linux
+   Copyright (C) 2000-2001 Qualcomm Incorporated
+
+   Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
+   IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
+   CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
+   WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+   ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR
+   IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+   ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
+   COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
+   SOFTWARE IS DISCLAIMED.
+*/
+
+/* SCO defaults */
+pub const SCO_DEFAULT_MTU: i32 = 500;
+
+/* SCO socket address */
+#[repr(C)]
+pub struct sockaddr_sco {
+    pub sco_family: sa_family_t,
+    pub sco_bdaddr: bdaddr_t,
+}
+
+/* SCO socket options */
+pub const SCO_OPTIONS: i32 = 0x01;
+
+#[repr(C)]
+pub struct sco_options {
+    pub mtu: __u16,
+}
+
+pub const SCO_CONNINFO: i32 = 0x02;
+
+#[repr(C)]
+pub struct sco_conninfo {
+    pub hci_handle: __u16,
+    pub dev_class: [__u8; 3],
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

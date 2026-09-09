@@ -1,0 +1,74 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2021 MediaTek Inc.
+ * Author: Sam Shih <sam.shih@mediatek.com>
+ * Author: Wenzhen Yu <wenzhen.yu@mediatek.com>
+ */
+
+// C dependencies supplied by the surrounding kernel/Rust bindings.
+
+static mt7986_clk_lock: SpinLock = define_spinlock!("mt7986_clk_lock");
+
+static infra_divs: [MtkFixedFactor; 1] = [
+    factor!(CLK_INFRA_SYSAXI_D2, "infra_sysaxi_d2", "sysaxi_sel", 1, 2),
+];
+
+static infra_uart_parent: [&str; 2] = ["csw_f26m_sel", "uart_sel"];
+static infra_spi_parents: [&str; 2] = ["i2c_sel", "spi_sel"];
+static infra_pwm_bsel_parents: [&str; 4] = [
+    "top_rtc_32p7k", "csw_f26m_sel", "infra_sysaxi_d2", "pwm_sel",
+];
+static infra_pcie_parents: [&str; 4] = [
+    "top_rtc_32p7k", "csw_f26m_sel", "top_xtal", "pextp_tl_ck_sel",
+];
+
+static infra_muxes: [MtkMux; 9] = [
+    // MODULE_CLK_SEL_0
+    mux_gate_clr_set_upd!(CLK_INFRA_UART0_SEL, "infra_uart0_sel", &infra_uart_parent, 0x0018, 0x0010, 0x0014, 0, 1, -1, -1, -1),
+    mux_gate_clr_set_upd!(CLK_INFRA_UART1_SEL, "infra_uart1_sel", &infra_uart_parent, 0x0018, 0x0010, 0x0014, 1, 1, -1, -1, -1),
+    mux_gate_clr_set_upd!(CLK_INFRA_UART2_SEL, "infra_uart2_sel", &infra_uart_parent, 0x0018, 0x0010, 0x0014, 2, 1, -1, -1, -1),
+    mux_gate_clr_set_upd!(CLK_INFRA_SPI0_SEL, "infra_spi0_sel", &infra_spi_parents, 0x0018, 0x0010, 0x0014, 4, 1, -1, -1, -1),
+    mux_gate_clr_set_upd!(CLK_INFRA_SPI1_SEL, "infra_spi1_sel", &infra_spi_parents, 0x0018, 0x0010, 0x0014, 5, 1, -1, -1, -1),
+    mux_gate_clr_set_upd!(CLK_INFRA_PWM1_SEL, "infra_pwm1_sel", &infra_pwm_bsel_parents, 0x0018, 0x0010, 0x0014, 9, 2, -1, -1, -1),
+    mux_gate_clr_set_upd!(CLK_INFRA_PWM2_SEL, "infra_pwm2_sel", &infra_pwm_bsel_parents, 0x0018, 0x0010, 0x0014, 11, 2, -1, -1, -1),
+    mux_gate_clr_set_upd!(CLK_INFRA_PWM_BSEL, "infra_pwm_bsel", &infra_pwm_bsel_parents, 0x0018, 0x0010, 0x0014, 13, 2, -1, -1, -1),
+    // MODULE_CLK_SEL_1
+    mux_gate_clr_set_upd!(CLK_INFRA_PCIE_SEL, "infra_pcie_sel", &infra_pcie_parents, 0x0028, 0x0020, 0x0024, 0, 2, -1, -1, -1),
+];
+
+static infra0_cg_regs: MtkGateRegs = MtkGateRegs { set_ofs: 0x40, clr_ofs: 0x44, sta_ofs: 0x48 };
+static infra1_cg_regs: MtkGateRegs = MtkGateRegs { set_ofs: 0x50, clr_ofs: 0x54, sta_ofs: 0x58 };
+static infra2_cg_regs: MtkGateRegs = MtkGateRegs { set_ofs: 0x60, clr_ofs: 0x64, sta_ofs: 0x68 };
+
+macro_rules! gate_infra0 { ($id:expr, $name:expr, $parent:expr, $shift:expr) => { gate_mtk!($id, $name, $parent, &infra0_cg_regs, $shift, &mtk_clk_gate_ops_setclr) }; }
+macro_rules! gate_infra1 { ($id:expr, $name:expr, $parent:expr, $shift:expr) => { gate_mtk!($id, $name, $parent, &infra1_cg_regs, $shift, &mtk_clk_gate_ops_setclr) }; }
+macro_rules! gate_infra2 { ($id:expr, $name:expr, $parent:expr, $shift:expr) => { gate_mtk!($id, $name, $parent, &infra2_cg_regs, $shift, &mtk_clk_gate_ops_setclr) }; }
+
+static infra_clks: [MtkGate; 46] = [
+    gate_infra0!(CLK_INFRA_GPT_STA, "infra_gpt_sta", "infra_sysaxi_d2", 0), gate_infra0!(CLK_INFRA_PWM_HCK, "infra_pwm_hck", "infra_sysaxi_d2", 1), gate_infra0!(CLK_INFRA_PWM_STA, "infra_pwm_sta", "infra_pwm_bsel", 2), gate_infra0!(CLK_INFRA_PWM1_CK, "infra_pwm1", "infra_pwm1_sel", 3), gate_infra0!(CLK_INFRA_PWM2_CK, "infra_pwm2", "infra_pwm2_sel", 4), gate_infra0!(CLK_INFRA_CQ_DMA_CK, "infra_cq_dma", "sysaxi_sel", 6), gate_infra0!(CLK_INFRA_EIP97_CK, "infra_eip97", "eip_b_sel", 7), gate_infra0!(CLK_INFRA_AUD_BUS_CK, "infra_aud_bus", "sysaxi_sel", 8), gate_infra0!(CLK_INFRA_AUD_26M_CK, "infra_aud_26m", "csw_f26m_sel", 9), gate_infra0!(CLK_INFRA_AUD_L_CK, "infra_aud_l", "aud_l_sel", 10), gate_infra0!(CLK_INFRA_AUD_AUD_CK, "infra_aud_aud", "a1sys_sel", 11), gate_infra0!(CLK_INFRA_AUD_EG2_CK, "infra_aud_eg2", "a_tuner_sel", 13), gate_infra0!(CLK_INFRA_DRAMC_26M_CK, "infra_dramc_26m", "csw_f26m_sel", 14), gate_infra0!(CLK_INFRA_DBG_CK, "infra_dbg", "infra_sysaxi_d2", 15), gate_infra0!(CLK_INFRA_AP_DMA_CK, "infra_ap_dma", "infra_sysaxi_d2", 16), gate_infra0!(CLK_INFRA_SEJ_CK, "infra_sej", "infra_sysaxi_d2", 24), gate_infra0!(CLK_INFRA_SEJ_13M_CK, "infra_sej_13m", "csw_f26m_sel", 25), gate_infra0!(CLK_INFRA_TRNG_CK, "infra_trng", "sysaxi_sel", 26),
+    gate_infra1!(CLK_INFRA_THERM_CK, "infra_therm", "csw_f26m_sel", 0), gate_infra1!(CLK_INFRA_I2C0_CK, "infra_i2c0", "i2c_sel", 1), gate_infra1!(CLK_INFRA_UART0_CK, "infra_uart0", "infra_uart0_sel", 2), gate_infra1!(CLK_INFRA_UART1_CK, "infra_uart1", "infra_uart1_sel", 3), gate_infra1!(CLK_INFRA_UART2_CK, "infra_uart2", "infra_uart2_sel", 4), gate_infra1!(CLK_INFRA_NFI1_CK, "infra_nfi1", "nfi1x_sel", 8), gate_infra1!(CLK_INFRA_SPINFI1_CK, "infra_spinfi1", "spinfi_sel", 9), gate_infra1!(CLK_INFRA_NFI_HCK_CK, "infra_nfi_hck", "infra_sysaxi_d2", 10), gate_infra1!(CLK_INFRA_SPI0_CK, "infra_spi0", "infra_spi0_sel", 11), gate_infra1!(CLK_INFRA_SPI1_CK, "infra_spi1", "infra_spi1_sel", 12), gate_infra1!(CLK_INFRA_SPI0_HCK_CK, "infra_spi0_hck", "infra_sysaxi_d2", 13), gate_infra1!(CLK_INFRA_SPI1_HCK_CK, "infra_spi1_hck", "infra_sysaxi_d2", 14), gate_infra1!(CLK_INFRA_FRTC_CK, "infra_frtc", "top_rtc_32k", 15), gate_infra1!(CLK_INFRA_MSDC_CK, "infra_msdc", "emmc_416m_sel", 16), gate_infra1!(CLK_INFRA_MSDC_HCK_CK, "infra_msdc_hck", "emmc_250m_sel", 17), gate_infra1!(CLK_INFRA_MSDC_133M_CK, "infra_msdc_133m", "sysaxi_sel", 18), gate_infra1!(CLK_INFRA_MSDC_66M_CK, "infra_msdc_66m", "infra_sysaxi_d2", 19), gate_infra1!(CLK_INFRA_ADC_26M_CK, "infra_adc_26m", "infra_adc_frc", 20), gate_infra1!(CLK_INFRA_ADC_FRC_CK, "infra_adc_frc", "csw_f26m_sel", 21), gate_infra1!(CLK_INFRA_FBIST2FPC_CK, "infra_fbist2fpc", "nfi1x_sel", 23),
+    gate_infra2!(CLK_INFRA_IUSB_133_CK, "infra_iusb_133", "sysaxi_sel", 0), gate_infra2!(CLK_INFRA_IUSB_66M_CK, "infra_iusb_66m", "infra_sysaxi_d2", 1), gate_infra2!(CLK_INFRA_IUSB_SYS_CK, "infra_iusb_sys", "u2u3_sys_sel", 2), gate_infra2!(CLK_INFRA_IUSB_CK, "infra_iusb", "u2u3_sel", 3), gate_infra2!(CLK_INFRA_IPCIE_CK, "infra_ipcie", "pextp_tl_ck_sel", 12), gate_infra2!(CLK_INFRA_IPCIE_PIPE_CK, "infra_ipcie_pipe", "top_xtal", 13), gate_infra2!(CLK_INFRA_IPCIER_CK, "infra_ipcier", "csw_f26m_sel", 14), gate_infra2!(CLK_INFRA_IPCIEB_CK, "infra_ipcieb", "sysaxi_sel", 15),
+];
+
+static infra_desc: MtkClkDesc = MtkClkDesc {
+    clks: &infra_clks, num_clks: infra_clks.len(), factor_clks: &infra_divs,
+    num_factor_clks: infra_divs.len(), mux_clks: &infra_muxes,
+    num_mux_clks: infra_muxes.len(), clk_lock: &mt7986_clk_lock,
+};
+
+static of_match_clk_mt7986_infracfg: [OfDeviceId; 2] = [
+    OfDeviceId { compatible: "mediatek,mt7986-infracfg", data: &infra_desc },
+    OfDeviceId::sentinel(),
+];
+
+static mut clk_mt7986_infracfg_drv: PlatformDriver = PlatformDriver {
+    driver: Driver { name: "clk-mt7986-infracfg", of_match_table: &of_match_clk_mt7986_infracfg },
+    probe: mtk_clk_simple_probe,
+    remove: mtk_clk_simple_remove,
+};
+
+module_platform_driver!(clk_mt7986_infracfg_drv);
+module_description!("MediaTek MT7986 infracfg clocks driver");
+module_license!("GPL");
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

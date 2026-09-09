@@ -1,0 +1,135 @@
+/* SPDX-License-Identifier: MIT */
+/* Copyright (C) B.A.T.M.A.N. contributors: Matthias Schiffer */
+
+pub const BATADV_NL_NAME: &str = "batadv";
+pub const BATADV_NL_MCAST_GROUP_CONFIG: &str = "config";
+pub const BATADV_NL_MCAST_GROUP_TPMETER: &str = "tpmeter";
+
+/* TT client-specific flags: bits 0..7 are remote, bits 8..15 are local. */
+pub const BATADV_TT_CLIENT_DEL: u16 = 1 << 0;
+pub const BATADV_TT_CLIENT_ROAM: u16 = 1 << 1;
+pub const BATADV_TT_CLIENT_WIFI: u16 = 1 << 4;
+pub const BATADV_TT_CLIENT_ISOLA: u16 = 1 << 5;
+pub const BATADV_TT_CLIENT_NOPURGE: u16 = 1 << 8;
+pub const BATADV_TT_CLIENT_NEW: u16 = 1 << 9;
+pub const BATADV_TT_CLIENT_PENDING: u16 = 1 << 10;
+pub const BATADV_TT_CLIENT_TEMP: u16 = 1 << 11;
+
+/* Private, own multicast flags. */
+pub const BATADV_MCAST_FLAGS_BRIDGED: u8 = 1 << 0;
+pub const BATADV_MCAST_FLAGS_QUERIER_IPV4_EXISTS: u8 = 1 << 1;
+pub const BATADV_MCAST_FLAGS_QUERIER_IPV6_EXISTS: u8 = 1 << 2;
+pub const BATADV_MCAST_FLAGS_QUERIER_IPV4_SHADOWING: u8 = 1 << 3;
+pub const BATADV_MCAST_FLAGS_QUERIER_IPV6_SHADOWING: u8 = 1 << 4;
+
+pub const BATADV_GW_MODE_OFF: u32 = 0;
+pub const BATADV_GW_MODE_CLIENT: u32 = 1;
+pub const BATADV_GW_MODE_SERVER: u32 = 2;
+
+/* batman-adv netlink attributes (C enum values). */
+pub const BATADV_ATTR_UNSPEC: u32 = 0;
+pub const BATADV_ATTR_VERSION: u32 = 1;
+pub const BATADV_ATTR_ALGO_NAME: u32 = 2;
+pub const BATADV_ATTR_MESH_IFINDEX: u32 = 3;
+pub const BATADV_ATTR_MESH_IFNAME: u32 = 4;
+pub const BATADV_ATTR_MESH_ADDRESS: u32 = 5;
+pub const BATADV_ATTR_HARD_IFINDEX: u32 = 6;
+pub const BATADV_ATTR_HARD_IFNAME: u32 = 7;
+pub const BATADV_ATTR_HARD_ADDRESS: u32 = 8;
+pub const BATADV_ATTR_ORIG_ADDRESS: u32 = 9;
+pub const BATADV_ATTR_TPMETER_RESULT: u32 = 10;
+pub const BATADV_ATTR_TPMETER_TEST_TIME: u32 = 11;
+pub const BATADV_ATTR_TPMETER_BYTES: u32 = 12;
+pub const BATADV_ATTR_TPMETER_COOKIE: u32 = 13;
+pub const BATADV_ATTR_PAD: u32 = 14;
+pub const BATADV_ATTR_ACTIVE: u32 = 15;
+pub const BATADV_ATTR_TT_ADDRESS: u32 = 16;
+pub const BATADV_ATTR_TT_TTVN: u32 = 17;
+pub const BATADV_ATTR_TT_LAST_TTVN: u32 = 18;
+pub const BATADV_ATTR_TT_CRC32: u32 = 19;
+pub const BATADV_ATTR_TT_VID: u32 = 20;
+pub const BATADV_ATTR_TT_FLAGS: u32 = 21;
+pub const BATADV_ATTR_FLAG_BEST: u32 = 22;
+pub const BATADV_ATTR_LAST_SEEN_MSECS: u32 = 23;
+pub const BATADV_ATTR_NEIGH_ADDRESS: u32 = 24;
+pub const BATADV_ATTR_TQ: u32 = 25;
+pub const BATADV_ATTR_THROUGHPUT: u32 = 26;
+pub const BATADV_ATTR_BANDWIDTH_UP: u32 = 27;
+pub const BATADV_ATTR_BANDWIDTH_DOWN: u32 = 28;
+pub const BATADV_ATTR_ROUTER: u32 = 29;
+pub const BATADV_ATTR_BLA_OWN: u32 = 30;
+pub const BATADV_ATTR_BLA_ADDRESS: u32 = 31;
+pub const BATADV_ATTR_BLA_VID: u32 = 32;
+pub const BATADV_ATTR_BLA_BACKBONE: u32 = 33;
+pub const BATADV_ATTR_BLA_CRC: u32 = 34;
+pub const BATADV_ATTR_DAT_CACHE_IP4ADDRESS: u32 = 35;
+pub const BATADV_ATTR_DAT_CACHE_HWADDRESS: u32 = 36;
+pub const BATADV_ATTR_DAT_CACHE_VID: u32 = 37;
+pub const BATADV_ATTR_MCAST_FLAGS: u32 = 38;
+pub const BATADV_ATTR_MCAST_FLAGS_PRIV: u32 = 39;
+pub const BATADV_ATTR_VLANID: u32 = 40;
+pub const BATADV_ATTR_AGGREGATED_OGMS_ENABLED: u32 = 41;
+pub const BATADV_ATTR_AP_ISOLATION_ENABLED: u32 = 42;
+pub const BATADV_ATTR_ISOLATION_MARK: u32 = 43;
+pub const BATADV_ATTR_ISOLATION_MASK: u32 = 44;
+pub const BATADV_ATTR_BONDING_ENABLED: u32 = 45;
+pub const BATADV_ATTR_BRIDGE_LOOP_AVOIDANCE_ENABLED: u32 = 46;
+pub const BATADV_ATTR_DISTRIBUTED_ARP_TABLE_ENABLED: u32 = 47;
+pub const BATADV_ATTR_FRAGMENTATION_ENABLED: u32 = 48;
+pub const BATADV_ATTR_GW_BANDWIDTH_DOWN: u32 = 49;
+pub const BATADV_ATTR_GW_BANDWIDTH_UP: u32 = 50;
+pub const BATADV_ATTR_GW_MODE: u32 = 51;
+pub const BATADV_ATTR_GW_SEL_CLASS: u32 = 52;
+pub const BATADV_ATTR_HOP_PENALTY: u32 = 53;
+pub const BATADV_ATTR_LOG_LEVEL: u32 = 54;
+pub const BATADV_ATTR_MULTICAST_FORCEFLOOD_ENABLED: u32 = 55;
+pub const BATADV_ATTR_NETWORK_CODING_ENABLED: u32 = 56;
+pub const BATADV_ATTR_ORIG_INTERVAL: u32 = 57;
+pub const BATADV_ATTR_ELP_INTERVAL: u32 = 58;
+pub const BATADV_ATTR_THROUGHPUT_OVERRIDE: u32 = 59;
+pub const BATADV_ATTR_MULTICAST_FANOUT: u32 = 60;
+pub const __BATADV_ATTR_AFTER_LAST: u32 = 61;
+pub const NUM_BATADV_ATTR: u32 = __BATADV_ATTR_AFTER_LAST;
+pub const BATADV_ATTR_MAX: u32 = __BATADV_ATTR_AFTER_LAST - 1;
+
+/* Supported batman-adv netlink commands. */
+pub const BATADV_CMD_UNSPEC: u32 = 0;
+pub const BATADV_CMD_GET_MESH: u32 = 1;
+pub const BATADV_CMD_GET_MESH_INFO: u32 = BATADV_CMD_GET_MESH;
+pub const BATADV_CMD_TP_METER: u32 = 2;
+pub const BATADV_CMD_TP_METER_CANCEL: u32 = 3;
+pub const BATADV_CMD_GET_ROUTING_ALGOS: u32 = 4;
+pub const BATADV_CMD_GET_HARDIF: u32 = 5;
+pub const BATADV_CMD_GET_HARDIFS: u32 = BATADV_CMD_GET_HARDIF;
+pub const BATADV_CMD_GET_TRANSTABLE_LOCAL: u32 = 6;
+pub const BATADV_CMD_GET_TRANSTABLE_GLOBAL: u32 = 7;
+pub const BATADV_CMD_GET_ORIGINATORS: u32 = 8;
+pub const BATADV_CMD_GET_NEIGHBORS: u32 = 9;
+pub const BATADV_CMD_GET_GATEWAYS: u32 = 10;
+pub const BATADV_CMD_GET_BLA_CLAIM: u32 = 11;
+pub const BATADV_CMD_GET_BLA_BACKBONE: u32 = 12;
+pub const BATADV_CMD_GET_DAT_CACHE: u32 = 13;
+pub const BATADV_CMD_GET_MCAST_FLAGS: u32 = 14;
+pub const BATADV_CMD_SET_MESH: u32 = 15;
+pub const BATADV_CMD_SET_HARDIF: u32 = 16;
+pub const BATADV_CMD_GET_VLAN: u32 = 17;
+pub const BATADV_CMD_SET_VLAN: u32 = 18;
+pub const __BATADV_CMD_AFTER_LAST: u32 = 19;
+pub const BATADV_CMD_MAX: u32 = __BATADV_CMD_AFTER_LAST - 1;
+
+pub const BATADV_TP_REASON_COMPLETE: u32 = 3;
+pub const BATADV_TP_REASON_CANCEL: u32 = 4;
+pub const BATADV_TP_REASON_DST_UNREACHABLE: u32 = 128;
+pub const BATADV_TP_REASON_RESEND_LIMIT: u32 = 129;
+pub const BATADV_TP_REASON_ALREADY_ONGOING: u32 = 130;
+pub const BATADV_TP_REASON_MEMORY_ERROR: u32 = 131;
+pub const BATADV_TP_REASON_CANT_SEND: u32 = 132;
+pub const BATADV_TP_REASON_TOO_MANY: u32 = 133;
+
+/* batman-adv rtnetlink nested attributes. */
+pub const IFLA_BATADV_UNSPEC: u32 = 0;
+pub const IFLA_BATADV_ALGO_NAME: u32 = 1;
+pub const __IFLA_BATADV_MAX: u32 = 2;
+pub const IFLA_BATADV_MAX: u32 = __IFLA_BATADV_MAX - 1;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

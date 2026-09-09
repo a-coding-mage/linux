@@ -1,0 +1,189 @@
+/*
+ * Copyright 2019 Advanced Micro Devices, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ */
+
+// Dependency supplied by ../inc/dmub_cmd.h.
+
+#[repr(C)]
+pub struct dmub_srv;
+
+/* DCN20 register definitions. */
+#[macro_export]
+macro_rules! DMUB_COMMON_REGS {
+    () => {
+        DMCUB_CNTL DMCUB_MEM_CNTL DMCUB_SEC_CNTL DMCUB_INBOX0_SIZE
+        DMCUB_INBOX0_RPTR DMCUB_INBOX0_WPTR DMCUB_INBOX1_BASE_ADDRESS
+        DMCUB_INBOX1_SIZE DMCUB_INBOX1_RPTR DMCUB_INBOX1_WPTR
+        DMCUB_OUTBOX0_BASE_ADDRESS DMCUB_OUTBOX0_SIZE DMCUB_OUTBOX0_RPTR
+        DMCUB_OUTBOX0_WPTR DMCUB_OUTBOX1_BASE_ADDRESS DMCUB_OUTBOX1_SIZE
+        DMCUB_OUTBOX1_RPTR DMCUB_OUTBOX1_WPTR DMCUB_REGION3_CW0_OFFSET
+        DMCUB_REGION3_CW1_OFFSET DMCUB_REGION3_CW2_OFFSET DMCUB_REGION3_CW3_OFFSET
+        DMCUB_REGION3_CW4_OFFSET DMCUB_REGION3_CW5_OFFSET DMCUB_REGION3_CW6_OFFSET
+        DMCUB_REGION3_CW7_OFFSET DMCUB_REGION3_CW0_OFFSET_HIGH DMCUB_REGION3_CW1_OFFSET_HIGH
+        DMCUB_REGION3_CW2_OFFSET_HIGH DMCUB_REGION3_CW3_OFFSET_HIGH DMCUB_REGION3_CW4_OFFSET_HIGH
+        DMCUB_REGION3_CW5_OFFSET_HIGH DMCUB_REGION3_CW6_OFFSET_HIGH DMCUB_REGION3_CW7_OFFSET_HIGH
+        DMCUB_REGION3_CW0_BASE_ADDRESS DMCUB_REGION3_CW1_BASE_ADDRESS DMCUB_REGION3_CW2_BASE_ADDRESS
+        DMCUB_REGION3_CW3_BASE_ADDRESS DMCUB_REGION3_CW4_BASE_ADDRESS DMCUB_REGION3_CW5_BASE_ADDRESS
+        DMCUB_REGION3_CW6_BASE_ADDRESS DMCUB_REGION3_CW7_BASE_ADDRESS DMCUB_REGION3_CW0_TOP_ADDRESS
+        DMCUB_REGION3_CW1_TOP_ADDRESS DMCUB_REGION3_CW2_TOP_ADDRESS DMCUB_REGION3_CW3_TOP_ADDRESS
+        DMCUB_REGION3_CW4_TOP_ADDRESS DMCUB_REGION3_CW5_TOP_ADDRESS DMCUB_REGION3_CW6_TOP_ADDRESS
+        DMCUB_REGION3_CW7_TOP_ADDRESS DMCUB_REGION4_OFFSET DMCUB_REGION4_OFFSET_HIGH
+        DMCUB_REGION4_TOP_ADDRESS DMCUB_REGION5_OFFSET DMCUB_REGION5_OFFSET_HIGH
+        DMCUB_REGION5_TOP_ADDRESS DMCUB_SCRATCH0 DMCUB_SCRATCH1 DMCUB_SCRATCH2 DMCUB_SCRATCH3
+        DMCUB_SCRATCH4 DMCUB_SCRATCH5 DMCUB_SCRATCH6 DMCUB_SCRATCH7 DMCUB_SCRATCH8 DMCUB_SCRATCH9
+        DMCUB_SCRATCH10 DMCUB_SCRATCH11 DMCUB_SCRATCH12 DMCUB_SCRATCH13 DMCUB_SCRATCH14 DMCUB_SCRATCH15
+        DMCUB_GPINT_DATAIN1 CC_DC_PIPE_DIS MMHUBBUB_SOFT_RESET DCN_VM_FB_LOCATION_BASE DCN_VM_FB_OFFSET
+        DMCUB_INTERRUPT_ACK DMCUB_TIMER_CURRENT DMCUB_INST_FETCH_FAULT_ADDR
+        DMCUB_UNDEFINED_ADDRESS_FAULT_ADDR DMCUB_DATA_WRITE_FAULT_ADDR
+    };
+}
+
+#[macro_export]
+macro_rules! DMCUB_INTERNAL_REGS { () => {}; }
+
+#[macro_export]
+macro_rules! DMUB_COMMON_FIELDS { () => {}; }
+
+#[repr(C)]
+pub struct dmub_srv_common_reg_offset {
+    pub DMCUB_CNTL: u32, pub DMCUB_MEM_CNTL: u32, pub DMCUB_SEC_CNTL: u32,
+    pub DMCUB_INBOX0_SIZE: u32, pub DMCUB_INBOX0_RPTR: u32, pub DMCUB_INBOX0_WPTR: u32,
+    pub DMCUB_INBOX1_BASE_ADDRESS: u32, pub DMCUB_INBOX1_SIZE: u32, pub DMCUB_INBOX1_RPTR: u32,
+    pub DMCUB_INBOX1_WPTR: u32, pub DMCUB_OUTBOX0_BASE_ADDRESS: u32, pub DMCUB_OUTBOX0_SIZE: u32,
+    pub DMCUB_OUTBOX0_RPTR: u32, pub DMCUB_OUTBOX0_WPTR: u32, pub DMCUB_OUTBOX1_BASE_ADDRESS: u32,
+    pub DMCUB_OUTBOX1_SIZE: u32, pub DMCUB_OUTBOX1_RPTR: u32, pub DMCUB_OUTBOX1_WPTR: u32,
+    pub DMCUB_REGION3_CW0_OFFSET: u32, pub DMCUB_REGION3_CW1_OFFSET: u32, pub DMCUB_REGION3_CW2_OFFSET: u32,
+    pub DMCUB_REGION3_CW3_OFFSET: u32, pub DMCUB_REGION3_CW4_OFFSET: u32, pub DMCUB_REGION3_CW5_OFFSET: u32,
+    pub DMCUB_REGION3_CW6_OFFSET: u32, pub DMCUB_REGION3_CW7_OFFSET: u32,
+    pub DMCUB_REGION3_CW0_OFFSET_HIGH: u32, pub DMCUB_REGION3_CW1_OFFSET_HIGH: u32,
+    pub DMCUB_REGION3_CW2_OFFSET_HIGH: u32, pub DMCUB_REGION3_CW3_OFFSET_HIGH: u32,
+    pub DMCUB_REGION3_CW4_OFFSET_HIGH: u32, pub DMCUB_REGION3_CW5_OFFSET_HIGH: u32,
+    pub DMCUB_REGION3_CW6_OFFSET_HIGH: u32, pub DMCUB_REGION3_CW7_OFFSET_HIGH: u32,
+    pub DMCUB_REGION3_CW0_BASE_ADDRESS: u32, pub DMCUB_REGION3_CW1_BASE_ADDRESS: u32,
+    pub DMCUB_REGION3_CW2_BASE_ADDRESS: u32, pub DMCUB_REGION3_CW3_BASE_ADDRESS: u32,
+    pub DMCUB_REGION3_CW4_BASE_ADDRESS: u32, pub DMCUB_REGION3_CW5_BASE_ADDRESS: u32,
+    pub DMCUB_REGION3_CW6_BASE_ADDRESS: u32, pub DMCUB_REGION3_CW7_BASE_ADDRESS: u32,
+    pub DMCUB_REGION3_CW0_TOP_ADDRESS: u32, pub DMCUB_REGION3_CW1_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW2_TOP_ADDRESS: u32, pub DMCUB_REGION3_CW3_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW4_TOP_ADDRESS: u32, pub DMCUB_REGION3_CW5_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW6_TOP_ADDRESS: u32, pub DMCUB_REGION3_CW7_TOP_ADDRESS: u32,
+    pub DMCUB_REGION4_OFFSET: u32, pub DMCUB_REGION4_OFFSET_HIGH: u32, pub DMCUB_REGION4_TOP_ADDRESS: u32,
+    pub DMCUB_REGION5_OFFSET: u32, pub DMCUB_REGION5_OFFSET_HIGH: u32, pub DMCUB_REGION5_TOP_ADDRESS: u32,
+    pub DMCUB_SCRATCH0: u32, pub DMCUB_SCRATCH1: u32, pub DMCUB_SCRATCH2: u32, pub DMCUB_SCRATCH3: u32,
+    pub DMCUB_SCRATCH4: u32, pub DMCUB_SCRATCH5: u32, pub DMCUB_SCRATCH6: u32, pub DMCUB_SCRATCH7: u32,
+    pub DMCUB_SCRATCH8: u32, pub DMCUB_SCRATCH9: u32, pub DMCUB_SCRATCH10: u32, pub DMCUB_SCRATCH11: u32,
+    pub DMCUB_SCRATCH12: u32, pub DMCUB_SCRATCH13: u32, pub DMCUB_SCRATCH14: u32, pub DMCUB_SCRATCH15: u32,
+    pub DMCUB_GPINT_DATAIN1: u32, pub CC_DC_PIPE_DIS: u32, pub MMHUBBUB_SOFT_RESET: u32,
+    pub DCN_VM_FB_LOCATION_BASE: u32, pub DCN_VM_FB_OFFSET: u32, pub DMCUB_INTERRUPT_ACK: u32,
+    pub DMCUB_TIMER_CURRENT: u32, pub DMCUB_INST_FETCH_FAULT_ADDR: u32,
+    pub DMCUB_UNDEFINED_ADDRESS_FAULT_ADDR: u32, pub DMCUB_DATA_WRITE_FAULT_ADDR: u32,
+}
+
+#[repr(C)] pub struct dmub_srv_common_reg_shift {
+    pub DMCUB_CNTL__DMCUB_ENABLE: u8, pub DMCUB_CNTL__DMCUB_SOFT_RESET: u8,
+    pub DMCUB_CNTL__DMCUB_TRACEPORT_EN: u8, pub DMCUB_MEM_CNTL__DMCUB_MEM_READ_SPACE: u8,
+    pub DMCUB_MEM_CNTL__DMCUB_MEM_WRITE_SPACE: u8, pub DMCUB_SEC_CNTL__DMCUB_SEC_RESET: u8,
+    pub DMCUB_SEC_CNTL__DMCUB_MEM_UNIT_ID: u8, pub DMCUB_SEC_CNTL__DMCUB_SEC_RESET_STATUS: u8,
+    pub DMCUB_REGION3_CW0_TOP_ADDRESS__DMCUB_REGION3_CW0_TOP_ADDRESS: u8,
+    pub DMCUB_REGION3_CW0_TOP_ADDRESS__DMCUB_REGION3_CW0_ENABLE: u8,
+    pub DMCUB_REGION3_CW1_TOP_ADDRESS__DMCUB_REGION3_CW1_TOP_ADDRESS: u8,
+    pub DMCUB_REGION3_CW1_TOP_ADDRESS__DMCUB_REGION3_CW1_ENABLE: u8,
+    pub DMCUB_REGION3_CW2_TOP_ADDRESS__DMCUB_REGION3_CW2_TOP_ADDRESS: u8,
+    pub DMCUB_REGION3_CW2_TOP_ADDRESS__DMCUB_REGION3_CW2_ENABLE: u8,
+    pub DMCUB_REGION3_CW3_TOP_ADDRESS__DMCUB_REGION3_CW3_TOP_ADDRESS: u8,
+    pub DMCUB_REGION3_CW3_TOP_ADDRESS__DMCUB_REGION3_CW3_ENABLE: u8,
+    pub DMCUB_REGION3_CW4_TOP_ADDRESS__DMCUB_REGION3_CW4_TOP_ADDRESS: u8,
+    pub DMCUB_REGION3_CW4_TOP_ADDRESS__DMCUB_REGION3_CW4_ENABLE: u8,
+    pub DMCUB_REGION3_CW5_TOP_ADDRESS__DMCUB_REGION3_CW5_TOP_ADDRESS: u8,
+    pub DMCUB_REGION3_CW5_TOP_ADDRESS__DMCUB_REGION3_CW5_ENABLE: u8,
+    pub DMCUB_REGION3_CW6_TOP_ADDRESS__DMCUB_REGION3_CW6_TOP_ADDRESS: u8,
+    pub DMCUB_REGION3_CW6_TOP_ADDRESS__DMCUB_REGION3_CW6_ENABLE: u8,
+    pub DMCUB_REGION3_CW7_TOP_ADDRESS__DMCUB_REGION3_CW7_TOP_ADDRESS: u8,
+    pub DMCUB_REGION3_CW7_TOP_ADDRESS__DMCUB_REGION3_CW7_ENABLE: u8,
+    pub DMCUB_REGION4_TOP_ADDRESS__DMCUB_REGION4_TOP_ADDRESS: u8,
+    pub DMCUB_REGION4_TOP_ADDRESS__DMCUB_REGION4_ENABLE: u8,
+    pub DMCUB_REGION5_TOP_ADDRESS__DMCUB_REGION5_TOP_ADDRESS: u8,
+    pub DMCUB_REGION5_TOP_ADDRESS__DMCUB_REGION5_ENABLE: u8,
+    pub CC_DC_PIPE_DIS__DC_DMCUB_ENABLE: u8, pub MMHUBBUB_SOFT_RESET__DMUIF_SOFT_RESET: u8,
+    pub DCN_VM_FB_LOCATION_BASE__FB_BASE: u8, pub DCN_VM_FB_OFFSET__FB_OFFSET: u8,
+    pub DMCUB_INTERRUPT_ACK__DMCUB_OUTBOX0_READY_INT_ACK: u8,
+}
+
+#[repr(C)] pub struct dmub_srv_common_reg_mask {
+    pub DMCUB_CNTL__DMCUB_ENABLE: u32, pub DMCUB_CNTL__DMCUB_SOFT_RESET: u32,
+    pub DMCUB_CNTL__DMCUB_TRACEPORT_EN: u32, pub DMCUB_MEM_CNTL__DMCUB_MEM_READ_SPACE: u32,
+    pub DMCUB_MEM_CNTL__DMCUB_MEM_WRITE_SPACE: u32, pub DMCUB_SEC_CNTL__DMCUB_SEC_RESET: u32,
+    pub DMCUB_SEC_CNTL__DMCUB_MEM_UNIT_ID: u32, pub DMCUB_SEC_CNTL__DMCUB_SEC_RESET_STATUS: u32,
+    pub DMCUB_REGION3_CW0_TOP_ADDRESS__DMCUB_REGION3_CW0_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW0_TOP_ADDRESS__DMCUB_REGION3_CW0_ENABLE: u32,
+    pub DMCUB_REGION3_CW1_TOP_ADDRESS__DMCUB_REGION3_CW1_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW1_TOP_ADDRESS__DMCUB_REGION3_CW1_ENABLE: u32,
+    pub DMCUB_REGION3_CW2_TOP_ADDRESS__DMCUB_REGION3_CW2_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW2_TOP_ADDRESS__DMCUB_REGION3_CW2_ENABLE: u32,
+    pub DMCUB_REGION3_CW3_TOP_ADDRESS__DMCUB_REGION3_CW3_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW3_TOP_ADDRESS__DMCUB_REGION3_CW3_ENABLE: u32,
+    pub DMCUB_REGION3_CW4_TOP_ADDRESS__DMCUB_REGION3_CW4_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW4_TOP_ADDRESS__DMCUB_REGION3_CW4_ENABLE: u32,
+    pub DMCUB_REGION3_CW5_TOP_ADDRESS__DMCUB_REGION3_CW5_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW5_TOP_ADDRESS__DMCUB_REGION3_CW5_ENABLE: u32,
+    pub DMCUB_REGION3_CW6_TOP_ADDRESS__DMCUB_REGION3_CW6_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW6_TOP_ADDRESS__DMCUB_REGION3_CW6_ENABLE: u32,
+    pub DMCUB_REGION3_CW7_TOP_ADDRESS__DMCUB_REGION3_CW7_TOP_ADDRESS: u32,
+    pub DMCUB_REGION3_CW7_TOP_ADDRESS__DMCUB_REGION3_CW7_ENABLE: u32,
+    pub DMCUB_REGION4_TOP_ADDRESS__DMCUB_REGION4_TOP_ADDRESS: u32,
+    pub DMCUB_REGION4_TOP_ADDRESS__DMCUB_REGION4_ENABLE: u32,
+    pub DMCUB_REGION5_TOP_ADDRESS__DMCUB_REGION5_TOP_ADDRESS: u32,
+    pub DMCUB_REGION5_TOP_ADDRESS__DMCUB_REGION5_ENABLE: u32,
+    pub CC_DC_PIPE_DIS__DC_DMCUB_ENABLE: u32, pub MMHUBBUB_SOFT_RESET__DMUIF_SOFT_RESET: u32,
+    pub DCN_VM_FB_LOCATION_BASE__FB_BASE: u32, pub DCN_VM_FB_OFFSET__FB_OFFSET: u32,
+    pub DMCUB_INTERRUPT_ACK__DMCUB_OUTBOX0_READY_INT_ACK: u32,
+}
+#[repr(C)] pub struct dmub_srv_common_regs {
+    pub offset: dmub_srv_common_reg_offset,
+    pub mask: dmub_srv_common_reg_mask,
+    pub shift: dmub_srv_common_reg_shift,
+}
+
+extern "C" {
+    pub static dmub_srv_dcn20_regs: dmub_srv_common_regs;
+    pub fn dmub_dcn20_init(dmub: *mut dmub_srv);
+    pub fn dmub_dcn20_reset(dmub: *mut dmub_srv);
+    pub fn dmub_dcn20_reset_release(dmub: *mut dmub_srv);
+    pub fn dmub_dcn20_backdoor_load(dmub: *mut dmub_srv, cw0: *const dmub_window, cw1: *const dmub_window);
+    pub fn dmub_dcn20_setup_windows(dmub: *mut dmub_srv, cw2: *const dmub_window, cw3: *const dmub_window, cw4: *const dmub_window, cw5: *const dmub_window, cw6: *const dmub_window, region6: *const dmub_window);
+    pub fn dmub_dcn20_setup_mailbox(dmub: *mut dmub_srv, inbox1: *const dmub_region);
+    pub fn dmub_dcn20_get_inbox1_wptr(dmub: *mut dmub_srv) -> u32;
+    pub fn dmub_dcn20_get_inbox1_rptr(dmub: *mut dmub_srv) -> u32;
+    pub fn dmub_dcn20_set_inbox1_wptr(dmub: *mut dmub_srv, wptr_offset: u32);
+    pub fn dmub_dcn20_setup_out_mailbox(dmub: *mut dmub_srv, outbox1: *const dmub_region);
+    pub fn dmub_dcn20_get_outbox1_wptr(dmub: *mut dmub_srv) -> u32;
+    pub fn dmub_dcn20_set_outbox1_rptr(dmub: *mut dmub_srv, rptr_offset: u32);
+    pub fn dmub_dcn20_setup_outbox0(dmub: *mut dmub_srv, outbox0: *const dmub_region);
+    pub fn dmub_dcn20_get_outbox0_wptr(dmub: *mut dmub_srv) -> u32;
+    pub fn dmub_dcn20_set_outbox0_rptr(dmub: *mut dmub_srv, rptr_offset: u32);
+    pub fn dmub_dcn20_is_hw_init(dmub: *mut dmub_srv) -> bool;
+    pub fn dmub_dcn20_is_supported(dmub: *mut dmub_srv) -> bool;
+    pub fn dmub_dcn20_set_gpint(dmub: *mut dmub_srv, reg: dmub_gpint_data_register);
+    pub fn dmub_dcn20_is_gpint_acked(dmub: *mut dmub_srv, reg: dmub_gpint_data_register) -> bool;
+    pub fn dmub_dcn20_get_gpint_response(dmub: *mut dmub_srv) -> u32;
+    pub fn dmub_dcn20_enable_dmub_boot_options(dmub: *mut dmub_srv, params: *const dmub_srv_hw_params);
+    pub fn dmub_dcn20_skip_dmub_panel_power_sequence(dmub: *mut dmub_srv, skip: bool);
+    pub fn dmub_dcn20_get_fw_boot_status(dmub: *mut dmub_srv) -> dmub_fw_boot_status;
+    pub fn dmub_dcn20_use_cached_inbox(dmub: *mut dmub_srv) -> bool;
+    pub fn dmub_dcn20_use_cached_trace_buffer(dmub: *mut dmub_srv) -> bool;
+    pub fn dmub_dcn20_get_current_time(dmub: *mut dmub_srv) -> u32;
+    pub fn dmub_dcn20_get_diagnostic_data(dmub: *mut dmub_srv);
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

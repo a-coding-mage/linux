@@ -1,0 +1,86 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* NFSv4 protocol definitions, translated from nfs4.h. */
+
+#[repr(C)]
+pub enum nfs4_acl_whotype { NFS4_ACL_WHO_NAMED = 0, NFS4_ACL_WHO_OWNER, NFS4_ACL_WHO_GROUP, NFS4_ACL_WHO_EVERYONE }
+
+#[repr(C)]
+pub union nfs4_ace_who { pub who_uid: kuid_t, pub who_gid: kgid_t }
+#[repr(C)]
+pub struct nfs4_ace { pub type_: u32, pub flag: u32, pub access_mask: u32, pub whotype: i32, pub who: nfs4_ace_who }
+#[repr(C)]
+pub struct nfs4_acl { pub naces: u32, pub aces: [nfs4_ace; 0] }
+pub const NFS4_MAXLABELLEN: usize = 2048;
+#[repr(C)]
+pub struct nfs4_label { pub lfs: u32, pub pi: u32, pub lsmid: u32, pub len: u32, pub label: *mut i8 }
+#[repr(C)]
+pub struct nfs4_verifier { pub data: [i8; NFS4_VERIFIER_SIZE] }
+#[repr(C)]
+pub union nfs4_stateid_data { pub data: [i8; NFS4_STATEID_SIZE], pub fields: nfs4_stateid_fields }
+#[repr(C, packed)]
+pub struct nfs4_stateid_fields { pub seqid: __be32, pub other: [i8; NFS4_STATEID_OTHER_SIZE] }
+#[repr(C)]
+pub struct nfs4_stateid_struct { pub data: nfs4_stateid_data, pub type_: i32 }
+pub type nfs4_stateid = nfs4_stateid_struct;
+
+#[repr(i32)]
+pub enum nfs_opnum4 { OP_ACCESS=3, OP_CLOSE, OP_COMMIT, OP_CREATE, OP_DELEGPURGE, OP_DELEGRETURN, OP_GETATTR, OP_GETFH, OP_LINK, OP_LOCK, OP_LOCKT, OP_LOCKU, OP_LOOKUP, OP_LOOKUPP, OP_NVERIFY, OP_OPEN, OP_OPENATTR, OP_OPEN_CONFIRM, OP_OPEN_DOWNGRADE, OP_PUTFH, OP_PUTPUBFH, OP_PUTROOTFH, OP_READ, OP_READDIR, OP_READLINK, OP_REMOVE, OP_RENAME, OP_RENEW, OP_RESTOREFH, OP_SAVEFH, OP_SECINFO, OP_SETATTR, OP_SETCLIENTID, OP_SETCLIENTID_CONFIRM, OP_VERIFY, OP_WRITE, OP_RELEASE_LOCKOWNER=39, OP_BACKCHANNEL_CTL, OP_BIND_CONN_TO_SESSION, OP_EXCHANGE_ID, OP_CREATE_SESSION, OP_DESTROY_SESSION, OP_FREE_STATEID, OP_GET_DIR_DELEGATION, OP_GETDEVICEINFO, OP_GETDEVICELIST, OP_LAYOUTCOMMIT, OP_LAYOUTGET, OP_LAYOUTRETURN, OP_SECINFO_NO_NAME, OP_SEQUENCE, OP_SET_SSV, OP_TEST_STATEID, OP_WANT_DELEGATION, OP_DESTROY_CLIENTID, OP_RECLAIM_COMPLETE, OP_ALLOCATE, OP_COPY, OP_COPY_NOTIFY, OP_DEALLOCATE, OP_IO_ADVISE, OP_LAYOUTERROR, OP_LAYOUTSTATS, OP_OFFLOAD_CANCEL, OP_OFFLOAD_STATUS, OP_READ_PLUS, OP_SEEK, OP_WRITE_SAME, OP_CLONE, OP_GETXATTR, OP_SETXATTR, OP_LISTXATTRS, OP_REMOVEXATTR, OP_ILLEGAL=10044 }
+pub const FIRST_NFS4_OP: nfs_opnum4 = nfs_opnum4::OP_ACCESS;
+pub const LAST_NFS40_OP: nfs_opnum4 = nfs_opnum4::OP_RELEASE_LOCKOWNER;
+pub const LAST_NFS41_OP: nfs_opnum4 = nfs_opnum4::OP_RECLAIM_COMPLETE;
+pub const LAST_NFS42_OP: nfs_opnum4 = nfs_opnum4::OP_REMOVEXATTR;
+pub const LAST_NFS4_OP: nfs_opnum4 = nfs_opnum4::OP_REMOVEXATTR;
+pub const NFS4ERR_RESET_TO_MDS: u32 = 12001; pub const NFS4ERR_RESET_TO_PNFS: u32 = 12002; pub const NFS4ERR_FATAL_IOERROR: u32 = 12003;
+pub unsafe fn seqid_mutating_err(err: u32) -> bool { match err { NFS4ERR_STALE_CLIENTID | NFS4ERR_STALE_STATEID | NFS4ERR_BAD_STATEID | NFS4ERR_BAD_SEQID | NFS4ERR_BADXDR | NFS4ERR_RESOURCE | NFS4ERR_NOFILEHANDLE | NFS4ERR_MOVED => false, _ => true } }
+
+#[repr(i32)] pub enum nfs_ftype4 { NF4BAD=0, NF4REG=1, NF4DIR, NF4BLK, NF4CHR, NF4LNK, NF4SOCK, NF4FIFO, NF4ATTRDIR, NF4NAMEDATTR }
+#[repr(i32)] pub enum open_claim_type4 { NFS4_OPEN_CLAIM_NULL=0, NFS4_OPEN_CLAIM_PREVIOUS, NFS4_OPEN_CLAIM_DELEGATE_CUR, NFS4_OPEN_CLAIM_DELEGATE_PREV, NFS4_OPEN_CLAIM_FH, NFS4_OPEN_CLAIM_DELEG_CUR_FH, NFS4_OPEN_CLAIM_DELEG_PREV_FH }
+#[repr(i32)] pub enum opentype4 { NFS4_OPEN_NOCREATE=0, NFS4_OPEN_CREATE }
+#[repr(i32)] pub enum createmode4 { NFS4_CREATE_UNCHECKED=0, NFS4_CREATE_GUARDED, NFS4_CREATE_EXCLUSIVE, NFS4_CREATE_EXCLUSIVE4_1 }
+#[repr(i32)] pub enum limit_by4 { NFS4_LIMIT_SIZE=1, NFS4_LIMIT_BLOCKS }
+#[repr(i32)] pub enum nfs4_open_delegation_type4 { NFS4_OPEN_DELEGATE_NONE=0, NFS4_OPEN_DELEGATE_READ, NFS4_OPEN_DELEGATE_WRITE, NFS4_OPEN_DELEGATE_NONE_EXT, NFS4_OPEN_DELEGATE_READ_ATTRS_DELEG, NFS4_OPEN_DELEGATE_WRITE_ATTRS_DELEG }
+#[repr(i32)] pub enum why_no_delegation4 { WND4_NOT_WANTED=0, WND4_CONTENTION, WND4_RESOURCE, WND4_NOT_SUPP_FTYPE, WND4_WRITE_DELEG_NOT_SUPP_FTYPE, WND4_NOT_SUPP_UPGRADE, WND4_NOT_SUPP_DOWNGRADE, WND4_CANCELLED, WND4_IS_DIR }
+#[repr(i32)] pub enum lock_type4 { NFS4_UNLOCK_LT=0, NFS4_READ_LT, NFS4_WRITE_LT, NFS4_READW_LT, NFS4_WRITEW_LT }
+
+#[repr(i32)] pub enum nfs_cb_opnum4 { OP_CB_GETATTR=3, OP_CB_RECALL, OP_CB_LAYOUTRECALL, OP_CB_NOTIFY, OP_CB_PUSH_DELEG, OP_CB_RECALL_ANY, OP_CB_RECALLABLE_OBJ_AVAIL, OP_CB_RECALL_SLOT, OP_CB_SEQUENCE, OP_CB_WANTS_CANCELLED, OP_CB_NOTIFY_LOCK, OP_CB_NOTIFY_DEVICEID, OP_CB_OFFLOAD, OP_CB_ILLEGAL=10044 }
+
+pub const NFSPROC4_NULL: u32=0; pub const NFSPROC4_COMPOUND: u32=1; pub const NFS4_VERSION: u32=4; pub const NFS4_MINOR_VERSION: u32=0; pub const NFS4_DEBUG: u32=1;
+pub const SESSION4_PERSIST: u32=0x001; pub const SESSION4_BACK_CHAN: u32=0x002; pub const SESSION4_RDMA: u32=0x004; pub const SESSION4_FLAG_MASK_A: u32=0x007;
+#[repr(C)] pub struct nfs4_sessionid { pub data: [u8; NFS4_MAX_SESSIONID_LEN] }
+#[repr(i32)] pub enum state_protect_how4 { SP4_NONE=0, SP4_MACH_CRED, SP4_SSV }
+#[repr(i32)] pub enum gddrnf4_status { GDD4_OK=0, GDD4_UNAVAIL }
+#[repr(i32)] pub enum pnfs_layouttype { LAYOUT_NFSV4_1_FILES=1, LAYOUT_OSD2_OBJECTS, LAYOUT_BLOCK_VOLUME, LAYOUT_FLEX_FILES, LAYOUT_SCSI, LAYOUT_TYPE_MAX }
+#[repr(i32)] pub enum pnfs_layoutreturn_type { RETURN_FILE=1, RETURN_FSID, RETURN_ALL }
+#[repr(i32)] pub enum pnfs_iomode { IOMODE_READ=1, IOMODE_RW, IOMODE_ANY }
+#[repr(i32)] pub enum pnfs_notify_deviceid_type4 { NOTIFY_DEVICEID4_CHANGE=2, NOTIFY_DEVICEID4_DELETE=4 }
+#[repr(i32)] pub enum pnfs_block_volume_type { PNFS_BLOCK_VOLUME_SIMPLE=0, PNFS_BLOCK_VOLUME_SLICE, PNFS_BLOCK_VOLUME_CONCAT, PNFS_BLOCK_VOLUME_STRIPE, PNFS_BLOCK_VOLUME_SCSI }
+#[repr(i32)] pub enum pnfs_block_extent_state { PNFS_BLOCK_READWRITE_DATA=0, PNFS_BLOCK_READ_DATA, PNFS_BLOCK_INVALID_DATA, PNFS_BLOCK_NONE_DATA }
+pub const PNFS_BLOCK_EXTENT_SIZE: usize = 7 * core::mem::size_of::<__be32>() + NFS4_DEVICEID4_SIZE;
+pub const PNFS_SCSI_RANGE_SIZE: usize = 4 * core::mem::size_of::<__be32>();
+#[repr(i32)] pub enum scsi_code_set { PS_CODE_SET_BINARY=1, PS_CODE_SET_ASCII, PS_CODE_SET_UTF8 }
+#[repr(i32)] pub enum scsi_designator_type { PS_DESIGNATOR_T10=1, PS_DESIGNATOR_EUI64, PS_DESIGNATOR_NAA, PS_DESIGNATOR_NAME=8 }
+pub const NFL4_UFLG_MASK:u32=0x3f; pub const NFL4_UFLG_DENSE:u32=1; pub const NFL4_UFLG_COMMIT_THRU_MDS:u32=2; pub const NFL4_UFLG_STRIPE_UNIT_SIZE_MASK:u32=0xffffffc0;
+#[repr(i32)] pub enum filelayout_hint_care4 { NFLH4_CARE_DENSE=1, NFLH4_CARE_COMMIT_THRU_MDS=2, NFLH4_CARE_STRIPE_UNIT_SIZE=0x40, NFLH4_CARE_STRIPE_COUNT=0x80 }
+pub const NFS4_DEVICEID4_SIZE: usize=16;
+#[repr(C)] pub struct nfs4_deviceid { pub data:[i8;NFS4_DEVICEID4_SIZE] }
+#[repr(i32)] pub enum data_content4 { NFS4_CONTENT_DATA=0, NFS4_CONTENT_HOLE }
+#[repr(i32)] pub enum pnfs_update_layout_reason { PNFS_UPDATE_LAYOUT_UNKNOWN=0, PNFS_UPDATE_LAYOUT_NO_PNFS, PNFS_UPDATE_LAYOUT_RD_ZEROLEN, PNFS_UPDATE_LAYOUT_MDSTHRESH, PNFS_UPDATE_LAYOUT_NOMEM, PNFS_UPDATE_LAYOUT_BULK_RECALL, PNFS_UPDATE_LAYOUT_IO_TEST_FAIL, PNFS_UPDATE_LAYOUT_FOUND_CACHED, PNFS_UPDATE_LAYOUT_RETURN, PNFS_UPDATE_LAYOUT_RETRY, PNFS_UPDATE_LAYOUT_BLOCKED, PNFS_UPDATE_LAYOUT_INVALID_OPEN, PNFS_UPDATE_LAYOUT_SEND_LAYOUTGET, PNFS_UPDATE_LAYOUT_EXIT }
+#[repr(C)] pub struct nfs4_op_map { pub u: nfs4_op_map_union }
+#[repr(C)] pub union nfs4_op_map_union { pub longs: [c_ulong; NFS4_OP_MAP_NUM_LONGS], pub words: [u32; NFS4_OP_MAP_NUM_WORDS] }
+#[repr(C)] pub struct nfs42_netaddr { pub netid:[i8;RPCBIND_MAXNETIDLEN], pub addr:[i8;RPCBIND_MAXUADDRLEN+1], pub netid_len:u32, pub addr_len:u32 }
+#[repr(i32)] pub enum netloc_type4 { NL4_NAME=1, NL4_URL, NL4_NETADDR }
+#[repr(C)] pub union nl4_server_u { pub named: nl4_server_name, pub nl4_addr: nfs42_netaddr }
+#[repr(C)] pub struct nl4_server_name { pub nl4_str_sz:i32, pub nl4_str:[i8;NFS4_OPAQUE_LIMIT+1] }
+#[repr(C)] pub struct nl4_server { pub nl4_type:netloc_type4, pub u:nl4_server_u }
+#[repr(i32)] pub enum nfs4_change_attr_type { NFS4_CHANGE_TYPE_IS_MONOTONIC_INCR=0, NFS4_CHANGE_TYPE_IS_VERSION_COUNTER, NFS4_CHANGE_TYPE_IS_VERSION_COUNTER_NOPNFS, NFS4_CHANGE_TYPE_IS_TIME_METADATA, NFS4_CHANGE_TYPE_IS_UNDEFINED }
+#[repr(i32)] pub enum nfs4_setxattr_options { SETXATTR4_EITHER=0, SETXATTR4_CREATE, SETXATTR4_REPLACE }
+pub const RCA4_TYPE_MASK_RDATA_DLG:u32=0; pub const RCA4_TYPE_MASK_WDATA_DLG:u32=1; pub const RCA4_TYPE_MASK_DIR_DLG:u32=2; pub const RCA4_TYPE_MASK_FILE_LAYOUT:u32=3; pub const RCA4_TYPE_MASK_BLK_LAYOUT:u32=4; pub const RCA4_TYPE_MASK_OBJ_LAYOUT_MIN:u32=8; pub const RCA4_TYPE_MASK_OBJ_LAYOUT_MAX:u32=9; pub const RCA4_TYPE_MASK_OTHER_LAYOUT_MIN:u32=12; pub const RCA4_TYPE_MASK_OTHER_LAYOUT_MAX:u32=15;
+
+/* Attribute numbers from RFC 7531, RFC 5662, RFC 7863, RFC 8275, RFC 8276. */
+pub const FATTR4_SUPPORTED_ATTRS:u32=0; pub const FATTR4_TYPE:u32=1; pub const FATTR4_FH_EXPIRE_TYPE:u32=2; pub const FATTR4_CHANGE:u32=3; pub const FATTR4_SIZE:u32=4; pub const FATTR4_LINK_SUPPORT:u32=5; pub const FATTR4_SYMLINK_SUPPORT:u32=6; pub const FATTR4_NAMED_ATTR:u32=7; pub const FATTR4_FSID:u32=8; pub const FATTR4_UNIQUE_HANDLES:u32=9; pub const FATTR4_LEASE_TIME:u32=10; pub const FATTR4_RDATTR_ERROR:u32=11; pub const FATTR4_ACL:u32=12; pub const FATTR4_ACLSUPPORT:u32=13; pub const FATTR4_ARCHIVE:u32=14; pub const FATTR4_CANSETTIME:u32=15; pub const FATTR4_CASE_INSENSITIVE:u32=16; pub const FATTR4_CASE_PRESERVING:u32=17; pub const FATTR4_CHOWN_RESTRICTED:u32=18; pub const FATTR4_FILEHANDLE:u32=19; pub const FATTR4_FILEID:u32=20; pub const FATTR4_FILES_AVAIL:u32=21; pub const FATTR4_FILES_FREE:u32=22; pub const FATTR4_FILES_TOTAL:u32=23; pub const FATTR4_FS_LOCATIONS:u32=24; pub const FATTR4_HIDDEN:u32=25; pub const FATTR4_HOMOGENEOUS:u32=26; pub const FATTR4_MAXFILESIZE:u32=27; pub const FATTR4_MAXLINK:u32=28; pub const FATTR4_MAXNAME:u32=29; pub const FATTR4_MAXREAD:u32=30; pub const FATTR4_MAXWRITE:u32=31; pub const FATTR4_MIMETYPE:u32=32; pub const FATTR4_MODE:u32=33; pub const FATTR4_NO_TRUNC:u32=34; pub const FATTR4_NUMLINKS:u32=35; pub const FATTR4_OWNER:u32=36; pub const FATTR4_OWNER_GROUP:u32=37; pub const FATTR4_QUOTA_AVAIL_HARD:u32=38; pub const FATTR4_QUOTA_AVAIL_SOFT:u32=39; pub const FATTR4_QUOTA_USED:u32=40; pub const FATTR4_RAWDEV:u32=41; pub const FATTR4_SPACE_AVAIL:u32=42; pub const FATTR4_SPACE_FREE:u32=43; pub const FATTR4_SPACE_TOTAL:u32=44; pub const FATTR4_SPACE_USED:u32=45; pub const FATTR4_SYSTEM:u32=46; pub const FATTR4_TIME_ACCESS:u32=47; pub const FATTR4_TIME_ACCESS_SET:u32=48; pub const FATTR4_TIME_BACKUP:u32=49; pub const FATTR4_TIME_CREATE:u32=50; pub const FATTR4_TIME_DELTA:u32=51; pub const FATTR4_TIME_METADATA:u32=52; pub const FATTR4_TIME_MODIFY:u32=53; pub const FATTR4_TIME_MODIFY_SET:u32=54; pub const FATTR4_MOUNTED_ON_FILEID:u32=55;
+pub const FATTR4_DIR_NOTIF_DELAY:u32=56; pub const FATTR4_DIRENT_NOTIF_DELAY:u32=57; pub const FATTR4_DACL:u32=58; pub const FATTR4_SACL:u32=59; pub const FATTR4_CHANGE_POLICY:u32=60; pub const FATTR4_FS_STATUS:u32=61; pub const FATTR4_FS_LAYOUT_TYPES:u32=62; pub const FATTR4_LAYOUT_HINT:u32=63; pub const FATTR4_LAYOUT_TYPES:u32=64; pub const FATTR4_LAYOUT_BLKSIZE:u32=65; pub const FATTR4_LAYOUT_ALIGNMENT:u32=66; pub const FATTR4_FS_LOCATIONS_INFO:u32=67; pub const FATTR4_MDSTHRESHOLD:u32=68; pub const FATTR4_RETENTION_GET:u32=69; pub const FATTR4_RETENTION_SET:u32=70; pub const FATTR4_RETENTEVT_GET:u32=71; pub const FATTR4_RETENTEVT_SET:u32=72; pub const FATTR4_RETENTION_HOLD:u32=73; pub const FATTR4_MODE_SET_MASKED:u32=74; pub const FATTR4_SUPPATTR_EXCLCREAT:u32=75; pub const FATTR4_FS_CHARSET_CAP:u32=76; pub const FATTR4_CLONE_BLKSIZE:u32=77; pub const FATTR4_SPACE_FREED:u32=78; pub const FATTR4_CHANGE_ATTR_TYPE:u32=79; pub const FATTR4_SEC_LABEL:u32=80; pub const FATTR4_MODE_UMASK:u32=81; pub const FATTR4_XATTR_SUPPORT:u32=82; pub const FATTR4_UNCACHEABLE_FILE_DATA:u32=87;
+pub const THRESHOLD_RD:u64=1<<0; pub const THRESHOLD_WR:u64=1<<1; pub const THRESHOLD_RD_IO:u64=1<<2; pub const THRESHOLD_WR_IO:u64=1<<3;
+pub const NFS4_OP_MAP_NUM_LONGS:usize=((LAST_NFS4_OP as usize + 8*core::mem::size_of::<c_ulong>()-1)/(8*core::mem::size_of::<c_ulong>())); pub const NFS4_OP_MAP_NUM_WORDS:usize=NFS4_OP_MAP_NUM_LONGS*core::mem::size_of::<c_ulong>()/core::mem::size_of::<u32>();
+extern "C" { }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

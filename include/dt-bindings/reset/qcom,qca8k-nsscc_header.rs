@@ -1,0 +1,74 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+/*
+ * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+ */
+
+pub const NSS_CC_SWITCH_CORE_ARES: u32 = 1;
+pub const NSS_CC_APB_BRIDGE_ARES: u32 = 2;
+pub const NSS_CC_MAC0_TX_ARES: u32 = 3;
+pub const NSS_CC_MAC0_TX_SRDS1_ARES: u32 = 4;
+pub const NSS_CC_MAC0_RX_ARES: u32 = 5;
+pub const NSS_CC_MAC0_RX_SRDS1_ARES: u32 = 6;
+pub const NSS_CC_MAC1_SRDS1_CH0_RX_ARES: u32 = 7;
+pub const NSS_CC_MAC1_TX_ARES: u32 = 8;
+pub const NSS_CC_MAC1_GEPHY0_TX_ARES: u32 = 9;
+pub const NSS_CC_MAC1_SRDS1_CH0_XGMII_RX_ARES: u32 = 10;
+pub const NSS_CC_MAC1_SRDS1_CH0_TX_ARES: u32 = 11;
+pub const NSS_CC_MAC1_RX_ARES: u32 = 12;
+pub const NSS_CC_MAC1_GEPHY0_RX_ARES: u32 = 13;
+pub const NSS_CC_MAC1_SRDS1_CH0_XGMII_TX_ARES: u32 = 14;
+pub const NSS_CC_MAC2_SRDS1_CH1_RX_ARES: u32 = 15;
+pub const NSS_CC_MAC2_TX_ARES: u32 = 16;
+pub const NSS_CC_MAC2_GEPHY1_TX_ARES: u32 = 17;
+pub const NSS_CC_MAC2_SRDS1_CH1_XGMII_RX_ARES: u32 = 18;
+pub const NSS_CC_MAC2_SRDS1_CH1_TX_ARES: u32 = 19;
+pub const NSS_CC_MAC2_RX_ARES: u32 = 20;
+pub const NSS_CC_MAC2_GEPHY1_RX_ARES: u32 = 21;
+pub const NSS_CC_MAC2_SRDS1_CH1_XGMII_TX_ARES: u32 = 22;
+pub const NSS_CC_MAC3_SRDS1_CH2_RX_ARES: u32 = 23;
+pub const NSS_CC_MAC3_TX_ARES: u32 = 24;
+pub const NSS_CC_MAC3_GEPHY2_TX_ARES: u32 = 25;
+pub const NSS_CC_MAC3_SRDS1_CH2_XGMII_RX_ARES: u32 = 26;
+pub const NSS_CC_MAC3_SRDS1_CH2_TX_ARES: u32 = 27;
+pub const NSS_CC_MAC3_RX_ARES: u32 = 28;
+pub const NSS_CC_MAC3_GEPHY2_RX_ARES: u32 = 29;
+pub const NSS_CC_MAC3_SRDS1_CH2_XGMII_TX_ARES: u32 = 30;
+pub const NSS_CC_MAC4_SRDS1_CH3_RX_ARES: u32 = 31;
+pub const NSS_CC_MAC4_TX_ARES: u32 = 32;
+pub const NSS_CC_MAC4_GEPHY3_TX_ARES: u32 = 33;
+pub const NSS_CC_MAC4_SRDS1_CH3_XGMII_RX_ARES: u32 = 34;
+pub const NSS_CC_MAC4_SRDS1_CH3_TX_ARES: u32 = 35;
+pub const NSS_CC_MAC4_RX_ARES: u32 = 36;
+pub const NSS_CC_MAC4_GEPHY3_RX_ARES: u32 = 37;
+pub const NSS_CC_MAC4_SRDS1_CH3_XGMII_TX_ARES: u32 = 38;
+pub const NSS_CC_MAC5_TX_ARES: u32 = 39;
+pub const NSS_CC_MAC5_TX_SRDS0_ARES: u32 = 40;
+pub const NSS_CC_MAC5_RX_ARES: u32 = 41;
+pub const NSS_CC_MAC5_RX_SRDS0_ARES: u32 = 42;
+pub const NSS_CC_AHB_ARES: u32 = 43;
+pub const NSS_CC_SEC_CTRL_AHB_ARES: u32 = 44;
+pub const NSS_CC_TLMM_ARES: u32 = 45;
+pub const NSS_CC_TLMM_AHB_ARES: u32 = 46;
+pub const NSS_CC_CNOC_AHB_ARES: u32 = 47;
+pub const NSS_CC_MDIO_AHB_ARES: u32 = 48;
+pub const NSS_CC_MDIO_MASTER_AHB_ARES: u32 = 49;
+pub const NSS_CC_SRDS0_SYS_ARES: u32 = 50;
+pub const NSS_CC_SRDS1_SYS_ARES: u32 = 51;
+pub const NSS_CC_GEPHY0_SYS_ARES: u32 = 52;
+pub const NSS_CC_GEPHY1_SYS_ARES: u32 = 53;
+pub const NSS_CC_GEPHY2_SYS_ARES: u32 = 54;
+pub const NSS_CC_GEPHY3_SYS_ARES: u32 = 55;
+pub const NSS_CC_SEC_CTRL_ARES: u32 = 56;
+pub const NSS_CC_SEC_CTRL_SENSE_ARES: u32 = 57;
+pub const NSS_CC_SLEEP_ARES: u32 = 58;
+pub const NSS_CC_DEBUG_ARES: u32 = 59;
+pub const NSS_CC_GEPHY0_ARES: u32 = 60;
+pub const NSS_CC_GEPHY1_ARES: u32 = 61;
+pub const NSS_CC_GEPHY2_ARES: u32 = 62;
+pub const NSS_CC_GEPHY3_ARES: u32 = 63;
+pub const NSS_CC_DSP_ARES: u32 = 64;
+pub const NSS_CC_GEPHY_FULL_ARES: u32 = 65;
+pub const NSS_CC_GLOBAL_ARES: u32 = 66;
+pub const NSS_CC_XPCS_ARES: u32 = 67;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

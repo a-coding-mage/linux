@@ -1,0 +1,15 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+
+// Header guard: _DT_BINDINGS_ADI_AD4695_H
+
+pub const AD4695_COMMON_MODE_REFGND: u32 = 0xFF;
+pub const AD4695_COMMON_MODE_COM: u32 = 0xFE;
+
+pub const AD4695_TRIGGER_EVENT_BUSY: u32 = 0;
+pub const AD4695_TRIGGER_EVENT_ALERT: u32 = 1;
+
+pub const AD4695_TRIGGER_PIN_GP0: u32 = 0;
+pub const AD4695_TRIGGER_PIN_GP2: u32 = 2;
+pub const AD4695_TRIGGER_PIN_GP3: u32 = 3;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

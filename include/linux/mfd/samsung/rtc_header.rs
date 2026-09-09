@@ -1,0 +1,168 @@
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Copyright (c) 2011-2014 Samsung Electronics Co., Ltd
+ *              http://www.samsung.com
+ */
+
+#[repr(i32)]
+pub enum s5m_rtc_reg {
+    S5M_RTC_SEC,
+    S5M_RTC_MIN,
+    S5M_RTC_HOUR,
+    S5M_RTC_WEEKDAY,
+    S5M_RTC_DATE,
+    S5M_RTC_MONTH,
+    S5M_RTC_YEAR1,
+    S5M_RTC_YEAR2,
+    S5M_ALARM0_SEC,
+    S5M_ALARM0_MIN,
+    S5M_ALARM0_HOUR,
+    S5M_ALARM0_WEEKDAY,
+    S5M_ALARM0_DATE,
+    S5M_ALARM0_MONTH,
+    S5M_ALARM0_YEAR1,
+    S5M_ALARM0_YEAR2,
+    S5M_ALARM1_SEC,
+    S5M_ALARM1_MIN,
+    S5M_ALARM1_HOUR,
+    S5M_ALARM1_WEEKDAY,
+    S5M_ALARM1_DATE,
+    S5M_ALARM1_MONTH,
+    S5M_ALARM1_YEAR1,
+    S5M_ALARM1_YEAR2,
+    S5M_ALARM0_CONF,
+    S5M_ALARM1_CONF,
+    S5M_RTC_STATUS,
+    S5M_WTSR_SMPL_CNTL,
+    S5M_RTC_UDR_CON,
+    S5M_RTC_REG_MAX,
+}
+
+#[repr(i32)]
+pub enum s2mps_rtc_reg {
+    S2MPS_RTC_CTRL,
+    S2MPS_WTSR_SMPL_CNTL,
+    S2MPS_RTC_UDR_CON,
+    S2MPS_RSVD,
+    S2MPS_RTC_SEC,
+    S2MPS_RTC_MIN,
+    S2MPS_RTC_HOUR,
+    S2MPS_RTC_WEEKDAY,
+    S2MPS_RTC_DATE,
+    S2MPS_RTC_MONTH,
+    S2MPS_RTC_YEAR,
+    S2MPS_ALARM0_SEC,
+    S2MPS_ALARM0_MIN,
+    S2MPS_ALARM0_HOUR,
+    S2MPS_ALARM0_WEEKDAY,
+    S2MPS_ALARM0_DATE,
+    S2MPS_ALARM0_MONTH,
+    S2MPS_ALARM0_YEAR,
+    S2MPS_ALARM1_SEC,
+    S2MPS_ALARM1_MIN,
+    S2MPS_ALARM1_HOUR,
+    S2MPS_ALARM1_WEEKDAY,
+    S2MPS_ALARM1_DATE,
+    S2MPS_ALARM1_MONTH,
+    S2MPS_ALARM1_YEAR,
+    S2MPS_OFFSRC,
+    S2MPS_RTC_REG_MAX,
+}
+
+#[repr(i32)]
+pub enum s2mpg10_rtc_reg {
+    S2MPG10_RTC_CTRL,
+    S2MPG10_RTC_UPDATE,
+    S2MPG10_RTC_SMPL,
+    S2MPG10_RTC_WTSR,
+    S2MPG10_RTC_CAP_SEL,
+    S2MPG10_RTC_MSEC,
+    S2MPG10_RTC_SEC,
+    S2MPG10_RTC_MIN,
+    S2MPG10_RTC_HOUR,
+    S2MPG10_RTC_WEEK,
+    S2MPG10_RTC_DAY,
+    S2MPG10_RTC_MON,
+    S2MPG10_RTC_YEAR,
+    S2MPG10_RTC_A0SEC,
+    S2MPG10_RTC_A0MIN,
+    S2MPG10_RTC_A0HOUR,
+    S2MPG10_RTC_A0WEEK,
+    S2MPG10_RTC_A0DAY,
+    S2MPG10_RTC_A0MON,
+    S2MPG10_RTC_A0YEAR,
+    S2MPG10_RTC_A1SEC,
+    S2MPG10_RTC_A1MIN,
+    S2MPG10_RTC_A1HOUR,
+    S2MPG10_RTC_A1WEEK,
+    S2MPG10_RTC_A1DAY,
+    S2MPG10_RTC_A1MON,
+    S2MPG10_RTC_A1YEAR,
+    S2MPG10_RTC_OSC_CTRL,
+}
+
+pub const RTC_I2C_ADDR: i32 = 0x0C >> 1;
+
+pub const HOUR_12: i32 = 1 << 7;
+pub const HOUR_AMPM: i32 = 1 << 6;
+pub const HOUR_PM: i32 = 1 << 5;
+pub const S5M_ALARM0_STATUS: i32 = 1 << 1;
+pub const S5M_ALARM1_STATUS: i32 = 1 << 2;
+pub const S5M_UPDATE_AD: i32 = 1 << 0;
+
+pub const S2MPS_ALARM0_STATUS: i32 = 1 << 2;
+pub const S2MPS_ALARM1_STATUS: i32 = 1 << 1;
+
+/* RTC Control Register */
+pub const BCD_EN_SHIFT: i32 = 0;
+pub const BCD_EN_MASK: i32 = 1 << BCD_EN_SHIFT;
+pub const MODEL24_SHIFT: i32 = 1;
+pub const MODEL24_MASK: i32 = 1 << MODEL24_SHIFT;
+/* RTC Update Register1 */
+pub const S5M_RTC_UDR_SHIFT: i32 = 0;
+pub const S5M_RTC_UDR_MASK: i32 = 1 << S5M_RTC_UDR_SHIFT;
+pub const S2MPS_RTC_WUDR_SHIFT: i32 = 4;
+pub const S2MPS_RTC_WUDR_MASK: i32 = 1 << S2MPS_RTC_WUDR_SHIFT;
+pub const S2MPS15_RTC_AUDR_SHIFT: i32 = 4;
+pub const S2MPS15_RTC_AUDR_MASK: i32 = 1 << S2MPS15_RTC_AUDR_SHIFT;
+pub const S2MPS13_RTC_AUDR_SHIFT: i32 = 1;
+pub const S2MPS13_RTC_AUDR_MASK: i32 = 1 << S2MPS13_RTC_AUDR_SHIFT;
+pub const S2MPS15_RTC_WUDR_SHIFT: i32 = 1;
+pub const S2MPS15_RTC_WUDR_MASK: i32 = 1 << S2MPS15_RTC_WUDR_SHIFT;
+pub const S2MPS_RTC_RUDR_SHIFT: i32 = 0;
+pub const S2MPS_RTC_RUDR_MASK: i32 = 1 << S2MPS_RTC_RUDR_SHIFT;
+pub const RTC_TCON_SHIFT: i32 = 1;
+pub const RTC_TCON_MASK: i32 = 1 << RTC_TCON_SHIFT;
+pub const S5M_RTC_TIME_EN_SHIFT: i32 = 3;
+pub const S5M_RTC_TIME_EN_MASK: i32 = 1 << S5M_RTC_TIME_EN_SHIFT;
+/*
+ * UDR_T field in S5M_RTC_UDR_CON register determines the time needed
+ * for updating alarm and time registers. Default is 7.32 ms.
+ */
+pub const S5M_RTC_UDR_T_SHIFT: i32 = 6;
+pub const S5M_RTC_UDR_T_MASK: i32 = 0x3 << S5M_RTC_UDR_T_SHIFT;
+pub const S5M_RTC_UDR_T_7320_US: i32 = 0x0 << S5M_RTC_UDR_T_SHIFT;
+pub const S5M_RTC_UDR_T_1830_US: i32 = 0x1 << S5M_RTC_UDR_T_SHIFT;
+pub const S5M_RTC_UDR_T_3660_US: i32 = 0x2 << S5M_RTC_UDR_T_SHIFT;
+pub const S5M_RTC_UDR_T_450_US: i32 = 0x3 << S5M_RTC_UDR_T_SHIFT;
+
+/* RTC Hour register */
+pub const HOUR_PM_SHIFT: i32 = 6;
+pub const HOUR_PM_MASK: i32 = 1 << HOUR_PM_SHIFT;
+/* RTC Alarm Enable */
+pub const ALARM_ENABLE_SHIFT: i32 = 7;
+pub const ALARM_ENABLE_MASK: i32 = 1 << ALARM_ENABLE_SHIFT;
+
+/* WTSR & SMPL registers */
+pub const SMPL_ENABLE_SHIFT: i32 = 7;
+pub const SMPL_ENABLE_MASK: i32 = 1 << SMPL_ENABLE_SHIFT;
+
+pub const WTSR_ENABLE_SHIFT: i32 = 6;
+pub const WTSR_ENABLE_MASK: i32 = 1 << WTSR_ENABLE_SHIFT;
+
+pub const S2MPG10_WTSR_COLDTIMER: i32 = 0b11 << 5;
+pub const S2MPG10_WTSR_COLDRST: i32 = 1 << 4;
+pub const S2MPG10_WTSR_WTSRT: i32 = 0b111 << 1;
+pub const S2MPG10_WTSR_WTSR_EN: i32 = 1 << 0;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

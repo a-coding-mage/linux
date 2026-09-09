@@ -1,0 +1,25 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+
+pub const CS35L32_BOOST_MGR_AUTO: u32 = 0;
+pub const CS35L32_BOOST_MGR_AUTO_AUDIO: u32 = 1;
+pub const CS35L32_BOOST_MGR_BYPASS: u32 = 2;
+pub const CS35L32_BOOST_MGR_FIXED: u32 = 3;
+
+pub const CS35L32_DATA_CFG_LR_VP: u32 = 0;
+pub const CS35L32_DATA_CFG_LR_STAT: u32 = 1;
+pub const CS35L32_DATA_CFG_LR: u32 = 2;
+pub const CS35L32_DATA_CFG_LR_VPSTAT: u32 = 3;
+
+pub const CS35L32_BATT_THRESH_3_1V: u32 = 0;
+pub const CS35L32_BATT_THRESH_3_2V: u32 = 1;
+pub const CS35L32_BATT_THRESH_3_3V: u32 = 2;
+pub const CS35L32_BATT_THRESH_3_4V: u32 = 3;
+
+pub const CS35L32_BATT_RECOV_3_1V: u32 = 0;
+pub const CS35L32_BATT_RECOV_3_2V: u32 = 1;
+pub const CS35L32_BATT_RECOV_3_3V: u32 = 2;
+pub const CS35L32_BATT_RECOV_3_4V: u32 = 3;
+pub const CS35L32_BATT_RECOV_3_5V: u32 = 4;
+pub const CS35L32_BATT_RECOV_3_6V: u32 = 5;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

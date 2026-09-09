@@ -1,0 +1,154 @@
+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+/*
+ * Copyright (c) 2021 Dávid Virág
+ *
+ * Device Tree binding constants for Exynos7885 clock controller.
+ */
+
+/* CMU_TOP */
+pub const CLK_FOUT_SHARED0_PLL: u32 = 1;
+pub const CLK_FOUT_SHARED1_PLL: u32 = 2;
+pub const CLK_DOUT_SHARED0_DIV2: u32 = 3;
+pub const CLK_DOUT_SHARED0_DIV3: u32 = 4;
+pub const CLK_DOUT_SHARED0_DIV4: u32 = 5;
+pub const CLK_DOUT_SHARED0_DIV5: u32 = 6;
+pub const CLK_DOUT_SHARED1_DIV2: u32 = 7;
+pub const CLK_DOUT_SHARED1_DIV3: u32 = 8;
+pub const CLK_DOUT_SHARED1_DIV4: u32 = 9;
+pub const CLK_MOUT_CORE_BUS: u32 = 10;
+pub const CLK_MOUT_CORE_CCI: u32 = 11;
+pub const CLK_MOUT_CORE_G3D: u32 = 12;
+pub const CLK_DOUT_CORE_BUS: u32 = 13;
+pub const CLK_DOUT_CORE_CCI: u32 = 14;
+pub const CLK_DOUT_CORE_G3D: u32 = 15;
+pub const CLK_GOUT_CORE_BUS: u32 = 16;
+pub const CLK_GOUT_CORE_CCI: u32 = 17;
+pub const CLK_GOUT_CORE_G3D: u32 = 18;
+pub const CLK_MOUT_PERI_BUS: u32 = 19;
+pub const CLK_MOUT_PERI_SPI0: u32 = 20;
+pub const CLK_MOUT_PERI_SPI1: u32 = 21;
+pub const CLK_MOUT_PERI_UART0: u32 = 22;
+pub const CLK_MOUT_PERI_UART1: u32 = 23;
+pub const CLK_MOUT_PERI_UART2: u32 = 24;
+pub const CLK_MOUT_PERI_USI0: u32 = 25;
+pub const CLK_MOUT_PERI_USI1: u32 = 26;
+pub const CLK_MOUT_PERI_USI2: u32 = 27;
+pub const CLK_DOUT_PERI_BUS: u32 = 28;
+pub const CLK_DOUT_PERI_SPI0: u32 = 29;
+pub const CLK_DOUT_PERI_SPI1: u32 = 30;
+pub const CLK_DOUT_PERI_UART0: u32 = 31;
+pub const CLK_DOUT_PERI_UART1: u32 = 32;
+pub const CLK_DOUT_PERI_UART2: u32 = 33;
+pub const CLK_DOUT_PERI_USI0: u32 = 34;
+pub const CLK_DOUT_PERI_USI1: u32 = 35;
+pub const CLK_DOUT_PERI_USI2: u32 = 36;
+pub const CLK_GOUT_PERI_BUS: u32 = 37;
+pub const CLK_GOUT_PERI_SPI0: u32 = 38;
+pub const CLK_GOUT_PERI_SPI1: u32 = 39;
+pub const CLK_GOUT_PERI_UART0: u32 = 40;
+pub const CLK_GOUT_PERI_UART1: u32 = 41;
+pub const CLK_GOUT_PERI_UART2: u32 = 42;
+pub const CLK_GOUT_PERI_USI0: u32 = 43;
+pub const CLK_GOUT_PERI_USI1: u32 = 44;
+pub const CLK_GOUT_PERI_USI2: u32 = 45;
+pub const CLK_MOUT_FSYS_BUS: u32 = 46;
+pub const CLK_MOUT_FSYS_MMC_CARD: u32 = 47;
+pub const CLK_MOUT_FSYS_MMC_EMBD: u32 = 48;
+pub const CLK_MOUT_FSYS_MMC_SDIO: u32 = 49;
+pub const CLK_MOUT_FSYS_USB30DRD: u32 = 50;
+pub const CLK_DOUT_FSYS_BUS: u32 = 51;
+pub const CLK_DOUT_FSYS_MMC_CARD: u32 = 52;
+pub const CLK_DOUT_FSYS_MMC_EMBD: u32 = 53;
+pub const CLK_DOUT_FSYS_MMC_SDIO: u32 = 54;
+pub const CLK_DOUT_FSYS_USB30DRD: u32 = 55;
+pub const CLK_GOUT_FSYS_BUS: u32 = 56;
+pub const CLK_GOUT_FSYS_MMC_CARD: u32 = 57;
+pub const CLK_GOUT_FSYS_MMC_EMBD: u32 = 58;
+pub const CLK_GOUT_FSYS_MMC_SDIO: u32 = 59;
+pub const CLK_GOUT_FSYS_USB30DRD: u32 = 60;
+pub const CLK_MOUT_SHARED0_PLL: u32 = 61;
+pub const CLK_MOUT_SHARED1_PLL: u32 = 62;
+
+/* CMU_CORE */
+pub const CLK_MOUT_CORE_BUS_USER: u32 = 1;
+pub const CLK_MOUT_CORE_CCI_USER: u32 = 2;
+pub const CLK_MOUT_CORE_G3D_USER: u32 = 3;
+pub const CLK_MOUT_CORE_GIC: u32 = 4;
+pub const CLK_DOUT_CORE_BUSP: u32 = 5;
+pub const CLK_GOUT_CCI_ACLK: u32 = 6;
+pub const CLK_GOUT_GIC400_CLK: u32 = 7;
+pub const CLK_GOUT_TREX_D_CORE_ACLK: u32 = 8;
+pub const CLK_GOUT_TREX_D_CORE_GCLK: u32 = 9;
+pub const CLK_GOUT_TREX_D_CORE_PCLK: u32 = 10;
+pub const CLK_GOUT_TREX_P_CORE_ACLK_P_CORE: u32 = 11;
+pub const CLK_GOUT_TREX_P_CORE_CCLK_P_CORE: u32 = 12;
+pub const CLK_GOUT_TREX_P_CORE_PCLK: u32 = 13;
+pub const CLK_GOUT_TREX_P_CORE_PCLK_P_CORE: u32 = 14;
+
+/* CMU_PERI */
+pub const CLK_MOUT_PERI_BUS_USER: u32 = 1;
+pub const CLK_MOUT_PERI_SPI0_USER: u32 = 2;
+pub const CLK_MOUT_PERI_SPI1_USER: u32 = 3;
+pub const CLK_MOUT_PERI_UART0_USER: u32 = 4;
+pub const CLK_MOUT_PERI_UART1_USER: u32 = 5;
+pub const CLK_MOUT_PERI_UART2_USER: u32 = 6;
+pub const CLK_MOUT_PERI_USI0_USER: u32 = 7;
+pub const CLK_MOUT_PERI_USI1_USER: u32 = 8;
+pub const CLK_MOUT_PERI_USI2_USER: u32 = 9;
+pub const CLK_GOUT_GPIO_TOP_PCLK: u32 = 10;
+pub const CLK_GOUT_HSI2C0_PCLK: u32 = 11;
+pub const CLK_GOUT_HSI2C1_PCLK: u32 = 12;
+pub const CLK_GOUT_HSI2C2_PCLK: u32 = 13;
+pub const CLK_GOUT_HSI2C3_PCLK: u32 = 14;
+pub const CLK_GOUT_I2C0_PCLK: u32 = 15;
+pub const CLK_GOUT_I2C1_PCLK: u32 = 16;
+pub const CLK_GOUT_I2C2_PCLK: u32 = 17;
+pub const CLK_GOUT_I2C3_PCLK: u32 = 18;
+pub const CLK_GOUT_I2C4_PCLK: u32 = 19;
+pub const CLK_GOUT_I2C5_PCLK: u32 = 20;
+pub const CLK_GOUT_I2C6_PCLK: u32 = 21;
+pub const CLK_GOUT_I2C7_PCLK: u32 = 22;
+pub const CLK_GOUT_PWM_MOTOR_PCLK: u32 = 23;
+pub const CLK_GOUT_SPI0_PCLK: u32 = 24;
+pub const CLK_GOUT_SPI0_EXT_CLK: u32 = 25;
+pub const CLK_GOUT_SPI1_PCLK: u32 = 26;
+pub const CLK_GOUT_SPI1_EXT_CLK: u32 = 27;
+pub const CLK_GOUT_UART0_EXT_UCLK: u32 = 28;
+pub const CLK_GOUT_UART0_PCLK: u32 = 29;
+pub const CLK_GOUT_UART1_EXT_UCLK: u32 = 30;
+pub const CLK_GOUT_UART1_PCLK: u32 = 31;
+pub const CLK_GOUT_UART2_EXT_UCLK: u32 = 32;
+pub const CLK_GOUT_UART2_PCLK: u32 = 33;
+pub const CLK_GOUT_USI0_PCLK: u32 = 34;
+pub const CLK_GOUT_USI0_SCLK: u32 = 35;
+pub const CLK_GOUT_USI1_PCLK: u32 = 36;
+pub const CLK_GOUT_USI1_SCLK: u32 = 37;
+pub const CLK_GOUT_USI2_PCLK: u32 = 38;
+pub const CLK_GOUT_USI2_SCLK: u32 = 39;
+pub const CLK_GOUT_MCT_PCLK: u32 = 40;
+pub const CLK_GOUT_SYSREG_PERI_PCLK: u32 = 41;
+pub const CLK_GOUT_WDT0_PCLK: u32 = 42;
+pub const CLK_GOUT_WDT1_PCLK: u32 = 43;
+
+/* CMU_FSYS */
+pub const CLK_MOUT_FSYS_BUS_USER: u32 = 1;
+pub const CLK_MOUT_FSYS_MMC_CARD_USER: u32 = 2;
+pub const CLK_MOUT_FSYS_MMC_EMBD_USER: u32 = 3;
+pub const CLK_MOUT_FSYS_MMC_SDIO_USER: u32 = 4;
+pub const CLK_GOUT_MMC_CARD_ACLK: u32 = 5;
+pub const CLK_GOUT_MMC_CARD_SDCLKIN: u32 = 6;
+pub const CLK_GOUT_MMC_EMBD_ACLK: u32 = 7;
+pub const CLK_GOUT_MMC_EMBD_SDCLKIN: u32 = 8;
+pub const CLK_GOUT_MMC_SDIO_ACLK: u32 = 9;
+pub const CLK_GOUT_MMC_SDIO_SDCLKIN: u32 = 10;
+pub const CLK_MOUT_FSYS_USB30DRD_USER: u32 = 11;
+pub const CLK_MOUT_USB_PLL: u32 = 12;
+pub const CLK_FOUT_USB_PLL: u32 = 13;
+pub const CLK_FSYS_USB20PHY_CLKCORE: u32 = 14;
+pub const CLK_FSYS_USB30DRD_ACLK_20PHYCTRL: u32 = 15;
+pub const CLK_FSYS_USB30DRD_ACLK_30PHYCTRL_0: u32 = 16;
+pub const CLK_FSYS_USB30DRD_ACLK_30PHYCTRL_1: u32 = 17;
+pub const CLK_FSYS_USB30DRD_BUS_CLK_EARLY: u32 = 18;
+pub const CLK_FSYS_USB30DRD_REF_CLK: u32 = 19;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

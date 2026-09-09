@@ -1,0 +1,91 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (c) 2019 MediaTek Inc.
+ */
+
+pub const MT6358_ID_VDRAM1: i32 = 0;
+pub const MT6358_ID_VCORE: i32 = 1;
+pub const MT6358_ID_VPA: i32 = 2;
+pub const MT6358_ID_VPROC11: i32 = 3;
+pub const MT6358_ID_VPROC12: i32 = 4;
+pub const MT6358_ID_VGPU: i32 = 5;
+pub const MT6358_ID_VS2: i32 = 6;
+pub const MT6358_ID_VMODEM: i32 = 7;
+pub const MT6358_ID_VS1: i32 = 8;
+pub const MT6358_ID_VDRAM2: i32 = 9;
+pub const MT6358_ID_VSIM1: i32 = 10;
+pub const MT6358_ID_VIBR: i32 = 11;
+pub const MT6358_ID_VRF12: i32 = 12;
+pub const MT6358_ID_VIO18: i32 = 13;
+pub const MT6358_ID_VUSB: i32 = 14;
+pub const MT6358_ID_VCAMIO: i32 = 15;
+pub const MT6358_ID_VCAMD: i32 = 16;
+pub const MT6358_ID_VCN18: i32 = 17;
+pub const MT6358_ID_VFE28: i32 = 18;
+pub const MT6358_ID_VSRAM_PROC11: i32 = 19;
+pub const MT6358_ID_VCN28: i32 = 20;
+pub const MT6358_ID_VSRAM_OTHERS: i32 = 21;
+pub const MT6358_ID_VSRAM_GPU: i32 = 22;
+pub const MT6358_ID_VXO22: i32 = 23;
+pub const MT6358_ID_VEFUSE: i32 = 24;
+pub const MT6358_ID_VAUX18: i32 = 25;
+pub const MT6358_ID_VMCH: i32 = 26;
+pub const MT6358_ID_VBIF28: i32 = 27;
+pub const MT6358_ID_VSRAM_PROC12: i32 = 28;
+pub const MT6358_ID_VCAMA1: i32 = 29;
+pub const MT6358_ID_VEMC: i32 = 30;
+pub const MT6358_ID_VIO28: i32 = 31;
+pub const MT6358_ID_VA12: i32 = 32;
+pub const MT6358_ID_VRF18: i32 = 33;
+pub const MT6358_ID_VCN33: i32 = 34;
+pub const MT6358_ID_VCAMA2: i32 = 35;
+pub const MT6358_ID_VMC: i32 = 36;
+pub const MT6358_ID_VLDO28: i32 = 37;
+pub const MT6358_ID_VAUD28: i32 = 38;
+pub const MT6358_ID_VSIM2: i32 = 39;
+pub const MT6358_ID_RG_MAX: i32 = 40;
+
+pub const MT6366_ID_VDRAM1: i32 = 0;
+pub const MT6366_ID_VCORE: i32 = 1;
+pub const MT6366_ID_VPA: i32 = 2;
+pub const MT6366_ID_VPROC11: i32 = 3;
+pub const MT6366_ID_VPROC12: i32 = 4;
+pub const MT6366_ID_VGPU: i32 = 5;
+pub const MT6366_ID_VS2: i32 = 6;
+pub const MT6366_ID_VMODEM: i32 = 7;
+pub const MT6366_ID_VS1: i32 = 8;
+pub const MT6366_ID_VDRAM2: i32 = 9;
+pub const MT6366_ID_VSIM1: i32 = 10;
+pub const MT6366_ID_VIBR: i32 = 11;
+pub const MT6366_ID_VRF12: i32 = 12;
+pub const MT6366_ID_VIO18: i32 = 13;
+pub const MT6366_ID_VUSB: i32 = 14;
+pub const MT6366_ID_VCN18: i32 = 15;
+pub const MT6366_ID_VFE28: i32 = 16;
+pub const MT6366_ID_VSRAM_PROC11: i32 = 17;
+pub const MT6366_ID_VCN28: i32 = 18;
+pub const MT6366_ID_VSRAM_OTHERS: i32 = 19;
+pub const MT6366_ID_VSRAM_GPU: i32 = 20;
+pub const MT6366_ID_VXO22: i32 = 21;
+pub const MT6366_ID_VEFUSE: i32 = 22;
+pub const MT6366_ID_VAUX18: i32 = 23;
+pub const MT6366_ID_VMCH: i32 = 24;
+pub const MT6366_ID_VBIF28: i32 = 25;
+pub const MT6366_ID_VSRAM_PROC12: i32 = 26;
+pub const MT6366_ID_VEMC: i32 = 27;
+pub const MT6366_ID_VIO28: i32 = 28;
+pub const MT6366_ID_VA12: i32 = 29;
+pub const MT6366_ID_VRF18: i32 = 30;
+pub const MT6366_ID_VCN33: i32 = 31;
+pub const MT6366_ID_VMC: i32 = 32;
+pub const MT6366_ID_VAUD28: i32 = 33;
+pub const MT6366_ID_VSIM2: i32 = 34;
+pub const MT6366_ID_VM18: i32 = 35;
+pub const MT6366_ID_VMDDR: i32 = 36;
+pub const MT6366_ID_VSRAM_CORE: i32 = 37;
+pub const MT6366_ID_RG_MAX: i32 = 38;
+
+pub const MT6358_MAX_REGULATOR: i32 = MT6358_ID_RG_MAX;
+pub const MT6366_MAX_REGULATOR: i32 = MT6366_ID_RG_MAX;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

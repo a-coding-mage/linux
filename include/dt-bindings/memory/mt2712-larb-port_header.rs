@@ -1,0 +1,93 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (c) 2017 MediaTek Inc.
+ * Author: Yong Wu <yong.wu@mediatek.com>
+ */
+
+// Dependency: MTK_M4U_ID is supplied by <dt-bindings/memory/mtk-memory-port.h>.
+
+pub const M4U_LARB0_ID: u32 = 0;
+pub const M4U_LARB1_ID: u32 = 1;
+pub const M4U_LARB2_ID: u32 = 2;
+pub const M4U_LARB3_ID: u32 = 3;
+pub const M4U_LARB4_ID: u32 = 4;
+pub const M4U_LARB5_ID: u32 = 5;
+pub const M4U_LARB6_ID: u32 = 6;
+pub const M4U_LARB7_ID: u32 = 7;
+pub const M4U_LARB8_ID: u32 = 8;
+pub const M4U_LARB9_ID: u32 = 9;
+
+/* larb0 */
+pub const M4U_PORT_DISP_OVL0: u32 = MTK_M4U_ID!(M4U_LARB0_ID, 0);
+pub const M4U_PORT_DISP_RDMA0: u32 = MTK_M4U_ID!(M4U_LARB0_ID, 1);
+pub const M4U_PORT_DISP_WDMA0: u32 = MTK_M4U_ID!(M4U_LARB0_ID, 2);
+pub const M4U_PORT_DISP_OD_R: u32 = MTK_M4U_ID!(M4U_LARB0_ID, 3);
+pub const M4U_PORT_DISP_OD_W: u32 = MTK_M4U_ID!(M4U_LARB0_ID, 4);
+pub const M4U_PORT_MDP_RDMA0: u32 = MTK_M4U_ID!(M4U_LARB0_ID, 5);
+pub const M4U_PORT_MDP_WDMA: u32 = MTK_M4U_ID!(M4U_LARB0_ID, 6);
+pub const M4U_PORT_DISP_RDMA2: u32 = MTK_M4U_ID!(M4U_LARB0_ID, 7);
+
+/* larb1 */
+pub const M4U_PORT_HW_VDEC_MC_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 0);
+pub const M4U_PORT_HW_VDEC_PP_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 1);
+pub const M4U_PORT_HW_VDEC_UFO_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 2);
+pub const M4U_PORT_HW_VDEC_VLD_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 3);
+pub const M4U_PORT_HW_VDEC_VLD2_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 4);
+pub const M4U_PORT_HW_VDEC_AVC_MV_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 5);
+pub const M4U_PORT_HW_VDEC_PRED_RD_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 6);
+pub const M4U_PORT_HW_VDEC_PRED_WR_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 7);
+pub const M4U_PORT_HW_VDEC_PPWRAP_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 8);
+pub const M4U_PORT_HW_VDEC_TILE: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 9);
+pub const M4U_PORT_HW_IMG_RESZ_EXT: u32 = MTK_M4U_ID!(M4U_LARB1_ID, 10);
+
+/* larb2 */
+pub const M4U_PORT_CAM_DMA0: u32 = MTK_M4U_ID!(M4U_LARB2_ID, 0);
+pub const M4U_PORT_CAM_DMA1: u32 = MTK_M4U_ID!(M4U_LARB2_ID, 1);
+pub const M4U_PORT_CAM_DMA2: u32 = MTK_M4U_ID!(M4U_LARB2_ID, 2);
+
+/* larb3 */
+pub const M4U_PORT_VENC_RCPU: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 0);
+pub const M4U_PORT_VENC_REC: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 1);
+pub const M4U_PORT_VENC_BSDMA: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 2);
+pub const M4U_PORT_VENC_SV_COMV: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 3);
+pub const M4U_PORT_VENC_RD_COMV: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 4);
+pub const M4U_PORT_VENC_CUR_CHROMA: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 5);
+pub const M4U_PORT_VENC_REF_CHROMA: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 6);
+pub const M4U_PORT_VENC_CUR_LUMA: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 7);
+pub const M4U_PORT_VENC_REF_LUMA: u32 = MTK_M4U_ID!(M4U_LARB3_ID, 8);
+
+/* larb4 */
+pub const M4U_PORT_DISP_OVL1: u32 = MTK_M4U_ID!(M4U_LARB4_ID, 0);
+pub const M4U_PORT_DISP_RDMA1: u32 = MTK_M4U_ID!(M4U_LARB4_ID, 1);
+pub const M4U_PORT_DISP_WDMA1: u32 = MTK_M4U_ID!(M4U_LARB4_ID, 2);
+pub const M4U_PORT_DISP_OD1_R: u32 = MTK_M4U_ID!(M4U_LARB4_ID, 3);
+pub const M4U_PORT_DISP_OD1_W: u32 = MTK_M4U_ID!(M4U_LARB4_ID, 4);
+pub const M4U_PORT_MDP_RDMA1: u32 = MTK_M4U_ID!(M4U_LARB4_ID, 5);
+pub const M4U_PORT_MDP_WROT1: u32 = MTK_M4U_ID!(M4U_LARB4_ID, 6);
+
+/* larb5 */
+pub const M4U_PORT_DISP_OVL2: u32 = MTK_M4U_ID!(M4U_LARB5_ID, 0);
+pub const M4U_PORT_DISP_WDMA2: u32 = MTK_M4U_ID!(M4U_LARB5_ID, 1);
+pub const M4U_PORT_MDP_RDMA2: u32 = MTK_M4U_ID!(M4U_LARB5_ID, 2);
+pub const M4U_PORT_MDP_WROT0: u32 = MTK_M4U_ID!(M4U_LARB5_ID, 3);
+
+/* larb6 */
+pub const M4U_PORT_JPGDEC_WDMA_0: u32 = MTK_M4U_ID!(M4U_LARB6_ID, 0);
+pub const M4U_PORT_JPGDEC_WDMA_1: u32 = MTK_M4U_ID!(M4U_LARB6_ID, 1);
+pub const M4U_PORT_JPGDEC_BSDMA_0: u32 = MTK_M4U_ID!(M4U_LARB6_ID, 2);
+pub const M4U_PORT_JPGDEC_BSDMA_1: u32 = MTK_M4U_ID!(M4U_LARB6_ID, 3);
+
+/* larb7 */
+pub const M4U_PORT_MDP_RDMA3: u32 = MTK_M4U_ID!(M4U_LARB7_ID, 0);
+pub const M4U_PORT_MDP_WROT2: u32 = MTK_M4U_ID!(M4U_LARB7_ID, 1);
+
+/* larb8 */
+pub const M4U_PORT_VDO: u32 = MTK_M4U_ID!(M4U_LARB8_ID, 0);
+pub const M4U_PORT_NR: u32 = MTK_M4U_ID!(M4U_LARB8_ID, 1);
+pub const M4U_PORT_WR_CHANNEL0: u32 = MTK_M4U_ID!(M4U_LARB8_ID, 2);
+
+/* larb9 */
+pub const M4U_PORT_TVD: u32 = MTK_M4U_ID!(M4U_LARB9_ID, 0);
+pub const M4U_PORT_WR_CHANNEL1: u32 = MTK_M4U_ID!(M4U_LARB9_ID, 1);
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

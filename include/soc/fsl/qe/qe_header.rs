@@ -1,0 +1,410 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* Rust translation of soc/fsl/qe/qe.h. External kernel types/functions remain dependencies. */
+
+pub type __be16 = u16;
+pub type __be32 = u32;
+pub type __be64 = u64;
+pub type dma_addr_t = usize;
+#[repr(C)] pub struct device { _private: [u8; 0] }
+#[repr(C)] pub struct device_node { _private: [u8; 0] }
+#[repr(C)] pub struct spinlock_t { _private: [u8; 0] }
+
+pub const QE_NUM_OF_SNUM: u32 = 256;
+pub const QE_NUM_OF_BRGS: u32 = 16;
+pub const QE_NUM_OF_PORTS: u32 = 1024;
+pub const QE_PIO_PINS: u32 = 32;
+pub const QE_PIO_DIR_IN: u32 = 2;
+pub const QE_PIO_DIR_OUT: u32 = 1;
+pub const BD_STATUS_MASK: u32 = 0xffff0000;
+pub const BD_LENGTH_MASK: u32 = 0x0000ffff;
+pub const QE_INTR_TABLE_ALIGN: u32 = 16;
+pub const QE_ALIGNMENT_OF_BD: u32 = 8;
+pub const QE_ALIGNMENT_OF_PRAM: u32 = 64;
+pub const QE_RISC_ALLOCATION_RISC1: u32 = 0x1;
+pub const QE_RISC_ALLOCATION_RISC2: u32 = 0x2;
+pub const QE_RISC_ALLOCATION_RISC3: u32 = 0x4;
+pub const QE_RISC_ALLOCATION_RISC4: u32 = 0x8;
+pub const QE_FLTR_TAD_SIZE: u32 = 8;
+pub const QE_CMXUCR_MII_ENET_MNG: u32 = 0x00007000;
+pub const QE_CMXUCR_MII_ENET_MNG_SHIFT: u32 = 12;
+pub const QE_CMXUCR_GRANT: u32 = 0x00008000;
+pub const QE_CMXUCR_TSA: u32 = 0x00004000;
+pub const QE_CMXUCR_BKPT: u32 = 0x00000100;
+pub const QE_CMXUCR_TX_CLK_SRC_MASK: u32 = 0x0000000F;
+pub const QE_CMXGCR_MII_ENET_MNG: u32 = 0x00007000;
+pub const QE_CMXGCR_MII_ENET_MNG_SHIFT: u32 = 12;
+pub const QE_CMXGCR_USBCS: u32 = 0x0000000f;
+pub const QE_CMXGCR_USBCS_CLK3: u32 = 0x1;
+pub const QE_CMXGCR_USBCS_CLK5: u32 = 0x2;
+pub const QE_CMXGCR_USBCS_CLK7: u32 = 0x3;
+pub const QE_CMXGCR_USBCS_CLK9: u32 = 0x4;
+pub const QE_CMXGCR_USBCS_CLK13: u32 = 0x5;
+pub const QE_CMXGCR_USBCS_CLK17: u32 = 0x6;
+pub const QE_CMXGCR_USBCS_CLK19: u32 = 0x7;
+pub const QE_CMXGCR_USBCS_CLK21: u32 = 0x8;
+pub const QE_CMXGCR_USBCS_BRG9: u32 = 0x9;
+pub const QE_CMXGCR_USBCS_BRG10: u32 = 0xa;
+pub const QE_CR_FLG: u32 = 0x00010000;
+pub const QE_RESET: u32 = 0x80000000;
+pub const QE_INIT_TX_RX: u32 = 0x00000000;
+pub const QE_INIT_RX: u32 = 0x00000001;
+pub const QE_INIT_TX: u32 = 0x00000002;
+pub const QE_ENTER_HUNT_MODE: u32 = 0x00000003;
+pub const QE_STOP_TX: u32 = 0x00000004;
+pub const QE_GRACEFUL_STOP_TX: u32 = 0x00000005;
+pub const QE_RESTART_TX: u32 = 0x00000006;
+pub const QE_CLOSE_RX_BD: u32 = 0x00000007;
+pub const QE_SWITCH_COMMAND: u32 = 0x00000007;
+pub const QE_SET_GROUP_ADDRESS: u32 = 0x00000008;
+pub const QE_START_IDMA: u32 = 0x00000009;
+pub const QE_MCC_STOP_RX: u32 = 0x00000009;
+pub const QE_ATM_TRANSMIT: u32 = 0x0000000a;
+pub const QE_HPAC_CLEAR_ALL: u32 = 0x0000000b;
+pub const QE_GRACEFUL_STOP_RX: u32 = 0x0000001a;
+pub const QE_RESTART_RX: u32 = 0x0000001b;
+pub const QE_HPAC_SET_PRIORITY: u32 = 0x0000010b;
+pub const QE_HPAC_STOP_TX: u32 = 0x0000020b;
+pub const QE_HPAC_STOP_RX: u32 = 0x0000030b;
+pub const QE_HPAC_GRACEFUL_STOP_TX: u32 = 0x0000040b;
+pub const QE_HPAC_GRACEFUL_STOP_RX: u32 = 0x0000050b;
+pub const QE_HPAC_START_TX: u32 = 0x0000060b;
+pub const QE_HPAC_START_RX: u32 = 0x0000070b;
+pub const QE_USB_STOP_TX: u32 = 0x0000000a;
+pub const QE_USB_RESTART_TX: u32 = 0x0000000c;
+pub const QE_QMC_STOP_TX: u32 = 0x0000000c;
+pub const QE_QMC_STOP_RX: u32 = 0x0000000d;
+pub const QE_SS7_SU_FIL_RESET: u32 = 0x0000000e;
+pub const QE_PUSHSCHED: u32 = 0x0000000f;
+pub const QE_RESET_BCS: u32 = 0x0000000a;
+pub const QE_MCC_INIT_TX_RX_16: u32 = 0x00000003;
+pub const QE_MCC_STOP_TX: u32 = 0x00000004;
+pub const QE_MCC_INIT_TX_1: u32 = 0x00000005;
+pub const QE_MCC_INIT_RX_1: u32 = 0x00000006;
+pub const QE_MCC_RESET: u32 = 0x00000007;
+pub const QE_SET_TIMER: u32 = 0x00000008;
+pub const QE_RANDOM_NUMBER: u32 = 0x0000000c;
+pub const QE_ATM_MULTI_THREAD_INIT: u32 = 0x00000011;
+pub const QE_ASSIGN_PAGE: u32 = 0x00000012;
+pub const QE_ADD_REMOVE_HASH_ENTRY: u32 = 0x00000013;
+pub const QE_START_FLOW_CONTROL: u32 = 0x00000014;
+pub const QE_STOP_FLOW_CONTROL: u32 = 0x00000015;
+pub const QE_ASSIGN_PAGE_TO_DEVICE: u32 = 0x00000016;
+pub const QE_ASSIGN_RISC: u32 = 0x00000010;
+pub const QE_CR_MCN_NORMAL_SHIFT: u32 = 6;
+pub const QE_CR_MCN_USB_SHIFT: u32 = 4;
+pub const QE_CR_MCN_RISC_ASSIGN_SHIFT: u32 = 8;
+pub const QE_CR_SNUM_SHIFT: u32 = 17;
+pub const QE_CR_SUBBLOCK_INVALID: u32 = 0x00000000;
+pub const QE_CR_SUBBLOCK_USB: u32 = 0x03200000;
+pub const QE_CR_SUBBLOCK_UCCFAST1: u32 = 0x02000000;
+pub const QE_CR_SUBBLOCK_UCCFAST2: u32 = 0x02200000;
+pub const QE_CR_SUBBLOCK_UCCFAST3: u32 = 0x02400000;
+pub const QE_CR_SUBBLOCK_UCCFAST4: u32 = 0x02600000;
+pub const QE_CR_SUBBLOCK_UCCFAST5: u32 = 0x02800000;
+pub const QE_CR_SUBBLOCK_UCCFAST6: u32 = 0x02a00000;
+pub const QE_CR_SUBBLOCK_UCCFAST7: u32 = 0x02c00000;
+pub const QE_CR_SUBBLOCK_UCCFAST8: u32 = 0x02e00000;
+pub const QE_CR_SUBBLOCK_UCCSLOW1: u32 = 0x00000000;
+pub const QE_CR_SUBBLOCK_UCCSLOW2: u32 = 0x00200000;
+pub const QE_CR_SUBBLOCK_UCCSLOW3: u32 = 0x00400000;
+pub const QE_CR_SUBBLOCK_UCCSLOW4: u32 = 0x00600000;
+pub const QE_CR_SUBBLOCK_UCCSLOW5: u32 = 0x00800000;
+pub const QE_CR_SUBBLOCK_UCCSLOW6: u32 = 0x00a00000;
+pub const QE_CR_SUBBLOCK_UCCSLOW7: u32 = 0x00c00000;
+pub const QE_CR_SUBBLOCK_UCCSLOW8: u32 = 0x00e00000;
+pub const QE_CR_SUBBLOCK_MCC1: u32 = 0x03800000;
+pub const QE_CR_SUBBLOCK_MCC2: u32 = 0x03a00000;
+pub const QE_CR_SUBBLOCK_MCC3: u32 = 0x03000000;
+pub const QE_CR_SUBBLOCK_IDMA1: u32 = 0x02800000;
+pub const QE_CR_SUBBLOCK_IDMA2: u32 = 0x02a00000;
+pub const QE_CR_SUBBLOCK_IDMA3: u32 = 0x02c00000;
+pub const QE_CR_SUBBLOCK_IDMA4: u32 = 0x02e00000;
+pub const QE_CR_SUBBLOCK_HPAC: u32 = 0x01e00000;
+pub const QE_CR_SUBBLOCK_SPI1: u32 = 0x01400000;
+pub const QE_CR_SUBBLOCK_SPI2: u32 = 0x01600000;
+pub const QE_CR_SUBBLOCK_RAND: u32 = 0x01c00000;
+pub const QE_CR_SUBBLOCK_TIMER: u32 = 0x01e00000;
+pub const QE_CR_SUBBLOCK_GENERAL: u32 = 0x03c00000;
+pub const QE_CR_PROTOCOL_UNSPECIFIED: u32 = 0x00;
+pub const QE_CR_PROTOCOL_HDLC_TRANSPARENT: u32 = 0x00;
+pub const QE_CR_PROTOCOL_QMC: u32 = 0x02;
+pub const QE_CR_PROTOCOL_UART: u32 = 0x04;
+pub const QE_CR_PROTOCOL_ATM_POS: u32 = 0x0A;
+pub const QE_CR_PROTOCOL_ETHERNET: u32 = 0x0C;
+pub const QE_CR_PROTOCOL_L2_SWITCH: u32 = 0x0D;
+pub const QE_BRGC_ENABLE: u32 = 0x00010000;
+pub const QE_BRGC_DIVISOR_SHIFT: u32 = 1;
+pub const QE_BRGC_DIVISOR_MAX: u32 = 0xFFF;
+pub const QE_BRGC_DIV16: u32 = 1;
+pub const QE_GTCFR1_PCAS: u32 = 0x80;
+pub const QE_GTCFR1_STP2: u32 = 0x20;
+pub const QE_GTCFR1_RST2: u32 = 0x10;
+pub const QE_GTCFR1_GM2: u32 = 0x08;
+pub const QE_GTCFR1_GM1: u32 = 0x04;
+pub const QE_GTCFR1_STP1: u32 = 0x02;
+pub const QE_GTCFR1_RST1: u32 = 0x01;
+pub const QE_SDSR_BER1: u32 = 0x02000000;
+pub const QE_SDSR_BER2: u32 = 0x01000000;
+pub const QE_SDMR_GLB_1_MSK: u32 = 0x80000000;
+pub const QE_SDMR_ADR_SEL: u32 = 0x20000000;
+pub const QE_SDMR_BER1_MSK: u32 = 0x02000000;
+pub const QE_SDMR_BER2_MSK: u32 = 0x01000000;
+pub const QE_SDMR_EB1_MSK: u32 = 0x00800000;
+pub const QE_SDMR_ER1_MSK: u32 = 0x00080000;
+pub const QE_SDMR_ER2_MSK: u32 = 0x00040000;
+pub const QE_SDMR_CEN_MASK: u32 = 0x0000E000;
+pub const QE_SDMR_SBER_1: u32 = 0x00000200;
+pub const QE_SDMR_SBER_2: u32 = 0x00000200;
+pub const QE_SDMR_EB1_PR_MASK: u32 = 0x000000C0;
+pub const QE_SDMR_ER1_PR: u32 = 0x00000008;
+pub const QE_SDMR_CEN_SHIFT: u32 = 13;
+pub const QE_SDMR_EB1_PR_SHIFT: u32 = 6;
+pub const QE_SDTM_MSNUM_SHIFT: u32 = 24;
+pub const QE_SDEBCR_BA_MASK: u32 = 0x01FFFFFF;
+pub const QE_CP_CERCR_MEE: u32 = 0x8000;
+pub const QE_CP_CERCR_IEE: u32 = 0x4000;
+pub const QE_CP_CERCR_CIR: u32 = 0x0800;
+pub const QE_IRAM_IADD_AIE: u32 = 0x80000000;
+pub const QE_IRAM_IADD_BADDR: u32 = 0x00080000;
+pub const QE_IRAM_READY: u32 = 0x80000000;
+pub const UPGCR_PROTOCOL: u32 = 0x80000000;
+pub const UPGCR_TMS: u32 = 0x40000000;
+pub const UPGCR_RMS: u32 = 0x20000000;
+pub const UPGCR_ADDR: u32 = 0x10000000;
+pub const UPGCR_DIAG: u32 = 0x01000000;
+pub const UCC_GUEMR_MODE_MASK_RX: u32 = 0x02;
+pub const UCC_GUEMR_MODE_FAST_RX: u32 = 0x02;
+pub const UCC_GUEMR_MODE_SLOW_RX: u32 = 0x00;
+pub const UCC_GUEMR_MODE_MASK_TX: u32 = 0x01;
+pub const UCC_GUEMR_MODE_FAST_TX: u32 = 0x01;
+pub const UCC_GUEMR_MODE_SLOW_TX: u32 = 0x00;
+pub const UCC_GUEMR_SET_RESERVED3: u32 = 0x10;
+pub const UCC_SLOW_GUMR_H_SAM_QMC: u32 = 0x00000000;
+pub const UCC_SLOW_GUMR_H_SAM_SATM: u32 = 0x00008000;
+pub const UCC_SLOW_GUMR_H_REVD: u32 = 0x00002000;
+pub const UCC_SLOW_GUMR_H_TRX: u32 = 0x00001000;
+pub const UCC_SLOW_GUMR_H_TTX: u32 = 0x00000800;
+pub const UCC_SLOW_GUMR_H_CDP: u32 = 0x00000400;
+pub const UCC_SLOW_GUMR_H_CTSP: u32 = 0x00000200;
+pub const UCC_SLOW_GUMR_H_CDS: u32 = 0x00000100;
+pub const UCC_SLOW_GUMR_H_CTSS: u32 = 0x00000080;
+pub const UCC_SLOW_GUMR_H_TFL: u32 = 0x00000040;
+pub const UCC_SLOW_GUMR_H_RFW: u32 = 0x00000020;
+pub const UCC_SLOW_GUMR_H_TXSY: u32 = 0x00000010;
+pub const UCC_SLOW_GUMR_H_4SYNC: u32 = 0x00000004;
+pub const UCC_SLOW_GUMR_H_8SYNC: u32 = 0x00000008;
+pub const UCC_SLOW_GUMR_H_16SYNC: u32 = 0x0000000c;
+pub const UCC_SLOW_GUMR_H_RTSM: u32 = 0x00000002;
+pub const UCC_SLOW_GUMR_H_RSYN: u32 = 0x00000001;
+pub const UCC_SLOW_GUMR_L_TCI: u32 = 0x10000000;
+pub const UCC_SLOW_GUMR_L_RINV: u32 = 0x02000000;
+pub const UCC_SLOW_GUMR_L_TINV: u32 = 0x01000000;
+pub const UCC_SLOW_GUMR_L_TEND: u32 = 0x00040000;
+pub const UCC_SLOW_GUMR_L_TDCR_MASK: u32 = 0x00030000;
+pub const UCC_SLOW_GUMR_L_TDCR_32: u32 = 0x00030000;
+pub const UCC_SLOW_GUMR_L_TDCR_16: u32 = 0x00020000;
+pub const UCC_SLOW_GUMR_L_TDCR_8: u32 = 0x00010000;
+pub const UCC_SLOW_GUMR_L_TDCR_1: u32 = 0x00000000;
+pub const UCC_SLOW_GUMR_L_RDCR_MASK: u32 = 0x0000c000;
+pub const UCC_SLOW_GUMR_L_RDCR_32: u32 = 0x0000c000;
+pub const UCC_SLOW_GUMR_L_RDCR_16: u32 = 0x00008000;
+pub const UCC_SLOW_GUMR_L_RDCR_8: u32 = 0x00004000;
+pub const UCC_SLOW_GUMR_L_RDCR_1: u32 = 0x00000000;
+pub const UCC_SLOW_GUMR_L_RENC_NRZI: u32 = 0x00000800;
+pub const UCC_SLOW_GUMR_L_RENC_NRZ: u32 = 0x00000000;
+pub const UCC_SLOW_GUMR_L_TENC_NRZI: u32 = 0x00000100;
+pub const UCC_SLOW_GUMR_L_TENC_NRZ: u32 = 0x00000000;
+pub const UCC_SLOW_GUMR_L_DIAG_MASK: u32 = 0x000000c0;
+pub const UCC_SLOW_GUMR_L_DIAG_LE: u32 = 0x000000c0;
+pub const UCC_SLOW_GUMR_L_DIAG_ECHO: u32 = 0x00000080;
+pub const UCC_SLOW_GUMR_L_DIAG_LOOP: u32 = 0x00000040;
+pub const UCC_SLOW_GUMR_L_DIAG_NORM: u32 = 0x00000000;
+pub const UCC_SLOW_GUMR_L_ENR: u32 = 0x00000020;
+pub const UCC_SLOW_GUMR_L_ENT: u32 = 0x00000010;
+pub const UCC_SLOW_GUMR_L_MODE_MASK: u32 = 0x0000000F;
+pub const UCC_SLOW_GUMR_L_MODE_BISYNC: u32 = 0x00000008;
+pub const UCC_SLOW_GUMR_L_MODE_AHDLC: u32 = 0x00000006;
+pub const UCC_SLOW_GUMR_L_MODE_UART: u32 = 0x00000004;
+pub const UCC_SLOW_GUMR_L_MODE_QMC: u32 = 0x00000002;
+pub const UCC_FAST_GUMR_LOOPBACK: u32 = 0x40000000;
+pub const UCC_FAST_GUMR_TCI: u32 = 0x20000000;
+pub const UCC_FAST_GUMR_TRX: u32 = 0x10000000;
+pub const UCC_FAST_GUMR_TTX: u32 = 0x08000000;
+pub const UCC_FAST_GUMR_CDP: u32 = 0x04000000;
+pub const UCC_FAST_GUMR_CTSP: u32 = 0x02000000;
+pub const UCC_FAST_GUMR_CDS: u32 = 0x01000000;
+pub const UCC_FAST_GUMR_CTSS: u32 = 0x00800000;
+pub const UCC_FAST_GUMR_TXSY: u32 = 0x00020000;
+pub const UCC_FAST_GUMR_RSYN: u32 = 0x00010000;
+pub const UCC_FAST_GUMR_SYNL_MASK: u32 = 0x0000C000;
+pub const UCC_FAST_GUMR_SYNL_16: u32 = 0x0000C000;
+pub const UCC_FAST_GUMR_SYNL_8: u32 = 0x00008000;
+pub const UCC_FAST_GUMR_SYNL_AUTO: u32 = 0x00004000;
+pub const UCC_FAST_GUMR_RTSM: u32 = 0x00002000;
+pub const UCC_FAST_GUMR_REVD: u32 = 0x00000400;
+pub const UCC_FAST_GUMR_ENR: u32 = 0x00000020;
+pub const UCC_FAST_GUMR_ENT: u32 = 0x00000010;
+pub const UCC_UART_UCCE_AB: u32 = 0x0200;
+pub const UCC_UART_UCCE_IDLE: u32 = 0x0100;
+pub const UCC_UART_UCCE_GRA: u32 = 0x0080;
+pub const UCC_UART_UCCE_BRKE: u32 = 0x0040;
+pub const UCC_UART_UCCE_BRKS: u32 = 0x0020;
+pub const UCC_UART_UCCE_CCR: u32 = 0x0008;
+pub const UCC_UART_UCCE_BSY: u32 = 0x0004;
+pub const UCC_UART_UCCE_TX: u32 = 0x0002;
+pub const UCC_UART_UCCE_RX: u32 = 0x0001;
+pub const UCC_HDLC_UCCE_GLR: u32 = 0x1000;
+pub const UCC_HDLC_UCCE_GLT: u32 = 0x0800;
+pub const UCC_HDLC_UCCE_IDLE: u32 = 0x0100;
+pub const UCC_HDLC_UCCE_BRKE: u32 = 0x0040;
+pub const UCC_HDLC_UCCE_BRKS: u32 = 0x0020;
+pub const UCC_HDLC_UCCE_TXE: u32 = 0x0010;
+pub const UCC_HDLC_UCCE_RXF: u32 = 0x0008;
+pub const UCC_HDLC_UCCE_BSY: u32 = 0x0004;
+pub const UCC_HDLC_UCCE_TXB: u32 = 0x0002;
+pub const UCC_HDLC_UCCE_RXB: u32 = 0x0001;
+pub const UCC_BISYNC_UCCE_GRA: u32 = 0x0080;
+pub const UCC_BISYNC_UCCE_TXE: u32 = 0x0010;
+pub const UCC_BISYNC_UCCE_RCH: u32 = 0x0008;
+pub const UCC_BISYNC_UCCE_BSY: u32 = 0x0004;
+pub const UCC_BISYNC_UCCE_TXB: u32 = 0x0002;
+pub const UCC_BISYNC_UCCE_RXB: u32 = 0x0001;
+pub const UCC_GETH_UCCE_MPD: u32 = 0x80000000;
+pub const UCC_GETH_UCCE_SCAR: u32 = 0x40000000;
+pub const UCC_GETH_UCCE_GRA: u32 = 0x20000000;
+pub const UCC_GETH_UCCE_CBPR: u32 = 0x10000000;
+pub const UCC_GETH_UCCE_BSY: u32 = 0x08000000;
+pub const UCC_GETH_UCCE_RXC: u32 = 0x04000000;
+pub const UCC_GETH_UCCE_TXC: u32 = 0x02000000;
+pub const UCC_GETH_UCCE_TXE: u32 = 0x01000000;
+pub const UCC_GETH_UCCE_TXB7: u32 = 0x00800000;
+pub const UCC_GETH_UCCE_TXB6: u32 = 0x00400000;
+pub const UCC_GETH_UCCE_TXB5: u32 = 0x00200000;
+pub const UCC_GETH_UCCE_TXB4: u32 = 0x00100000;
+pub const UCC_GETH_UCCE_TXB3: u32 = 0x00080000;
+pub const UCC_GETH_UCCE_TXB2: u32 = 0x00040000;
+pub const UCC_GETH_UCCE_TXB1: u32 = 0x00020000;
+pub const UCC_GETH_UCCE_TXB0: u32 = 0x00010000;
+pub const UCC_GETH_UCCE_RXB7: u32 = 0x00008000;
+pub const UCC_GETH_UCCE_RXB6: u32 = 0x00004000;
+pub const UCC_GETH_UCCE_RXB5: u32 = 0x00002000;
+pub const UCC_GETH_UCCE_RXB4: u32 = 0x00001000;
+pub const UCC_GETH_UCCE_RXB3: u32 = 0x00000800;
+pub const UCC_GETH_UCCE_RXB2: u32 = 0x00000400;
+pub const UCC_GETH_UCCE_RXB1: u32 = 0x00000200;
+pub const UCC_GETH_UCCE_RXB0: u32 = 0x00000100;
+pub const UCC_GETH_UCCE_RXF7: u32 = 0x00000080;
+pub const UCC_GETH_UCCE_RXF6: u32 = 0x00000040;
+pub const UCC_GETH_UCCE_RXF5: u32 = 0x00000020;
+pub const UCC_GETH_UCCE_RXF4: u32 = 0x00000010;
+pub const UCC_GETH_UCCE_RXF3: u32 = 0x00000008;
+pub const UCC_GETH_UCCE_RXF2: u32 = 0x00000004;
+pub const UCC_GETH_UCCE_RXF1: u32 = 0x00000002;
+pub const UCC_GETH_UCCE_RXF0: u32 = 0x00000001;
+pub const UCC_UART_UPSMR_FLC: u32 = 0x8000;
+pub const UCC_UART_UPSMR_SL: u32 = 0x4000;
+pub const UCC_UART_UPSMR_CL_MASK: u32 = 0x3000;
+pub const UCC_UART_UPSMR_CL_8: u32 = 0x3000;
+pub const UCC_UART_UPSMR_CL_7: u32 = 0x2000;
+pub const UCC_UART_UPSMR_CL_6: u32 = 0x1000;
+pub const UCC_UART_UPSMR_CL_5: u32 = 0x0000;
+pub const UCC_UART_UPSMR_UM_MASK: u32 = 0x0c00;
+pub const UCC_UART_UPSMR_UM_NORMAL: u32 = 0x0000;
+pub const UCC_UART_UPSMR_UM_MAN_MULTI: u32 = 0x0400;
+pub const UCC_UART_UPSMR_UM_AUTO_MULTI: u32 = 0x0c00;
+pub const UCC_UART_UPSMR_FRZ: u32 = 0x0200;
+pub const UCC_UART_UPSMR_RZS: u32 = 0x0100;
+pub const UCC_UART_UPSMR_SYN: u32 = 0x0080;
+pub const UCC_UART_UPSMR_DRT: u32 = 0x0040;
+pub const UCC_UART_UPSMR_PEN: u32 = 0x0010;
+pub const UCC_UART_UPSMR_RPM_MASK: u32 = 0x000c;
+pub const UCC_UART_UPSMR_RPM_ODD: u32 = 0x0000;
+pub const UCC_UART_UPSMR_RPM_LOW: u32 = 0x0004;
+pub const UCC_UART_UPSMR_RPM_EVEN: u32 = 0x0008;
+pub const UCC_UART_UPSMR_RPM_HIGH: u32 = 0x000C;
+pub const UCC_UART_UPSMR_TPM_MASK: u32 = 0x0003;
+pub const UCC_UART_UPSMR_TPM_ODD: u32 = 0x0000;
+pub const UCC_UART_UPSMR_TPM_LOW: u32 = 0x0001;
+pub const UCC_UART_UPSMR_TPM_EVEN: u32 = 0x0002;
+pub const UCC_UART_UPSMR_TPM_HIGH: u32 = 0x0003;
+pub const UCC_GETH_UPSMR_FTFE: u32 = 0x80000000;
+pub const UCC_GETH_UPSMR_PTPE: u32 = 0x40000000;
+pub const UCC_GETH_UPSMR_ECM: u32 = 0x04000000;
+pub const UCC_GETH_UPSMR_HSE: u32 = 0x02000000;
+pub const UCC_GETH_UPSMR_PRO: u32 = 0x00400000;
+pub const UCC_GETH_UPSMR_CAP: u32 = 0x00200000;
+pub const UCC_GETH_UPSMR_RSH: u32 = 0x00100000;
+pub const UCC_GETH_UPSMR_RPM: u32 = 0x00080000;
+pub const UCC_GETH_UPSMR_R10M: u32 = 0x00040000;
+pub const UCC_GETH_UPSMR_RLPB: u32 = 0x00020000;
+pub const UCC_GETH_UPSMR_TBIM: u32 = 0x00010000;
+pub const UCC_GETH_UPSMR_RES1: u32 = 0x00002000;
+pub const UCC_GETH_UPSMR_RMM: u32 = 0x00001000;
+pub const UCC_GETH_UPSMR_CAM: u32 = 0x00000400;
+pub const UCC_GETH_UPSMR_BRO: u32 = 0x00000200;
+pub const UCC_GETH_UPSMR_SMM: u32 = 0x00000080;
+pub const UCC_GETH_UPSMR_SGMM: u32 = 0x00000020;
+pub const UCC_HDLC_UPSMR_RTE: u32 = 0x02000000;
+pub const UCC_HDLC_UPSMR_BUS: u32 = 0x00200000;
+pub const UCC_HDLC_UPSMR_CW8: u32 = 0x00007000;
+pub const UCC_SLOW_TOD: u32 = 0x8000;
+pub const UCC_FAST_TOD: u32 = 0x8000;
+pub const UCC_BMR_GBL: u32 = 0x20;
+pub const UCC_BMR_BO_BE: u32 = 0x10;
+pub const UCC_BMR_CETM: u32 = 0x04;
+pub const UCC_BMR_DTB: u32 = 0x02;
+pub const UCC_BMR_BDB: u32 = 0x01;
+pub const FC_GBL: u32 = 0x20;
+pub const FC_DTB_LCL: u32 = 0x02;
+pub const UCC_FAST_FUNCTION_CODE_GBL: u32 = 0x20;
+pub const UCC_FAST_FUNCTION_CODE_DTB_LCL: u32 = 0x02;
+pub const UCC_FAST_FUNCTION_CODE_BDB_LCL: u32 = 0x01;
+pub const QE_RISC_ALLOCATION_RISC1_AND_RISC2: u32 = QE_RISC_ALLOCATION_RISC1 | QE_RISC_ALLOCATION_RISC2;
+pub const QE_RISC_ALLOCATION_FOUR_RISCS: u32 = QE_RISC_ALLOCATION_RISC1 | QE_RISC_ALLOCATION_RISC2 | QE_RISC_ALLOCATION_RISC3 | QE_RISC_ALLOCATION_RISC4;
+pub const QE_FLTR_TABLE_LOOKUP_KEY_SIZE_8_BYTES: u32 = 0x3f;
+pub const QE_FLTR_TABLE_LOOKUP_KEY_SIZE_16_BYTES: u32 = 0x5f;
+pub const QE_FLTR_LARGEST_EXTERNAL_TABLE_LOOKUP_KEY_SIZE_NONE: u32 = 0;
+pub const QE_FLTR_LARGEST_EXTERNAL_TABLE_LOOKUP_KEY_SIZE_8_BYTES: u32 = QE_FLTR_TABLE_LOOKUP_KEY_SIZE_8_BYTES;
+pub const QE_FLTR_LARGEST_EXTERNAL_TABLE_LOOKUP_KEY_SIZE_16_BYTES: u32 = QE_FLTR_TABLE_LOOKUP_KEY_SIZE_16_BYTES;
+pub const UCC_GUEMR_MODE_MASK: u32 = UCC_GUEMR_MODE_MASK_RX | UCC_GUEMR_MODE_MASK_TX;
+
+
+#[repr(u32)]
+#[derive(Copy, Clone, PartialEq, Eq)]
+pub enum qe_clock {
+    QE_CLK_NONE = 0, QE_BRG1, QE_BRG2, QE_BRG3, QE_BRG4, QE_BRG5, QE_BRG6, QE_BRG7, QE_BRG8,
+    QE_BRG9, QE_BRG10, QE_BRG11, QE_BRG12, QE_BRG13, QE_BRG14, QE_BRG15, QE_BRG16,
+    QE_CLK1, QE_CLK2, QE_CLK3, QE_CLK4, QE_CLK5, QE_CLK6, QE_CLK7, QE_CLK8, QE_CLK9,
+    QE_CLK10, QE_CLK11, QE_CLK12, QE_CLK13, QE_CLK14, QE_CLK15, QE_CLK16, QE_CLK17,
+    QE_CLK18, QE_CLK19, QE_CLK20, QE_CLK21, QE_CLK22, QE_CLK23, QE_CLK24,
+    QE_RSYNC_PIN, QE_TSYNC_PIN, QE_CLK_DUMMY,
+}
+
+#[inline] pub fn qe_clock_is_brg(clk: qe_clock) -> bool { (clk as u32) >= (qe_clock::QE_BRG1 as u32) && (clk as u32) <= (qe_clock::QE_BRG16 as u32) }
+
+#[repr(C)] pub struct qe_pio_regs { pub cpodr: __be32, pub cpdata: __be32, pub cpdir1: __be32, pub cpdir2: __be32, pub cppar1: __be32, pub cppar2: __be32 }
+#[repr(C, packed)] pub struct qe_bd { pub status: __be16, pub length: __be16, pub buf: __be32 }
+#[repr(C, packed)] pub struct qe_timer_tables { pub tm_base:u16, pub tm_ptr:u16, pub r_tmr:u16, pub r_tmv:u16, pub tm_cmd:u32, pub tm_cnt:u32 }
+#[repr(C, packed)] pub struct qe_fltr_tad { pub serialized: [u8; 8] }
+#[repr(u32)] pub enum comm_dir { COMM_DIR_NONE=0, COMM_DIR_RX=1, COMM_DIR_TX=2, COMM_DIR_RX_AND_TX=3 }
+#[repr(C, packed)] pub struct ucc_slow_pram { pub rbase:__be16,pub tbase:__be16,pub rbmr:u8,pub tbmr:u8,pub mrblr:__be16,pub rstate:__be32,pub rptr:__be32,pub rbptr:__be16,pub rcount:__be16,pub rtemp:__be32,pub tstate:__be32,pub tptr:__be32,pub tbptr:__be16,pub tcount:__be16,pub ttemp:__be32,pub rcrc:__be32,pub tcrc:__be32 }
+#[repr(C, packed)] pub struct qe_firmware_header { pub length:__be32, pub magic:[u8;3], pub version:u8 }
+#[repr(C, packed)] pub struct qe_microcode { pub id:[u8;32], pub traps:[__be32;16], pub eccr:__be32, pub iram_offset:__be32, pub count:__be32, pub code_offset:__be32, pub major:u8,pub minor:u8,pub revision:u8,pub padding:u8,pub reserved:[u8;4] }
+#[repr(C, packed)] pub struct qe_firmware { pub header:qe_firmware_header,pub id:[u8;62],pub split:u8,pub count:u8,pub soc_model:__be16,pub soc_major:u8,pub soc_minor:u8,pub padding:[u8;4],pub extended_modes:__be64,pub vtraps:[__be32;8],pub reserved:[u8;4] }
+#[repr(C)] pub struct qe_firmware_info { pub id:[i8;64], pub vtraps:[u32;8], pub extended_modes:u64 }
+#[repr(C)] pub struct qe_pin { _private:[u8;0] }
+
+extern "C" {
+    pub static mut cmxgcr_lock: spinlock_t;
+    pub fn qe_reset(); pub fn cpm_muram_init() -> i32;
+    pub fn cpm_muram_alloc(size: usize, align: usize) -> i32; pub fn cpm_muram_free(offset:i32);
+    pub fn cpm_muram_alloc_fixed(offset:usize,size:usize)->i32; pub fn cpm_muram_addr(offset:usize)->*mut u8;
+    pub fn qe_clock_source(source:*const i8)->qe_clock; pub fn qe_get_brg_clk()->u32;
+    pub fn qe_setbrg(brg:qe_clock,rate:u32,multiplier:u32)->i32; pub fn qe_get_snum()->i32; pub fn qe_put_snum(snum:u8);
+    pub fn qe_get_num_of_risc()->u32; pub fn qe_get_num_of_snums()->u32; pub fn qe_get_firmware_info()->*mut qe_firmware_info;
+    pub fn qe_usb_clock_set(clk:qe_clock,rate:i32)->i32;
+}
+
+#[inline] pub fn qe_alive_during_sleep() -> i32 { /* CONFIG_PPC_85xx selects 0; otherwise 1. */ 1 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

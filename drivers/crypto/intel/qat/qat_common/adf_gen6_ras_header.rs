@@ -1,0 +1,144 @@
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Copyright(c) 2025 Intel Corporation */
+
+// The C header includes Linux bit helpers; these constants use equivalent
+// local Rust expressions so their integer intent remains explicit.
+pub struct adf_ras_ops;
+
+/* Error source registers */
+pub const ADF_GEN6_ERRSOU0: u32 = 0x41A200;
+pub const ADF_GEN6_ERRSOU1: u32 = 0x41A204;
+pub const ADF_GEN6_ERRSOU2: u32 = 0x41A208;
+pub const ADF_GEN6_ERRSOU3: u32 = 0x41A20C;
+/* Error source mask registers */
+pub const ADF_GEN6_ERRMSK0: u32 = 0x41A210;
+pub const ADF_GEN6_ERRMSK1: u32 = 0x41A214;
+pub const ADF_GEN6_ERRMSK2: u32 = 0x41A218;
+pub const ADF_GEN6_ERRMSK3: u32 = 0x41A21C;
+
+pub const ADF_GEN6_ERRSOU0_MASK: u32 = 1 << 0;
+pub const ADF_GEN6_ERRSOU1_CPP0_MEUNC_BIT: u32 = 1 << 0;
+pub const ADF_GEN6_ERRSOU1_CPP_CMDPARERR_BIT: u32 = 1 << 1;
+pub const ADF_GEN6_ERRSOU1_RIMEM_PARERR_STS_BIT: u32 = 1 << 2;
+pub const ADF_GEN6_ERRSOU1_TIMEM_PARERR_STS_BIT: u32 = 1 << 3;
+pub const ADF_GEN6_ERRSOU1_SFICMD_PARERR_BIT: u32 = 1 << 4;
+pub const ADF_GEN6_ERRSOU1_MASK: u32 = ADF_GEN6_ERRSOU1_CPP0_MEUNC_BIT | ADF_GEN6_ERRSOU1_CPP_CMDPARERR_BIT | ADF_GEN6_ERRSOU1_RIMEM_PARERR_STS_BIT | ADF_GEN6_ERRSOU1_TIMEM_PARERR_STS_BIT | ADF_GEN6_ERRSOU1_SFICMD_PARERR_BIT;
+pub const ADF_GEN6_ERRMSK1_CPP0_MEUNC_BIT: u32 = 1 << 0;
+pub const ADF_GEN6_ERRMSK1_CPP_CMDPARERR_BIT: u32 = 1 << 1;
+pub const ADF_GEN6_ERRMSK1_RIMEM_PARERR_STS_BIT: u32 = 1 << 2;
+pub const ADF_GEN6_ERRMSK1_TIMEM_PARERR_STS_BIT: u32 = 1 << 3;
+pub const ADF_GEN6_ERRMSK1_IOSFCMD_PARERR_BIT: u32 = 1 << 4;
+pub const ADF_GEN6_ERRMSK1_MASK: u32 = ADF_GEN6_ERRMSK1_CPP0_MEUNC_BIT | ADF_GEN6_ERRMSK1_CPP_CMDPARERR_BIT | ADF_GEN6_ERRMSK1_RIMEM_PARERR_STS_BIT | ADF_GEN6_ERRMSK1_TIMEM_PARERR_STS_BIT | ADF_GEN6_ERRMSK1_IOSFCMD_PARERR_BIT;
+
+pub const ADF_GEN6_HIAEUNCERRLOG_CPP0: u32 = 0x41A300;
+pub const ADF_GEN6_HIAEUNCERRLOGENABLE_CPP0: u32 = 0x41A320;
+pub const ADF_GEN6_HIAECORERRLOG_CPP0: u32 = 0x41A308;
+pub const ADF_GEN6_HIAECORERRLOGENABLE_CPP0: u32 = 0x41A318;
+pub const ADF_GEN6_HICPPAGENTCMDPARERRLOG: u32 = 0x41A310;
+pub const ADF_GEN6_HICPPAGENTCMDPARERRLOGENABLE: u32 = 0x41A314;
+pub const ADF_6XXX_HICPPAGENTCMDPARERRLOG_MASK: u32 = 0x1B;
+pub const ADF_GEN6_RIMEM_PARERR_STS: u32 = 0x41B128;
+pub const ADF_GEN6_RI_MEM_PAR_ERR_EN0: u32 = 0x41B12C;
+pub const ADF_GEN6_RIMEM_PARERR_FATAL_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 18) | (1 << 19) | (1 << 20) | (1 << 21) | (1 << 22) | (1 << 23) | (1 << 24) | (1 << 25) | (1 << 26) | (1 << 27) | (1 << 28) | (1 << 30);
+pub const ADF_GEN6_RIMEM_PARERR_CERR_MASK: u32 = (1 << 10) | (1 << 11) | (1 << 12) | (1 << 13);
+
+pub const ADF_GEN6_TI_CI_PAR_STS: u32 = 0x50060C;
+pub const ADF_GEN6_TI_CI_PAR_ERR_MASK: u32 = 0x500608;
+pub const ADF_GEN6_TI_CI_PAR_STS_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 3);
+pub const ADF_GEN6_TI_PULL0FUB_PAR_STS: u32 = 0x500618;
+pub const ADF_GEN6_TI_PULL0FUB_PAR_ERR_MASK: u32 = 0x500614;
+pub const ADF_GEN6_TI_PULL0FUB_PAR_STS_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9) | (1 << 10) | (1 << 11) | (1 << 12) | (1 << 13) | (1 << 14);
+pub const ADF_GEN6_TI_PUSHFUB_PAR_STS: u32 = 0x500630;
+pub const ADF_GEN6_TI_PUSHFUB_PAR_ERR_MASK: u32 = 0x50062C;
+pub const ADF_GEN6_TI_PUSHFUB_PAR_STS_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7) | (1 << 8) | (1 << 9) | (1 << 10);
+pub const ADF_GEN6_TI_CD_PAR_STS: u32 = 0x50063C;
+pub const ADF_GEN6_TI_CD_PAR_ERR_MASK: u32 = 0x500638;
+pub const ADF_GEN6_TI_CD_PAR_STS_MASK: u32 = (1 << 26) - 1;
+pub const ADF_GEN6_TI_TRNSB_PAR_STS: u32 = 0x500648;
+pub const ADF_GEN6_TI_TRNSB_PAR_ERR_MASK: u32 = 0x500644;
+pub const ADF_GEN6_TI_TRNSB_PAR_STS_MASK: u32 = (1 << 22) - 1;
+pub const ADF_GEN6_RIMISCSTS: u32 = 0x41B1B8;
+pub const ADF_GEN6_RIMISCCTL: u32 = 0x41B1BC;
+
+pub const ADF_GEN6_ERRSOU2_SSM_ERR_BIT: u32 = 1 << 0;
+pub const ADF_GEN6_ERRSOU2_CPP_CFC_ERR_STATUS_BIT: u32 = 1 << 1;
+pub const ADF_GEN6_ERRSOU2_CPP_CFC_ATT_INT_MASK: u32 = (1 << 2) | (1 << 3) | (1 << 4);
+pub const ADF_GEN6_ERRSOU2_PM_INT_BIT: u32 = 1 << 18;
+pub const ADF_GEN6_ERRSOU2_MASK: u32 = ADF_GEN6_ERRSOU2_SSM_ERR_BIT | ADF_GEN6_ERRSOU2_CPP_CFC_ERR_STATUS_BIT;
+pub const ADF_GEN6_ERRSOU2_DIS_MASK: u32 = ADF_GEN6_ERRSOU2_MASK | ADF_GEN6_ERRSOU2_CPP_CFC_ATT_INT_MASK;
+pub const ADF_GEN6_IAINTSTATSSM: u32 = 0x28;
+pub const ADF_GEN6_IAINTSTATSSM_SH_ERR_BIT: u32 = 1 << 0;
+pub const ADF_GEN6_IAINTSTATSSM_PPERR_BIT: u32 = 1 << 2;
+pub const ADF_GEN6_IAINTSTATSSM_SCMPAR_ERR_BIT: u32 = 1 << 4;
+pub const ADF_GEN6_IAINTSTATSSM_CPPPAR_ERR_BIT: u32 = 1 << 5;
+pub const ADF_GEN6_IAINTSTATSSM_RFPAR_ERR_BIT: u32 = 1 << 6;
+pub const ADF_GEN6_IAINTSTATSSM_UNEXP_CPL_ERR_BIT: u32 = 1 << 7;
+pub const ADF_GEN6_IAINTSTATSSM_MASK: u32 = (1 << 0) | (1 << 2) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7);
+pub const ADF_GEN6_UERRSSMSH: u32 = 0x18;
+pub const ADF_GEN6_UERRSSMSH_MASK: u32 = (1 << 0) | (1 << 15);
+pub const ADF_GEN6_CERRSSMSH_ERROR_BIT: u32 = (1 << 0) | (1 << 15) | (1 << 24);
+pub const ADF_GEN6_CERRSSMSH: u32 = 0x10;
+pub const ADF_GEN6_INTMASKSSM: u32 = 0x0;
+pub const ADF_GEN6_INTMASKSSM_MASK: u32 = (1 << 0) | (1 << 2) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 7);
+pub const ADF_GEN6_PPERR: u32 = 0x8;
+pub const ADF_GEN6_PPERR_MASK: u32 = (1 << 0) | (1 << 1);
+pub const ADF_GEN6_SCM_PAR_ERR_MASK: u32 = 1 << 5;
+pub const ADF_GEN6_CPP_PAR_ERR_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2);
+pub const ADF_GEN6_UNEXP_CPL_ERR_MASK: u32 = (1 << 3) | (1 << 4) | (1 << 10) | (1 << 11);
+pub const ADF_GEN6_RF_PAR_ERR_MASK: u32 = 1 << 16;
+pub const ADF_GEN6_SSM_FERR_STATUS: u32 = 0x9C;
+pub const ADF_GEN6_CPP_CFC_ERR_STATUS: u32 = 0x640C04;
+pub const ADF_GEN6_CPP_CFC_ERR_STATUS_ERR_BIT: u32 = 1 << 0;
+pub const ADF_GEN6_CPP_CFC_ERR_STATUS_MERR_BIT: u32 = 1 << 1;
+pub const ADF_GEN6_CPP_CFC_ERR_STATUS_CMDPAR_BIT: u32 = 1 << 7;
+pub const ADF_GEN6_CPP_CFC_ERR_STATUS_DATAPAR_BIT: u32 = 1 << 8;
+pub const ADF_GEN6_CPP_CFC_FATAL_ERR_BIT: u32 = (1 << 0) | (1 << 1);
+pub const ADF_GEN6_CPP_CFC_ERR_CTRL_MASK: u32 = (1 << 0) | (1 << 1);
+pub const ADF_GEN6_CPP_CFC_ERR_CTRL_DIS_MASK: u32 = (1 << 4) | (1 << 5) | (1 << 6) | (1 << 9) | (1 << 10);
+pub const ADF_GEN6_CPP_CFC_ERR_CTRL: u32 = 0x640C00;
+pub const ADF_GEN6_CPP_CFC_ERR_STATUS_CLR_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2);
+pub const ADF_GEN6_CPP_CFC_ERR_STATUS_CLR: u32 = 0x640C08;
+
+pub const ADF_GEN6_ERRSOU3_TIMISCSTS_BIT: u32 = 1 << 0;
+pub const ADF_GEN6_ERRSOU3_RICPPINTSTS_MASK: u32 = (1 << 1) | (1 << 6);
+pub const ADF_GEN6_ERRSOU3_TICPPINTSTS_MASK: u32 = (1 << 2) | (1 << 5);
+pub const ADF_GEN6_ERRSOU3_VFLRNOTIFY_BIT: u32 = 1 << 7;
+pub const ADF_GEN6_ERRSOU3_ATUFAULTSTATUS_BIT: u32 = 1 << 8;
+pub const ADF_GEN6_ERRSOU3_RLTERROR_BIT: u32 = 1 << 9;
+pub const ADF_GEN6_ERRSOU3_TC_VC_MAP_ERROR_BIT: u32 = 1 << 16;
+pub const ADF_GEN6_ERRSOU3_PCIE_DEVHALT_BIT: u32 = 1 << 17;
+pub const ADF_GEN6_ERRSOU3_PG_REQ_DEVHALT_BIT: u32 = 1 << 18;
+pub const ADF_GEN6_ERRSOU3_XLT_CPL_DEVHALT_BIT: u32 = 1 << 19;
+pub const ADF_GEN6_ERRSOU3_TI_INT_ERR_DEVHALT_BIT: u32 = 1 << 20;
+pub const ADF_GEN6_ERRSOU3_MASK: u32 = ADF_GEN6_ERRSOU3_TIMISCSTS_BIT | ADF_GEN6_ERRSOU3_RICPPINTSTS_MASK | ADF_GEN6_ERRSOU3_TICPPINTSTS_MASK | ADF_GEN6_ERRSOU3_VFLRNOTIFY_BIT | ADF_GEN6_ERRSOU3_ATUFAULTSTATUS_BIT | ADF_GEN6_ERRSOU3_RLTERROR_BIT | ADF_GEN6_ERRSOU3_TC_VC_MAP_ERROR_BIT | ADF_GEN6_ERRSOU3_PCIE_DEVHALT_BIT | ADF_GEN6_ERRSOU3_PG_REQ_DEVHALT_BIT | ADF_GEN6_ERRSOU3_XLT_CPL_DEVHALT_BIT | ADF_GEN6_ERRSOU3_TI_INT_ERR_DEVHALT_BIT;
+pub const ADF_GEN6_ERRSOU3_DIS_MASK: u32 = ADF_GEN6_ERRSOU3_TIMISCSTS_BIT | ADF_GEN6_ERRSOU3_RICPPINTSTS_MASK | ADF_GEN6_ERRSOU3_TICPPINTSTS_MASK | ADF_GEN6_ERRSOU3_VFLRNOTIFY_BIT | ADF_GEN6_ERRSOU3_ATUFAULTSTATUS_BIT | ADF_GEN6_ERRSOU3_RLTERROR_BIT | ADF_GEN6_ERRSOU3_TC_VC_MAP_ERROR_BIT;
+pub const ADF_GEN6_RLT_ERRLOG: u32 = 0x508814;
+pub const ADF_GEN6_RLT_ERRLOG_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
+pub const ADF_GEN6_TIMISCSTS: u32 = 0x50054C;
+pub const ADF_GEN6_TIMISCCTL: u32 = 0x500548;
+pub const ADF_GEN6_TIMISCCTL_BIT: u32 = 1 << 0;
+pub const ADF_GEN6_TIMSCCTL_RELAY_MASK: u32 = (1 << 1) | (1 << 2) | (1 << 30);
+pub const ADF_GEN6_RICPPINTSTS: u32 = 0x41A330;
+pub const ADF_GEN6_RICPPINTSTS_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
+pub const ADF_GEN6_RICPPINTCTL: u32 = 0x41A32C;
+pub const ADF_GEN6_RICPPINTCTL_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4);
+pub const ADF_GEN6_TICPPINTSTS: u32 = 0x50053C;
+pub const ADF_GEN6_TICPPINTSTS_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2);
+pub const ADF_GEN6_TICPPINTCTL: u32 = 0x500538;
+pub const ADF_GEN6_TICPPINTCTL_MASK: u32 = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4);
+pub const ADF_GEN6_ATUFAULTSTATUS_BIT: u32 = 1 << 0;
+#[inline]
+pub const fn ADF_GEN6_ATUFAULTSTATUS(i: u32) -> u32 { 0x506000 + i * 0x4 }
+pub const ADF_GEN6_RIMISCSTS_BIT: u32 = 1 << 0;
+pub const ADF_GEN6_GENSTS: u32 = 0x41A220;
+pub const ADF_GEN6_GENSTS_DEVICE_STATE_MASK: u32 = (1 << 2) - 1;
+pub const ADF_GEN6_GENSTS_RESET_TYPE_MASK: u32 = ((1 << 4) - 1) & !((1 << 2) - 1);
+pub const ADF_GEN6_GENSTS_PFLR: u32 = 0x1;
+pub const ADF_GEN6_GENSTS_COLD_RESET: u32 = 0x3;
+pub const ADF_GEN6_GENSTS_DEVHALT: u32 = 0x1;
+
+extern "C" {
+    pub fn adf_gen6_init_ras_ops(ras_ops: *mut adf_ras_ops);
+}
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
