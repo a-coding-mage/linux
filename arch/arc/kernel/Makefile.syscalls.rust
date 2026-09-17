@@ -1,0 +1,7 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: 88e4023b704a4065cc3c348f6b7adc22b5bedda1384a4bbb62f0947856100a6f
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0
+
+syscall_abis_32 += arc time32 renameat stat64 rlimit

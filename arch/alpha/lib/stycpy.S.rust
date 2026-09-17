@@ -1,0 +1,15 @@
+/* SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783 */
+/* SOURCE-SHA256: de5cd1a2ecad97e2fb9692d7acf273c56e6520794e7ebb064ffee8e0dc7f8848 */
+/* REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272 */
+/* BUILD-REVIEWER: lupos-build-bash-1 */
+#include "strcpy.S"
+#ifdef CONFIG_ALPHA_EV67
+#include "ev67-strcat.S"
+#else
+#include "strcat.S"
+#endif
+#ifdef CONFIG_ALPHA_EV6
+#include "ev6-stxcpy.S"
+#else
+#include "stxcpy.S"
+#endif

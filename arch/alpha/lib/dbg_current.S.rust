@@ -1,0 +1,34 @@
+/* SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783 */
+/* SOURCE-SHA256: 05c75a73dc99f187506cd888e74a2deb2008227500514d9a7bdb1499a0eecb54 */
+/* REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272 */
+/* BUILD-REVIEWER: lupos-build-bash-1 */
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * arch/alpha/lib/dbg_current.S
+ * Contributed by Richard Henderson (rth@cygnus.com)
+ *
+ * Trap if we find current not correct.
+ */
+
+#include <asm/pal.h>
+
+	.text
+	.set noat
+
+	.globl _mcount
+	.ent _mcount
+_mcount:
+	.frame $30, 0, $28, 0
+	.prologue 0
+
+	lda	$0, -0x4000($30)
+	cmpult	$8, $30, $1
+	cmpule	$0, $30, $2
+	and	$1, $2, $3
+	bne	$3, 1f
+
+	call_pal PAL_bugchk
+
+1:	ret	$31, ($28), 1
+
+	.end _mcount

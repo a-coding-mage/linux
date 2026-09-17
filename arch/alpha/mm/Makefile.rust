@@ -1,0 +1,18 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: 15856d97400daef9ee535670fe6f3ebcf755fff4499309db6611e0bd7b36b9c5
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Makefile for the linux alpha-specific parts of the memory manager.
+#
+
+obj-y	:= init.o fault.o tlbflush.o
+
+# These objects have repository-owned Rust translations.  Keep the ordinary
+# Kbuild object names and make the Rust sources the authoritative prerequisites;
+# the shared Rust object rule supplies the kernel target, flags, depfiles and
+# objtool integration.
+$(obj)/init.o: $(src)/init.rs
+$(obj)/fault.o: $(src)/fault.rs
+$(obj)/tlbflush.o: $(src)/tlbflush.rs

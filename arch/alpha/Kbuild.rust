@@ -1,0 +1,10 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: 52ddd79d66af37431fc354d76071464e9e40be45f8b8d7bf4d42f4947a0fb72d
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0-only
+obj-y			+= kernel/ mm/
+obj-$(CONFIG_MATHEMU)	+= math-emu/
+
+# for cleaning
+subdir- += boot

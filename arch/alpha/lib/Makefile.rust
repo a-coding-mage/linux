@@ -1,0 +1,61 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: 29cd19982298d7aa56d2195f6fd26d388ef0dc95fee4d0aa46cf12e7157f9ad5
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0
+#
+# Makefile for alpha-specific library files..
+#
+
+asflags-y := $(KBUILD_CFLAGS)
+
+# Many of these routines have implementations tuned for ev6.
+# Choose them iff we're targeting ev6 specifically.
+ev6-$(CONFIG_ALPHA_EV6) := ev6-
+
+# Several make use of the cttz instruction introduced in ev67.
+ev67-$(CONFIG_ALPHA_EV67) := ev67-
+
+# These objects have repository-owned Rust crate roots.  The explicit static
+# pattern rule is intentional: the legacy .c files remain in the source tree
+# as provenance, but must not win Kbuild's implicit-rule search over the Rust
+# implementations.
+alpha-rust-objs := checksum.o csum_partial_copy.o udelay.o memcpy.o fpreg.o \
+		   srm_puts.o srm_printk.o fls.o
+
+lib-y =	__divqu.o __remqu.o __divlu.o __remlu.o \
+	udiv-qrnnd.o \
+	udelay.o \
+	$(ev6-y)memset.o \
+	$(ev6-y)memcpy.o \
+	memmove.o \
+	checksum.o \
+	csum_partial_copy.o \
+	$(ev67-y)strlen.o \
+	stycpy.o \
+	styncpy.o \
+	$(ev67-y)strchr.o \
+	$(ev67-y)strrchr.o \
+	$(ev6-y)memchr.o \
+	$(ev6-y)copy_user.o \
+	$(ev6-y)clear_user.o \
+	$(ev6-y)csum_ipv6_magic.o \
+	$(ev6-y)clear_page.o \
+	$(ev6-y)copy_page.o \
+	fpreg.o \
+	callback_srm.o \
+	srm_puts.o srm_printk.o \
+	fls.o
+
+$(obj)/$(alpha-rust-objs): $(obj)/%.o: $(obj)/%.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+
+# The division routines are built from single source, with different defines.
+AFLAGS___divqu.o = -DDIV
+AFLAGS___remqu.o =       -DREM
+AFLAGS___divlu.o = -DDIV       -DINTSIZE
+AFLAGS___remlu.o = -DREM -DINTSIZE
+
+$(addprefix $(obj)/,__divqu.o __remqu.o __divlu.o __remlu.o): \
+						$(src)/$(ev6-y)divide.S FORCE
+	$(call if_changed_rule,as_o_S)

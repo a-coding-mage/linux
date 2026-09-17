@@ -1,0 +1,13 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: e13b70c8a6e1d19b4ef64278deacfce822307363e4cd177f32e4d1170d8134a1
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0
+
+dtb-y	:= $(addsuffix .dtb, $(CONFIG_BUILTIN_DTB_NAME))
+
+# for CONFIG_OF_ALL_DTBS test
+dtb-	:= $(patsubst $(src)/%.dts,%.dtb, $(wildcard $(src)/*.dts))
+
+# board-specific dtc flags
+DTC_FLAGS_hsdk += --pad 20

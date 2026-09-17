@@ -1,0 +1,29 @@
+/* SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783 */
+/* SOURCE-SHA256: 31a80b8ce824fdfe46c3638cba198568b58fb82a0222c377dd8d012203cf4df3 */
+/* REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272 */
+/* BUILD-REVIEWER: lupos-build-bash-1 */
+/* SPDX-License-Identifier: GPL-2.0 */
+OUTPUT_FORMAT("elf64-alpha")
+ENTRY(__start)
+printk = srm_printk;
+SECTIONS
+{
+  . = 0x20000000;
+  .text : { *(.text) }
+  _etext = .;
+  PROVIDE (etext = .);
+  .rodata : { *(.rodata) *(.rodata.*) }
+  .data : { *(.data) CONSTRUCTORS }
+  .got : { *(.got) }
+  .sdata : { *(.sdata) }
+  _edata = .;
+  PROVIDE (edata = .);
+  .sbss : { *(.sbss) *(.scommon) }
+  .bss : { *(.bss) *(COMMON) }
+  _end = . ;
+  PROVIDE (end = .);
+
+  .mdebug 0 : { *(.mdebug) }
+  .note 0 : { *(.note) }
+  .comment 0 : { *(.comment) }
+}

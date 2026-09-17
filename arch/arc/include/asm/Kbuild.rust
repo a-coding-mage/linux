@@ -1,0 +1,14 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: ac9ec15c0246d05483a28f620a5959a032c18943c0a596fe860e20996d79b921
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0
+syscall-y += syscall_table_32.h
+
+generic-y += extable.h
+generic-y += kvm_para.h
+generic-y += mcs_spinlock.h
+generic-y += parport.h
+generic-y += ring_buffer.h
+generic-y += user.h
+generic-y += text-patching.h

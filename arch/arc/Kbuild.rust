@@ -1,0 +1,11 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: 85c8f5319c916d139dfcd954a59e5f03d07b5c18a6d1b9634c455a9d74416a92
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0
+obj-y += kernel/
+obj-y += mm/
+obj-y += net/
+
+# for cleaning
+subdir- += boot

@@ -1,7 +1,7 @@
 # SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
 # SOURCE-SHA256: 79a6db236771f08ad9ee10157c971565d6f982071ea6db1f9b0ec79c306bea9b
-# REVIEW-CONTEXT: a982d1fe2bd75cac2bca47395509509fc3c4671f62f88f185591b39cc4029528
-# BUILD-REVIEWER: lupos-build-bash-1
+# REVIEW-CONTEXT: 78bba1bbf523147a8ecf775d4e00737834af1dd51170c094a7bf07812bdd3053
+# BUILD-REVIEWER: lupos-build-bash-2
 # SPDX-License-Identifier: GPL-2.0
 #
 # Makefile for Kernel-based Virtual Machine module
@@ -9,9 +9,9 @@
 
 KVM ?= ../../../virt/kvm
 
-# Keep the Kbuild object names and conditional selection unchanged.  The
-# translated Rust siblings are selected by the pattern rule below; retaining
-# the .o names is required for built-in archive/module/link ordering.
+# Keep the public Kbuild object names, conditional selection, and ordering.
+# The common KVM implementation objects have Rust siblings in $(KVM); the
+# explicit pattern below takes precedence for these path-qualified objects.
 kvm-y := $(KVM)/kvm_main.o $(KVM)/eventfd.o $(KVM)/binary_stats.o
 kvm-$(CONFIG_KVM_VFIO) += $(KVM)/vfio.o
 kvm-$(CONFIG_KVM_MMIO) += $(KVM)/coalesced_mmio.o
@@ -21,8 +21,8 @@ kvm-$(CONFIG_HAVE_KVM_DIRTY_RING) += $(KVM)/dirty_ring.o
 kvm-$(CONFIG_HAVE_KVM_PFNCACHE) += $(KVM)/pfncache.o
 kvm-$(CONFIG_KVM_GUEST_MEMFD) += $(KVM)/guest_memfd.o
 
-# Kbuild's generic rules have both %.c and %.rs candidates.  These objects
-# have repository-owned Rust translations, so make the Rust prerequisite and
-# recipe the preferred rule while preserving the canonical .o target names.
+# Do not merely add .rs as a prerequisite to the C pattern rule: that would
+# leave the C recipe selected when foo.c and foo.rs coexist.  Use Kbuild's
+# native Rust recipe explicitly while retaining the canonical .o targets.
 $(KVM)/%.o: $(KVM)/%.rs FORCE
 	+$(call if_changed_rule,rustc_o_rs)

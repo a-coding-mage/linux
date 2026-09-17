@@ -1,0 +1,22 @@
+/* SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783 */
+/* SOURCE-SHA256: 6cfa9542396446c11b2e6526796e0ae9af244b4506278870cca02e6bf909d615 */
+/* REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272 */
+/* BUILD-REVIEWER: lupos-build-bash-1 */
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Alpha EV6 entry point for the Rust implementation of the IPv6 pseudo-header
+ * checksum.  Keep this assembly veneer because arch/alpha/lib/Makefile selects
+ * this file by its established object name and callers require this symbol.
+ */
+
+	.globl csum_ipv6_magic
+	.globl rust_csum_ipv6_magic
+	.align 4
+	.ent csum_ipv6_magic
+	.frame $30,0,$26,0
+csum_ipv6_magic:
+	.prologue 0
+	jsr	$26,rust_csum_ipv6_magic
+	ret	$31,($26),1
+	.end csum_ipv6_magic
+	EXPORT_SYMBOL(csum_ipv6_magic)

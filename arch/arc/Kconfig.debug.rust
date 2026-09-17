@@ -1,0 +1,14 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: d93964c40c9d0948d2f643d91dc198a7ac508941bc8a9ec644a08df0446c445c
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0
+
+config 16KSTACKS
+	bool "Use 16Kb for kernel stacks instead of 8Kb"
+	help
+	  If you say Y here the kernel will use a  16Kb stacksize for the
+	  kernel stack attached to each process/thread. The default is 8K.
+	  This increases the resident kernel footprint and will cause less
+	  threads to run on the system and also increase the pressure
+	  on the VM subsystem for higher order allocations.

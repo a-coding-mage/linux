@@ -1,0 +1,13 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: a2d7716338b3f598a9ec1f1ccc15cede2af0477f2a085b780b284b94b674a920
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0
+
+generated-y += syscall_table.h
+generic-y += agp.h
+generic-y += asm-offsets.h
+generic-y += kvm_para.h
+generic-y += mcs_spinlock.h
+generic-y += ring_buffer.h
+generic-y += text-patching.h

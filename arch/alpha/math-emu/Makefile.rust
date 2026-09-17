@@ -1,0 +1,14 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: 08f593489791fe1e44c63d256f6a5c3813a05a1849a7a09a760aa74c5c7654ed
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Makefile for the FPU instruction emulation.
+#
+
+ccflags-y := -w
+
+obj-$(CONFIG_MATHEMU) += math-emu.o
+
+math-emu-objs := math.o

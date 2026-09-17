@@ -1,0 +1,19 @@
+/* SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783 */
+/* SOURCE-SHA256: 588f940b6859379e11054b4f182bc1903361491869d846d72bc1cbcb73772d73 */
+/* REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272 */
+/* BUILD-REVIEWER: lupos-build-bash-1 */
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * arch/alpha/kernel/systbls.S
+ *
+ * The system call table. 
+ */
+
+#include <asm/unistd.h>
+
+#define __SYSCALL(nr, entry) .quad entry
+	.data
+	.align 3
+	.globl sys_call_table
+sys_call_table:
+#include <asm/syscall_table.h>

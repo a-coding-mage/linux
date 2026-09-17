@@ -1,0 +1,8 @@
+# SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+# SOURCE-SHA256: dd2cb3ed5e84cf895312c582abf11cf19490ac5ad74d9ca5679be314c872c0df
+# REVIEW-CONTEXT: 7290f2d38ef10c1013f60fd60ce3eca79a7031267b1a58d41fd4ee00298f1272
+# BUILD-REVIEWER: lupos-build-bash-1
+# SPDX-License-Identifier: GPL-2.0
+syscall-y += unistd_32.h
+
+generic-y += ucontext.h
