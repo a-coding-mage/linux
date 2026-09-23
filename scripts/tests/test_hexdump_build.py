@@ -14,6 +14,8 @@ import shlex
 import subprocess
 import tempfile
 import unittest
+from rust_exports_test_support import (compile_native_wrapper, dwarf_tools, dwarf_versions,
+                                       read_exports)
 
 from check_hexdump_kernel import verify_linked_implementation
 from kconfig_test_support import cached_conf_tools
@@ -21,7 +23,8 @@ from kconfig_test_support import cached_conf_tools
 
 ROOT = Path(__file__).resolve().parents[2]
 ORIGINAL = "lib/hexdump.o"
-TRANSLATED = ("lib/hexdump_rust.o", "lib/hexdump_exports.o")
+TRANSLATED = ("lib/hexdump_rust.o",)
+OBSOLETE = "lib/hexdump_exports.o"
 
 
 def clean_environment():
@@ -44,7 +47,7 @@ class HexdumpBuildTests(unittest.TestCase):
         build.mkdir()
         # Keep all implementations on disk: only archive membership determines
         # the linked selection, including after C -> Rust -> C transitions.
-        for member in {ORIGINAL, *TRANSLATED, *members}:
+        for member in {ORIGINAL, *TRANSLATED, OBSOLETE, *members}:
             path = build / member
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b"archive-member fixture\n")
@@ -68,8 +71,9 @@ class HexdumpBuildTests(unittest.TestCase):
 
     def test_runtime_rejects_missing_partial_mixed_and_opposite_implementations(self):
         cases = (("C", []), ("Rust", []), ("Rust", [ORIGINAL]),
-                 ("C", list(TRANSLATED)), ("Rust", [TRANSLATED[0]]),
-                 ("Rust", [TRANSLATED[1]]), ("Rust", [ORIGINAL, *TRANSLATED]),
+                 ("C", list(TRANSLATED)), ("Rust", [OBSOLETE]),
+                 ("Rust", [*TRANSLATED, OBSOLETE]), ("Rust", [ORIGINAL, *TRANSLATED]),
+                 ("C", [ORIGINAL, OBSOLETE]),
                  ("C", [ORIGINAL, *TRANSLATED]))
         for selection, members in cases:
             with self.subTest(selection=selection, members=members):
@@ -106,7 +110,7 @@ hexdump-selection:
                         "-f", harness, "hexdump-selection", "HOST_TOOLS_LANG=" + host,
                         "CONFIG_RUST=y", "CONFIG_RUST_HEXDUMP=" + selection],
                         cwd=self.work, env=clean_environment(), check=True, capture_output=True)
-                    expected = b"hexdump_rust.o hexdump_exports.o" if selection == "y" else b"hexdump.o"
+                    expected = b"hexdump_rust.o" if selection == "y" else b"hexdump.o"
                     self.assertEqual(result.stdout.splitlines(), [expected, b""])
                     self.assertEqual(result.stderr, b"")
 
@@ -148,6 +152,7 @@ pub use production::*;
         content = dependencies.read_text()
         self.assertIn(str(ROOT / "lib/hexdump_rust.rs"), content)
         self.assertIn(str(ROOT / "lib/hexdump.rs"), content)
+        self.assertIn(str(ROOT / "lib/../rust/ffi_export.rs"), content)
         self.assertNotIn(str(ROOT / "lib/hexdump.c"), content)
 
     def test_optional_completed_native_build_is_read_only_and_consistent(self):
@@ -164,6 +169,63 @@ pub use production::*;
             self.assertIn(str(ROOT / "lib/hexdump.rs"), command)
             self.assertIn("$(wildcard include/config/PRINTK)", command)
             self.assertIn("$(wildcard include/config/PRINTK_INDEX)", command)
+
+    def test_native_export_metadata_and_dwarf_follow_printk_configuration(self):
+        from test_hexdump_translation import c_environment
+        include = c_environment(self.work)
+        (include / "linux/compiler.h").write_text('''#ifndef HEX_EXPORT_TEST_COMPILER_H
+#define HEX_EXPORT_TEST_COMPILER_H
+#define unlikely(x) __builtin_expect(!!(x), 0)
+#define __used __attribute__((__used__))
+#define __section(name) __attribute__((__section__(name)))
+#define __ADDRESSABLE(sym) static void * __used __section(".discard.addressable") \\
+    hex_addressable_##sym = (void *)&sym;
+#endif
+''')
+        (include / "linux/linkage.h").write_text("#define ASM_NL ;\n")
+        (include / "linux/export.h").write_text('#include "' + str(ROOT / "include/linux/export.h") + '"\n')
+        tools = dwarf_tools()
+        expected_all = {
+            b"hex_asc": b"0x9cd815e5", b"hex_asc_upper": b"0x9cd815e5",
+            b"hex_to_bin": b"0x53849ca6", b"hex2bin": b"0x1e421b3d",
+            b"bin2hex": b"0x8590de8d", b"hex_dump_to_buffer": b"0x287cb6a0",
+            b"print_hex_dump": b"0x3403408b",
+        }
+        for printk in (False, True):
+            expected = {name: crc for name, crc in expected_all.items()
+                        if printk or name != b"print_hex_dump"}
+            for version in (4, 5):
+                for optimize in ("0", "2", "s"):
+                    with self.subTest(printk=printk, dwarf=version, optimize=optimize):
+                        native = compile_native_wrapper("lib/hexdump_rust.rs", self.work / "native",
+                                                        optimize=optimize, dwarf=version,
+                                                        cfg=("CONFIG_PRINTK",) if printk else ())
+                        actual, native_types = dwarf_versions(tools, native, expected, self.work)
+                        self.assertEqual(actual, expected)
+                        self.assertIn(b"hex_asc variable array_type[17]", native_types)
+                        self.assertIn(b"base_type usize byte_size(8)", native_types)
+                        obj = self.work / "hexdump-c.o"
+                        subprocess.run([*shlex.split(os.environ.get("HOSTCC", "cc")), "-O" + optimize,
+                                        "-g", "-gdwarf-" + str(version), "-funsigned-char",
+                                        "-DCONFIG_64BIT", "-DCONFIG_GENDWARFKSYMS", "-D__KERNEL__",
+                                        *(["-DCONFIG_PRINTK"] if printk else []), "-I" + str(include),
+                                        "-I" + str(ROOT / "include"), "-c", ROOT / "lib/hexdump.c",
+                                        "-o", obj], capture_output=True, check=True)
+                        original, original_types = dwarf_versions(tools, obj, expected, self.work)
+                        self.assertNotEqual(native_types, original_types)
+                        for name in expected:
+                            self.assertNotEqual(actual[name], original[name])
+                        records = []
+                        for owner in (native, obj):
+                            rows = read_exports(owner)
+                            records.append({row["name"]: (row["license"], row["namespace"],
+                                                          row["relocation_target"], row["relocation_addend"])
+                                            for row in rows})
+                            for row in rows:
+                                self.assertEqual(row["pointer_width"], 8)
+                                self.assertEqual(row["section_flags"], 2)
+                        wanted = {name.decode(): ("", "", name.decode(), 0) for name in expected}
+                        self.assertEqual(records, [wanted, wanted])
 
 
 if __name__ == "__main__":

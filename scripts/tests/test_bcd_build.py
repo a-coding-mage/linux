@@ -16,14 +16,15 @@ import tempfile
 import unittest
 
 import check_bcd_kernel as checker
-import gendwarf_test_support as dwarf_support
 from kconfig_test_support import cached_conf_tools
+from rust_exports_test_support import compile_native_wrapper, dwarf_tools, dwarf_versions, read_exports
 
 
 ROOT = Path(__file__).resolve().parents[2]
 ORIGINAL = "lib/bcd.o"
-TRANSLATED = ("lib/bcd_rust.o", "lib/bcd_exports.o")
-SOURCES = ("lib/bcd_rust.rs", "lib/bcd.rs", "lib/../include/linux/bcd_header.rs")
+TRANSLATED = ("lib/bcd_rust.o",)
+OBSOLETE = "lib/bcd_exports.o"
+SOURCES = ("lib/bcd_rust.rs", "lib/bcd.rs", "lib/../include/linux/bcd_header.rs", "lib/../rust/ffi_export.rs")
 MARKERS = {"c": b"LUPOS_BCD_ABI_OK inputs=69646 full16=65536",
            "rust": b"LUPOS_BCD_RUST_API_OK inputs=69646 full16=65536"}
 
@@ -46,7 +47,7 @@ class BcdBuildTests(TemporaryTest):
     def kernel(self, members, relative=False):
         build = self.work / str(len(list(self.work.iterdir())))
         build.mkdir()
-        for member in {ORIGINAL, *TRANSLATED, *members}:
+        for member in {ORIGINAL, *TRANSLATED, OBSOLETE, *members}:
             path = build / member
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b"BCD archive-member fixture\n")
@@ -69,8 +70,9 @@ class BcdBuildTests(TemporaryTest):
 
     def test_archive_rejects_missing_partial_mixed_or_opposite_objects(self):
         for selection, members in (("C", []), ("Rust", []), ("Rust", [ORIGINAL]),
-                                   ("C", list(TRANSLATED)), ("Rust", [TRANSLATED[0]]),
-                                   ("Rust", [TRANSLATED[1]]), ("C", [ORIGINAL, *TRANSLATED]),
+                                   ("C", list(TRANSLATED)), ("Rust", [OBSOLETE]),
+                                   ("Rust", [*TRANSLATED, OBSOLETE]), ("C", [ORIGINAL, *TRANSLATED]),
+                                   ("C", [ORIGINAL, OBSOLETE]),
                                    ("Rust", [ORIGINAL, *TRANSLATED])):
             with self.subTest(selection=selection, members=members):
                 with self.assertRaisesRegex(ValueError, "linked BCD objects"):
@@ -113,7 +115,7 @@ bcd-selection:
                         self.assertEqual(baseline.count(b"bcd.o"), 1)
                     expected = []
                     for item in baseline:
-                        expected.extend([b"bcd_rust.o", b"bcd_exports.o"]
+                        expected.extend([b"bcd_rust.o"]
                                         if item == b"bcd.o" and selection == "y" else [item])
                     self.assertEqual(objects, expected)
                     self.assertEqual(elsewhere, b"")
@@ -218,11 +220,11 @@ class BcdVersioningTests(TemporaryTest):
                         source / "genksyms.rs", "-o", rust], check=True, capture_output=True)
         return c, rust
 
-    def test_public_declarations_preserve_genksyms_crc_and_symtypes(self):
+    def test_original_c_genksyms_crc_and_symtypes_are_unchanged(self):
         tools = self.genksyms_tools()
         for compiler in self.compilers:
             outcomes = []
-            for source in (ROOT / "lib/bcd.c", ROOT / "lib/bcd_exports.c"):
+            for source in (ROOT / "lib/bcd.c",):
                 preprocessed = subprocess.run([*compiler, *self.flags, "-E", "-D__GENKSYMS__", source],
                                               check=True, capture_output=True).stdout
                 for tool in tools:
@@ -237,37 +239,35 @@ class BcdVersioningTests(TemporaryTest):
                                  {b"_bcd2bin": b"0xdf37db04", b"_bin2bcd": b"0xa5dc760e"})
                 self.assertIn(b"unsigned char", outcomes[0][2])
 
-    def test_dwarf_tools_agree_but_declaration_only_parameter_names_change_crc(self):
-        tools = dwarf_support.build_c(self.work), dwarf_support.build_rust(self.work)
+    def test_native_rust_dwarf_versions_actual_definitions_and_exports(self):
+        tools = dwarf_tools()
         original_crc = {b"_bcd2bin": b"0x605be21c", b"_bin2bcd": b"0xf664d2df"}
-        declaration_crc = {b"_bcd2bin": b"0xcf47c3a6", b"_bin2bcd": b"0x198ec728"}
-        for compiler in self.compilers:
-            for version in (4, 5):
-                for optimized in ("-O0", "-O2"):
-                    outcomes = []
-                    for source in (ROOT / "lib/bcd.c", ROOT / "lib/bcd_exports.c"):
+        rust_crc = {b"_bcd2bin": b"0x22d59527", b"_bin2bcd": b"0x888cb1d4"}
+        for version in (4, 5):
+            for optimized in ("0", "2", "s"):
+                native = compile_native_wrapper("lib/bcd_rust.rs", self.work / "native",
+                                                optimize=optimized, dwarf=version)
+                records = read_exports(native)
+                self.assertEqual({row["name"] for row in records}, {"_bcd2bin", "_bin2bcd"})
+                for row in records:
+                    self.assertEqual((row["license"], row["namespace"], row["relocation_target"],
+                                      row["relocation_addend"]), ("", "", row["name"], 0))
+                actual, types = dwarf_versions(tools, native, rust_crc, self.work)
+                self.assertEqual(actual, rust_crc)
+                self.assertIn(b"base_type u8 byte_size(1) encoding(7)", types)
+                self.assertIn(b" val )", types)
+                self.assertNotIn(b"unsigned char", types)
+                for compiler in self.compilers:
+                    with self.subTest(compiler=compiler, dwarf=version, optimized=optimized):
                         obj = self.work / "bcd.o"
                         subprocess.run([*compiler, *self.flags, "-g", "-gdwarf-" + str(version),
-                                        optimized, "-c", source, "-o", obj], check=True, capture_output=True)
-                        variants = []
-                        for tool in tools:
-                            types = self.work / "output.symtypes"
-                            result = subprocess.run([tool, "--symtypes", types, obj],
-                                                    input=b"_bcd2bin\n_bin2bcd\n",
-                                                    capture_output=True, check=True)
-                            variants.append((result.stdout, result.stderr, types.read_bytes()))
-                        self.assertEqual(variants[0], variants[1])
-                        self.assertEqual(variants[0][1], b"")
-                        outcomes.append(variants[0])
-                    with self.subTest(compiler=compiler, dwarf=version, optimized=optimized):
-                        # Do not pretend these are interchangeable DWARF module
-                        # versions: declarations omit the definition's `val`.
-                        self.assertEqual(outcomes[0][2].replace(b" val )", b" )"), outcomes[1][2])
-                        self.assertIn(b" val )", outcomes[0][2])
-                        self.assertNotEqual(outcomes[0][0], outcomes[1][0])
-                        for outcome, expected in zip(outcomes, (original_crc, declaration_crc)):
-                            self.assertEqual(dict(re.findall(rb"#SYMVER (\w+) (0x[0-9a-f]+)",
-                                                             outcome[0])), expected)
+                                        "-O" + optimized, "-c", ROOT / "lib/bcd.c", "-o", obj],
+                                       check=True, capture_output=True)
+                        original, original_types = dwarf_versions(tools, obj, original_crc, self.work)
+                        self.assertEqual(original, original_crc)
+                        self.assertIn(b"unsigned char", original_types)
+                        self.assertNotEqual(actual, original)
+                        self.assertNotEqual(types, original_types)
 
 
 class BcdConsumerTests(TemporaryTest):

@@ -34,7 +34,7 @@ CFLAGS_string.o += -fno-stack-protector
 endif
 
 ifeq ($(CONFIG_RUST_CTYPE),y)
-lib-y := ctype_rust.o ctype_exports.o
+lib-y := ctype_rust.o
 else
 lib-y := ctype.o
 endif
@@ -59,7 +59,7 @@ obj-y	+= lockref.o
 CONTEXT_ANALYSIS_rhashtable.o := y
 
 ifeq ($(CONFIG_RUST_BCD),y)
-obj-y += bcd_rust.o bcd_exports.o
+obj-y += bcd_rust.o
 else
 obj-y += bcd.o
 endif
@@ -73,7 +73,7 @@ obj-y += sort.o parser.o debug_locks.o random32.o \
 	 generic-radix-tree.o bitmap-str.o
 obj-y += string_helpers.o
 ifeq ($(CONFIG_RUST_HEXDUMP),y)
-obj-y += hexdump_rust.o hexdump_exports.o
+obj-y += hexdump_rust.o
 else
 obj-y += hexdump.o
 endif

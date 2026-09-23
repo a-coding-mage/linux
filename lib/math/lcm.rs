@@ -1,33 +1,59 @@
 // SPDX-License-Identifier: GPL-2.0-only
-// Dependencies: linux/compiler.h, linux/gcd.h, linux/export.h, linux/lcm.h
+//! Allocation-free least common multiples with native unsigned wrapping.
 
-use core::ffi::c_ulong;
+#[path = "gcd.rs"]
+// GCD's public standalone API is an implementation detail of this module.
+#[allow(unreachable_pub)]
+mod greatest_common_divisor;
 
-unsafe extern "C" {
-    fn gcd(a: c_ulong, b: c_ulong) -> c_ulong;
+/// Returns the least common multiple, or zero if either argument is zero.
+///
+/// Division precedes multiplication; a result exceeding `usize` wraps exactly
+/// like the kernel's unsigned-long implementation.
+#[inline]
+pub const fn lcm(a: usize, b: usize) -> usize {
+    multiply_quotient(a, b, greatest_common_divisor::gcd(a, b))
 }
 
-/* Lowest common multiple */
-pub unsafe fn lcm(a: c_ulong, b: c_ulong) -> c_ulong {
-    if a != 0 && b != 0 {
-        (a / gcd(a, b)) * b
+/// Returns the least common multiple using an explicit GCD strategy.
+#[inline]
+pub const fn lcm_with_ffs(a: usize, b: usize, efficient_ffs: bool) -> usize {
+    multiply_quotient(
+        a,
+        b,
+        greatest_common_divisor::gcd_with_ffs(a, b, efficient_ffs),
+    )
+}
+
+const fn multiply_quotient(a: usize, b: usize, divisor: usize) -> usize {
+    // gcd is zero only when both inputs are zero. checked_div handles that case
+    // and avoids a division-by-zero panic dependency even in unoptimized code.
+    match a.checked_div(divisor) {
+        Some(quotient) => quotient.wrapping_mul(b),
+        None => 0,
+    }
+}
+
+/// Returns the nonzero LCM, falling back to `b`, then `a`, when it is zero.
+#[inline]
+pub const fn lcm_not_zero(a: usize, b: usize) -> usize {
+    nonzero_result(a, b, lcm(a, b))
+}
+
+/// Returns the nonzero LCM using an explicit GCD strategy.
+#[inline]
+pub const fn lcm_not_zero_with_ffs(a: usize, b: usize, efficient_ffs: bool) -> usize {
+    nonzero_result(a, b, lcm_with_ffs(a, b, efficient_ffs))
+}
+
+const fn nonzero_result(a: usize, b: usize, result: usize) -> usize {
+    if result != 0 {
+        result
+    } else if b != 0 {
+        b
     } else {
-        0
+        a
     }
 }
-
-// EXPORT_SYMBOL_GPL(lcm);
-
-pub unsafe fn lcm_not_zero(a: c_ulong, b: c_ulong) -> c_ulong {
-    let l = lcm(a, b);
-
-    if l != 0 {
-        return l;
-    }
-
-    if b != 0 { b } else { a }
-}
-
-// EXPORT_SYMBOL_GPL(lcm_not_zero);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

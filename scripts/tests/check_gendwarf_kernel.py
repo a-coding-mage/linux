@@ -89,28 +89,44 @@ def unit_exports(image, command, nm):
     Rust libraries are versioned before rust/exports.o creates their C export
     records. Their rule in rust/Makefile, also used for rust/helpers/helpers.c,
     uses unsorted, defined symbols instead of scripts/Makefile.build's
-    __export_symbol_ records. The source record,
-    unlike dependencies or the object's directory, identifies Rust units even
-    when source files or compiler executables are outside the kernel tree.
+    __export_symbol_ records. Generic Rust objects now use explicit markers,
+    just like C objects. Their saved command sets RUST_MODFILE; Rust library
+    commands instead emit .rmeta metadata. Neither the directory nor a .rs
+    suffix alone identifies which actual Kbuild versioning rule was used.
     """
     sources = [line.partition(b":=")[2].strip() for line in command.splitlines()
                if line.startswith(b"source_")]
-    rust = any(source.endswith((b".rs", b"/rust/helpers/helpers.c"))
-               or source == b"rust/helpers/helpers.c" for source in sources)
-    flags = ["-p", "--defined-only"] if rust else []
+    commands = [line.partition(b":=")[2].strip() for line in command.splitlines()
+                if line.startswith(b"savedcmd_")]
+    tokens = [os.fsencode(token) for saved in commands
+              for token in shlex.split(os.fsdecode(saved))]
+    blanket = any(source.endswith(b"/rust/helpers/helpers.c")
+                  or source == b"rust/helpers/helpers.c" for source in sources)
+    if any(source.endswith(b".rs") for source in sources):
+        if any(token.startswith(b"RUST_MODFILE=") for token in tokens):
+            blanket = False
+        elif any(token.startswith(b"--emit=metadata=") for token in tokens):
+            blanket = True
+        else:
+            raise ValueError(f"{image}: cannot identify Rust symbol-versioning rule from saved command")
+    flags = ["-p", "--defined-only"] if blanket else []
     symbols = subprocess.run([*nm, *flags, image], capture_output=True, check=True).stdout
     names = []
-    for line in (symbols.split(b"\n") if rust else symbols.splitlines()):
+    for line in symbols.split(b"\n"):
         # awk's default field separator splits spaces/tabs, not every ASCII
         # whitespace byte: e.g. CR and VT may be part of an ELF symbol name.
-        fields = re.split(b"[ \t]+", line.strip(b" \t")) if rust else line.split()
-        if rust:
+        fields = re.split(b"[ \t]+", line.strip(b" \t"))
+        if blanket:
             # Match awk's $2~/(T|R|D|B)/, $3 and exclusion pattern exactly.
             if (len(fields) >= 3 and re.search(b"[TRDB]", fields[1])
                     and not re.search(b"__(pfx|cfi|odr_asan)", fields[2])):
                 names.append(fields[2])
-        elif fields and fields[-1].startswith(b"__export_symbol_"):
-            names.append(fields[-1][len(b"__export_symbol_"):])
+        else:
+            # Match getexportsymbols' sed expression, including raw symbol
+            # bytes that are not awk field separators or C identifiers.
+            marker = re.search(rb" __export_symbol_(.*)$", line)
+            if marker is not None:
+                names.append(marker.group(1))
     return b"".join(name + b"\n" for name in names)
 
 

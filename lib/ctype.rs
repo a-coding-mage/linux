@@ -5,7 +5,7 @@
 // Compile this table-owning module only once per kernel, through ctype_rust.rs.
 // Independent native Rust consumers use kernel::ctype, not a path import of
 // this source. The shared helper component uses a private table accessor;
-// kernel export/version metadata is supplied separately.
+// the owning crate emits export metadata and Kbuild versions its native DWARF.
 
 #[path = "../include/linux/ctype_header.rs"]
 mod classification;

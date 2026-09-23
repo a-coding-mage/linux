@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+// SPDX-License-Identifier: GPL-2.0
+//! Safe GCD algorithms; native runtime static-key ownership is separate.
 
-// Declarations supplied by linux/compiler.h and linux/jump_label.h.
-#[repr(C)]
-pub struct static_key_true {
-    _private: [u8; 0],
-}
+#[path = "../../lib/math/gcd.rs"]
+mod greatest_common_divisor;
 
-extern "C" {
-    pub static efficient_ffs_key: static_key_true;
-
-    pub fn gcd(a: usize, b: usize) -> usize;
-}
+pub use greatest_common_divisor::{gcd, gcd_with_ffs};
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

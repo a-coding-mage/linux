@@ -17,8 +17,8 @@ config RUST_BCD
 	  retained. The implementation needs no allocation.
 
 	  When using DWARF module versioning, rebuild modules after changing
-	  this option: declaration-only export metadata can change version
-	  CRCs without changing the C ABI.
+	  this option: native Rust debug types produce different version CRCs
+	  from C debug types even when the C ABI is unchanged.
 
 	  Disable this option to retain the original C implementation. This
 	  choice is independent of the HOST_TOOLS_LANG build-tool selector.
@@ -32,6 +32,9 @@ config RUST_CTYPE
 	  Build the translated Rust character classification table used by
 	  the existing C ctype macros and inline functions. Its byte-oriented
 	  classification, including the historical Latin-1 entries, is retained.
+
+	  When using DWARF module versioning, rebuild modules after changing
+	  this option: native Rust and C debug types have different version CRCs.
 
 	  Disable this option to keep the original C table. This choice is
 	  independent of HOST_TOOLS_LANG and does not change the separate
@@ -47,8 +50,8 @@ config RUST_HEXDUMP
 	  bin2hex(), hex_dump_to_buffer(), and print_hex_dump(). The exported
 	  C interface and symbol versioning remain available to existing
 	  kernel and module callers. The implementation needs no allocation.
-	  Rebuild modules after changing this option: declaration-only DWARF
-	  export metadata can change version CRCs without changing the C ABI.
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
 
 	  Disable this option to retain the original C implementation. This
 	  choice is independent of the HOST_TOOLS_LANG build-tool selector.
@@ -65,11 +68,29 @@ config RUST_INT_MATH
 	  implementation needs no allocation.
 
 	  When using DWARF module versioning, rebuild modules after changing
-	  this option: declaration-only export metadata can change version
-	  CRCs without changing the C ABI.
+	  this option: native Rust debug types produce different version CRCs
+	  from C debug types even when the C ABI is unchanged.
 
 	  Disable this option to retain the original C implementations. This
 	  choice is independent of the HOST_TOOLS_LANG build-tool selector.
+
+	  If unsure, say N.
+
+config RUST_GCD_LCM
+	bool "Rust implementation of greatest common divisor and least common multiple"
+	depends on RUST
+	help
+	  Build the translated Rust gcd(), lcm(), and lcm_not_zero() functions.
+	  Their C interfaces, GPL-only exports and unsigned wrapping arithmetic
+	  are retained. The real efficient_ffs_key remains available to the
+	  architecture code for runtime selection of the original GCD algorithms.
+	  The implementation needs no allocation.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementations. This
+	  choice is independent of HOST_TOOLS_LANG and RUST_INT_MATH.
 
 	  If unsure, say N.
 

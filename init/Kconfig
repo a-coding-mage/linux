@@ -2275,6 +2275,16 @@ config RUST
 
 	  If unsure, say N.
 
+config RUST_NATIVE_EXPORTS
+	bool "Native Rust library export bridge"
+	depends on RUST
+	help
+	  Generate the GPL-only export records for the Rust libraries and their
+	  C helpers with Rust instead of the original C export bridge. Symbol
+	  versions still come from the defining objects, not from this bridge.
+
+	  If unsure, say N to keep the original C export bridge.
+
 source "rust/kernel/Kconfig.test"
 
 config RUSTC_VERSION_TEXT

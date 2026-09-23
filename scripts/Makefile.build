@@ -205,6 +205,11 @@ genksyms = $(objtree)/scripts/genksyms/genksyms		\
 ifdef CONFIG_GENDWARFKSYMS
 cmd_gensymtypes_c = $(if $(skip_gendwarfksyms),,	\
 	$(call getexportsymbols,\1) | $(gendwarfksyms) $@)
+
+# Native Rust exports carry the same __export_symbol_ records as C exports.
+# Version only those explicit exports from the defining Rust object's DWARF,
+# not every global Rust symbol (the rust/ library rules use that separately).
+cmd_gensymtypes_rs = $(call getexportsymbols,\1) | $(gendwarfksyms) $@
 else
 cmd_gensymtypes_c = $(CPP) -D__GENKSYMS__ $(c_flags) $< | $(genksyms)
 endif # CONFIG_GENDWARFKSYMS
@@ -239,6 +244,11 @@ gen_symversions =								\
 	fi
 
 cmd_gen_symversions_c =	$(call gen_symversions,c)
+
+# CONFIG_RUST with CONFIG_MODVERSIONS requires CONFIG_GENDWARFKSYMS.
+ifdef CONFIG_GENDWARFKSYMS
+cmd_gen_symversions_rs =	$(call gen_symversions,rs)
+endif
 
 endif
 
@@ -360,6 +370,7 @@ quiet_cmd_rustc_o_rs = $(RUSTC_OR_CLIPPY_QUIET) $(quiet_modtag) $@
 define rule_rustc_o_rs
 	$(call cmd_and_fixdep,rustc_o_rs)
 	$(call cmd,gen_objtooldep)
+	$(call cmd,gen_symversions_rs)
 endef
 
 $(obj)/%.o: $(obj)/%.rs FORCE

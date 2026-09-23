@@ -15,14 +15,15 @@ import subprocess
 import tempfile
 import unittest
 
-import gendwarf_test_support as dwarf_support
+from rust_exports_test_support import compile_native_wrapper, dwarf_tools, dwarf_versions, read_exports
 from kconfig_test_support import cached_conf_tools
 
 
 ROOT = Path(__file__).resolve().parents[2]
 ORIGINAL = "lib/ctype.o"
-TRANSLATED = ("lib/ctype_rust.o", "lib/ctype_exports.o")
-SOURCES = ("lib/ctype_rust.rs", "lib/ctype.rs", "lib/../include/linux/ctype_header.rs")
+TRANSLATED = ("lib/ctype_rust.o",)
+OBSOLETE = "lib/ctype_exports.o"
+SOURCES = ("lib/ctype_rust.rs", "lib/ctype.rs", "lib/../include/linux/ctype_header.rs", "lib/../rust/ffi_export.rs")
 
 
 def environment():
@@ -43,7 +44,7 @@ class CtypeBuildTests(unittest.TestCase):
         self.sequence += 1
         build = self.work / str(self.sequence)
         build.mkdir()
-        for member in {ORIGINAL, *TRANSLATED, *members}:
+        for member in {ORIGINAL, *TRANSLATED, OBSOLETE, *members}:
             path = build / member
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b"ctype archive-member fixture\n")
@@ -68,8 +69,9 @@ class CtypeBuildTests(unittest.TestCase):
     def test_archive_rejects_missing_partial_mixed_and_opposite_objects(self):
         from check_ctype_kernel import verify_linked_implementation
         for selection, members in (("C", []), ("Rust", []), ("Rust", [ORIGINAL]),
-                                   ("C", list(TRANSLATED)), ("Rust", [TRANSLATED[0]]),
-                                   ("Rust", [TRANSLATED[1]]), ("C", [ORIGINAL, *TRANSLATED]),
+                                   ("C", list(TRANSLATED)), ("Rust", [OBSOLETE]),
+                                   ("Rust", [*TRANSLATED, OBSOLETE]), ("C", [ORIGINAL, *TRANSLATED]),
+                                   ("C", [ORIGINAL, OBSOLETE]),
                                    ("Rust", [ORIGINAL, *TRANSLATED])):
             with self.subTest(selection=selection, members=members):
                 with self.assertRaisesRegex(ValueError, "linked ctype objects"):
@@ -111,7 +113,7 @@ ctype-selection:
                     if baseline is None:
                         baseline = objects
                         self.assertEqual(baseline[0], b"ctype.o")
-                    expected = ([b"ctype_rust.o", b"ctype_exports.o", *baseline[1:]]
+                    expected = ([b"ctype_rust.o", *baseline[1:]]
                                 if selection == "y" else baseline)
                     self.assertEqual(objects, expected)
                     self.assertEqual(elsewhere, b"")
@@ -224,11 +226,11 @@ class CtypeVersioningTests(unittest.TestCase):
                         source / "genksyms.rs", "-o", rust], check=True, capture_output=True)
         return c, rust
 
-    def test_public_declaration_preserves_genksyms_crc_and_symtypes(self):
+    def test_original_c_genksyms_crc_and_symtypes_are_unchanged(self):
         tools = self.genksyms_tools()
         for compiler in self.compilers:
             outcomes = []
-            for source in (ROOT / "lib/ctype.c", ROOT / "lib/ctype_exports.c"):
+            for source in (ROOT / "lib/ctype.c",):
                 preprocessed = subprocess.run([*compiler, *self.flags, "-E", "-D__GENKSYMS__", source],
                                               check=True, capture_output=True).stdout
                 for tool in tools:
@@ -241,26 +243,31 @@ class CtypeVersioningTests(unittest.TestCase):
                 self.assertEqual(outcomes[0], (b"#SYMVER _ctype 0x11089ac7\n", b"",
                                                b"_ctype extern const unsigned char _ctype [ ] \n"))
 
-    def test_public_declaration_preserves_dwarf_crc_and_symtypes(self):
-        tools = dwarf_support.build_c(self.work), dwarf_support.build_rust(self.work)
-        for compiler in self.compilers:
-            for version in (4, 5):
-                for optimized in ("-O0", "-O2"):
-                    outcomes = []
-                    for source in (ROOT / "lib/ctype.c", ROOT / "lib/ctype_exports.c"):
+    def test_native_rust_dwarf_versions_the_actual_array_and_export(self):
+        tools = dwarf_tools()
+        for version in (4, 5):
+            for optimized in ("0", "2", "s"):
+                native = compile_native_wrapper("lib/ctype_rust.rs", self.work / "native",
+                                                optimize=optimized, dwarf=version)
+                records = read_exports(native)
+                self.assertEqual(len(records), 1)
+                self.assertEqual((records[0]["name"], records[0]["license"], records[0]["namespace"],
+                                  records[0]["relocation_target"], records[0]["relocation_addend"]),
+                                 ("_ctype", "", "", "_ctype", 0))
+                actual, types = dwarf_versions(tools, native, ["_ctype"], self.work)
+                self.assertEqual(actual, {b"_ctype": b"0x10d1a48b"})
+                self.assertEqual(types, b"_ctype variable array_type[256] { base_type u8 byte_size(1) encoding(7) }\n")
+                for compiler in self.compilers:
+                    with self.subTest(compiler=compiler, dwarf=version, optimized=optimized):
                         obj = self.work / "ctype.o"
                         subprocess.run([*compiler, *self.flags, "-g", "-gdwarf-" + str(version),
-                                        optimized, "-c", source, "-o", obj], check=True, capture_output=True)
-                        for tool in tools:
-                            types = self.work / "output.symtypes"
-                            result = subprocess.run([tool, "--symtypes", types, obj], input=b"_ctype\n",
-                                                    capture_output=True, check=True)
-                            outcomes.append((result.stdout, result.stderr, types.read_bytes()))
-                    with self.subTest(compiler=compiler, dwarf=version, optimized=optimized):
-                        self.assertTrue(all(result == outcomes[0] for result in outcomes), outcomes)
-                        self.assertTrue(outcomes[0][0].startswith(b"#SYMVER _ctype "))
-                        self.assertEqual(outcomes[0][1], b"")
-                        self.assertIn(b"array_type", outcomes[0][2])
+                                        "-O" + optimized, "-c", ROOT / "lib/ctype.c", "-o", obj],
+                                       check=True, capture_output=True)
+                        original, original_types = dwarf_versions(tools, obj, ["_ctype"], self.work)
+                        expected = b"0x729d105b" if b"array_type[256]" in original_types else b"0x9b4b48a0"
+                        self.assertEqual(original, {b"_ctype": expected})
+                        self.assertIn(b"const_type", original_types)
+                        self.assertNotEqual(actual, original)
 
 
 if __name__ == "__main__":

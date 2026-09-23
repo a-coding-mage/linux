@@ -504,19 +504,93 @@ translated hexadecimal helpers has exact per-unit C/Rust/Kbuild parity for
 The complete ``vmlinux.o`` and final ``vmlinux`` also match C for all 6,664
 exports, diagnostics and symtypes.
 
-The combined native build with Rust BCD, character classification, hexadecimal
-helpers and x86 instruction decoding also passes the same read-only audit:
-439 compilation units and 6,834 CRC records match C/Rust/Kbuild, including
+The combined native build with Rust integer math, BCD, character classification,
+hexadecimal helpers and x86 instruction decoding, with the four libraries'
+export metadata emitted directly from Rust, passes the same read-only audit:
+438 compilation units and 6,834 CRC records match C/Rust/Kbuild, including
 every symtypes file. Both complete kernel images match the C version tool for
 all 6,834 exported symbols, diagnostics and symtypes.
+
+Native Rust library export bridge
+---------------------------------
+
+``CONFIG_RUST_NATIVE_EXPORTS=y`` selects ``rust/exports_rust.o`` in place of
+``rust/exports.o``. It requires ``CONFIG_RUST``, defaults to disabled, and is
+independent of ``HOST_TOOLS_LANG``. The original ``rust/exports.c`` and its
+generated C-header build path remain selectable without source changes.
+
+The native bridge imports the translated export definitions and generates
+metadata directly from the same ordered ``nm``/AWK symbol lists as C. All
+exports remain GPL-only, including the existing helper and optional build-assert
+guards. Mangled linker names are referenced without fictitious ``extern``
+types: the defining objects still provide the real function/data kinds, DWARF
+and version CRCs. The bridge deliberately generates no second set of versions.
+The optional ``rust_build_error`` retains its existing unversioned policy.
+
+In the combined native x86-64 build, all 3,152 bridge records match the original
+C bridge exactly, and the complete ``Module.symvers`` is byte-identical.
+Switching this metadata-only option therefore does not require rebuilding
+modules. A previously built independent Rust consumer loads and passes its
+8,194-input ctype checks after switching to the native bridge; a new consumer
+built with that bridge also loads unchanged after restoring the C bridge.
+With ``CONFIG_RUST_BUILD_ASSERT_ALLOW=y``, both choices produce the same 3,153
+records and identical versions, including the original build-error warning
+and zero CRC. Repeating the final Rust build leaves its outputs unchanged.
+
+For a completed kernel, perform a read-only audit with::
+
+    python3 scripts/tests/check_rust_exports_bridge.py /tmp/lupos-build
+
+The checker verifies linked selection, current generated lists and dependencies,
+actual export records, all final kernel exports and defining-object version
+provenance. It ignores stale unlinked objects but rejects mixed bridge selection
+and stale images. Original C comparison files are compiled only in a temporary
+directory; no native build files are modified. Automatic comparison supports
+x86 ELF32/ELF64; other targets require an original bridge object supplied with
+``--reference``. Final ``vmlinux`` freshness is checked on every target; x86 also
+requires a current ``bzImage``. Inspection is independent of the invoking
+locale; DWARF parsing covers both GCC and Clang representations. Focused tests
+are in ``test_rust_exports_bridge*.py``.
+
+This removes the C metadata bridge when enabled; it does not translate the
+remaining C helper implementations or the rest of the target kernel.
 
 Translated target-kernel code
 -----------------------------
 
+The integer-math, BCD, character-classification and hexadecimal-helper Rust
+owners emit their own native export records using the repaired translation
+``include/linux/export_header.rs``, imported through ``rust/ffi_export.rs``.
+No C export-glue source or object is selected for these implementations.
+Kbuild reads the actual Rust object's DWARF to generate module versions;
+export licenses, namespaces and target pointer widths are retained. Pure
+Rust API consumers do not emit these records a second time.
+This interface is for native implementation owners, not a general emulation of
+C preprocessor export macros. Namespaces are explicit printable ASCII strings
+excluding quotes, backslashes and braces; ordinary identifiers and
+``module:name,name*`` namespaces are supported. The four migrated owners retain
+their original empty namespaces.
+
+With ``CONFIG_MODVERSIONS=y``, rebuild modules when switching between the C
+and Rust implementations. Native Rust debug types differ from C typedefs and
+debug types, even when the machine-level C ABI is identical. The version tools
+must describe the real implementation, not force a C checksum onto Rust types.
+The existing Rust Kconfig dependency requires ``CONFIG_GENDWARFKSYMS`` for
+module versioning; the original C configuration still supports genksyms.
+
+With minimum Rust 1.85, the combined host regression suite passes all 808 tests
+without skips, including genuine i686 execution and export-object checks.
+Native x86-64 QEMU checks pass both C and independent Rust callers for integer
+math, BCD and ctype, all seven hexdump exports, and the original 1,184 hexdump
+tests. A Rust-to-C-to-Rust build cycle restores each choice's symbol versions;
+the retained C kernel also loads its previously built ctype test module.
+A repeated final Rust build leaves the four implementation objects, symbol
+versions and kernel images unchanged.
+
 ``CONFIG_RUST_INT_MATH=y`` selects translated integer exponentiation and square
 roots. It requires native Rust support, defaults to disabled and is independent
 of ``HOST_TOOLS_LANG``. The Makefile retains ``int_pow.o`` and ``int_sqrt.o`` for
-the C choice, or selects ``int_math_rust.o`` and export-only metadata for Rust.
+the C choice, or selects the single ``int_math_rust.o`` for Rust.
 ``int_pow`` remains GPL-only; the square-root exports retain their original
 license classification. As in C, ``int_sqrt64`` is an exported symbol only on
 32-bit kernels; 64-bit C callers retain the original inline helper.
@@ -533,10 +607,57 @@ Only the integer-function boundary of ``include/linux/math_header.rs`` has been
 repaired to reuse these algorithms. Its other translated macros and fraction
 types remain pending work and are not exposed through ``kernel::math``.
 
+For a completed x86-64 build with ``CONFIG_INT_POW_KUNIT_TEST=y`` and
+``CONFIG_INT_SQRT_KUNIT_TEST=y``, run::
+
+    python3 scripts/tests/check_int_math_kernel.py /tmp/lupos-build
+    python3 scripts/tests/check_int_math_kernel.py /tmp/lupos-build --caller rust
+
+Each runner verifies all 30 original KUnit cases and compares 82,113 square-root
+inputs plus 4,400 power pairs with the unchanged C implementation. The Rust
+caller imports ``kernel::math`` independently. ``--allow-c-baseline`` selects
+the retained C implementation; the usual isolated-tool arguments are supported.
+Modules are loaded only inside QEMU. Focused host tests are in
+``test_int_math*.py``. ``INT_MATH_I686_SYSROOT`` optionally supplies a matching
+Rust i686 sysroot for genuine ELF32 differential execution; this is not a
+simulation of pointer width through conditional-compilation overrides.
+
+``CONFIG_RUST_GCD_LCM=y`` selects the translated greatest-common-divisor and
+least-common-multiple implementations. It requires ``CONFIG_RUST``, defaults
+to disabled and is independent of ``HOST_TOOLS_LANG`` and ``RUST_INT_MATH``.
+The original ``gcd.o`` and ``lcm.o`` remain the C choice; Rust selects the single
+``gcd_lcm_rust.o`` owner with the same three GPL-only C exports.
+
+The canonical translations and their header modules provide safe, allocation-free
+``const`` functions, also available as ``kernel::math::{gcd, lcm, lcm_not_zero}``.
+They retain both original GCD algorithms, zero handling and division-before-
+wrapping-multiplication semantics. Pure Rust imports define no C symbols and
+need no fictitious foreign bit-scan functions or static-key layouts.
+
+The native owner retains the real, nonexported ``efficient_ffs_key`` used by
+architecture setup code, including RISC-V's existing Zbb-dependent disable.
+Rust-owned storage uses ``Opaque`` over the actual generated C binding, not a
+replacement layout. The typed static-branch macro requires the actual key's
+permanent storage and rejects reference or dereference-wrapper substitutions.
+Native calls consult the mutable key; pure constant-evaluable helpers select
+the configured algorithm without kernel state. Both produce the same results.
+
+For a completed x86-64 build with ``CONFIG_GCD_KUNIT_TEST=y``, run::
+
+    python3 scripts/tests/check_gcd_lcm_kernel.py /tmp/lupos-build
+    python3 scripts/tests/check_gcd_lcm_kernel.py /tmp/lupos-build --caller rust
+
+Each runner checks 211,056 input pairs across real key transitions 1-to-0-to-1
+and all 11 unchanged GCD KUnit cases. ``--allow-c-baseline`` checks the retained
+C implementation. The private test fixture resolves the exact image's key
+address and boots only that image with ``nokaslr`` inside QEMU; no production
+key export is added and no module is loaded on the host. The key is restored
+before module initialization returns, including normal error paths.
+
 ``CONFIG_RUST_BCD=y`` selects the translated binary-coded decimal conversions.
 It requires native Rust support, defaults to disabled and is independent of
 ``HOST_TOOLS_LANG``. Leaving it disabled retains ``bcd.o``; the Rust choice
-uses ``bcd_rust.o`` plus export-only C metadata. The implementation is pure,
+uses only ``bcd_rust.o``. The implementation is pure,
 allocation-free and retains the two exported C functions, including unsigned
 overflow and invalid-digit behavior.
 
@@ -553,9 +674,8 @@ All helpers support Rust constant evaluation without changing these semantics.
 conversion itself does not reject invalid digits.
 
 Rebuild modules after changing this option when using DWARF symbol versioning.
-GCC and Clang omit the original parameter names from the declaration-only
-export metadata, changing both function CRCs without changing their C ABI.
-The C selection restores the original metadata; genksyms versions are retained.
+The Rust choice versions the real Rust definitions, including their parameter
+names and native types. The C selection restores the original C metadata.
 
 After a completed x86-64 build, check the selected implementation in QEMU::
 
@@ -583,7 +703,7 @@ helpers rather than depending on either C export's version.
 ``CONFIG_RUST_CTYPE=y`` selects the translated, immutable 256-byte character
 classification table. It requires native Rust support, defaults to disabled,
 and is independent of ``HOST_TOOLS_LANG``. The original ``ctype.o`` remains
-available; the Rust selection uses ``ctype_rust.o`` and export-only C metadata.
+available; the Rust selection uses only ``ctype_rust.o``.
 Boot, firmware and host-tool copies are unchanged. The table preserves all
 historical Latin-1 entries, including NBSP whitespace and punctuation at
 ``0xd7`` and ``0xf7``; this is neither ASCII-only nor Unicode classification.
@@ -600,10 +720,10 @@ The helpers retain unsigned-byte truncation where C performs it, the full
 integer comparison used by ``isdigit``, and the original case-conversion
 quirks. Differential tests compare every table byte and helper with the
 unchanged C sources under signed/unsigned ``char``. Independent-crate tests
-check that consumers share exactly one immutable table. Export metadata keeps
-the original symbol versions under GCC and Clang, using both genksyms and
-DWARF versioning; a complete array redeclaration after the public header is
-needed to preserve Clang's original debug type.
+check that consumers share exactly one immutable table. The native Rust array
+definition supplies its complete debug type, without a C redeclaration. Its
+DWARF checksum differs from C's ``const unsigned char[256]`` debug type, so
+versioned modules must be rebuilt when changing the selected implementation.
 
 After a completed x86-64 build, test C callers inside QEMU with::
 
@@ -621,20 +741,18 @@ under ``rust-ctype-test/`` and ``rust-boot-test/`` in the output directory.
 
 Native x86-64 builds with Rust 1.85 and extended DWARF module versions pass
 all 256 table bytes and 8,194 inputs per caller with both table selections.
-A C module built against the original table also loads unchanged with the
-Rust table, and a separately compiled ``kernel::ctype`` Rust module loads
-unchanged after switching back to C. Both preserve the original ``_ctype``
-symbol version. Host differential, build-selection and runtime-runner checks
-are available through ``test_ctype*.py``.
+These callers must be rebuilt against the selected table's symbol version;
+the former C metadata shim's cross-selection checksum compatibility no longer
+applies. Host differential, build-selection and runtime-runner checks are
+available through ``test_ctype*.py``.
 
 ``CONFIG_RUST_HEXDUMP=y`` selects the translated ``lib/hexdump.rs`` for the
 kernel's hexadecimal conversion and dump functions. This option requires
 native ``CONFIG_RUST`` support and is disabled by default; leaving it disabled
 keeps the original C implementation. It is independent of ``HOST_TOOLS_LANG``.
 ``lib/hexdump_rust.rs`` supplies the kernel crate boundary without changing the
-adjacent C source's build rule. The export-only ``hexdump_exports.c`` retains
-the standard C export machinery and prototypes; it contains no conversion or
-formatting implementation.
+adjacent C source's build rule. It emits the export records directly, including
+the ``CONFIG_PRINTK``-conditional export; no C export-only object is needed.
 
 The translation needs no allocation. It preserves forward overlapping-buffer
 operations, partial writes, native-endian groups, empty-buffer behavior, the
@@ -644,10 +762,10 @@ packed kernel binding and Rust call-site locations. Signed and unsigned host
 ``char`` bindings are tested separately from their common pointer ABI.
 
 Rebuild modules when changing this option. In DWARF module-versioning mode,
-GCC omits formal parameter names from the declaration-only export boundary,
-which changes function CRCs despite preserving the machine-level C ABI.
-The C selection retains its original metadata; the Rust selection and modules
-built against it use matching generated versions.
+the native Rust definitions have different debug types and CRCs from C despite
+preserving the machine-level C ABI. The C selection retains its original
+metadata; the Rust selection and modules built against it use matching
+generated versions.
 
 The normal x86-64 build with Rust 1.85, extended module versions and printk
 indexing is verified through QEMU. The unchanged C ``test_hexdump`` module

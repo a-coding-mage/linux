@@ -80,7 +80,8 @@ class GendwarfKernelExportTests(unittest.TestCase):
         return exports
 
     def test_native_rust_preserves_symbol_table_order_and_all_export_classes(self):
-        command = b"source_rust/core.o := /private/rust/library/core/src/lib.rs\n"
+        command = (b"savedcmd_rust/core.o := compiler --emit=metadata=rust/libcore.rmeta\n"
+                   b"source_rust/core.o := /private/rust/library/core/src/lib.rs\n")
         symbols = (b"0003 T z_function\n0001 R r_constant\n0002 D d_data\n"
                    b"0000 B a_zeroed\n0004 T binary_\xff\n0005 T vertical_\x0b_tab\n"
                    b"0006 T carriage_\r_return\n0007 T form_\x0c_feed\n")
@@ -89,7 +90,8 @@ class GendwarfKernelExportTests(unittest.TestCase):
                          b"vertical_\x0b_tab\ncarriage_\r_return\nform_\x0c_feed\n")
 
     def test_native_rust_matches_awk_filters_not_global_only_or_sorted_nm(self):
-        command = b"source_rust/kernel.o := /source/rust/kernel/lib.rs\n"
+        command = (b"savedcmd_rust/kernel.o := compiler --emit=metadata=rust/libkernel.rmeta\n"
+                   b"source_rust/kernel.o := /source/rust/kernel/lib.rs\n")
         symbols = (b"0000 t local_text\n0000 r local_constant\n0000 d local_data\n"
                    b"0000 b local_bss\n0000 W weak\n0000 V weak_data\n"
                    b"0000 A absolute\n         U undefined\n\n"
@@ -119,13 +121,28 @@ class GendwarfKernelExportTests(unittest.TestCase):
         self.assertEqual(self.exports(command, b"0000 r __export_symbol_helper\n", []),
                          b"helper\n")
 
-    def test_source_identity_not_path_or_compiler_name_selects_rust(self):
-        command = (b"savedcmd_lib/tool.o := wrapper --compiler=/bin/custom input\n"
+    def test_saved_rule_not_directory_or_compiler_name_selects_rust_library(self):
+        command = (b"savedcmd_lib/tool.o := wrapper --compiler=/bin/custom --emit=metadata=lib/libtool.rmeta input\n"
                    b"source_lib/tool.o := /private dir/\xff.rs\n")
         self.assertEqual(self.exports(command, b"0000 T function\n", ["-p", "--defined-only"]),
                          b"function\n")
         self.assertEqual(self.exports(b"source_lib/asm.o := /source/asm.S\n",
                                       b"0000 r __export_symbol_asm\n", []), b"asm\n")
+
+    def test_generic_rust_rule_versions_markers_only_even_inside_rust_directory(self):
+        command = (b"savedcmd_rust/core.o := OBJTREE=/out RUST_MODFILE=rust/core custom-compiler input\n"
+                   b"source_rust/core.o := /private/core.rs\n"
+                   b"deps_rust/core.o := /private/library/lib.rs\n")
+        symbols = (b"0000 R __export_symbol_data\n0008 R __export_symbol_function\n"
+                   b"0010 R __export_symbol_raw_\x0b\r\xff\n0000 R data\n"
+                   b"0000 T function\n0010 T unexported_global\n")
+        self.assertEqual(self.exports(command, symbols, []), b"data\nfunction\nraw_\x0b\r\xff\n")
+
+    def test_unknown_rust_rule_is_not_silently_assumed_to_export_all_globals(self):
+        command = (b"savedcmd_lib/unknown.o := custom-compiler input\n"
+                   b"source_lib/unknown.o := /private/unknown.rs\n")
+        with self.assertRaisesRegex(ValueError, "cannot identify Rust symbol-versioning rule"):
+            unit_exports(Path("/out/lib/unknown.o"), command, ["nm"])
 
     def test_real_rust_object_matches_kbuild_awk_rule(self):
         with tempfile.TemporaryDirectory(prefix="gendwarf-rust-exports-") as work:
@@ -151,10 +168,35 @@ class GendwarfKernelExportTests(unittest.TestCase):
             expected = subprocess.run(
                 ["awk", '$2~/(T|R|D|B)/ && $3!~/__(pfx|cfi|odr_asan)/ { printf "%s\\n",$3 }'],
                 input=symbols, capture_output=True, check=True).stdout
-            command = b"source_fixture.o := " + os.fsencode(source) + b"\n"
+            command = (b"savedcmd_fixture.o := custom-compiler --emit=metadata=libfixture.rmeta\n"
+                       b"source_fixture.o := " + os.fsencode(source) + b"\n")
             self.assertEqual(unit_exports(image, command, nm), expected)
             self.assertEqual(set(expected.splitlines()),
                              {b"z_function", b"a_function", b"READ_ONLY", b"WRITABLE", b"ZERO"})
+
+    def test_real_native_export_object_matches_generic_kbuild_sed_rule(self):
+        root = Path(__file__).resolve().parents[2]
+        with tempfile.TemporaryDirectory(prefix="gendwarf-explicit-rust-exports-") as directory:
+            work = Path(directory)
+            source, image = work / "fixture.rs", work / "fixture.o"
+            source.write_text(f'''#![no_std]
+#[path = "{root}/rust/ffi_export.rs"] mod ffi_export;
+#[no_mangle] pub extern "C" fn exported_function(value: u32) -> u32 {{ value }}
+#[no_mangle] pub static EXPORTED_DATA: u8 = 7;
+#[no_mangle] pub extern "C" fn unexported_global() -> u32 {{ 99 }}
+ffi_export::export_symbol!(exported_function, exported_function, "GPL", "");
+ffi_export::export_symbol!(EXPORTED_DATA, EXPORTED_DATA, "", "");
+''')
+            subprocess.run([*shlex.split(os.environ.get("HOSTRUSTC", "rustc")), "--edition=2021",
+                            "--crate-type=lib", "--emit=obj", source, "-o", image], check=True, capture_output=True)
+            nm = shlex.split(os.environ.get("NM", "nm"))
+            symbols = subprocess.run([*nm, image], check=True, capture_output=True).stdout
+            expected = subprocess.run(["sed", "-n", r"s/.* __export_symbol_\(.*\)/\1/p"],
+                                      input=symbols, check=True, capture_output=True).stdout
+            command = (b"savedcmd_fixture.o := RUST_MODFILE=fixture custom-compiler\n"
+                       b"source_fixture.o := " + os.fsencode(source) + b"\n")
+            self.assertEqual(unit_exports(image, command, nm), expected)
+            self.assertEqual(expected, b"EXPORTED_DATA\nexported_function\n")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,10 @@
 //! Native C ABI owner for integer powers and square roots.
 //!
 //! Pure Rust consumers import `kernel::math`; only this crate defines the
-//! unmangled C entry points. Export metadata is supplied separately.
+//! unmangled C entry points and their native export metadata.
+
+#[path = "../../rust/ffi_export.rs"]
+mod ffi_export;
 
 // The canonical functions are public for pure consumers, but this C ABI crate
 // deliberately keeps its imports private because the wrappers reuse their names.
@@ -39,3 +42,8 @@ pub extern "C" fn int_sqrt64(x: u64) -> u32 {
 // shared safe helper available here without creating an extra C ABI symbol.
 #[cfg(not(target_pointer_width = "32"))]
 pub use square_root::int_sqrt64;
+
+ffi_export::export_symbol!(int_pow, int_pow, "GPL", "");
+ffi_export::export_symbol!(int_sqrt, int_sqrt, "", "");
+#[cfg(target_pointer_width = "32")]
+ffi_export::export_symbol!(int_sqrt64, int_sqrt64, "", "");

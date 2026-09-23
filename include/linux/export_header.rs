@@ -1,111 +1,135 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+// SPDX-License-Identifier: GPL-2.0-only
+//! Export records for translated implementations that own a kernel C ABI.
+//!
+//! Only the implementation-owning crate imports this module. Pure Rust API
+//! consumers must not emit a second export record. The record layout matches
+//! `include/linux/export.h`; modpost supplies the final kernel symbol tables.
+//! Version CRCs come from the implementation's own DWARF, not C declarations.
+//!
+//! This CONFIG_MODVERSIONS token is a fixdep dependency: changing module
+//! versioning must rebuild each exporting object and regenerate its CRCs.
 
-// Translation of linux/export.h.  The C include dependencies are supplied by
-// the surrounding kernel translation unit.
+/// Register an unmangled C ABI symbol, preserving its license and namespace.
+///
+/// `$name` is the exact external name; `$symbol` is the defining Rust item,
+/// which may instead use `#[export_name]`. Licenses are either `""` or `"GPL"`.
+/// Namespaces may contain printable ASCII except quotes, backslashes and braces:
+/// these restrictions prevent injection into the assembler/template strings.
+/// The usual identifier namespaces and `module:name,name*` form are supported.
+///
+/// `sym` references the real item, retaining its function/object symbol kind
+/// and preventing a misspelled Rust path from becoming an unresolved symbol.
+/// Local record labels are intentionally not Rust globals or exported items.
+#[allow(unused_macros)] // Linkage-only bridge crates use the other interface.
+macro_rules! export_symbol {
+    ($name:ident, $symbol:path, $license:literal, $namespace:literal) => {
+        const _: () = {
+            let license = $license.as_bytes();
+            assert!(
+                license.is_empty()
+                    || (license.len() == 3
+                        && license[0] == b'G'
+                        && license[1] == b'P'
+                        && license[2] == b'L'),
+                "export license must be empty or GPL"
+            );
+            let namespace = $namespace.as_bytes();
+            let mut i = 0;
+            while i < namespace.len() {
+                let byte = namespace[i];
+                assert!(
+                    byte >= b' '
+                        && byte <= b'~'
+                        && byte != b'"'
+                        && byte != b'\\'
+                        && byte != b'{'
+                        && byte != b'}',
+                    "export namespace contains unsupported assembler characters"
+                );
+                i += 1;
+            }
+        };
 
-/*
- * This comment block is used by fixdep. Please do not remove.
- *
- * When CONFIG_MODVERSIONS is changed from n to y, all source files having
- * EXPORT_SYMBOL variants must be re-compiled because genksyms is run as a
- * side effect of the *.o build rule.
- */
-
-// LLVM integrated assembler can merge adjacent string literals passed to
-// `.ascii`, but not to `.asciz`; the original macros consequently emit these
-// records as separate assembler directives.
-
-#[cfg(not(__DISABLE_EXPORTS))]
-#[macro_export]
-macro_rules! ___EXPORT_SYMBOL {
-    ($sym:ident, $license:expr, $($ns:expr)*) => {
-        // C expansion:
-        // .section ".export_symbol","a"
-        // __export_symbol_<sym>:
-        // .asciz <license>
-        // .ascii <namespace> "\0"
-        // .balign 8/.balign 4; .quad/.long <sym>; .previous
-        // The section record is emitted by the target assembler integration.
-        const _: () = ();
+        #[cfg(target_pointer_width = "64")]
+        core::arch::global_asm!(
+            concat!(
+                ".pushsection .export_symbol,\"a\"\n",
+                "__export_symbol_", stringify!($name), ":\n",
+                ".asciz \"", $license, "\"\n",
+                ".asciz \"", $namespace, "\"\n",
+                ".balign 8\n.quad {address}\n.popsection\n",
+            ),
+            address = sym $symbol,
+        );
+        #[cfg(target_pointer_width = "32")]
+        core::arch::global_asm!(
+            concat!(
+                ".pushsection .export_symbol,\"a\"\n",
+                "__export_symbol_", stringify!($name), ":\n",
+                ".asciz \"", $license, "\"\n",
+                ".asciz \"", $namespace, "\"\n",
+                ".balign 4\n.long {address}\n.popsection\n",
+            ),
+            address = sym $symbol,
+        );
     };
 }
 
-#[cfg(__DISABLE_EXPORTS)]
-#[macro_export]
-macro_rules! ___EXPORT_SYMBOL {
-    ($sym:ident, $license:expr, $($ns:expr)*) => {};
-}
+/// Export a linker name from Kbuild's generated Rust-library symbol lists.
+///
+/// Unlike `export_symbol!`, this metadata-only bridge does not own the item.
+/// Generic/mangled Rust items cannot be expressed as typed paths in a different
+/// crate. Reference the exact linkage name without inventing an `extern` type;
+/// the defining object supplies its symbol kind, DWARF and version checksum.
+///
+/// This interface is restricted to the existing GPL-only, empty-namespace Rust
+/// library bridge. Ordinary native C ABI owners must use the typed macro above.
+#[allow(unused_macros)] // Typed implementation owners do not use linker names.
+macro_rules! export_symbol_linkage_gpl {
+    ($symbol:ident) => {
+        const _: () = {
+            let name = stringify!($symbol).as_bytes();
+            let mut i = 0;
+            while i < name.len() {
+                let byte = name[i];
+                assert!(
+                    byte == b'_'
+                        || (byte >= b'a' && byte <= b'z')
+                        || (byte >= b'A' && byte <= b'Z')
+                        || (i != 0 && byte >= b'0' && byte <= b'9'),
+                    "Rust-library export names must be ASCII C identifiers"
+                );
+                i += 1;
+            }
+        };
 
-// CONFIG_GENDWARFKSYMS emits a discarded pointer for each exported symbol.
-#[cfg(CONFIG_GENDWARFKSYMS)]
-#[macro_export]
-macro_rules! __GENDWARFKSYMS_EXPORT {
-    ($sym:ident) => {
-        // static typeof($sym) *__gendwarfksyms_ptr_<sym> __used
-        //     __section(".discard.gendwarfksyms") = &$sym;
-        const _: () = ();
+        #[cfg(target_pointer_width = "64")]
+        core::arch::global_asm!(concat!(
+            ".pushsection .export_symbol,\"a\"\n",
+            "__export_symbol_",
+            stringify!($symbol),
+            ":\n",
+            ".asciz \"GPL\"\n.asciz \"\"\n",
+            ".balign 8\n.quad ",
+            stringify!($symbol),
+            "\n.popsection\n",
+        ));
+        #[cfg(target_pointer_width = "32")]
+        core::arch::global_asm!(concat!(
+            ".pushsection .export_symbol,\"a\"\n",
+            "__export_symbol_",
+            stringify!($symbol),
+            ":\n",
+            ".asciz \"GPL\"\n.asciz \"\"\n",
+            ".balign 4\n.long ",
+            stringify!($symbol),
+            "\n.popsection\n",
+        ));
     };
 }
 
-#[cfg(not(CONFIG_GENDWARFKSYMS))]
-#[macro_export]
-macro_rules! __GENDWARFKSYMS_EXPORT {
-    ($sym:ident) => {};
-}
-
-#[cfg(__DISABLE_EXPORTS)]
-#[macro_export]
-macro_rules! __EXPORT_SYMBOL {
-    ($sym:ident, $license:expr, $ns:expr) => {};
-}
-
-#[cfg(all(not(__DISABLE_EXPORTS), __GENKSYMS__))]
-#[macro_export]
-macro_rules! __EXPORT_SYMBOL {
-    ($sym:ident, $license:expr, $ns:expr) => {
-        // __GENKSYMS_EXPORT_SYMBOL($sym)
-        const _: () = ();
-    };
-}
-
-#[cfg(all(not(__DISABLE_EXPORTS), not(__GENKSYMS__)))]
-#[macro_export]
-macro_rules! __EXPORT_SYMBOL {
-    ($sym:ident, $license:expr, $ns:expr) => {
-        // C also declares `extern typeof($sym) $sym`, marks it addressable,
-        // emits __GENDWARFKSYMS_EXPORT, and attaches ___EXPORT_SYMBOL as asm.
-        $crate::__GENDWARFKSYMS_EXPORT!($sym);
-        $crate::___EXPORT_SYMBOL!($sym, $license, $ns);
-    };
-}
-
-#[cfg(DEFAULT_SYMBOL_NAMESPACE)]
-#[macro_export]
-macro_rules! _EXPORT_SYMBOL {
-    ($sym:ident, $license:expr) => {
-        $crate::__EXPORT_SYMBOL!($sym, $license, DEFAULT_SYMBOL_NAMESPACE);
-    };
-}
-
-#[cfg(not(DEFAULT_SYMBOL_NAMESPACE))]
-#[macro_export]
-macro_rules! _EXPORT_SYMBOL {
-    ($sym:ident, $license:expr) => {
-        $crate::__EXPORT_SYMBOL!($sym, $license, "");
-    };
-}
-
-#[macro_export]
-macro_rules! EXPORT_SYMBOL { ($sym:ident) => { $crate::_EXPORT_SYMBOL!($sym, ""); }; }
-#[macro_export]
-macro_rules! EXPORT_SYMBOL_GPL { ($sym:ident) => { $crate::_EXPORT_SYMBOL!($sym, "GPL"); }; }
-#[macro_export]
-macro_rules! EXPORT_SYMBOL_NS { ($sym:ident, $ns:expr) => { $crate::__EXPORT_SYMBOL!($sym, "", $ns); }; }
-#[macro_export]
-macro_rules! EXPORT_SYMBOL_NS_GPL { ($sym:ident, $ns:expr) => { $crate::__EXPORT_SYMBOL!($sym, "GPL", $ns); }; }
-#[macro_export]
-macro_rules! EXPORT_SYMBOL_FOR_MODULES {
-    ($sym:ident, $mods:expr) => { $crate::__EXPORT_SYMBOL!($sym, "GPL", concat!("module:", $mods)); };
-}
+// Each importing crate uses either typed ownership or linkage-only metadata.
+#[allow(unused_imports)]
+pub(crate) use {export_symbol, export_symbol_linkage_gpl};
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

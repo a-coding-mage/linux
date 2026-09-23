@@ -205,9 +205,9 @@ def verify_linked_implementation(build, selection):
                             check=True, capture_output=True).stdout
     objects = {(build / os.fsdecode(line)).resolve() for line in listed.splitlines()}
     original = {(build / "lib/ctype.o").resolve()}
-    translated = {(build / ("lib/" + name + ".o")).resolve()
-                  for name in ("ctype_rust", "ctype_exports")}
-    actual = objects & (original | translated)
+    translated = {(build / "lib/ctype_rust.o").resolve()}
+    obsolete = {(build / "lib/ctype_exports.o").resolve()}
+    actual = objects & (original | translated | obsolete)
     expected = translated if selection == "Rust" else original
     if actual != expected:
         raise ValueError(f"linked ctype objects do not match the {selection} configuration: {actual}")

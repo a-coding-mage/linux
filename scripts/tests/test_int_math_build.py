@@ -16,15 +16,17 @@ import tempfile
 import unittest
 
 import check_int_math_kernel as checker
-import gendwarf_test_support as dwarf_support
 from kconfig_test_support import cached_conf_tools
+from rust_exports_test_support import (compile_native_wrapper, dwarf_tools, dwarf_versions,
+                                       read_exports, rust_targets)
 
 
 ROOT = Path(__file__).resolve().parents[2]
 ORIGINAL = {"lib/math/int_pow.o", "lib/math/int_sqrt.o"}
-TRANSLATED = {"lib/math/int_math_rust.o", "lib/math/int_math_exports.o"}
+TRANSLATED = {"lib/math/int_math_rust.o"}
+OBSOLETE = {"lib/math/int_math_exports.o"}
 KUNIT = {"lib/math/tests/int_pow_kunit.o", "lib/math/tests/int_sqrt_kunit.o"}
-SOURCES = ("int_math_rust.rs", "int_pow.rs", "int_sqrt.rs")
+SOURCES = ("int_math_rust.rs", "int_pow.rs", "int_sqrt.rs", "../../rust/ffi_export.rs")
 
 
 def environment():
@@ -101,7 +103,7 @@ class IntMathBuildTests(TemporaryTest):
     def kernel(self, members, relative=True):
         build = self.work / str(len(list(self.work.iterdir())))
         build.mkdir()
-        for member in ORIGINAL | TRANSLATED | KUNIT:
+        for member in ORIGINAL | TRANSLATED | OBSOLETE | KUNIT:
             path = build / member
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b"integer math archive fixture\n")
@@ -122,7 +124,8 @@ class IntMathBuildTests(TemporaryTest):
 
     def test_archive_rejects_missing_partial_mixed_and_opposite_objects(self):
         for selection, expected, opposite in (("C", ORIGINAL, TRANSLATED), ("Rust", TRANSLATED, ORIGINAL)):
-            for members in (set(), opposite, expected | opposite, *[{name} for name in expected]):
+            partial = [{name} for name in expected] if len(expected) > 1 else []
+            for members in (set(), opposite, expected | opposite, OBSOLETE, expected | OBSOLETE, *partial):
                 with self.subTest(selection=selection, members=members):
                     with self.assertRaisesRegex(ValueError, "linked integer math"):
                         checker.verify_linked_implementation(self.kernel(members | KUNIT), selection)
@@ -159,7 +162,7 @@ selection:
                                              "HOST_TOOLS_LANG=" + host, "CONFIG_RUST_INT_MATH=" + selection,
                                              "CONFIG_INT_POW_KUNIT_TEST=y", "CONFIG_INT_SQRT_KUNIT_TEST=y"],
                                             cwd=self.work, env=environment(), check=True, capture_output=True)
-                    selected = (b"int_math_rust.o int_math_exports.o" if selection == "y"
+                    selected = (b"int_math_rust.o" if selection == "y"
                                 else b"int_pow.o int_sqrt.o")
                     self.assertEqual(result.stdout, b"div64.o gcd.o lcm.o int_log.o " + selected +
                                      b" reciprocal_div.o tests/\nint_pow_kunit.o int_sqrt_kunit.o\n")
@@ -268,12 +271,12 @@ class IntMathVersioningTests(TemporaryTest):
     def type_map(data):
         return dict(line.split(b" ", 1) for line in data.splitlines() if line)
 
-    def test_public_declarations_preserve_genksyms_on_both_word_sizes(self):
+    def test_original_c_genksyms_remains_valid_on_both_word_sizes(self):
         tools = self.genksyms_tools()
         for compiler in self.compilers:
             for width in (32, 64):
                 original_crc, original_types = {}, {}
-                for name in ("int_pow.c", "int_sqrt.c", "int_math_exports.c"):
+                for name in ("int_pow.c", "int_sqrt.c"):
                     data = subprocess.run([*self.arguments(compiler, width), "-E", "-D__GENKSYMS__",
                                            ROOT / "lib/math" / name], check=True, capture_output=True).stdout
                     outcomes = []
@@ -283,97 +286,91 @@ class IntMathVersioningTests(TemporaryTest):
                         outcomes.append((result.stdout, result.stderr, types.read_bytes()))
                     self.assertEqual(outcomes[0], outcomes[1])
                     self.assertEqual(outcomes[0][1], b"")
-                    crc, types = self.records(outcomes[0][0]), self.type_map(outcomes[0][2])
-                    if name == "int_math_exports.c":
-                        with self.subTest(compiler=compiler, width=width):
-                            self.assertEqual(crc, original_crc)
-                            self.assertEqual(types, original_types)
-                            self.assertEqual(set(crc), self.symbols(width))
-                    else:
-                        original_crc.update(crc)
-                        original_types.update(types)
+                    original_crc.update(self.records(outcomes[0][0]))
+                    original_types.update(self.type_map(outcomes[0][2]))
+                with self.subTest(compiler=compiler, width=width):
+                    self.assertEqual(set(original_crc), self.symbols(width))
+                    self.assertIn(b"unsigned long", original_types[b"int_sqrt"])
+                    self.assertIn(b"u64", original_types[b"int_pow"])
 
-    def test_dwarf_tools_agree_and_declaration_only_crc_changes_are_explicit(self):
-        tools = dwarf_support.build_c(self.work), dwarf_support.build_rust(self.work)
-        for compiler in self.compilers:
-            for width in (32, 64):
-                for version in (4, 5):
-                    for optimized in ("-O0", "-O2"):
+    def test_native_rust_dwarf_versions_actual_definitions_on_each_available_target(self):
+        tools = dwarf_tools()
+        targets = rust_targets()
+        for width in (32, 64):
+            for version in (4, 5):
+                for optimized in ("0", "2", "s"):
+                    native_crc = native_types = None
+                    if width in targets:
+                        obj = compile_native_wrapper("lib/math/int_math_rust.rs", self.work / "native",
+                                                     optimize=optimized, dwarf=version,
+                                                     target_flags=targets[width])
+                        native_crc, text = dwarf_versions(tools, obj, self.symbols(width), self.work)
+                        native_types = self.type_map(text)
+                        self.assertEqual(native_crc[b"int_pow"], b"0xfabbb301")
+                        self.assertIn(b"base_type u64 byte_size(8) encoding(7) base", native_types[b"int_pow"])
+                        self.assertIn(b"base_type u32 byte_size(4) encoding(7) exp", native_types[b"int_pow"])
+                        self.assertIn(f"base_type usize byte_size({width // 8}) encoding(7) x".encode(),
+                                      native_types[b"int_sqrt"])
+                        if width == 64:
+                            self.assertEqual(native_crc[b"int_sqrt"], b"0x480e9811")
+                        else:
+                            self.assertIn(b"base_type u64 byte_size(8) encoding(7) x",
+                                          native_types[b"int_sqrt64"])
+                            self.assertTrue(native_types[b"int_sqrt64"].endswith(
+                                b"-> base_type u32 byte_size(4) encoding(7)"))
+                    for compiler in self.compilers:
                         original_crc, original_types = {}, {}
-                        for name in ("int_pow.c", "int_sqrt.c", "int_math_exports.c"):
+                        for name in ("int_pow.c", "int_sqrt.c"):
                             obj = self.work / "input.o"
                             subprocess.run([*self.arguments(compiler, width), "-g", "-gdwarf-" + str(version),
-                                            optimized, "-c", ROOT / "lib/math" / name, "-o", obj],
+                                            "-O" + optimized, "-c", ROOT / "lib/math" / name, "-o", obj],
                                            check=True, capture_output=True)
-                            exports = self.symbols(width)
-                            if name == "int_pow.c":
-                                exports = {b"int_pow"}
-                            elif name == "int_sqrt.c":
-                                exports -= {b"int_pow"}
-                            outcomes = []
-                            for tool in tools:
-                                types = self.work / "out.types"
-                                result = subprocess.run([tool, "--symtypes", types, obj],
-                                                        input=b"".join(symbol + b"\n" for symbol in sorted(exports)),
-                                                        check=True, capture_output=True)
-                                outcomes.append((result.stdout, result.stderr, types.read_bytes()))
-                            self.assertEqual(outcomes[0], outcomes[1])
-                            self.assertEqual(outcomes[0][1], b"")
-                            crc, types = self.records(outcomes[0][0]), self.type_map(outcomes[0][2])
-                            if name != "int_math_exports.c":
-                                original_crc.update(crc)
-                                original_types.update(types)
-                                continue
-                            with self.subTest(compiler=compiler, width=width, dwarf=version, optimized=optimized):
-                                normalized = {key: re.sub(rb" (base|exp|x) ", b" ", value)
-                                              for key, value in original_types.items()}
-                                self.assertEqual(types, normalized)
-                                self.assertNotEqual(types, original_types)
-                                self.assertEqual(set(crc), self.symbols(width))
-                                # GCC and Clang already spell primitive DWARF
-                                # types differently in unchanged C, affecting
-                                # CRCs independently of declaration-only glue.
-                                clang_spelling = b"unsigned long long byte_size" in original_types[b"t#__u64"]
-                                pow_pair = ((b"0xc217874a", b"0x58de7142") if clang_spelling
-                                            else (b"0x4df1f4f2", b"0x3082d8a2"))
-                                sqrt_pairs = ({32: (b"0xb273e065", b"0x85fc5094"),
-                                               64: (b"0x80cd5f3e", b"0x7f806ae2")} if clang_spelling else
-                                              {32: (b"0x1be4ec76", b"0xe84b15b1"),
-                                               64: (b"0x4d77e769", b"0x670d4f68")})
-                                self.assertEqual((original_crc[b"int_pow"], crc[b"int_pow"]), pow_pair)
-                                self.assertEqual((original_crc[b"int_sqrt"], crc[b"int_sqrt"]), sqrt_pairs[width])
-                                if width == 32:
-                                    sqrt64_pair = ((b"0x8ad663b4", b"0xb7ee40ec") if clang_spelling
-                                                   else (b"0x1ce4caf4", b"0xd800c2cc"))
-                                    self.assertEqual((original_crc[b"int_sqrt64"], crc[b"int_sqrt64"]), sqrt64_pair)
+                            exports = {b"int_pow"} if name == "int_pow.c" else self.symbols(width) - {b"int_pow"}
+                            crc, text = dwarf_versions(tools, obj, exports, self.work)
+                            original_crc.update(crc)
+                            original_types.update(self.type_map(text))
+                        with self.subTest(compiler=compiler, width=width, dwarf=version, optimized=optimized):
+                            clang = b"unsigned long long byte_size" in original_types[b"t#__u64"]
+                            self.assertEqual(original_crc[b"int_pow"], b"0xc217874a" if clang else b"0x4df1f4f2")
+                            roots = ({32: b"0xb273e065", 64: b"0x80cd5f3e"} if clang else
+                                     {32: b"0x1be4ec76", 64: b"0x4d77e769"})
+                            self.assertEqual(original_crc[b"int_sqrt"], roots[width])
+                            if width == 32:
+                                self.assertEqual(original_crc[b"int_sqrt64"],
+                                                 b"0x8ad663b4" if clang else b"0x1ce4caf4")
+                            if native_crc is not None:
+                                self.assertEqual(set(native_crc), set(original_crc))
+                                for symbol in self.symbols(width):
+                                    self.assertNotEqual(native_crc[symbol], original_crc[symbol])
+                                self.assertNotEqual(native_types, original_types)
 
     def test_export_licenses_and_32_bit_only_symbol_metadata(self):
+        targets = rust_targets()
         for compiler in self.compilers:
             for width in (32, 64):
                 combined = {}
-                for name in ("int_pow.c", "int_sqrt.c", "int_math_exports.c"):
+                for name in ("int_pow.c", "int_sqrt.c"):
                     obj = self.work / "input.o"
                     subprocess.run([*self.arguments(compiler, width), "-c", ROOT / "lib/math" / name, "-o", obj],
                                    check=True, capture_output=True)
-                    binary = self.work / "export-section.bin"
-                    subprocess.run([*shlex.split(os.environ.get("OBJCOPY", "objcopy")), "-O", "binary",
-                                    "--only-section=.export_symbol", obj, binary], check=True, capture_output=True)
-                    section = binary.read_bytes()
-                    symbols = subprocess.run([*shlex.split(os.environ.get("NM", "nm")), "-n", obj],
-                                             check=True, capture_output=True).stdout
-                    licenses = {}
-                    for line in symbols.splitlines():
-                        fields = line.split()
-                        if len(fields) == 3 and fields[-1].startswith(b"__export_symbol_"):
-                            licenses[fields[-1][len(b"__export_symbol_"):]] = section[int(fields[0], 16):].split(b"\0", 1)[0]
-                    if name == "int_math_exports.c":
-                        self.assertEqual(licenses, combined)
-                        self.assertEqual(set(licenses), self.symbols(width))
-                        self.assertEqual(licenses[b"int_pow"], b"GPL")
-                        for symbol in self.symbols(width) - {b"int_pow"}:
-                            self.assertEqual(licenses[symbol], b"")
-                    else:
-                        combined.update(licenses)
+                    for row in read_exports(obj):
+                        combined[row["name"]] = (row["license"], row["namespace"],
+                                                 row["relocation_target"], row["relocation_addend"])
+                expected = {symbol.decode(): ("GPL" if symbol == b"int_pow" else "", "", symbol.decode(), 0)
+                            for symbol in self.symbols(width)}
+                self.assertEqual(combined, expected)
+                if width in targets:
+                    for optimize in ("0", "2", "s"):
+                        obj = compile_native_wrapper("lib/math/int_math_rust.rs", self.work / "native",
+                                                     optimize=optimize, target_flags=targets[width])
+                        records = read_exports(obj)
+                        native = {row["name"]: (row["license"], row["namespace"],
+                                               row["relocation_target"], row["relocation_addend"])
+                                  for row in records}
+                        self.assertEqual(native, expected)
+                        for row in records:
+                            self.assertEqual(row["pointer_width"], width // 8)
+                            self.assertEqual(row["section_flags"], 2)
 
 
 class IntMathConsumerTests(TemporaryTest):

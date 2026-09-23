@@ -135,9 +135,9 @@ def verify_linked_implementation(build, selection):
         path = Path(os.fsdecode(line))
         objects.add((path if path.is_absolute() else build / path).resolve())
     original = (build / "lib/hexdump.o").resolve()
-    translated = {(build / "lib/hexdump_rust.o").resolve(),
-                  (build / "lib/hexdump_exports.o").resolve()}
-    actual = objects & ({original} | translated)
+    translated = {(build / "lib/hexdump_rust.o").resolve()}
+    obsolete = {(build / "lib/hexdump_exports.o").resolve()}
+    actual = objects & ({original} | translated | obsolete)
     expected = translated if selection == "Rust" else {original}
     if actual != expected:
         raise ValueError(f"linked hexdump objects do not match the {selection} configuration: {actual}")

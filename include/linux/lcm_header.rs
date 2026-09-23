@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+// SPDX-License-Identifier: GPL-2.0
+//! Safe LCM algorithms without foreign declarations or native symbol owners.
 
-// Dependency intent from <linux/compiler.h> is preserved by the C ABI
-// declarations below. The source declarations are __attribute_const__.
+#[path = "../../lib/math/lcm.rs"]
+mod least_common_multiple;
 
-use core::ffi::c_ulong;
-
-extern "C" {
-    pub fn lcm(a: c_ulong, b: c_ulong) -> c_ulong;
-    pub fn lcm_not_zero(a: c_ulong, b: c_ulong) -> c_ulong;
-}
+pub use least_common_multiple::{lcm, lcm_not_zero, lcm_not_zero_with_ffs, lcm_with_ffs};
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

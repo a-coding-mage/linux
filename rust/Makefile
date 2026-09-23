@@ -6,8 +6,19 @@ rustdoc_output := $(objtree)/Documentation/output/rust/rustdoc
 # Clean generated host directory
 clean-files := host/
 
+# Either format may remain after changing the bridge selection or disabling
+# Rust. Clean only the known export lists, including inactive helper lists.
+clean-files += $(foreach family,core bindings kernel helpers, \
+                   exports_$(family)_generated.h exports_$(family)_generated.rs)
+
+ifeq ($(CONFIG_RUST_NATIVE_EXPORTS),y)
+rust-export-extension := rs
+else
+rust-export-extension := h
+endif
+
 obj-$(CONFIG_RUST) += core.o compiler_builtins.o ffi.o
-always-$(CONFIG_RUST) += exports_core_generated.h
+always-$(CONFIG_RUST) += exports_core_generated.$(rust-export-extension)
 
 obj-$(CONFIG_RUST) += zerocopy.o
 
@@ -15,7 +26,7 @@ ifdef CONFIG_RUST_INLINE_HELPERS
 always-$(CONFIG_RUST) += helpers/helpers.bc helpers/helpers_module.bc
 else
 obj-$(CONFIG_RUST) += helpers/helpers.o
-always-$(CONFIG_RUST) += exports_helpers_generated.h
+always-$(CONFIG_RUST) += exports_helpers_generated.$(rust-export-extension)
 endif
 # Missing prototypes are expected in the helpers since these are exported
 # for Rust only, thus there is no header nor prototypes.
@@ -23,7 +34,8 @@ CFLAGS_REMOVE_helpers/helpers.o = -Wmissing-prototypes -Wmissing-declarations
 
 always-$(CONFIG_RUST) += bindings/bindings_generated.rs bindings/bindings_helpers_generated.rs
 obj-$(CONFIG_RUST) += bindings.o pin_init.o kernel.o
-always-$(CONFIG_RUST) += exports_bindings_generated.h exports_kernel_generated.h
+always-$(CONFIG_RUST) += exports_bindings_generated.$(rust-export-extension) \
+                       exports_kernel_generated.$(rust-export-extension)
 
 always-$(CONFIG_RUST) += uapi/uapi_generated.rs
 obj-$(CONFIG_RUST) += uapi.o
@@ -34,7 +46,11 @@ else
 always-$(CONFIG_RUST) += build_error.o
 endif
 
+ifeq ($(CONFIG_RUST_NATIVE_EXPORTS),y)
+obj-$(CONFIG_RUST) += exports_rust.o
+else
 obj-$(CONFIG_RUST) += exports.o
+endif
 
 always-$(CONFIG_RUST) += host/libproc_macro2.rlib host/libquote.rlib host/libsyn.rlib
 
@@ -586,6 +602,25 @@ $(obj)/exports_bindings_generated.h: $(obj)/bindings.o FORCE
 $(obj)/exports_kernel_generated.h: $(obj)/kernel.o FORCE
 	$(call if_changed,exports)
 
+# Keep the exact symbol selection and ordering used by the C export bridge.
+# These records refer to linker names without inventing Rust declarations or
+# recalculating the versions supplied by the actual defining objects.
+quiet_cmd_exports_rs = EXPORTS $@
+      cmd_exports_rs = \
+	$(call rust_exports,$<,"ffi_export::export_symbol_linkage_gpl!(%s);\n") > $@
+
+$(obj)/exports_core_generated.rs: $(obj)/core.o FORCE
+	$(call if_changed,exports_rs)
+
+$(obj)/exports_helpers_generated.rs: $(obj)/helpers/helpers.o FORCE
+	$(call if_changed,exports_rs)
+
+$(obj)/exports_bindings_generated.rs: $(obj)/bindings.o FORCE
+	$(call if_changed,exports_rs)
+
+$(obj)/exports_kernel_generated.rs: $(obj)/kernel.o FORCE
+	$(call if_changed,exports_rs)
+
 quiet_cmd_rustc_procmacrolibrary = $(if $(skip_clippy),RUSTC,$(RUSTC_OR_CLIPPY_QUIET)) PL $@
       cmd_rustc_procmacrolibrary = \
 	$(rustc_target_envs) \
@@ -726,9 +761,17 @@ endef
 $(obj)/helpers/helpers.o: $(src)/helpers/helpers.c $(recordmcount_source) FORCE
 	+$(call if_changed_rule,rust_cc_library)
 
-# Disable symbol versioning for exports.o to avoid conflicts with the actual
+# Disable symbol versioning for both bridges to avoid conflicts with the actual
 # symbol versions generated from Rust objects.
-$(obj)/exports.o: private skip_gendwarfksyms = 1
+$(obj)/exports.o $(obj)/exports_rust.o: private skip_gendwarfksyms = 1
+
+$(obj)/exports_rust.o: $(src)/exports_rust.rs $(obj)/compiler_builtins.o \
+    $(obj)/exports_core_generated.rs $(obj)/exports_bindings_generated.rs \
+    $(obj)/exports_kernel_generated.rs FORCE
+	+$(call if_changed_rule,rustc_library)
+ifndef CONFIG_RUST_INLINE_HELPERS
+$(obj)/exports_rust.o: $(obj)/exports_helpers_generated.rs
+endif
 
 $(obj)/core.o: private skip_clippy = 1
 $(obj)/core.o: private skip_flags = $(core-skip_flags)

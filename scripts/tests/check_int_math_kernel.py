@@ -229,10 +229,10 @@ def verify_linked_implementation(build, selection):
                             check=True, capture_output=True).stdout
     objects = {(build / os.fsdecode(line)).resolve() for line in listed.splitlines()}
     original = {(build / ("lib/math/" + name + ".o")).resolve() for name in ("int_pow", "int_sqrt")}
-    translated = {(build / ("lib/math/" + name + ".o")).resolve()
-                  for name in ("int_math_rust", "int_math_exports")}
+    translated = {(build / "lib/math/int_math_rust.o").resolve()}
+    obsolete = {(build / "lib/math/int_math_exports.o").resolve()}
     expected = translated if selection == "Rust" else original
-    if objects & (original | translated) != expected:
+    if objects & (original | translated | obsolete) != expected:
         raise ValueError("linked integer math objects do not match the " + selection + " configuration")
     for name in ("int_pow_kunit", "int_sqrt_kunit"):
         if (build / ("lib/math/tests/" + name + ".o")).resolve() not in objects:

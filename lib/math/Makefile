@@ -1,7 +1,13 @@
 # SPDX-License-Identifier: GPL-2.0-only
-obj-y += div64.o gcd.o lcm.o int_log.o
+obj-y += div64.o
+ifeq ($(CONFIG_RUST_GCD_LCM),y)
+obj-y += gcd_lcm_rust.o
+else
+obj-y += gcd.o lcm.o
+endif
+obj-y += int_log.o
 ifeq ($(CONFIG_RUST_INT_MATH),y)
-obj-y += int_math_rust.o int_math_exports.o
+obj-y += int_math_rust.o
 else
 obj-y += int_pow.o int_sqrt.o
 endif
