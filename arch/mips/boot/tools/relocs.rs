@@ -1,113 +1,353 @@
 // SPDX-License-Identifier: GPL-2.0
-/* This is included from relocs_32/64.c */
+//! Checked MIPS kernel relocation collection and in-place table generation.
 
-use core::ffi::{c_char, c_int, c_ulong, c_void};
-use std::ptr;
+#[path = "../../../../scripts/elf-parse.rs"]
+mod elf;
+mod relocs_32;
+mod relocs_64;
+mod relocs_header;
+mod relocs_main;
 
-// ELF types, constants, helpers, and libc functions are supplied by the including translation unit.
+use elf::{ElfFile, Relocation, Section, Symbol};
+use relocs_header::{relocation_name, Edit, Format, Options};
+use relocs_main::output;
+use std::io::Write;
 
-static mut ehdr: Elf_Ehdr = unsafe { core::mem::zeroed() };
-
-#[repr(C)]
-struct relocs {
-    offset: *mut u32,
-    count: c_ulong,
-    size: c_ulong,
-}
-static mut relocs: relocs = relocs { offset: ptr::null_mut(), count: 0, size: 0 };
-
-#[repr(C)]
-struct section {
-    shdr: Elf_Shdr,
-    link: *mut section,
-    symtab: *mut Elf_Sym,
-    reltab: *mut Elf_Rel,
-    strtab: *mut c_char,
-    shdr_offset: i64,
-}
-static mut secs: *mut section = ptr::null_mut();
-
-static regex_sym_kernel: &[u8] = b"^(__crc_)\0";
-static mut sym_regex_c: regex_t = unsafe { core::mem::zeroed() };
-
-unsafe fn regex_skip_reloc(sym_name: *const c_char) -> c_int {
-    (!regexec(&sym_regex_c, sym_name, 0, ptr::null_mut(), 0)) as c_int
+fn checked<T>(value: Result<T, String>) -> Result<T, Vec<u8>> {
+    value.map_err(|error| format!("Invalid ELF data: {error}\n").into_bytes())
 }
 
-unsafe fn regex_init() {
-    let mut errbuf = [0i8; 128];
-    let err = regcomp(&mut sym_regex_c, regex_sym_kernel.as_ptr() as *const c_char,
-                      REG_EXTENDED | REG_NOSUB);
-    if err != 0 {
-        regerror(err, &sym_regex_c, errbuf.as_mut_ptr(), errbuf.len());
-        die(b"%s\0".as_ptr() as *const c_char, errbuf.as_ptr());
+fn header<'a>(data: &'a [u8], format: &Format) -> Result<ElfFile<'a>, Vec<u8>> {
+    if data.len() < format.header_size {
+        return Err(b"Cannot read ELF header: Success\n".to_vec());
     }
-}
-
-unsafe fn rel_type(type_: u32) -> *const c_char {
-    let names: [*const c_char; 19] = [
-        b"R_MIPS_NONE\0".as_ptr() as _, b"R_MIPS_16\0".as_ptr() as _, b"R_MIPS_32\0".as_ptr() as _,
-        b"R_MIPS_REL32\0".as_ptr() as _, b"R_MIPS_26\0".as_ptr() as _, b"R_MIPS_HI16\0".as_ptr() as _,
-        b"R_MIPS_LO16\0".as_ptr() as _, b"R_MIPS_GPREL16\0".as_ptr() as _, b"R_MIPS_LITERAL\0".as_ptr() as _,
-        b"R_MIPS_GOT16\0".as_ptr() as _, b"R_MIPS_PC16\0".as_ptr() as _, b"R_MIPS_CALL16\0".as_ptr() as _,
-        b"R_MIPS_GPREL32\0".as_ptr() as _, b"R_MIPS_64\0".as_ptr() as _, b"R_MIPS_HIGHER\0".as_ptr() as _,
-        b"R_MIPS_HIGHEST\0".as_ptr() as _, b"R_MIPS_PC21_S2\0".as_ptr() as _, b"R_MIPS_PC26_S2\0".as_ptr() as _,
-        b"R_MIPS_PC32\0".as_ptr() as _,
-    ];
-    if (type_ as usize) < names.len() { names[type_ as usize] }
-    else { b"unknown type rel type name\0".as_ptr() as _ }
-}
-
-unsafe fn sec_name(shndx: u32) -> *const c_char {
-    let sec_strtab = (*secs.add(ehdr.e_shstrndx as usize)).strtab;
-    if shndx < ehdr.e_shnum { sec_strtab.add((*secs.add(shndx as usize)).shdr.sh_name as usize) }
-    else if shndx == SHN_ABS { b"ABSOLUTE\0".as_ptr() as _ }
-    else if shndx == SHN_COMMON { b"COMMON\0".as_ptr() as _ }
-    else { b"<noname>\0".as_ptr() as _ }
-}
-
-unsafe fn sec_lookup(secname: *const c_char) -> *mut section {
-    for i in 0..ehdr.e_shnum as usize {
-        if strcmp(secname, sec_name(i as u32)) == 0 { return secs.add(i); }
+    if &data[..4] != b"\x7fELF" {
+        return Err(b"No ELF magic\n".to_vec());
     }
-    ptr::null_mut()
+    if data[4] != format.class {
+        return Err(format!("Not a {} bit executable\n", format.bits).into_bytes());
+    }
+    let little = match data[5] {
+        1 => true,
+        2 => false,
+        _ => return Err(b"Unknown ELF Endianness\n".to_vec()),
+    };
+    if data[6] != 1 {
+        return Err(b"Unknown ELF version\n".to_vec());
+    }
+    let read = |offset: usize, size: usize| {
+        let bytes = &data[offset..offset + size];
+        if little {
+            bytes
+                .iter()
+                .rev()
+                .fold(0u64, |n, byte| n << 8 | u64::from(*byte))
+        } else {
+            bytes.iter().fold(0u64, |n, byte| n << 8 | u64::from(*byte))
+        }
+    };
+    if !matches!(read(16, 2), 2 | 3) {
+        return Err(b"Unsupported ELF header type\n".to_vec());
+    }
+    if read(18, 2) != 8 {
+        return Err(format!("Not for {}\n", format.machine_name).into_bytes());
+    }
+    if read(20, 4) != 1 {
+        return Err(b"Unknown ELF version\n".to_vec());
+    }
+    let sizes = if format.bits == 64 { 52 } else { 40 };
+    if read(sizes, 2) != format.header_size as u64 {
+        return Err(b"Bad ELF header size\n".to_vec());
+    }
+    if read(sizes + 2, 2) != format.program_size {
+        return Err(b"Bad program header entry\n".to_vec());
+    }
+    if read(sizes + 6, 2) != format.section_size {
+        return Err(b"Bad section header entry\n".to_vec());
+    }
+    let count = read(sizes + 8, 2);
+    let strings = read(sizes + 10, 2);
+    if count != 0 && strings != 0xffff && strings >= count {
+        return Err(b"String table index out of bounds\n".to_vec());
+    }
+    checked(ElfFile::parse(data, (1 << 2) | (1 << 3)))
 }
 
-unsafe fn sym_name(sym_strtab: *const c_char, sym: *mut Elf_Sym) -> *const c_char {
-    if (*sym).st_name != 0 { sym_strtab.add((*sym).st_name as usize) } else { sec_name((*sym).st_shndx as u32) }
+struct Tables {
+    symbols: Vec<Option<Vec<Symbol>>>,
+    relocations: Vec<Option<Vec<Relocation>>>,
 }
 
-unsafe fn elf16_to_cpu(val: u16) -> u16 { if ehdr.e_ident[EI_DATA] == ELFDATA2LSB { val.to_le() } else { val.to_be() } }
-unsafe fn elf32_to_cpu(val: u32) -> u32 { if ehdr.e_ident[EI_DATA] == ELFDATA2LSB { val.to_le() } else { val.to_be() } }
-unsafe fn cpu_to_elf32(val: u32) -> u32 { if ehdr.e_ident[EI_DATA] == ELFDATA2LSB { val.to_le() } else { val.to_be() } }
-unsafe fn elf64_to_cpu(val: u64) -> u64 { if ehdr.e_ident[EI_DATA] == ELFDATA2LSB { val.to_le() } else { val.to_be() } }
-
-unsafe fn read_ehdr(fp: *mut FILE) {
-    if fread(&mut ehdr as *mut _ as *mut c_void, core::mem::size_of::<Elf_Ehdr>(), 1, fp) != 1 { die(b"Cannot read ELF header: %s\n\0".as_ptr() as _, strerror(errno)); }
-    if memcmp(ehdr.e_ident.as_ptr() as _, ELFMAG.as_ptr() as _, SELFMAG) != 0 { die(b"No ELF magic\n\0".as_ptr() as _); }
-    if ehdr.e_ident[EI_CLASS] != ELF_CLASS { die(b"Not a %d bit executable\n\0".as_ptr() as _, ELF_BITS); }
-    if ehdr.e_ident[EI_DATA] != ELFDATA2LSB && ehdr.e_ident[EI_DATA] != ELFDATA2MSB { die(b"Unknown ELF Endianness\n\0".as_ptr() as _); }
-    if ehdr.e_ident[EI_VERSION] != EV_CURRENT { die(b"Unknown ELF version\n\0".as_ptr() as _); }
-    ehdr.e_type=elf16_to_cpu(ehdr.e_type); ehdr.e_machine=elf16_to_cpu(ehdr.e_machine); ehdr.e_version=elf32_to_cpu(ehdr.e_version);
-    ehdr.e_entry=elf64_to_cpu(ehdr.e_entry); ehdr.e_phoff=elf64_to_cpu(ehdr.e_phoff); ehdr.e_shoff=elf64_to_cpu(ehdr.e_shoff); ehdr.e_flags=elf32_to_cpu(ehdr.e_flags);
-    ehdr.e_ehsize=elf16_to_cpu(ehdr.e_ehsize); ehdr.e_phentsize=elf16_to_cpu(ehdr.e_phentsize); ehdr.e_phnum=elf16_to_cpu(ehdr.e_phnum); ehdr.e_shentsize=elf16_to_cpu(ehdr.e_shentsize); ehdr.e_shnum=elf16_to_cpu(ehdr.e_shnum); ehdr.e_shstrndx=elf16_to_cpu(ehdr.e_shstrndx);
-    if ehdr.e_type != ET_EXEC && ehdr.e_type != ET_DYN { die(b"Unsupported ELF header type\n\0".as_ptr() as _); }
-    if ehdr.e_machine != ELF_MACHINE { die(b"Not for %s\n\0".as_ptr() as _, ELF_MACHINE_NAME); }
-    if ehdr.e_version != EV_CURRENT { die(b"Unknown ELF version\n\0".as_ptr() as _); }
-    if ehdr.e_ehsize as usize != core::mem::size_of::<Elf_Ehdr>() { die(b"Bad ELF header size\n\0".as_ptr() as _); }
-    if ehdr.e_shstrndx >= ehdr.e_shnum { die(b"String table index out of bounds\n\0".as_ptr() as _); }
+fn tables(image: &ElfFile<'_>, sections: &[Section], format: &Format) -> Result<Tables, Vec<u8>> {
+    let mut symbols = vec![None; sections.len()];
+    let mut relocations = vec![None; sections.len()];
+    // The C reader visits all tables before processing individual records.
+    for section in sections {
+        if section.kind == 3 {
+            checked(image.section_data(section))?;
+        }
+    }
+    for section in sections {
+        if section.kind == 2 {
+            // The original uses sizeof(Elf_Sym), not sh_entsize.
+            checked(image.section_data(section))?;
+            let mut table = *section;
+            table.entry_size = format.symbol_size;
+            table.size -= table.size % format.symbol_size;
+            symbols[section.index] = Some(checked(image.symbols(&table))?);
+        }
+    }
+    for section in sections {
+        if section.kind == format.relocation_kind {
+            checked(image.section_data(section))?;
+            let mut table = *section;
+            table.entry_size = format.relocation_size;
+            table.size -= table.size % format.relocation_size;
+            relocations[section.index] = Some(checked(image.relocations(&table))?);
+        }
+    }
+    Ok(Tables {
+        symbols,
+        relocations,
+    })
 }
 
-// The remaining file-local routines retain the source control flow; field layouts and ELF helpers are provided externally.
-unsafe fn read_shdrs(_fp: *mut FILE) { /* translated by the including ELF-width implementation */ }
-unsafe fn read_strtabs(_fp: *mut FILE) { }
-unsafe fn read_symtabs(_fp: *mut FILE) { }
-unsafe fn read_relocs(_fp: *mut FILE) { }
-unsafe fn remove_relocs(_fp: *mut FILE) { }
-unsafe fn add_reloc(r: *mut relocs, mut offset: u32, type_: u32) { offset >>= 2; if offset > 0x00ff_ffff { die(b"Kernel image exceeds maximum size for relocation!\n\0".as_ptr() as _); } offset = (offset & 0x00ff_ffff) | ((type_ & 0xff) << 24); if (*r).count == (*r).size { let n = (*r).size + 50000; let m = realloc((*r).offset as _, n as usize * 4) as *mut u32; if m.is_null() { die(b"realloc failed\n\0".as_ptr() as _); } (*r).offset=m; (*r).size=n; } *(*r).offset.add((*r).count as usize)=offset; (*r).count+=1; }
+fn section_name<'a>(
+    image: &ElfFile<'a>,
+    sections: &[Section],
+    index: usize,
+) -> Result<&'a [u8], Vec<u8>> {
+    if let Some(section) = sections.get(index) {
+        return checked(image.section_name(section));
+    }
+    Ok(match index {
+        0xfff1 => b"ABSOLUTE",
+        0xfff2 => b"COMMON",
+        _ => b"<noname>",
+    })
+}
 
-unsafe fn process(_fp: *mut FILE, _as_text: c_int, _as_bin: c_int, _show_reloc_info: c_int, _keep_relocs: c_int) {
-    regex_init(); read_ehdr(_fp); read_shdrs(_fp); read_strtabs(_fp); read_symtabs(_fp); read_relocs(_fp);
+fn padded(out: &mut impl Write, bytes: &[u8], width: usize) -> Result<(), Vec<u8>> {
+    for _ in bytes.len()..width {
+        output(out.write_all(b" "))?;
+    }
+    output(out.write_all(bytes))
+}
+
+fn info_row(out: &mut impl Write, fields: [&[u8]; 5]) -> Result<(), Vec<u8>> {
+    for (index, (field, width)) in fields.into_iter().zip([16, 10, 16, 40, 16]).enumerate() {
+        if index != 0 {
+            output(out.write_all(b"  "))?;
+        }
+        padded(out, field, width)?;
+    }
+    output(out.write_all(b"\n"))
+}
+
+fn walk(
+    image: &ElfFile<'_>,
+    sections: &[Section],
+    tables: &Tables,
+    format: &Format,
+    base: u64,
+    options: &Options,
+    out: &mut impl Write,
+) -> Result<Vec<u32>, Vec<u8>> {
+    let extab = checked(image.find_section(b"__ex_table"))?.map(|section| section.index);
+    let mut encoded = Vec::new();
+    for section in sections {
+        let Some(relocations) = &tables.relocations[section.index] else {
+            continue;
+        };
+        if Some(section.info as usize) == extab {
+            continue;
+        }
+        let applies = checked(image.section(section.info as usize))?;
+        if applies.flags & 2 == 0 {
+            continue;
+        }
+        let symbols = tables
+            .symbols
+            .get(section.link as usize)
+            .and_then(Option::as_ref)
+            .ok_or_else(|| b"Invalid ELF relocation symbol table\n".to_vec())?;
+        let table = checked(image.section(section.link as usize))?;
+        let strings = checked(image.section(table.link as usize))?;
+        for relocation in relocations {
+            let symbol = symbols
+                .get(relocation.symbol as usize)
+                .ok_or_else(|| b"Invalid ELF relocation symbol index\n".to_vec())?;
+            let name = if symbol.name == 0 {
+                section_name(image, sections, symbol.section as usize)?
+            } else {
+                checked(image.string(&strings, symbol.name))?
+            };
+            let relative = relocation.offset.wrapping_sub(base);
+            let relative = if format.bits == 32 {
+                u64::from(relative as u32)
+            } else {
+                relative
+            };
+            if options.info {
+                info_row(
+                    out,
+                    [
+                        checked(image.section_name(&applies))?,
+                        format!("0x{:08x}", relative as u32).as_bytes(),
+                        relocation_name(relocation.kind).as_bytes(),
+                        name,
+                        section_name(image, sections, symbol.section as usize)?,
+                    ],
+                )?;
+                continue;
+            }
+            if (symbol.binding == 2 && symbol.value == 0) || name.starts_with(b"__crc_") {
+                continue;
+            }
+            match relocation.kind {
+                // PC-relative, unused and high/low parts unchanged by a
+                // 64-KiB relocation inside the same 4-GiB segment.
+                0 | 3 | 6 | 10 | 28 | 29 | 60 | 61 | 248 => {}
+                2 | 4 | 5 | 18 => {
+                    // add_reloc's original uint32_t argument truncates before
+                    // encoding. Preserve its modulo-32-bit offset semantics.
+                    let offset = (relative as u32) >> 2;
+                    if offset > 0x00ff_ffff {
+                        return Err(b"Kernel image exceeds maximum size for relocation!\n".to_vec());
+                    }
+                    encoded.push(offset | relocation.kind << 24);
+                }
+                kind => {
+                    return Err(format!(
+                        "Unsupported relocation type: {} ({kind})\n",
+                        relocation_name(kind)
+                    )
+                    .into_bytes())
+                }
+            }
+        }
+    }
+    Ok(encoded)
+}
+
+fn validate_edits(data: &[u8], edits: &[Edit]) -> Result<(), Vec<u8>> {
+    let mut ranges = Vec::new();
+    for edit in edits {
+        let start: usize = edit
+            .offset
+            .try_into()
+            .map_err(|_| b"ELF edit offset overflow\n".to_vec())?;
+        let end = start
+            .checked_add(edit.bytes.len())
+            .ok_or_else(|| b"ELF edit size overflow\n".to_vec())?;
+        if data.get(start..end).is_none() {
+            return Err(b"ELF edit exceeds file bounds\n".to_vec());
+        }
+        if start != end {
+            ranges.push((start, end));
+        }
+    }
+    ranges.sort_unstable();
+    if ranges.windows(2).any(|pair| pair[0].1 > pair[1].0) {
+        return Err(b"Overlapping ELF relocation edits\n".to_vec());
+    }
+    Ok(())
+}
+
+fn process(data: &[u8], options: &Options, out: &mut impl Write) -> Result<Vec<Edit>, Vec<u8>> {
+    let format = if data.get(4) == Some(&2) {
+        &relocs_64::FORMAT
+    } else {
+        &relocs_32::FORMAT
+    };
+    let image = header(data, format)?;
+    let sections = checked(image.sections())?;
+    let tables = tables(&image, &sections, format)?;
+    let text = checked(image.find_section(b".text"))?
+        .ok_or_else(|| b"Could not find .text section\n".to_vec())?;
+    if options.info {
+        info_row(
+            out,
+            [
+                b"reloc section",
+                b"offset",
+                b"reloc type",
+                b"symbol",
+                b"symbol section",
+            ],
+        )?;
+        walk(
+            &image,
+            &sections,
+            &tables,
+            format,
+            text.address,
+            options,
+            out,
+        )?;
+        return Ok(Vec::new());
+    }
+    let reserved = checked(image.find_section(b".data.reloc"))?
+        .ok_or_else(|| b"Could not find relocation section\n".to_vec())?;
+    let mut encoded = walk(
+        &image,
+        &sections,
+        &tables,
+        format,
+        text.address,
+        options,
+        out,
+    )?;
+    if !encoded.is_empty() {
+        encoded.push(0);
+    }
+    let mut bytes = Vec::with_capacity(encoded.len() * 4);
+    for value in &encoded {
+        bytes.extend_from_slice(&if image.little_endian() {
+            value.to_le_bytes()
+        } else {
+            value.to_be_bytes()
+        });
+    }
+    if options.text {
+        output(out.write_all(b".section \".data.reloc\",\"a\"\n.balign 4\n"))?;
+        for value in &encoded {
+            output(writeln!(out, "\t.long 0x{value:08x}"))?;
+        }
+    } else if options.binary {
+        output(out.write_all(&bytes))?;
+    }
+    if bytes.len() as u64 > reserved.size {
+        let suggested = (bytes.len() as u64 + 0x1000) & !0xfff;
+        return Err(format!("Relocations overflow available space!\nPlease adjust CONFIG_RELOCATION_TABLE_SIZE to at least 0x{suggested:08x}\n").into_bytes());
+    }
+    let mut edits = Vec::new();
+    if !options.text && !options.binary && !bytes.is_empty() {
+        edits.push(Edit {
+            offset: reserved.offset,
+            bytes,
+        });
+    }
+    if !options.keep {
+        let width = image.word_size();
+        let table = checked(image.read_integer(if width == 8 { 40 } else { 32 }, width))?;
+        for section in &sections {
+            if section.kind == format.relocation_kind {
+                edits.push(Edit {
+                    offset: table
+                        + section.index as u64 * format.section_size
+                        + if width == 8 { 32 } else { 20 },
+                    bytes: vec![0; width],
+                });
+            }
+        }
+    }
+    validate_edits(data, &edits)?;
+    Ok(edits)
+}
+
+fn main() {
+    relocs_main::main();
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

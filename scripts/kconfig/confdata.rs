@@ -677,3 +677,5 @@ pub(crate) fn write_autoconf(kconf: &mut Kconfig, overwrite: bool) -> io::Result
     // auto.conf is the completion marker consumed by Kbuild: publish it last.
     atomic_write(&autoconf, &config)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -90,12 +90,14 @@ VDSO_LDFLAGS += -shared --build-id=sha1
 VDSO_LDFLAGS += --orphan-handling=$(CONFIG_LD_ORPHAN_WARN_LEVEL)
 
 
-# Borrow vdsomunge.rs from the arm vDSO
+# Borrow vdsomunge from the arm vDSO
 # We have to use a relative path because scripts/Makefile.host prefixes
 # $(hostprogs) with $(obj)
 munge := ../../../arm/vdso/vdsomunge
 hostprogs := $(munge)
+ifneq ($(HOST_TOOLS_LANG),c)
 $(munge)-rust := y
+endif
 
 c-obj-vdso := note.o
 c-obj-vdso-gettimeofday := vgettimeofday.o

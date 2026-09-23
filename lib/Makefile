@@ -33,7 +33,13 @@ KASAN_SANITIZE_string.o := n
 CFLAGS_string.o += -fno-stack-protector
 endif
 
-lib-y := ctype.o string.o vsprintf.o cmdline.o \
+ifeq ($(CONFIG_RUST_CTYPE),y)
+lib-y := ctype_rust.o ctype_exports.o
+else
+lib-y := ctype.o
+endif
+
+lib-y += string.o vsprintf.o cmdline.o \
 	 rbtree.o radix-tree.o timerqueue.o xarray.o \
 	 maple_tree.o idr.o extable.o irq_regs.o argv_split.o \
 	 flex_proportions.o ratelimit.o \
@@ -52,7 +58,13 @@ obj-y	+= lockref.o
 
 CONTEXT_ANALYSIS_rhashtable.o := y
 
-obj-y += bcd.o sort.o parser.o debug_locks.o random32.o \
+ifeq ($(CONFIG_RUST_BCD),y)
+obj-y += bcd_rust.o bcd_exports.o
+else
+obj-y += bcd.o
+endif
+
+obj-y += sort.o parser.o debug_locks.o random32.o \
 	 bust_spinlocks.o kasprintf.o bitmap.o scatterlist.o \
 	 list_sort.o uuid.o iov_iter.o clz_ctz.o \
 	 bsearch.o find_bit.o llist.o lwq.o memweight.o kfifo.o \
@@ -60,7 +72,11 @@ obj-y += bcd.o sort.o parser.o debug_locks.o random32.o \
 	 once.o refcount.o rcuref.o usercopy.o errseq.o bucket_locks.o \
 	 generic-radix-tree.o bitmap-str.o
 obj-y += string_helpers.o
+ifeq ($(CONFIG_RUST_HEXDUMP),y)
+obj-y += hexdump_rust.o hexdump_exports.o
+else
 obj-y += hexdump.o
+endif
 obj-$(CONFIG_TEST_HEXDUMP) += test_hexdump.o
 obj-y += kstrtox.o
 obj-$(CONFIG_FIND_BIT_BENCHMARK) += find_bit_benchmark.o

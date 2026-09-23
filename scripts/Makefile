@@ -13,9 +13,6 @@ hostprogs-always-$(CONFIG_RUST_KERNEL_DOCTESTS)		+= rustdoc_test_builder
 hostprogs-always-$(CONFIG_RUST_KERNEL_DOCTESTS)		+= rustdoc_test_gen
 hostprogs-always-$(CONFIG_TRACEPOINTS)			+= tracepoint-update
 
-sorttable-rust := y
-tracepoint-update-rust := y
-
 ifneq ($(or $(CONFIG_X86_64),$(CONFIG_X86_32)),)
 always-$(CONFIG_RUST)					+= target.json
 filechk_rust_target = $< < include/config/auto.conf
@@ -26,6 +23,12 @@ endif
 
 hostprogs += generate_rust_target
 generate_rust_target-rust := y
+rustdoc_test_builder-rust := y
+rustdoc_test_gen-rust := y
+
+ifneq ($(HOST_TOOLS_LANG),c)
+sorttable-rust := y
+tracepoint-update-rust := y
 kallsyms-rust := y
 gen_packed_field_checks-rust := y
 asn1_compiler-rust := y
@@ -33,8 +36,6 @@ unifdef-rust := y
 insert-sys-cert-rust := y
 sign-file-rust := y
 recordmcount-rust := y
-rustdoc_test_builder-rust := y
-rustdoc_test_gen-rust := y
 
 HOSTRUSTFLAGS_sorttable += --check-cfg='cfg(UNWINDER_ORC_ENABLED)' \
 			  --check-cfg='cfg(MCOUNT_SORT_ENABLED)'
@@ -48,6 +49,34 @@ endif
 
 ifdef CONFIG_BUILDTIME_MCOUNT_SORT
 HOSTRUSTFLAGS_sorttable += --cfg MCOUNT_SORT_ENABLED
+endif
+else
+sorttable-objs := sorttable.o elf-parse.o
+tracepoint-update-objs := tracepoint-update.o elf-parse.o
+
+HOSTCFLAGS_tracepoint-update.o = -I$(srctree)/tools/include
+HOSTCFLAGS_elf-parse.o = -I$(srctree)/tools/include
+HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
+HOSTLDLIBS_sorttable = -lpthread
+HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
+HOSTCFLAGS_sign-file.o = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null)
+HOSTCFLAGS_sign-file.o += -I$(srctree)/tools/include/uapi/
+HOSTLDLIBS_sign-file = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
+
+ifdef CONFIG_UNWINDER_ORC
+ifeq ($(ARCH),x86_64)
+SRCARCH := x86
+endif
+ifeq ($(ARCH),loongarch)
+SRCARCH := loongarch
+endif
+HOSTCFLAGS_sorttable.o += -I$(srctree)/tools/arch/$(SRCARCH)/include
+HOSTCFLAGS_sorttable.o += -DUNWINDER_ORC_ENABLED
+endif
+
+ifdef CONFIG_BUILDTIME_MCOUNT_SORT
+HOSTCFLAGS_sorttable.o += -DMCOUNT_SORT_ENABLED
+endif
 endif
 
 # The following programs are only built on demand

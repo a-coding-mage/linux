@@ -71,3 +71,5 @@ pub(crate) struct Property<'a> {
     pub(crate) data_offset: usize,
     pub(crate) data: &'a [u8],
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

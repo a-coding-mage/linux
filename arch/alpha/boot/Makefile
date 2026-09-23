@@ -9,8 +9,12 @@
 #
 
 hostprogs	:= tools/mkbb tools/objstrip
+ifneq ($(HOST_TOOLS_LANG),c)
 tools/mkbb-rust	:= y
 tools/objstrip-rust := y
+else
+KBUILD_HOSTCFLAGS := -Wall -I$(objtree)/usr/include
+endif
 targets		:= vmlinux.gz vmlinux \
 		   vmlinux.nh tools/lxboot tools/bootlx tools/bootph \
 		   tools/bootpzh bootloader bootpheader bootpzheader 

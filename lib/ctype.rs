@@ -1,13 +1,26 @@
 // SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/lib/ctype.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- */
+//! Kernel byte-classification table and safe, allocation-free helpers.
+// Copyright (C) 1991, 1992 Linus Torvalds.
+//
+// Compile this table-owning module only once per kernel, through ctype_rust.rs.
+// Independent native Rust consumers use kernel::ctype, not a path import of
+// this source. The shared helper component uses a private table accessor;
+// kernel export/version metadata is supplied separately.
 
-// Constants supplied by the translated Linux ctype header are referenced here.
-// The C EXPORT_SYMBOL(_ctype) directive is represented by the public static.
+#[path = "../include/linux/ctype_header.rs"]
+mod classification;
+pub use classification::*;
 
+const fn ctype_mask(byte: u8) -> u8 {
+    _ctype[byte as usize]
+}
+
+/// Original kernel classification masks for all 256 unsigned-byte values.
+///
+/// This is the sole immutable definition of the C-visible `_ctype` symbol.
+#[rustfmt::skip] // Keep the original C byte-range rows directly auditable.
+#[allow(non_upper_case_globals)]
+#[no_mangle]
 pub static _ctype: [u8; 256] = [
     _C, _C, _C, _C, _C, _C, _C, _C,                         /* 0-7 */
     _C, _C | _S, _C | _S, _C | _S, _C | _S, _C | _S, _C, _C, /* 8-15 */
@@ -27,10 +40,10 @@ pub static _ctype: [u8; 256] = [
     _L, _L, _L, _P, _P, _P, _P, _C,                         /* 120-127 */
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,         /* 128-143 */
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,         /* 144-159 */
-    _S | _SP, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, /* 160-175 */
+    _S | _SP, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, /* 160-175 */
     _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, _P, /* 176-191 */
     _U, _U, _U, _U, _U, _U, _U, _U, _U, _U, _U, _U, _U, _U, _U, _U, /* 192-207 */
-    _U, _U, _U, _U, _U, _U, _U, _U, _P, _U, _U, _U, _U, _U, _U, _L, /* 208-223 */
+    _U, _U, _U, _U, _U, _U, _U, _P, _U, _U, _U, _U, _U, _U, _U, _L, /* 208-223 */
     _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, /* 224-239 */
     _L, _L, _L, _L, _L, _L, _L, _P, _L, _L, _L, _L, _L, _L, _L, _L, /* 240-255 */
 ];

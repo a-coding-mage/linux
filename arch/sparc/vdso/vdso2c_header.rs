@@ -142,3 +142,5 @@ pub(crate) fn emit(
         "_builtin = {{\n\t.data = raw_data,\n\t.size = {mapping_size},\n}};\n"
     )
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

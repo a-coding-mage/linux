@@ -77,7 +77,9 @@ $(obj)/%.so.raw: $(obj)/%.so.dbg.raw FORCE
 	$(call if_changed,objcopy)
 
 hostprogs := genvdso
+ifneq ($(HOST_TOOLS_LANG),c)
 genvdso-rust := y
+endif
 
 quiet_cmd_genvdso = GENVDSO $@
 define cmd_genvdso

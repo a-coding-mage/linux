@@ -41,3 +41,5 @@ pub(crate) fn nop_node(data: &mut [u8], node: i32) -> Result<()> {
     let end = node_end_offset(data, node)?;
     nop_region(data, struct_abs(data, node, 0)?, (end - node) as usize)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

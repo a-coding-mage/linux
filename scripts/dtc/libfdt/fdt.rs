@@ -151,3 +151,5 @@ pub(crate) fn move_into(data: &[u8], dest: &mut [u8]) -> Result<()> {
     dest[..h.totalsize].copy_from_slice(&data[..h.totalsize]);
     Ok(())
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

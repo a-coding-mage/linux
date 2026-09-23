@@ -466,3 +466,5 @@ fn main() {
     let _ = io::stderr().write_all(&diagnostics.bytes);
     std::process::exit(status);
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -15,10 +15,14 @@ ccflags-y += -fno-stack-protector	\
 	     $(DISABLE_KSTACK_ERASE)
 
 hostprogs := gen-hyprel
+ifneq ($(HOST_TOOLS_LANG),c)
 gen-hyprel-rust := y
 HOSTRUSTFLAGS_gen-hyprel += --check-cfg='cfg(CONFIG_CPU_BIG_ENDIAN)'
 ifdef CONFIG_CPU_BIG_ENDIAN
 HOSTRUSTFLAGS_gen-hyprel += --cfg CONFIG_CPU_BIG_ENDIAN
+endif
+else
+HOST_EXTRACFLAGS += -I$(objtree)/include
 endif
 
 lib-objs := clear_page.o copy_page.o memcpy.o memset.o tishift.o

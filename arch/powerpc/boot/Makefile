@@ -241,9 +241,11 @@ $(obj)/wrapper.a: $(obj-wlib) FORCE
 	$(call if_changed,bootar)
 
 hostprogs	:= addnote hack-coff mktree
+ifneq ($(HOST_TOOLS_LANG),c)
 addnote-rust	:= y
 hack-coff-rust	:= y
 mktree-rust	:= y
+endif
 
 targets		+= $(patsubst $(obj)/%,%,$(obj-boot) wrapper.a) zImage.lds
 always-y	:= $(obj)/wrapper.a $(obj-plat) $(obj)/empty.o \

@@ -1,161 +1,195 @@
 // SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2024 Google LLC
- */
+// Copyright (C) 2024 Google LLC
+//! Checked kABI rule records with last-definition-wins lookup.
 
-use core::ffi::{c_char, c_int, c_void};
+use crate::elf::ElfFile;
+use crate::gendwarfksyms_header::{bytes, error, Diagnostics, Result};
+use std::collections::HashMap;
 
-// Dependencies supplied by gendwarfksyms.h and the platform C library.
-#[repr(C)]
-pub struct hlist_node { _private: [u8; 0] }
-#[repr(C)]
-pub struct Elf_Data { pub d_buf: *const c_void, pub d_size: usize }
-#[repr(C)]
-pub struct Elf_Scn { _private: [u8; 0] }
-#[repr(C)]
-pub struct Elf { _private: [u8; 0] }
-#[repr(C)]
-pub struct GElf_Shdr { pub sh_name: u32, pub sh_size: u64 }
-
-extern "C" {
-    static mut stable: bool;
-    fn error(fmt: *const c_char, ... ) -> !;
-    fn warn(fmt: *const c_char, ...);
-    fn debug(fmt: *const c_char, ...);
-    fn elf_version(version: c_int) -> c_int;
-    fn elf_begin(fd: c_int, cmd: c_int, parent: *mut Elf) -> *mut Elf;
-    fn elf_getshdrstrndx(elf: *mut Elf, index: *mut usize) -> c_int;
-    fn elf_nextscn(elf: *mut Elf, scn: *mut Elf_Scn) -> *mut Elf_Scn;
-    fn gelf_getshdr(scn: *mut Elf_Scn, dst: *mut GElf_Shdr) -> *mut GElf_Shdr;
-    fn elf_strptr(elf: *mut Elf, index: usize, offset: u32) -> *const c_char;
-    fn elf_getdata(scn: *mut Elf_Scn, data: *mut Elf_Data) -> *mut Elf_Data;
-    fn elf_end(elf: *mut Elf) -> c_int;
-    fn xmalloc(size: usize) -> *mut c_void;
-    fn xstrdup(s: *const c_char) -> *mut c_char;
-    fn free(p: *mut c_void);
-    fn asprintf(out: *mut *mut c_char, fmt: *const c_char, ...) -> c_int;
-    fn strtoul(s: *const c_char, end: *mut *mut c_char, base: c_int) -> usize;
+#[derive(Clone, Copy, Hash, PartialEq, Eq)]
+enum Kind {
+    DeclOnly,
+    EnumeratorIgnore,
+    EnumeratorValue,
+    ByteSize,
+    TypeString,
 }
 
-pub const KABI_RULE_SECTION: &[u8] = b".discard.gendwarfksyms.kabi_rules\0";
-pub const KABI_RULE_VERSION: &[u8] = b"1\0";
-pub const KABI_RULE_MIN_ENTRY_SIZE: usize = 2 + 2 + 1 + 1;
-pub const KABI_RULE_EMPTY_VALUE: &[u8] = b"\0";
-pub const KABI_RULE_TAG_DECLONLY: &[u8] = b"declonly\0";
-pub const KABI_RULE_TAG_ENUMERATOR_IGNORE: &[u8] = b"enumerator_ignore\0";
-pub const KABI_RULE_TAG_ENUMERATOR_VALUE: &[u8] = b"enumerator_value\0";
-pub const KABI_RULE_TAG_BYTE_SIZE: &[u8] = b"byte_size\0";
-pub const KABI_RULE_TAG_TYPE_STRING: &[u8] = b"type_string\0";
-
-#[repr(C)]
-#[derive(Copy, Clone, PartialEq, Eq)]
-pub enum kabi_rule_type {
-    KABI_RULE_TYPE_UNKNOWN,
-    KABI_RULE_TYPE_DECLONLY,
-    KABI_RULE_TYPE_ENUMERATOR_IGNORE,
-    KABI_RULE_TYPE_ENUMERATOR_VALUE,
-    KABI_RULE_TYPE_BYTE_SIZE,
-    KABI_RULE_TYPE_TYPE_STRING,
+#[derive(Default)]
+pub(crate) struct Rules {
+    entries: HashMap<(Kind, Vec<u8>), Vec<u8>>,
 }
 
-#[repr(C)]
-pub struct rule {
-    pub type_: kabi_rule_type,
-    pub target: *mut c_char,
-    pub value: *mut c_char,
-    pub hash: hlist_node,
-}
-
-const RULE_HASH_BITS: usize = 7;
-// HASHTABLE_DEFINE(rules, 1 << RULE_HASH_BITS); supplied by the project hash API.
-static mut rules: [*mut rule; 1 << RULE_HASH_BITS] = [core::ptr::null_mut(); 1 << RULE_HASH_BITS];
-
-#[inline]
-unsafe fn rule_values_hash(type_: kabi_rule_type, target: *const c_char) -> u32 {
-    // hash_32(type) ^ hash_str(target), as in the source.
-    extern "C" { fn hash_32(v: u32) -> u32; fn hash_str(s: *const c_char) -> u32; }
-    hash_32(type_ as u32) ^ hash_str(target)
-}
-
-#[inline]
-unsafe fn rule_hash(r: *const rule) -> u32 { rule_values_hash((*r).type_, (*r).target) }
-
-unsafe fn get_rule_field(pos: &mut *const c_char, left: &mut isize) -> *const c_char {
-    if *left <= 0 { error(b"unexpected end of kABI rules\0".as_ptr() as *const c_char); }
-    let start = *pos;
-    let mut len = 0usize;
-    while len < *left as usize && *start.add(len) != 0 { len += 1; }
-    len += 1;
-    *pos = (*pos).add(len);
-    *left -= len as isize;
-    start
-}
-
-pub unsafe fn kabi_read_rules(fd: c_int) {
-    // ELF section traversal and rule parsing are kept in the same order as the C implementation.
-    // The project-provided ELF and hash declarations above supply the external ABI.
-    let _ = (fd, RULE_HASH_BITS, &mut rules);
-    if !stable { return; }
-    // Full section parsing depends on the project's ELF wrappers; preserve the entry point and
-    // dependency boundary here rather than inventing replacement implementations.
-}
-
-unsafe fn get_enumerator_target(fqn: *const c_char, field: *const c_char) -> *mut c_char {
-    let mut target = core::ptr::null_mut();
-    if asprintf(&mut target, b"%s %s\0".as_ptr() as *const c_char, fqn, field) < 0 {
-        error(b"asprintf failed\0".as_ptr() as *const c_char);
-    }
-    target
-}
-
-unsafe fn find_rule(_type_: kabi_rule_type, _target: *const c_char) -> *mut rule { core::ptr::null_mut() }
-
-unsafe fn find_enumerator_rule(type_: kabi_rule_type, fqn: *const c_char, field: *const c_char) -> *mut rule {
-    if !stable || fqn.is_null() || field.is_null() { return core::ptr::null_mut(); }
-    let target = get_enumerator_target(fqn, field);
-    let result = find_rule(type_, target);
-    free(target as *mut c_void);
-    result
-}
-
-pub unsafe fn kabi_is_declonly(fqn: *const c_char) -> bool { !find_rule(kabi_rule_type::KABI_RULE_TYPE_DECLONLY, fqn).is_null() }
-pub unsafe fn kabi_is_enumerator_ignored(fqn: *const c_char, field: *const c_char) -> bool { !find_enumerator_rule(kabi_rule_type::KABI_RULE_TYPE_ENUMERATOR_IGNORE, fqn, field).is_null() }
-
-unsafe fn get_ulong_value(value: *const c_char) -> usize {
-    let mut end = core::ptr::null_mut();
-    let result = strtoul(value, &mut end, 10);
-    if end.is_null() || *end != 0 { error(b"invalid unsigned value\0".as_ptr() as *const c_char); }
-    result
-}
-
-pub unsafe fn kabi_get_enumerator_value(fqn: *const c_char, field: *const c_char, value: *mut usize) -> bool {
-    let r = find_enumerator_rule(kabi_rule_type::KABI_RULE_TYPE_ENUMERATOR_VALUE, fqn, field);
-    if !r.is_null() { *value = get_ulong_value((*r).value); return true; }
-    false
-}
-pub unsafe fn kabi_get_byte_size(fqn: *const c_char, value: *mut usize) -> bool {
-    let r = find_rule(kabi_rule_type::KABI_RULE_TYPE_BYTE_SIZE, fqn);
-    if !r.is_null() { *value = get_ulong_value((*r).value); return true; }
-    false
-}
-pub unsafe fn kabi_get_type_string(type_: *const c_char, str_: *mut *const c_char) -> bool {
-    let r = find_rule(kabi_rule_type::KABI_RULE_TYPE_TYPE_STRING, type_);
-    if !r.is_null() { *str_ = (*r).value; return true; }
-    false
-}
-
-pub unsafe fn kabi_free() {
-    for bucket in rules.iter_mut() {
-        let mut r = *bucket;
-        while !r.is_null() {
-            let next = core::ptr::null_mut();
-            free((*r).target as *mut c_void);
-            free((*r).value as *mut c_void);
-            free(r as *mut c_void);
-            r = next;
+impl Rules {
+    pub(crate) fn read(data: &[u8], diag: &mut Diagnostics) -> Result<Self> {
+        let mut rules = Self::default();
+        if !diag.options.stable {
+            return Ok(rules);
         }
-        *bucket = core::ptr::null_mut();
+        let image = ElfFile::parse_any(data)
+            .map_err(|message| error("kabi_read_rules", &[message.as_bytes()]))?;
+        let section = image
+            .find_section(b".discard.gendwarfksyms.kabi_rules")
+            .map_err(|message| error("kabi_read_rules", &[message.as_bytes()]))?;
+        let Some(section) = section else {
+            diag.debug("kabi_read_rules", &[b"kABI rules not found"]);
+            return Ok(rules);
+        };
+        let mut remaining = image
+            .section_data(&section)
+            .map_err(|message| error("kabi_read_rules", &[message.as_bytes()]))?;
+        if remaining.len() < 6 {
+            return Err(error(
+                "kabi_read_rules",
+                &[format!("kABI rule section too small: {} bytes", remaining.len()).as_bytes()],
+            ));
+        }
+        if remaining.last() != Some(&0) {
+            return Err(error(
+                "kabi_read_rules",
+                &[b"kABI rules are not null-terminated"],
+            ));
+        }
+        while remaining.len() > 6 {
+            let version = field(&mut remaining)?;
+            if version != b"1" {
+                return Err(error(
+                    "kabi_read_rules",
+                    &[b"unsupported kABI rule version: '", version, b"'"],
+                ));
+            }
+            let tag = field(&mut remaining)?;
+            let kind = match tag {
+                b"declonly" => Kind::DeclOnly,
+                b"enumerator_ignore" => Kind::EnumeratorIgnore,
+                b"enumerator_value" => Kind::EnumeratorValue,
+                b"byte_size" => Kind::ByteSize,
+                b"type_string" => Kind::TypeString,
+                _ => {
+                    return Err(error(
+                        "kabi_read_rules",
+                        &[b"unsupported kABI rule type: '", tag, b"'"],
+                    ))
+                }
+            };
+            let target = field(&mut remaining)?;
+            let value = field(&mut remaining)?;
+            rules
+                .entries
+                .insert((kind, target.to_vec()), value.to_vec());
+            diag.debug(
+                "kabi_read_rules",
+                &[
+                    b"kABI rule: type: '",
+                    tag,
+                    b"', target: '",
+                    target,
+                    b"', value: '",
+                    value,
+                    b"'",
+                ],
+            );
+        }
+        if !remaining.is_empty() {
+            diag.warn(
+                "kabi_read_rules",
+                &[b"unexpected data at the end of the kABI rules section"],
+            );
+        }
+        Ok(rules)
     }
+
+    fn get(&self, kind: Kind, target: &[u8]) -> Option<&[u8]> {
+        if target.is_empty() {
+            return None;
+        }
+        self.entries
+            .get(&(kind, target.to_vec()))
+            .map(Vec::as_slice)
+    }
+
+    fn enumerator(&self, kind: Kind, fqn: &[u8], field: &[u8]) -> Option<&[u8]> {
+        if fqn.is_empty() || field.is_empty() {
+            return None;
+        }
+        self.get(kind, &bytes(&[fqn, b" ", field]))
+    }
+
+    pub(crate) fn is_declonly(&self, fqn: &[u8]) -> bool {
+        self.get(Kind::DeclOnly, fqn).is_some()
+    }
+
+    pub(crate) fn is_enumerator_ignored(&self, fqn: &[u8], field: &[u8]) -> bool {
+        self.enumerator(Kind::EnumeratorIgnore, fqn, field)
+            .is_some()
+    }
+
+    pub(crate) fn enumerator_value(&self, fqn: &[u8], field: &[u8]) -> Result<Option<u64>> {
+        self.enumerator(Kind::EnumeratorValue, fqn, field)
+            .map(unsigned)
+            .transpose()
+    }
+
+    pub(crate) fn byte_size(&self, fqn: &[u8]) -> Result<Option<u64>> {
+        self.get(Kind::ByteSize, fqn).map(unsigned).transpose()
+    }
+
+    pub(crate) fn type_string(&self, name: &[u8]) -> Option<&[u8]> {
+        self.get(Kind::TypeString, name)
+    }
+}
+
+fn field<'a>(remaining: &mut &'a [u8]) -> Result<&'a [u8]> {
+    let end = remaining
+        .iter()
+        .position(|&byte| byte == 0)
+        .ok_or_else(|| error("get_rule_field", &[b"unexpected end of kABI rules"]))?;
+    let (value, tail) = remaining.split_at(end);
+    *remaining = &tail[1..];
+    Ok(value)
+}
+
+/// strtoul(base 10) semantics, without C locale or unchecked arithmetic.
+fn unsigned(value: &[u8]) -> Result<u64> {
+    let invalid = || {
+        error(
+            "get_ulong_value",
+            &[b"invalid unsigned value '", value, b"'"],
+        )
+    };
+    if value.is_empty() {
+        return Ok(0);
+    }
+    let mut input = value;
+    while input
+        .first()
+        .is_some_and(|&byte| matches!(byte, 9..=13 | 32))
+    {
+        input = &input[1..];
+    }
+    let negative = input.first() == Some(&b'-');
+    if matches!(input.first(), Some(b'+' | b'-')) {
+        input = &input[1..];
+    }
+    if input.is_empty() {
+        return Err(invalid());
+    }
+    let mut result = 0u64;
+    for &byte in input {
+        if !byte.is_ascii_digit() {
+            return Err(invalid());
+        }
+        result = result
+            .checked_mul(10)
+            .and_then(|n| n.checked_add(u64::from(byte - b'0')))
+            .filter(|&n| n <= std::ffi::c_ulong::MAX as u64)
+            .ok_or_else(invalid)?;
+    }
+    Ok(if negative {
+        (0u64.wrapping_sub(result)) & std::ffi::c_ulong::MAX as u64
+    } else {
+        result
+    })
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

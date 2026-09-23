@@ -805,9 +805,12 @@ Using Rust for host programs
 ----------------------------
 
 Kbuild offers support for host programs written in Rust. In this tree,
-the migrated build tools require a host Rust compiler even when
-``CONFIG_RUST`` is disabled. They use the host standard library and do not
-require kernel Rust bindings.
+the migrated build tools default to Rust and require a host Rust compiler even
+when ``CONFIG_RUST`` is disabled. They use the host standard library and do not
+require kernel Rust bindings. ``HOST_TOOLS_LANG=c`` selects the original C
+rules for these tools; ``HOST_TOOLS_LANG=rust`` selects their Rust rules.
+Both source selections keep their own flags and dependencies. Native
+Rust-only programs are unaffected by this migration-specific choice.
 
 Example::
 

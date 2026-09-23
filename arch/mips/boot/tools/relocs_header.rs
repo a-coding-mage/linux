@@ -28,13 +28,27 @@ pub(crate) struct Edit {
 
 pub(crate) fn relocation_name(kind: u32) -> &'static str {
     match kind {
-        0 => "R_MIPS_NONE", 1 => "R_MIPS_16", 2 => "R_MIPS_32",
-        3 => "R_MIPS_REL32", 4 => "R_MIPS_26", 5 => "R_MIPS_HI16",
-        6 => "R_MIPS_LO16", 7 => "R_MIPS_GPREL16", 8 => "R_MIPS_LITERAL",
-        9 => "R_MIPS_GOT16", 10 => "R_MIPS_PC16", 11 => "R_MIPS_CALL16",
-        12 => "R_MIPS_GPREL32", 18 => "R_MIPS_64", 28 => "R_MIPS_HIGHER",
-        29 => "R_MIPS_HIGHEST", 60 => "R_MIPS_PC21_S2",
-        61 => "R_MIPS_PC26_S2", 248 => "R_MIPS_PC32",
+        0 => "R_MIPS_NONE",
+        1 => "R_MIPS_16",
+        2 => "R_MIPS_32",
+        3 => "R_MIPS_REL32",
+        4 => "R_MIPS_26",
+        5 => "R_MIPS_HI16",
+        6 => "R_MIPS_LO16",
+        7 => "R_MIPS_GPREL16",
+        8 => "R_MIPS_LITERAL",
+        9 => "R_MIPS_GOT16",
+        10 => "R_MIPS_PC16",
+        11 => "R_MIPS_CALL16",
+        12 => "R_MIPS_GPREL32",
+        18 => "R_MIPS_64",
+        28 => "R_MIPS_HIGHER",
+        29 => "R_MIPS_HIGHEST",
+        60 => "R_MIPS_PC21_S2",
+        61 => "R_MIPS_PC26_S2",
+        248 => "R_MIPS_PC32",
         _ => "unknown type rel type name",
     }
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

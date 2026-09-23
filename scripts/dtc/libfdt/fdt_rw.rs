@@ -305,3 +305,5 @@ pub(crate) fn pack(data: &mut [u8]) -> Result<()> {
         (40 + reserve + h.size_dt_struct + h.size_dt_strings) as u32,
     )
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

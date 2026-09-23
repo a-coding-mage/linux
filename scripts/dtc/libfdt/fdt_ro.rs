@@ -423,3 +423,5 @@ pub(crate) fn property_offsets(data: &[u8], node: i32) -> Vec<i32> {
     }
     out
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

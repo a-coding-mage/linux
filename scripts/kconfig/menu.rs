@@ -710,3 +710,5 @@ impl DependencyChecker {
         eprintln!("For a resolution refer to Documentation/kbuild/kconfig-language.rst\nsubsection \"Kconfig recursive dependency limitations\"\n");
     }
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

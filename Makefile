@@ -463,6 +463,22 @@ endif
 HOSTRUSTC = rustc
 HOSTPKG_CONFIG	= pkg-config
 
+# Migrated host tools retain both implementations. The target kernel's
+# CONFIG_RUST setting is independent of this build-host choice.
+HOST_TOOLS_LANG ?= rust
+ifneq ($(HOST_TOOLS_LANG),c)
+ifneq ($(HOST_TOOLS_LANG),rust)
+$(error HOST_TOOLS_LANG must be 'c' or 'rust')
+endif
+endif
+export HOST_TOOLS_LANG
+
+ifneq ($(filter rust-host-tools rust-host-tests,$(MAKECMDGOALS)),)
+ifneq ($(HOST_TOOLS_LANG),rust)
+$(error rust-host-tools and rust-host-tests require HOST_TOOLS_LANG=rust; use HOST_TOOLS_LANG=c with normal Kbuild targets)
+endif
+endif
+
 # the KERNELDOC macro needs to be exported, as scripts/Makefile.build
 # has a logic to call it
 KERNELDOC       = $(srctree)/tools/docs/kernel-doc
@@ -1543,11 +1559,13 @@ rust-host-tools: outputmakefile scripts_basic
 	$(Q)$(MAKE) $(build)=scripts/ipe/polgen scripts/ipe/polgen/polgen
 	$(Q)$(MAKE) $(build)=scripts/kconfig scripts/kconfig/conf
 	$(Q)$(MAKE) $(build)=scripts/genksyms scripts/genksyms/genksyms
+	$(Q)$(MAKE) $(build)=scripts/gendwarfksyms scripts/gendwarfksyms/gendwarfksyms
 	$(Q)$(MAKE) $(build)=scripts/dtc hostprogs='dtc fdtoverlay fdtget fdtput' \
 		scripts/dtc/dtc scripts/dtc/fdtoverlay scripts/dtc/fdtget scripts/dtc/fdtput
 	$(Q)$(MAKE) $(build)=certs certs/extract-cert
-	$(Q)$(MAKE) $(build)=arch/x86/tools hostprogs='vdso2c relocs' \
-		arch/x86/tools/vdso2c arch/x86/tools/relocs
+	$(Q)$(MAKE) $(build)=arch/x86/tools hostprogs='vdso2c relocs insn_decoder_test insn_sanity' \
+		arch/x86/tools/vdso2c arch/x86/tools/relocs \
+		arch/x86/tools/insn_decoder_test arch/x86/tools/insn_sanity
 	$(Q)$(MAKE) $(build)=arch/powerpc/boot hostprogs='addnote hack-coff mktree' \
 		arch/powerpc/boot/addnote arch/powerpc/boot/hack-coff arch/powerpc/boot/mktree
 	$(Q)$(MAKE) $(build)=arch/arm/vdso arch/arm/vdso/vdsomunge
@@ -1555,13 +1573,17 @@ rust-host-tools: outputmakefile scripts_basic
 	$(Q)$(MAKE) $(build)=arch/arm64/kvm/hyp/nvhe arch/arm64/kvm/hyp/nvhe/gen-hyprel
 	$(Q)$(MAKE) $(build)=arch/alpha/boot \
 		arch/alpha/boot/tools/mkbb arch/alpha/boot/tools/objstrip
-	$(Q)$(MAKE) $(build)=arch/mips/tools hostprogs='elf-entry' arch/mips/tools/elf-entry
+	$(Q)$(MAKE) $(build)=arch/mips/tools hostprogs='elf-entry loongson3-llsc-check' \
+		arch/mips/tools/elf-entry arch/mips/tools/loongson3-llsc-check
 	$(Q)$(MAKE) $(build)=arch/mips/boot arch/mips/boot/elf2ecoff
+	$(Q)$(MAKE) $(build)=arch/mips/boot/tools arch/mips/boot/tools/relocs
 	$(Q)$(MAKE) $(build)=arch/mips/boot/compressed hostprogs='calc_vmlinuz_load_addr' \
 		arch/mips/boot/compressed/calc_vmlinuz_load_addr
 	$(Q)$(MAKE) $(build)=arch/mips/vdso arch/mips/vdso/genvdso
-	$(Q)$(MAKE) $(build)=arch/s390/tools hostprogs='gen_facilities gen_opcode_table' \
-		arch/s390/tools/gen_facilities arch/s390/tools/gen_opcode_table
+	$(Q)$(MAKE) $(build)=arch/s390/tools hostprogs='gen_facilities gen_opcode_table relocs' \
+		arch/s390/tools/gen_facilities arch/s390/tools/gen_opcode_table arch/s390/tools/relocs
+	$(Q)$(MAKE) $(build)=arch/sparc/boot arch/sparc/boot/piggyback
+	$(Q)$(MAKE) $(build)=arch/sparc/vdso arch/sparc/vdso/vdso2c
 	$(Q)$(MAKE) $(build)=arch/x86/boot/compressed arch/x86/boot/compressed/mkpiggy
 	$(Q)$(MAKE) $(build)=arch/x86/boot arch/x86/boot/mkcpustr
 

@@ -1,20 +1,25 @@
 // SPDX-License-Identifier: GPL-2.0
-// Translated from Linux kernel declarations in <linux/bcd.h> and <linux/export.h>.
+//! Binary-coded decimal conversions with the original exported C ABI.
+//!
+//! This implementation is compiled once through `bcd_rust.rs`. Independent
+//! native Rust callers use `kernel::bcd`, which imports only the shared pure
+//! helpers and therefore introduces no second copy of these exported symbols.
 
+#[path = "../include/linux/bcd_header.rs"]
+mod conversion;
+
+pub use conversion::*;
+
+/// Converts a packed byte exactly as the original C `_bcd2bin` function.
 #[no_mangle]
 pub extern "C" fn _bcd2bin(val: u8) -> u32 {
-    ((val & 0x0f) as u32) + ((val as u32) >> 4) * 10
+    bcd2bin(val)
 }
 
-// EXPORT_SYMBOL(_bcd2bin);
-
+/// Converts an integer with C's wrapping `_bin2bcd` arithmetic and byte result.
 #[no_mangle]
 pub extern "C" fn _bin2bcd(val: u32) -> u8 {
-    let t: u32 = (val * 103) >> 10;
-
-    ((t << 4) | (val - t * 10)) as u8
+    bin2bcd(val)
 }
-
-// EXPORT_SYMBOL(_bin2bcd);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

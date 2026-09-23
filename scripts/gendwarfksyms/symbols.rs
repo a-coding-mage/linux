@@ -1,115 +1,278 @@
 // SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2024 Google LLC */
+// Copyright (C) 2024 Google LLC
+//! Export records with explicit ownership and stable C-compatible iteration.
 
-use core::ffi::{c_char, c_int, c_uint, c_ulong, c_void};
-use std::ffi::CStr;
+use crate::elf::ElfFile;
+use crate::gendwarfksyms_header::{
+    bytes, error, hash_bytes, io_error, Diagnostics, Result, SYMBOL_PTR_PREFIX,
+};
+use std::collections::HashMap;
+use std::io::{BufRead, Write};
 
-// Declarations supplied by gendwarfksyms.h and the project ELF interfaces.
-extern "C" {
-    static mut symbol_addrs: c_void;
-    static mut symbol_names: c_void;
-    fn hash_32(v: u32) -> c_uint;
-    fn addr_hash(v: u64) -> u32;
-    fn hash_str(s: *const c_char) -> u32;
-    fn strncmp(a: *const c_char, b: *const c_char, n: usize) -> c_int;
-    fn strcmp(a: *const c_char, b: *const c_char) -> c_int;
-    fn warn(fmt: *const c_char, ...);
-    fn error(fmt: *const c_char, ...);
-    fn debug(fmt: *const c_char, ...);
-    fn xcalloc(n: usize, size: usize) -> *mut c_void;
-    fn free(p: *mut c_void);
-    fn getline(line: *mut *mut c_char, size: *mut usize, file: *mut FILE) -> isize;
-    fn sscanf(s: *const c_char, fmt: *const c_char, ...) -> c_int;
-    fn printf(fmt: *const c_char, ...);
-    fn elf_version(v: c_uint) -> c_uint;
-    fn elf_begin(fd: c_int, cmd: c_int, p: *mut c_void) -> *mut Elf;
-    fn elf_nextscn(elf: *mut Elf, scn: *mut Elf_Scn) -> *mut Elf_Scn;
-    fn gelf_getshdr(scn: *mut Elf_Scn, shdr: *mut GElf_Shdr) -> *mut GElf_Shdr;
-    fn elf_getdata(scn: *mut Elf_Scn, data: *mut Elf_Data) -> *mut Elf_Data;
-    fn gelf_fsize(elf: *mut Elf, ty: c_int, count: usize, version: c_uint) -> usize;
-    fn gelf_getsymshndx(data: *mut Elf_Data, xdata: *mut Elf_Data, n: usize,
-                        sym: *mut GElf_Sym, xndx: *mut Elf32_Word) -> *mut GElf_Sym;
-    fn elf_strptr(elf: *mut Elf, section: usize, offset: usize) -> *const c_char;
-    fn elf_errmsg(error: c_int) -> *const c_char;
-    fn elf_end(elf: *mut Elf) -> c_int;
-    fn check(v: c_int);
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(crate) enum SymbolState {
+    Unprocessed,
+    Mapped,
+    Processed,
 }
 
-#[repr(C)] pub struct FILE { _private: [u8; 0] }
-#[repr(C)] pub struct Elf { _private: [u8; 0] }
-#[repr(C)] pub struct Elf_Scn { _private: [u8; 0] }
-#[repr(C)] pub struct Elf_Data { _private: [u8; 0] }
-#[repr(C)] pub struct Dwarf_Die { pub addr: usize }
-#[repr(C)] pub struct GElf_Shdr { pub sh_type: u32, pub sh_entsize: u64, pub sh_size: u64, pub sh_link: usize }
-#[repr(C)] pub struct GElf_Sym { pub st_info: u8, pub st_shndx: u16, pub st_name: usize, pub st_value: u64 }
-pub type Elf32_Word = u32;
-
-#[repr(C)] pub struct SymbolAddr { pub section: u32, pub address: u64 }
-#[repr(C)] pub struct HListNode { _private: [u8; 0] }
-#[repr(C)] pub struct Symbol {
-    pub name: *const c_char, pub addr: SymbolAddr, pub state: c_uint,
-    pub crc: c_ulong, pub ptr_die_addr: usize, pub die_addr: usize,
-    pub name_hash: HListNode, pub addr_hash: HListNode,
-}
-pub type SymbolCallback = unsafe extern "C" fn(*mut Symbol, *mut c_void);
-pub type ElfSymbolCallback = unsafe extern "C" fn(*const c_char, *mut GElf_Sym, Elf32_Word, *mut c_void);
-
-pub const SYMBOL_HASH_BITS: u32 = 12;
-pub const SHN_UNDEF: u32 = 0;
-pub const SHN_XINDEX: u16 = 0xffff;
-pub const SYMBOL_UNPROCESSED: c_uint = 0;
-pub const SYMBOL_PROCESSED: c_uint = 1;
-pub const SYMBOL_MAPPED: c_uint = 2;
-pub const SYMBOL_PTR_PREFIX: &[u8] = b"__gendwarfksyms_ptr_\0";
-pub const SYMBOL_PTR_PREFIX_LEN: usize = SYMBOL_PTR_PREFIX.len() - 1;
-
-unsafe fn symbol_addr_hash(addr: *const SymbolAddr) -> c_uint {
-    hash_32((*addr).section ^ addr_hash((*addr).address))
+pub(crate) struct Symbol {
+    pub(crate) name: Vec<u8>,
+    pub(crate) addr: (u32, u64),
+    pub(crate) state: SymbolState,
+    pub(crate) die_addr: Option<usize>,
+    pub(crate) ptr_die_addr: Option<usize>,
+    pub(crate) crc: u32,
 }
 
-unsafe fn __for_each_addr(sym: *mut Symbol, func: Option<SymbolCallback>, data: *mut c_void) -> c_uint {
-    let mut processed = 0;
-    // hash_for_each_possible_safe(symbol_addrs, match, tmp, addr_hash, ...)
-    // Iteration is supplied by the project's hash-table implementation.
-    let _ = (&mut symbol_addrs, sym, func, data);
-    processed
+#[derive(Default)]
+pub(crate) struct Symbols {
+    pub(crate) entries: Vec<Symbol>,
+    names: HashMap<Vec<u8>, Vec<usize>>,
+    addresses: HashMap<(u32, u64), Vec<usize>>,
 }
 
-pub unsafe extern "C" fn is_symbol_ptr(name: *const c_char) -> bool {
-    !name.is_null() && strncmp(name, SYMBOL_PTR_PREFIX.as_ptr() as *const c_char, SYMBOL_PTR_PREFIX_LEN) == 0
+pub(crate) fn is_symbol_ptr(name: &[u8]) -> bool {
+    name.starts_with(SYMBOL_PTR_PREFIX)
 }
 
-unsafe fn for_each(mut name: *const c_char, func: Option<SymbolCallback>, data: *mut c_void) -> c_uint {
-    if name.is_null() || *name == 0 { return 0; }
-    if is_symbol_ptr(name) { name = name.add(SYMBOL_PTR_PREFIX_LEN); }
-    // hash_for_each_possible_safe(symbol_names, match, tmp, name_hash, hash_str(name))
-    let _ = (&mut symbol_names, name, func, data);
-    0
-}
-
-unsafe extern "C" fn set_crc(sym: *mut Symbol, data: *mut c_void) {
-    let crc = data as *mut c_ulong;
-    if (*sym).state == SYMBOL_PROCESSED && (*sym).crc != *crc {
-        warn(b"overriding version for symbol %s (crc %lx vs. %lx)\0".as_ptr() as _, (*sym).name, (*sym).crc, *crc);
+impl Symbols {
+    fn matching(&self, name: &[u8]) -> Vec<usize> {
+        if name.is_empty() {
+            return Vec::new();
+        }
+        let name = name.strip_prefix(SYMBOL_PTR_PREFIX).unwrap_or(name);
+        let Some(&first) = self.names.get(name).and_then(|ids| ids.last()) else {
+            return Vec::new();
+        };
+        let mut result = vec![first];
+        let addr = self.entries[first].addr;
+        if addr.0 != 0 {
+            if let Some(aliases) = self.addresses.get(&addr) {
+                result.extend(aliases.iter().rev().copied().filter(|&id| id != first));
+            }
+        }
+        result
     }
-    (*sym).state = SYMBOL_PROCESSED; (*sym).crc = *crc;
-}
-pub unsafe extern "C" fn symbol_set_crc(sym: *mut Symbol, crc: c_ulong) {
-    if for_each((*sym).name, Some(set_crc), &crc as *const _ as *mut _) == 0 { error(b"no matching symbols: '%s'\0".as_ptr() as _, (*sym).name); }
-}
-unsafe extern "C" fn set_ptr(sym: *mut Symbol, data: *mut c_void) { (*sym).ptr_die_addr = (*(data as *mut Dwarf_Die)).addr; }
-pub unsafe extern "C" fn symbol_set_ptr(sym: *mut Symbol, ptr: *mut Dwarf_Die) { if for_each((*sym).name, Some(set_ptr), ptr as _) == 0 { error(b"no matching symbols: '%s'\0".as_ptr() as _, (*sym).name); } }
-unsafe extern "C" fn set_die(sym: *mut Symbol, data: *mut c_void) { (*sym).die_addr = (*(data as *mut Dwarf_Die)).addr; (*sym).state = SYMBOL_MAPPED; }
-pub unsafe extern "C" fn symbol_set_die(sym: *mut Symbol, die: *mut Dwarf_Die) { if for_each((*sym).name, Some(set_die), die as _) == 0 { error(b"no matching symbols: '%s'\0".as_ptr() as _, (*sym).name); } }
 
-// The remaining ELF/hash-table traversal is intentionally represented as the
-// direct external operation used by the C implementation; these declarations
-// preserve its externally visible entry points and callback ordering.
-pub unsafe extern "C" fn symbol_read_exports(_file: *mut FILE) -> c_int { 0 }
-pub unsafe extern "C" fn symbol_get(_name: *const c_char) -> *mut Symbol { core::ptr::null_mut() }
-pub unsafe extern "C" fn symbol_for_each(_func: SymbolCallback, _arg: *mut c_void) {}
-pub unsafe extern "C" fn symbol_read_symtab(_fd: c_int) {}
-pub unsafe extern "C" fn symbol_print_versions() {}
-pub unsafe extern "C" fn symbol_free() {}
+    pub(crate) fn read_exports(mut input: impl BufRead, diag: &mut Diagnostics) -> Result<Self> {
+        let mut symbols = Self::default();
+        let mut line = Vec::new();
+        loop {
+            line.clear();
+            // Like getline(), terminate on EOF or an input-stream failure.
+            match input.read_until(b'\n', &mut line) {
+                Ok(0) | Err(_) => break,
+                Ok(_) => (),
+            }
+            // getline feeds sscanf("%ms"), which reads only the first C word.
+            let visible = line.split(|&byte| byte == 0).next().unwrap_or_default();
+            let space = |byte: &u8| matches!(*byte, 9..=13 | 32);
+            let name = visible
+                .split(space)
+                .find(|word| !word.is_empty())
+                .ok_or_else(|| {
+                    error("symbol_read_exports", &[b"malformed input line: ", visible])
+                })?;
+            if !symbols.matching(name).is_empty() {
+                continue;
+            }
+            let id = symbols.entries.len();
+            symbols.entries.push(Symbol {
+                name: name.to_vec(),
+                addr: (0, 0),
+                state: SymbolState::Unprocessed,
+                die_addr: None,
+                ptr_die_addr: None,
+                crc: 0,
+            });
+            symbols.names.entry(name.to_vec()).or_default().push(id);
+            diag.debug("symbol_read_exports", &[name]);
+        }
+        diag.debug(
+            "symbol_read_exports",
+            &[
+                symbols.entries.len().to_string().as_bytes(),
+                b" exported symbols",
+            ],
+        );
+        Ok(symbols)
+    }
+
+    pub(crate) fn get(&self, name: &[u8]) -> Option<usize> {
+        self.matching(name)
+            .into_iter()
+            .filter(|&id| self.entries[id].state == SymbolState::Unprocessed)
+            .last()
+    }
+
+    pub(crate) fn ordered_indices(&self) -> Vec<usize> {
+        let mut ids: Vec<_> = (0..self.entries.len()).collect();
+        ids.sort_by_key(|&id| {
+            (
+                hash_bytes(&self.entries[id].name) & 4095,
+                std::cmp::Reverse(id),
+            )
+        });
+        ids
+    }
+
+    fn targets(&self, id: usize, function: &str) -> Result<Vec<usize>> {
+        let name = &self.entries[id].name;
+        let targets = self.matching(name);
+        if targets.is_empty() {
+            return Err(error(function, &[b"no matching symbols: '", name, b"'"]));
+        }
+        Ok(targets)
+    }
+
+    pub(crate) fn set_die(&mut self, id: usize, addr: usize) -> Result<()> {
+        for target in self.targets(id, "symbol_set_die")? {
+            self.entries[target].die_addr = Some(addr);
+            self.entries[target].state = SymbolState::Mapped;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn set_ptr(&mut self, id: usize, addr: usize) -> Result<()> {
+        for target in self.targets(id, "symbol_set_ptr")? {
+            self.entries[target].ptr_die_addr = Some(addr);
+        }
+        Ok(())
+    }
+
+    pub(crate) fn set_crc(&mut self, id: usize, crc: u32, diag: &mut Diagnostics) -> Result<()> {
+        for target in self.targets(id, "symbol_set_crc")? {
+            let symbol = &mut self.entries[target];
+            if symbol.state == SymbolState::Processed && symbol.crc != crc {
+                diag.warn(
+                    "set_crc",
+                    &[
+                        b"overriding version for symbol ",
+                        &symbol.name,
+                        format!(" (crc {:x} vs. {crc:x})", symbol.crc).as_bytes(),
+                    ],
+                );
+            }
+            symbol.state = SymbolState::Processed;
+            symbol.crc = crc;
+        }
+        Ok(())
+    }
+
+    pub(crate) fn read_symtab(&mut self, data: &[u8], diag: &mut Diagnostics) -> Result<()> {
+        let checked = |result: std::result::Result<_, String>| {
+            result.map_err(|message| error("elf_for_each_global", &[message.as_bytes()]))
+        };
+        let image = checked(ElfFile::parse_any(data))?;
+        let sections = image
+            .sections()
+            .map_err(|message| error("elf_for_each_global", &[message.as_bytes()]))?;
+        let extended = sections
+            .iter()
+            .find(|section| section.kind == 18)
+            .map(|section| image.section_data(section))
+            .transpose()
+            .map_err(|message| error("elf_for_each_global", &[message.as_bytes()]))?;
+        let width = if image.word_size() == 8 { 24 } else { 16 };
+        for section in sections.iter().filter(|section| section.kind == 2) {
+            if section.entry_size != width {
+                return Err(error(
+                    "elf_for_each_global",
+                    &[
+                        format!("expected sh_entsize ({}) to be {width}", section.entry_size)
+                            .as_bytes(),
+                    ],
+                ));
+            }
+            let mut table = *section;
+            table.size -= table.size % width;
+            let symbols = image
+                .symbols(&table)
+                .map_err(|message| error("elf_for_each_global", &[message.as_bytes()]))?;
+            let strings = image
+                .section(section.link as usize)
+                .map_err(|message| error("elf_for_each_global", &[message.as_bytes()]))?;
+            for (index, symbol) in symbols.iter().enumerate().skip(1) {
+                if symbol.binding == 0 {
+                    continue;
+                }
+                let name = image
+                    .string(&strings, symbol.name)
+                    .map_err(|message| error("elf_for_each_global", &[message.as_bytes()]))?;
+                if name.is_empty() {
+                    continue;
+                }
+                let section_id = if symbol.section == 0xffff {
+                    let offset = index.checked_mul(4).ok_or_else(|| {
+                        error("elf_for_each_global", &[b"extended symbol index overflow"])
+                    })?;
+                    let raw: [u8; 4] = extended
+                        .and_then(|data| data.get(offset..offset + 4))
+                        .ok_or_else(|| {
+                            error("elf_for_each_global", &[b"invalid extended symbol index"])
+                        })?
+                        .try_into()
+                        .unwrap();
+                    if image.little_endian() {
+                        u32::from_le_bytes(raw)
+                    } else {
+                        u32::from_be_bytes(raw)
+                    }
+                } else {
+                    u32::from(symbol.section)
+                };
+                if section_id == 0 {
+                    continue;
+                }
+                let addr = (section_id, symbol.value);
+                for id in self.matching(name) {
+                    let entry = &mut self.entries[id];
+                    if entry.addr.0 == 0 {
+                        entry.addr = addr;
+                        self.addresses.entry(addr).or_default().push(id);
+                        diag.debug(
+                            "set_symbol_addr",
+                            &[
+                                &entry.name,
+                                format!(" -> {{ {}, {:x} }}", addr.0, addr.1).as_bytes(),
+                            ],
+                        );
+                    } else if entry.addr != addr {
+                        diag.warn(
+                            "set_symbol_addr",
+                            &[b"multiple addresses for symbol ", &entry.name, b"?"],
+                        );
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn print_versions(
+        &self,
+        out: &mut impl Write,
+        diag: &mut Diagnostics,
+    ) -> Result<()> {
+        for id in self.ordered_indices() {
+            let symbol = &self.entries[id];
+            if symbol.state != SymbolState::Processed {
+                diag.warn(
+                    "symbol_print_versions",
+                    &[b"no information for symbol ", &symbol.name],
+                );
+            }
+            let line = bytes(&[
+                b"#SYMVER ",
+                &symbol.name,
+                format!(" 0x{:08x}\n", symbol.crc).as_bytes(),
+            ]);
+            out.write_all(&line)
+                .map_err(|err| io_error("symbol_print_versions", err))?;
+        }
+        Ok(())
+    }
+}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -86,7 +86,12 @@ $(obj)/x509_revocation_list: $(CONFIG_SYSTEM_REVOCATION_KEYS) $(obj)/extract-cer
 targets += x509_revocation_list
 
 hostprogs := extract-cert
+ifneq ($(HOST_TOOLS_LANG),c)
 extract-cert-rust := y
 include $(srctree)/scripts/Makefile.openssl
 HOSTRUSTFLAGS_extract-cert += $(openssl-host-rustflags)
 $(obj)/extract-cert: $(srctree)/scripts/openssl_config.py
+else
+HOSTCFLAGS_extract-cert.o = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null) -I$(srctree)/scripts
+HOSTLDLIBS_extract-cert = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
+endif

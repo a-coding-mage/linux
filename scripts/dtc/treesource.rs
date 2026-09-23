@@ -398,3 +398,5 @@ pub(crate) fn to_source(
     write_node(&mut output, tree, tree.root, 0, options)?;
     Ok(output)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

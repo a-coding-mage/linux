@@ -169,3 +169,5 @@ pub(crate) fn relocation_type(kind: u32, is_64: bool) -> &'static str {
         }
     }
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

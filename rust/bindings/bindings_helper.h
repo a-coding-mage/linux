@@ -50,6 +50,7 @@
 #include <linux/cpufreq.h>
 #include <linux/cpumask.h>
 #include <linux/cred.h>
+#include <linux/ctype.h>
 #include <linux/debugfs.h>
 #include <linux/device/faux.h>
 #include <linux/dma-direction.h>
@@ -98,6 +99,10 @@
 #include <net/genetlink.h>
 #include <net/netlink.h>
 #include <trace/events/rust_sample.h>
+
+#ifdef CONFIG_RUST_X86_INSN
+#include <asm/insn.h>
+#endif
 
 /*
  * The driver-core Rust code needs to know about some C driver-core private

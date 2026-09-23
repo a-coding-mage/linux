@@ -19,3 +19,5 @@ pub(crate) const SELINUX_POLICYCAP_NAMES: &[&str] = &[
     "memfd_class",
     "bpf_token_perms",
 ];
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

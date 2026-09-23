@@ -1,244 +1,385 @@
 // SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2024 Google LLC
- */
+// Copyright (C) 2024 Google LLC
+//! Expand owned DIE fragments into symtypes records and symbol-version CRCs.
 
-use std::ffi::{c_char, c_int, c_void, c_ulong, CStr};
-use std::mem;
-use std::ptr;
+use crate::cache::Cache;
+use crate::die::{Die, DieMap, DieState, Fragment};
+use crate::gendwarfksyms_header::{bytes, error, io_error, Diagnostics, Result};
+use crate::kabi::Rules;
+use crate::symbols::{SymbolState, Symbols};
+use std::collections::{BTreeMap, HashSet};
+use std::io::Write;
+use std::rc::Rc;
 
-// The list, hash-table, DIE, symbol, cache, and project helper declarations
-// are supplied by the translated companion sources.
-
-static mut expansion_cache: cache = cache { _private: [] };
-
-#[repr(C)]
-struct type_list_entry {
-    str_: *const c_char,
-    owned: *mut c_void,
-    list: list_head,
+#[derive(Default)]
+struct Expansion {
+    // Sharing immutable fragments keeps nested expansion iterative without
+    // copying complete type definitions at every reference.
+    fragments: Rc<[Vec<u8>]>,
+    length: usize,
 }
 
-unsafe fn type_list_free(list: *mut list_head) {
-    let mut entry: *mut type_list_entry = ptr::null_mut();
-    let mut tmp: *mut type_list_entry = ptr::null_mut();
-    list_for_each_entry_safe!(entry, tmp, list, list, {
-        if !(*entry).owned.is_null() { free((*entry).owned); }
-        free(entry as *mut c_void);
-    });
-    INIT_LIST_HEAD!(list);
-}
-
-unsafe fn type_list_append(list: *mut list_head, s: *const c_char, owned: *mut c_void) -> usize {
-    if s.is_null() { return 0; }
-    let entry = xmalloc(mem::size_of::<type_list_entry>()) as *mut type_list_entry;
-    (*entry).str_ = s;
-    (*entry).owned = owned;
-    list_add_tail!(&mut (*entry).list, list);
-    strlen(s)
-}
-
-unsafe fn type_list_write(list: *mut list_head, file: *mut FILE) {
-    let mut entry: *mut type_list_entry = ptr::null_mut();
-    list_for_each_entry!(entry, list, list, {
-        if !(*entry).str_.is_null() { checkp(fputs((*entry).str_, file)); }
-    });
-}
-
-#[repr(C)]
-struct type_expansion {
-    name: *mut c_char,
-    len: usize,
-    expanded: list_head,
-    hash: hlist_node,
-}
-
-unsafe fn type_expansion_init(ty: *mut type_expansion) {
-    (*ty).name = ptr::null_mut();
-    (*ty).len = 0;
-    INIT_LIST_HEAD!(&mut (*ty).expanded);
-}
-
-unsafe fn type_expansion_free(ty: *mut type_expansion) {
-    free((*ty).name as *mut c_void);
-    (*ty).name = ptr::null_mut();
-    (*ty).len = 0;
-    type_list_free(&mut (*ty).expanded);
-}
-
-unsafe fn type_expansion_append(ty: *mut type_expansion, s: *const c_char, owned: *mut c_void) {
-    (*ty).len += type_list_append(&mut (*ty).expanded, s, owned);
-}
-
-static mut type_map: hashtable = hashtable { _private: [] };
-
-unsafe fn __type_map_get(name: *const c_char, res: *mut *mut type_expansion) -> c_int {
-    let mut e: *mut type_expansion = ptr::null_mut();
-    hash_for_each_possible!(type_map, e, hash, hash_str(name), {
-        if strcmp(name, (*e).name) == 0 { *res = e; return 0; }
-    });
-    -1
-}
-
-unsafe fn type_map_add(name: *const c_char, ty: *mut type_expansion) -> *mut type_expansion {
-    let mut e: *mut type_expansion = ptr::null_mut();
-    if __type_map_get(name, &mut e) != 0 {
-        e = xmalloc(mem::size_of::<type_expansion>()) as *mut type_expansion;
-        type_expansion_init(e);
-        (*e).name = xstrdup(name);
-        hash_add!(type_map, &mut (*e).hash, hash_str((*e).name));
-        if dump_types { debug!(b"adding %s\0".as_ptr(), (*e).name); }
-    } else {
-        if (*ty).len <= (*e).len { return e; }
-        type_list_free(&mut (*e).expanded);
-        if dump_types { debug!(b"replacing %s\0".as_ptr(), (*e).name); }
-    }
-    list_replace_init!(&mut (*ty).expanded, &mut (*e).expanded);
-    (*e).len = (*ty).len;
-    if dump_types {
-        checkp(fputs((*e).name, stderr)); checkp(fputs(b" \0".as_ptr() as *const c_char, stderr));
-        type_list_write(&mut (*e).expanded, stderr); checkp(fputs(b"\n\0".as_ptr() as *const c_char, stderr));
-    }
-    e
-}
-
-unsafe fn type_map_get(name: *const c_char, res: *mut *mut type_expansion) -> c_int {
-    let mut ty = mem::MaybeUninit::<type_expansion>::uninit();
-    let mut override_: *const c_char = ptr::null();
-    if __type_map_get(name, res) == 0 { return 0; }
-    if stable && kabi_get_type_string(name, &mut override_) != 0 {
-        type_expansion_init(ty.as_mut_ptr());
-        type_parse(name, override_, ty.as_mut_ptr());
-        *res = type_map_add(name, ty.as_mut_ptr());
-        type_expansion_free(ty.as_mut_ptr());
-        return 0;
-    }
-    -1
-}
-
-unsafe fn type_parse(name: *const c_char, str_: *const c_char, ty: *mut type_expansion) {
-    if *str_ == 0 { error!(b"empty type string override for '%s'\0".as_ptr(), name); }
-    let mut start = 0usize;
-    let mut pos = 0usize;
-    while *str_.add(pos) != 0 {
-        if !is_type_prefix(str_.add(pos)) { pos += 1; continue; }
-        let mut end = pos + 2;
-        let mut marker = b' ';
-        if *str_.add(end) == b'\'' as c_char { marker = b'\''; end += 1; }
-        while *str_.add(end) != 0 && *str_.add(end) != marker as c_char { end += 1; }
-        let empty = if marker == b'\'' { if *str_.add(end) != marker as c_char { error!(b"incomplete type reference\0".as_ptr()); } end == pos + 3 } else { end == pos + 2 };
-        if empty { error!(b"empty type name\0".as_ptr()); }
-        if pos > start {
-            let fragment = xstrndup(str_.add(start), pos - start);
-            type_expansion_append(ty, fragment, fragment as *mut c_void);
+impl Expansion {
+    fn new(fragments: Vec<Vec<u8>>) -> Self {
+        let length = fragments.iter().map(Vec::len).sum();
+        Self {
+            fragments: fragments.into(),
+            length,
         }
-        let fragment = xstrndup(str_.add(pos), end - pos);
-        type_expansion_append(ty, fragment, fragment as *mut c_void);
-        start = end; pos = end;
     }
-    if *str_.add(start) != 0 { type_expansion_append(ty, str_.add(start), ptr::null_mut()); }
-}
 
-unsafe fn is_type_prefix(s: *const c_char) -> bool {
-    ((*s == b's' as c_char || *s == b'u' as c_char || *s == b'e' as c_char || *s == b't' as c_char) && *s.add(1) == b'#' as c_char)
-}
-
-unsafe fn get_type_name(cache: *mut die) -> *mut c_char {
-    if (*cache).state == DIE_INCOMPLETE { warn!(b"found incomplete cache entry\0".as_ptr(), cache); return ptr::null_mut(); }
-    if (*cache).state == DIE_SYMBOL || (*cache).state == DIE_FQN || (*cache).fqn.is_null() || *(*cache).fqn == 0 { return ptr::null_mut(); }
-    let prefix = match (*cache).tag { DW_TAG_CLASS_TYPE | DW_TAG_STRUCTURE_TYPE => b's', DW_TAG_UNION_TYPE => b'u', DW_TAG_ENUMERATION_TYPE => b'e', DW_TAG_TYPEDEF_TYPE => b't', _ => 0 };
-    if prefix == 0 { return ptr::null_mut(); }
-    let quote = if strchr((*cache).fqn, b' ' as c_int).is_null() { b"\0" } else { b"'\0" };
-    let mut name: *mut c_char = ptr::null_mut();
-    asprintf(&mut name, b"%c#%s%s%s\0".as_ptr() as *const c_char, prefix, quote.as_ptr(), (*cache).fqn, quote.as_ptr());
-    name
-}
-
-unsafe fn type_expand(name: *const c_char, cache: *mut die, ty: *mut type_expansion) {
-    type_expansion_init(ty);
-    let mut override_: *const c_char = ptr::null();
-    if stable && kabi_get_type_string(name, &mut override_) != 0 { type_parse(name, override_, ty); }
-    else { __type_expand(cache, ty); }
-}
-
-unsafe fn __type_expand(_cache: *mut die, _ty: *mut type_expansion) {
-    // DIE fragment traversal is supplied by the translated DIE interfaces.
-}
-
-unsafe fn type_map_write(file: *mut FILE) {
-    if file.is_null() { return; }
-    // The project hash traversal and qsort helpers are used here exactly as in
-    // the C implementation; entries are emitted in lexical name order.
-    let mut e: *mut type_expansion = ptr::null_mut();
-    hash_for_each!(type_map, e, hash, {
-        checkp(fputs((*e).name, file));
-        checkp(fputs(b" \0".as_ptr() as *const c_char, file));
-        type_list_write(&mut (*e).expanded, file);
-        checkp(fputs(b"\n\0".as_ptr() as *const c_char, file));
-    });
-}
-
-unsafe fn type_map_free() {
-    let mut e: *mut type_expansion = ptr::null_mut();
-    let mut tmp: *mut hlist_node = ptr::null_mut();
-    hash_for_each_safe!(type_map, e, tmp, hash, {
-        type_expansion_free(e); free(e as *mut c_void);
-    });
-    hash_init!(type_map);
-}
-
-#[repr(C)] struct version { type_: type_expansion, crc: c_ulong }
-unsafe fn version_init(v: *mut version) { (*v).crc = crc32(0, ptr::null(), 0); type_expansion_init(&mut (*v).type_); }
-unsafe fn version_free(v: *mut version) { type_expansion_free(&mut (*v).type_); }
-unsafe fn version_add(v: *mut version, s: *const c_char) {
-    (*v).crc = crc32((*v).crc, s as *const u8, strlen(s) as u32);
-    if dump_versions { type_expansion_append(&mut (*v).type_, s, ptr::null_mut()); }
-}
-
-unsafe fn __calculate_version(v: *mut version, ty: *mut type_expansion) {
-    let mut entry: *mut type_list_entry = ptr::null_mut();
-    list_for_each_entry!(entry, &mut (*ty).expanded, list, {
-        if is_type_prefix((*entry).str_) {
-            let mut e: *mut type_expansion = ptr::null_mut();
-            if type_map_get((*entry).str_, &mut e) != 0 { error!(b"unknown type reference\0".as_ptr()); }
-            if cache_was_expanded(&mut expansion_cache, e as *mut c_void) { version_add(v, (*entry).str_); }
-            else { cache_mark_expanded(&mut expansion_cache, e as *mut c_void); __calculate_version(v, e); }
-        } else { version_add(v, (*entry).str_); }
-    });
-}
-unsafe fn calculate_version(v: *mut version, ty: *mut type_expansion) { version_init(v); __calculate_version(v, ty); cache_free(&mut expansion_cache); }
-
-unsafe fn expand_type(cache: *mut die, _arg: *mut c_void) {
-    if (*cache).mapped { return; }
-    (*cache).mapped = true;
-    let name = get_type_name(cache);
-    if name.is_null() { return; }
-    let mut ty = mem::MaybeUninit::<type_expansion>::uninit();
-    type_expand(name, cache, ty.as_mut_ptr());
-    type_map_add(name, ty.as_mut_ptr());
-    type_expansion_free(ty.as_mut_ptr()); free(name as *mut c_void);
-}
-
-unsafe fn expand_symbol(sym: *mut symbol, _arg: *mut c_void) {
-    let mut cache_: *mut die = ptr::null_mut();
-    if !symtypes && (*sym).state == SYMBOL_PROCESSED { return; }
-    if __die_map_get((*sym).die_addr, DIE_SYMBOL, &mut cache_) != 0 { return; }
-    let mut ty = mem::MaybeUninit::<type_expansion>::uninit();
-    type_expand((*sym).name, cache_, ty.as_mut_ptr());
-    if (*sym).state != SYMBOL_PROCESSED {
-        let mut v = mem::MaybeUninit::<version>::uninit(); calculate_version(v.as_mut_ptr(), ty.as_mut_ptr());
-        symbol_set_crc(sym, (*v.as_ptr()).crc); version_free(v.as_mut_ptr());
+    fn print(&self, diag: &mut Diagnostics) {
+        for fragment in self.fragments.iter() {
+            diag.print(&[fragment]);
+        }
     }
-    if symtypes { type_map_add((*sym).name, ty.as_mut_ptr()); }
-    type_expansion_free(ty.as_mut_ptr());
 }
 
-pub unsafe fn generate_symtypes_and_versions(file: *mut FILE) {
-    cache_init(&mut expansion_cache);
-    die_map_for_each(expand_type, ptr::null_mut());
-    symbol_for_each(expand_symbol, ptr::null_mut());
-    type_map_write(file);
-    type_map_free();
+#[derive(Default)]
+struct TypeMap {
+    names: BTreeMap<Vec<u8>, usize>,
+    entries: Vec<(Vec<u8>, Expansion)>,
+}
+
+impl TypeMap {
+    fn add(&mut self, name: &[u8], expansion: Expansion, diag: &mut Diagnostics) -> usize {
+        let id = if let Some(&id) = self.names.get(name) {
+            if expansion.length <= self.entries[id].1.length {
+                return id;
+            }
+            if diag.options.dump_types {
+                diag.debug("type_map_add", &[b"replacing ", name]);
+            }
+            self.entries[id].1 = expansion;
+            id
+        } else {
+            let id = self.entries.len();
+            self.entries.push((name.to_vec(), expansion));
+            self.names.insert(name.to_vec(), id);
+            if diag.options.dump_types {
+                diag.debug("type_map_add", &[b"adding ", name]);
+            }
+            id
+        };
+        if diag.options.dump_types {
+            diag.print(&[name, b" "]);
+            self.entries[id].1.print(diag);
+            diag.print(&[b"\n"]);
+        }
+        id
+    }
+
+    fn get(&mut self, name: &[u8], rules: &Rules, diag: &mut Diagnostics) -> Result<Option<usize>> {
+        if let Some(&id) = self.names.get(name) {
+            return Ok(Some(id));
+        }
+        if diag.options.stable {
+            if let Some(override_) = rules.type_string(name) {
+                return Ok(Some(self.add(name, parse(name, override_)?, diag)));
+            }
+        }
+        Ok(None)
+    }
+
+    fn write(&self, output: Option<&mut dyn Write>) -> Result<()> {
+        let Some(output) = output else {
+            return Ok(());
+        };
+        for (name, &id) in &self.names {
+            output
+                .write_all(name)
+                .and_then(|()| output.write_all(b" "))
+                .map_err(|err| io_error("type_map_write", err))?;
+            for fragment in self.entries[id].1.fragments.iter() {
+                output
+                    .write_all(fragment)
+                    .map_err(|err| io_error("type_list_write", err))?;
+            }
+            output
+                .write_all(b"\n")
+                .map_err(|err| io_error("type_map_write", err))?;
+        }
+        Ok(())
+    }
+}
+
+fn is_type_prefix(value: &[u8]) -> bool {
+    matches!(value.first(), Some(b's' | b'u' | b'e' | b't')) && value.get(1) == Some(&b'#')
+}
+
+fn type_name(die: &Die, diag: &mut Diagnostics) -> Option<Vec<u8>> {
+    if die.state == DieState::Incomplete {
+        diag.warn(
+            "get_type_name",
+            &[format!("found incomplete cache entry: {die:p}").as_bytes()],
+        );
+        return None;
+    }
+    if matches!(die.state, DieState::Symbol | DieState::Fqn) {
+        return None;
+    }
+    let name = die.fqn.as_deref().filter(|name| !name.is_empty())?;
+    // DW_TAG_class_type, structure_type, union_type, enumeration_type, typedef.
+    let prefix = match die.tag {
+        0x02 | 0x13 => b's',
+        0x17 => b'u',
+        0x04 => b'e',
+        0x16 => b't',
+        _ => return None,
+    };
+    let quote = if name.contains(&b' ') {
+        &b"'"[..]
+    } else {
+        &b""[..]
+    };
+    Some(bytes(&[&[prefix, b'#'], quote, name, quote]))
+}
+
+fn parse(name: &[u8], input: &[u8]) -> Result<Expansion> {
+    if input.is_empty() {
+        return Err(error(
+            "type_parse",
+            &[b"empty type string override for '", name, b"'"],
+        ));
+    }
+    let (mut start, mut position) = (0, 0);
+    let mut fragments = Vec::new();
+    while position < input.len() {
+        if !is_type_prefix(&input[position..]) {
+            position += 1;
+            continue;
+        }
+        let mut end = position + 2;
+        let quoted = input.get(end) == Some(&b'\'');
+        if quoted {
+            end += 1;
+        }
+        let marker = if quoted { b'\'' } else { b' ' };
+        while end < input.len() && input[end] != marker {
+            end += 1;
+        }
+        if quoted && end == input.len() {
+            return Err(error(
+                "type_parse",
+                &[
+                    b"incomplete ",
+                    &input[position..position + 1],
+                    b"# type reference for '",
+                    name,
+                    b"' (string : '",
+                    input,
+                    b"')",
+                ],
+            ));
+        }
+        let empty = end == position + if quoted { 3 } else { 2 };
+        if empty {
+            return Err(error(
+                "type_parse",
+                &[
+                    b"empty ",
+                    &input[position..position + 1],
+                    b"# type name for '",
+                    name,
+                    b"' (string: '",
+                    input,
+                    b"')",
+                ],
+            ));
+        }
+        if quoted {
+            end += 1;
+        }
+        if position > start {
+            fragments.push(input[start..position].to_vec());
+        }
+        fragments.push(input[position..end].to_vec());
+        start = end;
+        position = end;
+    }
+    if start < input.len() {
+        fragments.push(input[start..].to_vec());
+    }
+    Ok(Expansion::new(fragments))
+}
+
+fn expand(
+    name: &[u8],
+    index: usize,
+    dies: &DieMap,
+    rules: &Rules,
+    diag: &mut Diagnostics,
+) -> Result<Expansion> {
+    if diag.options.stable {
+        if let Some(override_) = rules.type_string(name) {
+            return parse(name, override_);
+        }
+    }
+    let mut output = Vec::new();
+    let mut stack = vec![(index, 0)];
+    let mut active = HashSet::from([index]);
+    while let Some((index, offset)) = stack.last_mut() {
+        let fragments = &dies.entries[*index].fragments;
+        let Some(fragment) = fragments.get(*offset) else {
+            active.remove(index);
+            stack.pop();
+            continue;
+        };
+        *offset += 1;
+        match fragment {
+            Fragment::String(value) => output.push(value.clone()),
+            Fragment::Linebreak(_) => {
+                if !matches!(fragments.get(*offset), Some(Fragment::Linebreak(_))) {
+                    output.push(b" ".to_vec());
+                }
+            }
+            Fragment::Die(addr) => {
+                let child = dies
+                    .find(*addr, DieState::Complete)
+                    .or_else(|| dies.find(*addr, DieState::Unexpanded))
+                    .ok_or_else(|| {
+                        error(
+                            "__type_expand",
+                            &[format!("unknown child: {addr:x}").as_bytes()],
+                        )
+                    })?;
+                if let Some(name) = type_name(&dies.entries[child], diag) {
+                    output.push(name);
+                } else {
+                    // Named recursion becomes a reference above. An anonymous
+                    // cycle is malformed input; reject it instead of overflowing
+                    // the C implementation's recursive call stack.
+                    if !active.insert(child) {
+                        return Err(error(
+                            "__type_expand",
+                            &[format!("recursive anonymous type: {addr:x}").as_bytes()],
+                        ));
+                    }
+                    stack.push((child, 0));
+                }
+            }
+        }
+    }
+    Ok(Expansion::new(output))
+}
+
+const fn crc_table() -> [u32; 256] {
+    let mut table = [0; 256];
+    let mut index = 0;
+    while index < 256 {
+        let mut value = index as u32;
+        let mut bit = 0;
+        while bit < 8 {
+            value = (value >> 1) ^ if value & 1 != 0 { 0xedb8_8320 } else { 0 };
+            bit += 1;
+        }
+        table[index] = value;
+        index += 1;
+    }
+    table
+}
+
+fn version(
+    expansion: &Expansion,
+    types: &mut TypeMap,
+    rules: &Rules,
+    diag: &mut Diagnostics,
+) -> Result<(u32, Vec<u8>)> {
+    const CRC_TABLE: [u32; 256] = crc_table();
+    let mut crc = !0u32;
+    let mut expanded = Vec::new();
+    let mut seen = Cache::default();
+    // The root expansion is not in type_map and has a NULL C name.
+    let mut stack = vec![(None::<usize>, expansion.fragments.clone(), 0)];
+    while let Some((name_id, fragments, offset)) = stack.last_mut() {
+        let Some(fragment) = fragments.get(*offset) else {
+            stack.pop();
+            continue;
+        };
+        *offset += 1;
+        if is_type_prefix(fragment) {
+            let child = types.get(fragment, rules, diag)?.ok_or_else(|| {
+                let name = name_id.map_or(&b"(null)"[..], |id| types.entries[id].0.as_slice());
+                error(
+                    "__calculate_version",
+                    &[
+                        b"unknown type reference to '",
+                        fragment,
+                        b"' when expanding '",
+                        name,
+                        b"'",
+                    ],
+                )
+            })?;
+            if !seen.was_expanded(child) {
+                seen.mark_expanded(child);
+                stack.push((Some(child), types.entries[child].1.fragments.clone(), 0));
+                continue;
+            }
+        }
+        for &byte in fragment {
+            crc = CRC_TABLE[((crc ^ byte as u32) & 0xff) as usize] ^ (crc >> 8);
+        }
+        if diag.options.dump_versions {
+            expanded.extend_from_slice(fragment);
+        }
+    }
+    Ok((!crc, expanded))
+}
+
+pub(crate) fn generate(
+    dies: &mut DieMap,
+    symbols: &mut Symbols,
+    rules: &Rules,
+    diag: &mut Diagnostics,
+    output: Option<&mut dyn Write>,
+) -> Result<()> {
+    let mut types = TypeMap::default();
+    for mut index in dies.ordered_indices() {
+        if dies.entries[index].mapped {
+            continue;
+        }
+        dies.entries[index].mapped = true;
+        if dies.entries[index].state == DieState::Unexpanded {
+            if let Some(complete) = dies.find(dies.entries[index].addr, DieState::Complete) {
+                index = complete;
+                if dies.entries[index].mapped {
+                    continue;
+                }
+                dies.entries[index].mapped = true;
+            }
+        }
+        if let Some(name) = type_name(&dies.entries[index], diag) {
+            diag.debug("expand_type", &[&name]);
+            let expansion = expand(&name, index, dies, rules, diag)?;
+            types.add(&name, expansion, diag);
+        }
+    }
+    for id in symbols.ordered_indices() {
+        if !diag.options.symtypes && symbols.entries[id].state == SymbolState::Processed {
+            continue;
+        }
+        let Some(addr) = symbols.entries[id].die_addr else {
+            continue;
+        };
+        let Some(index) = dies.find(addr, DieState::Symbol) else {
+            continue;
+        };
+        let name = symbols.entries[id].name.clone();
+        let expansion = expand(&name, index, dies, rules, diag)?;
+        if symbols.entries[id].state != SymbolState::Processed {
+            let (crc, expanded) = version(&expansion, &mut types, rules, diag)?;
+            symbols.set_crc(id, crc, diag)?;
+            diag.debug("expand_symbol", &[&name, format!(" = {crc:x}").as_bytes()]);
+            if diag.options.dump_versions {
+                diag.print(&[&name, b" ", &expanded, b"\n"]);
+            }
+        }
+        if diag.options.symtypes {
+            types.add(&name, expansion, diag);
+        }
+    }
+    types.write(output)
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

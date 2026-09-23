@@ -100,3 +100,5 @@ pub(crate) fn from_fs(
     tree.boot_cpuid_phys = tree.guess_boot_cpuid();
     Ok(tree)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

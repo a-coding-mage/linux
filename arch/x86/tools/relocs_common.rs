@@ -62,3 +62,5 @@ pub(crate) fn run() -> Result<()> {
         .write_all(&output)
         .map_err(|error| format!("Cannot write relocations: {}\n", io_error(error)).into())
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

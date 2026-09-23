@@ -769,3 +769,5 @@ fn append_sections(
     output.extend_from_slice(relocations);
     write_integer(output, shoff_offset, word, new_shoff as u64, little)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

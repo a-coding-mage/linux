@@ -237,3 +237,5 @@ pub(crate) fn get_src_version(module: &str) -> Result<SourceVersion, String> {
     result.checksum = Some(digest.finish());
     Ok(result)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

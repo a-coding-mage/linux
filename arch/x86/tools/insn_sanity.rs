@@ -5,195 +5,307 @@
  * Copyright (C) IBM Corporation, 2009
  * Copyright (C) Hitachi, Ltd., 2011
  */
+//! Exercise the bounded x86 decoder with reproducible random or supplied bytes.
 
-use std::ffi::{CStr, CString};
+// Both decoder test programs share helpers and the complete decoder API, but
+// exercise different subsets of it.
+#[allow(dead_code)]
+mod insn_test_common;
+
+use common::decoder::{Instruction, Mode, MAX_INSN_SIZE};
+use insn_test_common as common;
+use std::ffi::OsString;
 use std::fs::File;
-use std::io::{self, Read};
-use std::os::raw::{c_char, c_int, c_uint, c_ulong, c_ushort, c_void};
-use std::ptr;
+use std::io::{self, BufRead, BufReader, BufWriter, Read, Write};
+use std::os::unix::ffi::OsStrExt;
 
-const DEFAULT_MAX_ITER: c_ulong = 10000;
-const INSN_NOP: u8 = 0x90;
-
-/* Supplied by the x86 decoder implementation. */
-#[repr(C)]
-pub struct insn_field {
-    pub value: c_int,
-    pub bytes: [u8; 4],
-    pub got: c_int,
-    pub nbytes: c_int,
+struct Config {
+    program: Vec<u8>,
+    verbose: u32,
+    mode: Mode,
+    seed: u32,
+    start: u64,
+    end: u64,
+    input: Option<Box<dyn BufRead>>,
 }
 
-#[repr(C)]
-pub struct insn {
-    pub prefixes: insn_field,
-    pub rex_prefix: insn_field,
-    pub vex_prefix: insn_field,
-    pub opcode: insn_field,
-    pub modrm: insn_field,
-    pub sib: insn_field,
-    pub displacement: insn_field,
-    pub immediate1: insn_field,
-    pub immediate2: insn_field,
-    pub attr: c_uint,
-    pub opnd_bytes: c_int,
-    pub addr_bytes: c_int,
-    pub length: c_int,
-    pub x86_64: c_int,
-    pub kaddr: *mut u8,
-    pub next_byte: *mut u8,
-}
-
-extern "C" {
-    fn insn_decode(insn: *mut insn, kaddr: *mut u8, max_bytes: usize, x86_64: c_int) -> c_int;
-    fn srand(seed: c_uint);
-    fn random() -> c_long;
-    fn getopt(argc: c_int, argv: *mut *mut c_char, optstring: *const c_char) -> c_int;
-    static mut optarg: *mut c_char;
-}
-
-type c_long = isize;
-
-static mut PROG: *const c_char = ptr::null();
-static mut VERBOSE: c_int = 0;
-static mut X86_64: c_int = 0;
-static mut SEED: c_uint = 0;
-static mut ITER_START: c_ulong = 0;
-static mut ITER_END: c_ulong = DEFAULT_MAX_ITER;
-static mut INPUT_FILE: *mut File = ptr::null_mut();
-
-const MAX_INSN_SIZE: usize = 15;
-const INSN_MODE_32: c_int = 1;
-const INSN_MODE_64: c_int = 2;
-
-unsafe fn usage(err: *const c_char) -> ! {
-    if !err.is_null() {
-        eprintln!("{}: Error: {}\n", cstr(PROG), cstr(err));
+fn usage(program: &[u8], error: Option<&str>) -> Vec<u8> {
+    let mut output = Vec::new();
+    if let Some(error) = error {
+        output.extend_from_slice(program);
+        output.extend_from_slice(format!(": Error: {error}\n\n").as_bytes());
     }
-    eprintln!("Usage: {} [-y|-n|-v] [-s seed[,no]] [-m max] [-i input]", cstr(PROG));
-    eprintln!("\t-y\t64bit mode");
-    eprintln!("\t-n\t32bit mode");
-    eprintln!("\t-v\tVerbosity(-vv dumps any decoded result)");
-    eprintln!("\t-s\tGive a random seed (and iteration number)");
-    eprintln!("\t-m\tGive a maximum iteration number");
-    eprintln!("\t-i\tGive an input file with decoded binary");
-    std::process::exit(1)
+    output.extend_from_slice(b"Usage: ");
+    output.extend_from_slice(program);
+    output.extend_from_slice(
+        b" [-y|-n|-v] [-s seed[,no]] [-m max] [-i input]\n\
+\t-y\t64bit mode\n\
+\t-n\t32bit mode\n\
+\t-v\tVerbosity(-vv dumps any decoded result)\n\
+\t-s\tGive a random seed (and iteration number)\n\
+\t-m\tGive a maximum iteration number\n\
+\t-i\tGive an input file with decoded binary\n",
+    );
+    output
 }
 
-unsafe fn cstr(s: *const c_char) -> String {
-    if s.is_null() { String::new() } else { CStr::from_ptr(s).to_string_lossy().into_owned() }
-}
-
-unsafe fn dump_field(name: &str, indent: &str, field: *const insn_field) {
-    let f = &*field;
-    eprintln!("{}.{} = {{", indent, name);
-    eprintln!("{}\t.value = {}, bytes[] = {{{:x}, {:x}, {:x}, {:x}}},", indent, f.value, f.bytes[0], f.bytes[1], f.bytes[2], f.bytes[3]);
-    eprintln!("{}\t.got = {}, .nbytes = {} }},", indent, f.got, f.nbytes);
-}
-
-unsafe fn dump_insn(x: *const insn) {
-    let i = &*x;
-    println!("Instruction = {{");
-    dump_field("prefixes", "\t", &i.prefixes);
-    dump_field("rex_prefix", "\t", &i.rex_prefix);
-    dump_field("vex_prefix", "\t", &i.vex_prefix);
-    dump_field("opcode", "\t", &i.opcode);
-    dump_field("modrm", "\t", &i.modrm);
-    dump_field("sib", "\t", &i.sib);
-    dump_field("displacement", "\t", &i.displacement);
-    dump_field("immediate1", "\t", &i.immediate1);
-    dump_field("immediate2", "\t", &i.immediate2);
-    println!("\t.attr = {:x}, .opnd_bytes = {}, .addr_bytes = {},", i.attr, i.opnd_bytes, i.addr_bytes);
-    println!("\t.length = {}, .x86_64 = {}, .kaddr = {:?}}}", i.length, i.x86_64, i.kaddr);
-}
-
-unsafe fn dump_stream(msg: &str, nr_iter: c_ulong, buf: *const u8, x: *const insn) {
-    println!("{}:", msg);
-    dump_insn(x);
-    println!("You can reproduce this with below command(s);");
-    print!(" $ echo");
-    for j in 0..MAX_INSN_SIZE { print!(" {:02x}", *buf.add(j)); }
-    println!(" | {} -i -", cstr(PROG));
-    if INPUT_FILE.is_null() { println!("Or \n $ {} -s 0x{:x},{}", cstr(PROG), SEED, nr_iter); }
-}
-
-unsafe fn read_next_insn(buf: *mut u8) -> c_int {
-    let file = &mut *INPUT_FILE;
-    let mut line = String::new();
-    if file.read_to_string(&mut line).is_err() || line.is_empty() { return 0; }
-    let mut n = 0;
-    for token in line.split_whitespace().take(MAX_INSN_SIZE) {
-        if let Ok(v) = u8::from_str_radix(token, 16) { *buf.add(n) = v; n += 1; } else { break; }
-    }
-    n as c_int
-}
-
-unsafe fn generate_insn(buf: *mut u8) -> c_int {
-    if !INPUT_FILE.is_null() { return read_next_insn(buf); }
-    let mut i = 0;
-    while i < MAX_INSN_SIZE - 1 { *(buf.add(i) as *mut c_ushort) = random() as c_ushort; i += 2; }
-    while i < MAX_INSN_SIZE { *buf.add(i) = random() as u8; i += 1; }
-    i as c_int
-}
-
-unsafe fn init_random_seed() {
-    let mut f = match File::open("/dev/urandom") { Ok(v) => v, Err(_) => usage(CString::new("Failed to open /dev/urandom").unwrap().as_ptr()) };
-    let mut bytes = [0u8; 4];
-    if f.read_exact(&mut bytes).is_err() { usage(CString::new("Failed to open /dev/urandom").unwrap().as_ptr()); }
-    SEED = u32::from_ne_bytes(bytes);
-}
-
-unsafe fn parse_args(argc: c_int, argv: *mut *mut c_char) {
-    PROG = *argv;
-    let options = CString::new("ynvs:m:i:").unwrap();
-    loop {
-        let c = getopt(argc, argv, options.as_ptr());
-        if c == -1 { break; }
-        match c as u8 as char {
-            'y' => X86_64 = 1,
-            'n' => X86_64 = 0,
-            'v' => VERBOSE += 1,
-            'i' => {
-                let arg = CStr::from_ptr(optarg).to_string_lossy();
-                if arg != "-" { INPUT_FILE = Box::into_raw(Box::new(File::open(arg.as_ref()).unwrap_or_else(|_| usage(CString::new("Failed to open input file").unwrap().as_ptr())))); }
-                else { INPUT_FILE = Box::into_raw(Box::new(File::open("/dev/stdin").unwrap())); }
+fn parse(args: &[OsString]) -> Result<Config, Vec<u8>> {
+    let program = common::program(args).as_bytes();
+    let fail = |message| usage(program, Some(message));
+    let mut config = Config {
+        program: program.to_vec(),
+        verbose: 0,
+        mode: Mode::Bits32,
+        seed: 0,
+        start: 0,
+        end: 10_000,
+        input: None,
+    };
+    let mut set_seed = false;
+    for option in common::Options::new(args, b"ynvs:m:i:") {
+        let (option, value) = option.map_err(|mut error| {
+            error.extend_from_slice(&usage(program, None));
+            error
+        })?;
+        match option {
+            b'y' => config.mode = Mode::Bits64,
+            b'n' => config.mode = Mode::Bits32,
+            b'v' => config.verbose = config.verbose.saturating_add(1),
+            b'i' => {
+                let path = value.expect("option requires an argument");
+                config.input = Some(if path.as_bytes() == b"-" {
+                    Box::new(BufReader::new(io::stdin()))
+                } else {
+                    Box::new(BufReader::new(
+                        File::open(path).map_err(|_| fail("Failed to open input file"))?,
+                    ))
+                });
             }
-            's' => {
-                let arg = CStr::from_ptr(optarg).to_string_lossy();
-                let mut p = arg.splitn(2, ',');
-                SEED = p.next().unwrap().parse().unwrap_or_else(|_| usage(CString::new("Failed to parse seed").unwrap().as_ptr()));
-                if let Some(v) = p.next() { ITER_START = v.parse().unwrap_or_else(|_| usage(CString::new("Failed to parse seed").unwrap().as_ptr())); }
-                srand(SEED);
+            b's' => {
+                let value = value.expect("option requires an argument");
+                let mut bytes = value.as_bytes();
+                let (seed, mut end) = common::unsigned(bytes, 0);
+                config.seed = seed as u32;
+                if bytes.get(end) == Some(&b',') {
+                    bytes = &bytes[end + 1..];
+                    (config.start, end) = common::unsigned(bytes, 0);
+                }
+                if end == 0 || end != bytes.len() {
+                    return Err(fail("Failed to parse seed"));
+                }
+                set_seed = true;
             }
-            'm' => { ITER_END = CStr::from_ptr(optarg).to_string_lossy().parse().unwrap_or_else(|_| usage(CString::new("Failed to parse max_iter").unwrap().as_ptr())); }
-            _ => usage(ptr::null()),
+            b'm' => {
+                let value = value.expect("option requires an argument");
+                let bytes = value.as_bytes();
+                let (number, end) = common::unsigned(bytes, 0);
+                if end == 0 || end != bytes.len() {
+                    return Err(fail("Failed to parse max_iter"));
+                }
+                config.end = number;
+            }
+            _ => unreachable!("only declared options are returned"),
         }
     }
-    if ITER_END < ITER_START { usage(CString::new("Max iteration number must be bigger than iter-num").unwrap().as_ptr()); }
-    if !INPUT_FILE.is_null() && SEED != 0 { usage(CString::new("Don't use input file (-i) with random seed (-s)").unwrap().as_ptr()); }
-    if INPUT_FILE.is_null() { if SEED == 0 { init_random_seed(); } srand(SEED); }
+    if config.end < config.start {
+        return Err(fail("Max iteration number must be bigger than iter-num"));
+    }
+    if set_seed && config.input.is_some() {
+        return Err(fail("Don't use input file (-i) with random seed (-s)"));
+    }
+    if !set_seed && config.input.is_none() {
+        let mut seed = [0; 4];
+        let read = File::open("/dev/urandom").and_then(|mut file| file.read(&mut seed));
+        if !matches!(read, Ok(4)) {
+            return Err(fail("Failed to open /dev/urandom"));
+        }
+        config.seed = u32::from_ne_bytes(seed);
+    }
+    Ok(config)
 }
 
-pub unsafe fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
-    parse_args(argc, argv);
-    let mut buf = [0u8; MAX_INSN_SIZE * 2];
-    for b in &mut buf[MAX_INSN_SIZE..] { *b = INSN_NOP; }
-    let mut errors = 0;
-    let mut count = 0;
-    for i in 0..ITER_END {
-        if generate_insn(buf.as_mut_ptr()) <= 0 { break; }
-        if i < ITER_START { continue; }
-        let mut decoded = std::mem::MaybeUninit::<insn>::uninit();
-        let ret = insn_decode(decoded.as_mut_ptr(), buf.as_mut_ptr(), buf.len(), if X86_64 != 0 { INSN_MODE_64 } else { INSN_MODE_32 });
-        let x = decoded.assume_init();
-        if x.next_byte <= x.kaddr || x.kaddr.add(MAX_INSN_SIZE) < x.next_byte {
-            dump_stream("Error: Found an access violation", i, buf.as_ptr(), &x); errors += 1;
-        } else if VERBOSE != 0 && ret < 0 { dump_stream("Info: Found an undecodable input", i, buf.as_ptr(), &x); }
-        else if VERBOSE >= 2 { dump_insn(&x); }
-        count += 1;
+// Reproduce glibc's shared srand()/random() additive-feedback sequence without
+// an FFI dependency, so old Linux-host seed/iteration reproductions still work.
+struct Random {
+    state: [u32; 31],
+    front: usize,
+    rear: usize,
+}
+
+impl Random {
+    fn new(seed: u32) -> Self {
+        let mut state = [0; 31];
+        state[0] = if seed == 0 { 1 } else { seed };
+        let mut word = state[0] as i32 as i64;
+        for value in state.iter_mut().skip(1) {
+            word = 16_807 * (word % 127_773) - 2_836 * (word / 127_773);
+            if word < 0 {
+                word += 2_147_483_647;
+            }
+            *value = word as u32;
+        }
+        let mut random = Self {
+            state,
+            front: 3,
+            rear: 0,
+        };
+        for _ in 0..310 {
+            random.next();
+        }
+        random
     }
-    eprintln!("  {}: {}: Decoded and checked {} {} instructions with {} errors (seed:0x{:x})", cstr(PROG), if errors != 0 { "failure" } else { "success" }, count, if INPUT_FILE.is_null() { "random" } else { "given" }, errors, SEED);
-    if errors != 0 { 1 } else { 0 }
+
+    fn next(&mut self) -> u32 {
+        let value = self.state[self.front].wrapping_add(self.state[self.rear]);
+        self.state[self.front] = value;
+        self.front = (self.front + 1) % 31;
+        self.rear = (self.rear + 1) % 31;
+        value >> 1
+    }
+
+    fn fill(&mut self, buffer: &mut [u8]) {
+        let mut pairs = buffer.chunks_exact_mut(2);
+        for pair in &mut pairs {
+            pair.copy_from_slice(&(self.next() as u16).to_ne_bytes());
+        }
+        for byte in pairs.into_remainder() {
+            *byte = self.next() as u8;
+        }
+    }
+}
+
+fn read_next(reader: &mut dyn BufRead, buffer: &mut [u8]) -> usize {
+    // The C tool treats both a read error and a final unterminated fgets chunk
+    // as end-of-input, and returns the last index rather than the byte count.
+    let Some(line) = common::fgets(reader, 256).ok().flatten() else {
+        return 0;
+    };
+    if line.eof {
+        return 0;
+    }
+    let mut input = common::cstr(&line.bytes);
+    for (index, byte) in buffer.iter_mut().enumerate() {
+        let (value, end) = common::unsigned(input, 16);
+        *byte = value as u8;
+        input = &input[end..];
+        if input.first() != Some(&b' ') {
+            return index;
+        }
+    }
+    buffer.len()
+}
+
+fn dump_stream(
+    output: &mut Vec<u8>,
+    message: &[u8],
+    iteration: u64,
+    insn: &Instruction<'_>,
+    config: &Config,
+) {
+    output.extend_from_slice(message);
+    output.extend_from_slice(b":\n");
+    common::dump_insn(output, insn);
+    output.extend_from_slice(b"You can reproduce this with below command(s);\n $ echo ");
+    for byte in insn.bytes {
+        output.extend_from_slice(format!(" {byte:02x}").as_bytes());
+    }
+    output.extend_from_slice(b" | ");
+    output.extend_from_slice(&config.program);
+    output.extend_from_slice(b" -i -\n");
+    if config.input.is_none() {
+        output.extend_from_slice(b"Or \n $ ");
+        output.extend_from_slice(&config.program);
+        output.extend_from_slice(format!(" -s 0x{:x},{iteration}\n", config.seed).as_bytes());
+    }
+}
+
+fn run(mut config: Config, stdout: &mut dyn Write, stderr: &mut dyn Write) -> io::Result<i32> {
+    let mut random = Random::new(config.seed);
+    // The C tool leaves an initial short input's tail uninitialized. Initialize
+    // it safely, while preserving the previous instruction's tail on later
+    // short lines. The second half retains the original NOP stop bytes.
+    let mut buffer = [0; MAX_INSN_SIZE * 2];
+    buffer[MAX_INSN_SIZE..].fill(0x90);
+    let (mut instructions, mut errors) = (0i32, 0i32);
+    let mut output = Vec::new();
+    for iteration in 0..config.end {
+        let bytes = &mut buffer[..MAX_INSN_SIZE];
+        if let Some(input) = &mut config.input {
+            if read_next(input.as_mut(), bytes) == 0 {
+                break;
+            }
+        } else {
+            random.fill(bytes);
+        }
+        if iteration < config.start {
+            continue;
+        }
+        let mut insn = Instruction::new(&buffer, config.mode);
+        let result = insn.decode();
+        output.clear();
+        if insn.next == 0 || insn.next > MAX_INSN_SIZE {
+            dump_stream(
+                &mut output,
+                b"Error: Found an access violation",
+                iteration,
+                &insn,
+                &config,
+            );
+            stderr.write_all(&output)?;
+            errors = errors.wrapping_add(1);
+        } else if config.verbose > 0 && result.is_err() {
+            dump_stream(
+                &mut output,
+                b"Info: Found an undecodable input",
+                iteration,
+                &insn,
+                &config,
+            );
+            stdout.write_all(&output)?;
+        } else if config.verbose >= 2 {
+            common::dump_insn(&mut output, &insn);
+            stdout.write_all(&output)?;
+        }
+        instructions = instructions.wrapping_add(1);
+    }
+    output.clear();
+    output.extend_from_slice(b"  ");
+    output.extend_from_slice(&config.program);
+    let status = if errors == 0 { "success" } else { "failure" };
+    let source = if config.input.is_some() {
+        "given"
+    } else {
+        "random"
+    };
+    output.extend_from_slice(format!(": {status}: Decoded and checked {instructions} {source} instructions with {errors} errors (seed:0x{:x})\n", config.seed).as_bytes());
+    if errors == 0 {
+        stdout.write_all(&output)?;
+    } else {
+        stderr.write_all(&output)?;
+    }
+    stdout.flush()?;
+    stderr.flush()?;
+    Ok(i32::from(errors != 0))
+}
+
+fn main() {
+    let args: Vec<_> = std::env::args_os().collect();
+    let mut stdout = BufWriter::new(io::stdout().lock());
+    let mut stderr = io::stderr().lock();
+    let status = match parse(&args) {
+        Ok(config) => match run(config, &mut stdout, &mut stderr) {
+            Ok(status) => status,
+            Err(error) => {
+                let _ = stderr.write_all(&common::error(common::program(&args).as_bytes(), &error));
+                1
+            }
+        },
+        Err(message) => {
+            let _ = stderr.write_all(&message);
+            1
+        }
+    };
+    std::process::exit(status);
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

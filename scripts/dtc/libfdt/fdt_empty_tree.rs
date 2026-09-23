@@ -10,3 +10,5 @@ pub(crate) fn create_empty_tree(data: &mut [u8]) -> Result<()> {
     finish(data)?;
     open_inplace(data)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

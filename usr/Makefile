@@ -17,7 +17,9 @@ obj-$(CONFIG_BLK_DEV_INITRD) := initramfs_data.o
 $(obj)/initramfs_data.o: $(obj)/initramfs_inc_data
 
 hostprogs := gen_init_cpio
+ifneq ($(HOST_TOOLS_LANG),c)
 gen_init_cpio-rust := y
+endif
 
 ramfs-input := $(CONFIG_INITRAMFS_SOURCE)
 cpio-data :=

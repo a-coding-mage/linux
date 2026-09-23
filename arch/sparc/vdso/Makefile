@@ -32,7 +32,11 @@ $(obj)/vdso64.so.dbg: $(obj)/vdso.lds $(vobjs) FORCE
 	$(call if_changed,vdso)
 
 hostprogs += vdso2c
+ifneq ($(HOST_TOOLS_LANG),c)
 vdso2c-rust := y
+else
+HOST_EXTRACFLAGS += -I$(srctree)/tools/include
+endif
 
 quiet_cmd_vdso2c = VDSO2C  $@
       cmd_vdso2c = $(obj)/vdso2c $< $(<:%.dbg=%) $@

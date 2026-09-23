@@ -155,3 +155,5 @@ pub(crate) fn symbol_offsets(data: &[u8]) -> Result<Vec<(&'static str, u64)>, St
     }
     Ok(offsets)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

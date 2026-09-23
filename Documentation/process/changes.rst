@@ -91,8 +91,11 @@ Rust
 ----
 
 A recent version of the Rust compiler and its host standard library are
-required, including when ``CONFIG_RUST`` is disabled. The dependency generator
-and other migrated build tools are compiled with ``HOSTRUSTC``.
+required for the default ``HOST_TOOLS_LANG=rust`` mode, including when
+``CONFIG_RUST`` is disabled. The dependency generator and other migrated build
+tools are compiled with ``HOSTRUSTC``. Set ``HOST_TOOLS_LANG=c`` on normal
+Kbuild invocations to use their retained C implementations; this does not
+disable target-kernel Rust or tools that were originally Rust-only.
 
 The additional target-kernel requirements (including ``rust-src`` and
 ``bindgen``) still depend on ``CONFIG_RUST``. See

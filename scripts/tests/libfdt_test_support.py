@@ -206,17 +206,16 @@ def cached_fdt_utilities():
     rustc = shlex.split(os.environ.get("HOSTRUSTC", "rustc"))
     result = {}
     for name in ("fdtget", "fdtput", "fdtoverlay"):
-        # Linux retained old, unbuilt get/put applets when util.h changed. The
-        # temporary reference adapts only the reader signature and usage macro;
-        # all option handling, algorithms, formatting and mutations remain C.
-        source = (LIB.parent / (name + ".c")).read_text()
-        if name != "fdtoverlay":
-            source = source.replace('#include "util.h"', '#include "util.h"\n#undef usage')
-            source = source.replace("utilfdt_read(filename)", "utilfdt_read(filename, NULL)")
-        src = work / (name + ".c")
-        src.write_text(source)
+        # Compile unchanged C applets with the same narrow old-API bridge
+        # selected by Kbuild. The bridge applies only to the applet, not util.c.
+        compatibility = [] if name == "fdtoverlay" else [
+            "-include", str(LIB.parent / "fdt_legacy_compat.h")]
+        obj = work / (name + ".o")
+        subprocess.run(cc + ["-O2", "-I", str(LIB), "-I", str(LIB.parent)]
+                       + compatibility + ["-c", str(LIB.parent / (name + ".c")),
+                                          "-o", str(obj)], check=True, capture_output=True)
         c, rust = work / (name + "-c"), work / (name + "-rust")
-        subprocess.run(cc + ["-O2", "-I", str(LIB), "-I", str(LIB.parent), str(src),
+        subprocess.run(cc + ["-O2", "-I", str(LIB), "-I", str(LIB.parent), str(obj),
                              str(LIB.parent / "util.c")]
                        + [str(LIB / (s + ".c")) for s in SOURCES]
                        + ["-o", str(c)], check=True, capture_output=True)

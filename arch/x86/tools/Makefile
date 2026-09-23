@@ -27,6 +27,10 @@ posttest: $(obj)/insn_decoder_test vmlinux $(obj)/insn_sanity
 	$(call cmd,sanitytest)
 
 hostprogs += insn_decoder_test insn_sanity
+ifneq ($(HOST_TOOLS_LANG),c)
+insn_decoder_test-rust := y
+insn_sanity-rust := y
+else
 
 # -I needed for generated C source and C source which in the kernel tree.
 HOSTCFLAGS_insn_decoder_test.o := -Wall -I$(srctree)/tools/arch/x86/lib/ -I$(srctree)/tools/arch/x86/include/ -I$(objtree)/arch/x86/lib/
@@ -37,14 +41,19 @@ HOSTCFLAGS_insn_sanity.o := -Wall -I$(srctree)/tools/arch/x86/lib/ -I$(srctree)/
 $(obj)/insn_decoder_test.o: $(srctree)/tools/arch/x86/lib/insn.c $(srctree)/tools/arch/x86/lib/inat.c $(srctree)/tools/arch/x86/include/asm/inat_types.h $(srctree)/tools/arch/x86/include/asm/inat.h $(srctree)/tools/arch/x86/include/asm/insn.h $(objtree)/arch/x86/lib/inat-tables.c
 
 $(obj)/insn_sanity.o: $(srctree)/tools/arch/x86/lib/insn.c $(srctree)/tools/arch/x86/lib/inat.c $(srctree)/tools/arch/x86/include/asm/inat_types.h $(srctree)/tools/arch/x86/include/asm/inat.h $(srctree)/tools/arch/x86/include/asm/insn.h $(objtree)/arch/x86/lib/inat-tables.c
+endif
 
 HOST_EXTRACFLAGS += -I$(srctree)/tools/include -I$(srctree)/include/uapi \
 		    -I$(srctree)/arch/$(SUBARCH)/include/uapi
 
 hostprogs	+= relocs vdso2c
+ifneq ($(HOST_TOOLS_LANG),c)
 relocs-rust	:= y
 HOSTRUSTFLAGS_relocs += --check-cfg='cfg(CONFIG_FW_LOADER)'
 vdso2c-rust	:= y
+else
+relocs-objs	:= relocs_32.o relocs_64.o relocs_common.o
+endif
 
 always-y	:= $(hostprogs)
 

@@ -3,7 +3,9 @@
 # fixdep: used to generate dependency information during build process
 
 hostprogs-always-y	+= fixdep
+ifneq ($(HOST_TOOLS_LANG),c)
 fixdep-rust		:= y
+endif
 
 # randstruct: the seed is needed before building the gcc-plugin or
 # before running a Clang kernel build.

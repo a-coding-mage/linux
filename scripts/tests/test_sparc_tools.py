@@ -12,6 +12,8 @@ import subprocess
 import tempfile
 import unittest
 
+from test_migration_invariants import environment
+
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -347,6 +349,54 @@ class SparcToolsTests(unittest.TestCase):
             self.assertEqual(run.returncode, 1)
             self.assertIn(b"Is a directory", run.stderr)
             self.assertNotEqual((work / "image").read_bytes(), image)
+
+    def test_normal_kbuild_c_rust_c_selection(self):
+        with tempfile.TemporaryDirectory(prefix="sparc-kbuild-") as tmp:
+            work = Path(tmp)
+            env = environment()
+            make = shlex.split(os.environ.get("MAKE", "make"))
+            command = make + ["-C", tmp, "-f", str(ROOT / "scripts/Makefile.build"),
+                              "srctree=" + str(ROOT), "srcroot=" + str(ROOT),
+                              "VPATH=" + str(ROOT), "objtree=.", "building_out_of_srctree=1",
+                              "ARCH=sparc", "SRCARCH=sparc", "CONFIG_SHELL=/bin/sh",
+                              "HOSTCC=" + os.environ.get("HOSTCC", "cc"),
+                              "KBUILD_HOSTCFLAGS=-O2 -I " + str(ROOT / "scripts/include"),
+                              "KBUILD_HOSTRUSTFLAGS=--edition=2021 -O -Dwarnings"]
+            bootstrap = command + ["HOST_TOOLS_LANG=c", "HOSTRUSTC=false", "obj=scripts/basic",
+                                   "scripts/basic/fixdep"]
+            run = subprocess.run(bootstrap, env=env, capture_output=True)
+            self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+            (work / "raw").write_bytes(vdso_fixture())
+            (work / "stripped").write_bytes(bytes(range(128)))
+            (work / "map").write_bytes(b"f0004000 T _start\nf0007000 T _end\n")
+            (work / "initrd").write_bytes(bytes(range(255)))
+            results = []
+            for language in ("c", "rust", "c"):
+                binaries = []
+                for name, directory in (("piggyback", "boot"), ("vdso2c", "vdso")):
+                    obj = "arch/sparc/" + directory
+                    target = obj + "/" + name
+                    compiler = "false" if language == "c" else os.environ.get("HOSTRUSTC", "rustc")
+                    argv = command + ["HOST_TOOLS_LANG=" + language, "HOSTRUSTC=" + compiler,
+                                      "obj=" + obj, target]
+                    run = subprocess.run(argv, env=env, capture_output=True, timeout=30)
+                    self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                    record = (work / obj / ("." + name + ".cmd")).read_text()
+                    self.assertIn(name + (".rs" if language == "rust" else ".c"), record)
+                    self.assertEqual("--emit=link=" in record, language == "rust")
+                    binary = work / target
+                    stamp = binary.stat().st_mtime_ns
+                    run = subprocess.run(argv, env=env, capture_output=True, timeout=30)
+                    self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                    self.assertEqual(binary.stat().st_mtime_ns, stamp)
+                    binaries.append(binary)
+                (work / "image").write_bytes(aout_fixture())
+                for argv in ([binaries[0], "64", "image", "map", "initrd"],
+                             [binaries[1], "raw", "stripped", "output.c"]):
+                    run = subprocess.run(argv, cwd=work, env=env, capture_output=True, timeout=5)
+                    self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+                results.append(((work / "image").read_bytes(), (work / "output.c").read_bytes()))
+            self.assertEqual(results, [results[0]] * 3)
 
 
 if __name__ == "__main__":

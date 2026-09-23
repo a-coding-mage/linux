@@ -1,206 +1,356 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* x86 instruction analysis */
+// SPDX-License-Identifier: GPL-2.0-or-later
+//! Owned x86 instruction fields and a bounded, borrowed decoding cursor.
+// Copyright (C) IBM Corporation, 2009.
 
-use core::ffi::c_void;
+use super::inat;
 
-// insn_attr_t, insn_value_t, insn_byte_t, ARRAY_SIZE, and the inat helpers
-// are supplied by the corresponding translated dependencies.
+pub(crate) const MAX_INSN_SIZE: usize = 15;
+pub(crate) const POP_SS_OPCODE: u8 = 0x1f;
+pub(crate) const MOV_SREG_OPCODE: u8 = 0x8e;
+pub(crate) const X86_VEX2_M: u8 = 1;
+pub(crate) const X86_VEX_M_MAX: u8 = 0x1f;
+pub(crate) const X86_XOP_M_MIN: u8 = 0x08;
+pub(crate) const X86_XOP_M_MAX: u8 = 0x1f;
 
-#[cfg(any(target_endian = "little"))]
-#[repr(C)]
-pub union insn_field_value {
-    pub value: insn_value_t,
-    pub bytes: [insn_byte_t; 4],
+// Native equivalents of the field-extraction macros, keeping each mask's
+// numeric value (rather than collapsing single-bit masks into booleans).
+pub(crate) const fn modrm_mod(byte: u8) -> u8 {
+    byte >> 6
+}
+pub(crate) const fn modrm_reg(byte: u8) -> u8 {
+    (byte >> 3) & 7
+}
+pub(crate) const fn modrm_rm(byte: u8) -> u8 {
+    byte & 7
+}
+pub(crate) const fn sib_scale(byte: u8) -> u8 {
+    byte >> 6
+}
+pub(crate) const fn sib_index(byte: u8) -> u8 {
+    (byte >> 3) & 7
+}
+pub(crate) const fn sib_base(byte: u8) -> u8 {
+    byte & 7
+}
+pub(crate) const fn rex2_m(byte: u8) -> u8 {
+    byte & 0x80
+}
+pub(crate) const fn rex2_r(byte: u8) -> u8 {
+    byte & 0x40
+}
+pub(crate) const fn rex2_x(byte: u8) -> u8 {
+    byte & 0x20
+}
+pub(crate) const fn rex2_b(byte: u8) -> u8 {
+    byte & 0x10
+}
+pub(crate) const fn rex_w(byte: u8) -> u8 {
+    byte & 8
+}
+pub(crate) const fn rex_r(byte: u8) -> u8 {
+    byte & 4
+}
+pub(crate) const fn rex_x(byte: u8) -> u8 {
+    byte & 2
+}
+pub(crate) const fn rex_b(byte: u8) -> u8 {
+    byte & 1
+}
+pub(crate) const fn vex_w(byte: u8) -> u8 {
+    byte & 0x80
+}
+pub(crate) const fn vex_r(byte: u8) -> u8 {
+    byte & 0x80
+}
+pub(crate) const fn vex_x(byte: u8) -> u8 {
+    byte & 0x40
+}
+pub(crate) const fn vex_b(byte: u8) -> u8 {
+    byte & 0x20
+}
+pub(crate) const fn vex_l(byte: u8) -> u8 {
+    byte & 4
+}
+pub(crate) const fn evex_m(byte: u8) -> u8 {
+    byte & 7
+}
+pub(crate) const fn vex3_m(byte: u8) -> u8 {
+    byte & 0x1f
+}
+pub(crate) const fn vex_v(byte: u8) -> u8 {
+    (byte >> 3) & 0xf
+}
+pub(crate) const fn vex_p(byte: u8) -> u8 {
+    byte & 3
+}
+pub(crate) const fn xop_r(byte: u8) -> u8 {
+    byte & 0x80
+}
+pub(crate) const fn xop_x(byte: u8) -> u8 {
+    byte & 0x40
+}
+pub(crate) const fn xop_b(byte: u8) -> u8 {
+    byte & 0x20
+}
+pub(crate) const fn xop_m(byte: u8) -> u8 {
+    byte & 0x1f
+}
+pub(crate) const fn xop_w(byte: u8) -> u8 {
+    byte & 0x80
+}
+pub(crate) const fn xop_v(byte: u8) -> u8 {
+    byte & 0x78
+}
+pub(crate) const fn xop_l(byte: u8) -> u8 {
+    byte & 4
+}
+pub(crate) const fn xop_p(byte: u8) -> u8 {
+    byte & 3
 }
 
-#[cfg(any(target_endian = "little"))]
-#[repr(C)]
-pub struct insn_field {
-    pub data: insn_field_value,
-    pub got: u8,
-    pub nbytes: u8,
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub(crate) struct Field {
+    pub(crate) bytes: [u8; 4],
+    pub(crate) got: bool,
+    pub(crate) nbytes: u8,
+    // The C flag is an unsigned byte, not _Bool. Track actual assignments
+    // separately so an untouched nonzero flag retains its original value.
+    pub(crate) got_written: bool,
 }
 
-#[cfg(not(target_endian = "little"))]
-#[repr(C)]
-pub union insn_field_value {
-    pub little: insn_value_t,
-    pub bytes: [insn_byte_t; 4],
+impl Field {
+    pub(crate) fn value(&self) -> i32 {
+        i32::from_le_bytes(self.bytes)
+    }
+    pub(crate) fn set(&mut self, value: i32, nbytes: u8) {
+        self.bytes = value.to_le_bytes();
+        self.nbytes = nbytes;
+    }
+    pub(crate) fn mark_got(&mut self) {
+        self.got = true;
+        self.got_written = true;
+    }
 }
 
-#[cfg(not(target_endian = "little"))]
-#[repr(C)]
-pub struct insn_field {
-    pub value: insn_value_t,
-    pub data: insn_field_value,
-    pub got: u8,
-    pub nbytes: u8,
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum Mode {
+    Bits32,
+    Bits64,
+    // The caller supplies the target kernel configuration, not the host width.
+    Kernel { x86_64: bool },
 }
 
-#[inline]
-pub unsafe fn insn_field_set(p: *mut insn_field, v: insn_value_t, n: u8) {
-    #[cfg(target_endian = "little")]
-    { (*p).data.value = v; }
-    #[cfg(not(target_endian = "little"))]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(i32)]
+pub(crate) enum DecodeError {
+    Invalid = -22,
+    NoData = -61,
+}
+pub(crate) type DecodeResult = Result<(), DecodeError>;
+
+/// Copy only the requested bytes of an instruction, after checking its bound.
+///
+/// A failed read leaves the destination untouched. Implementations must not
+/// read beyond the requested span: a kernel instruction may border an unmapped
+/// page, and a cached decoding stage need not access instruction memory at all.
+pub(crate) trait Input {
+    // A native adapter can publish preceding field changes before a read,
+    // preserving C when instruction input aliases the output structure.
+    fn before_read(&self, _decoded: &Decoder<Self>)
+    where
+        Self: Sized,
     {
-        (*p).value = v;
-        (*p).data.little = v.to_le();
     }
-    (*p).nbytes = n;
+    fn read(&self, offset: usize, destination: &mut [u8]) -> bool;
 }
 
-#[inline]
-pub unsafe fn insn_set_byte(p: *mut insn_field, n: u8, v: insn_byte_t) {
-    (*p).data.bytes[n as usize] = v;
-    #[cfg(not(target_endian = "little"))]
-    { (*p).value = u32::from_le((*p).data.little) as insn_value_t; }
-}
-
-#[repr(C)]
-pub struct insn {
-    pub prefixes: insn_field,
-    pub rex_prefix: insn_field,
-    pub vex_prefix: insn_field,
-    pub opcode: insn_field,
-    pub modrm: insn_field,
-    pub sib: insn_field,
-    pub displacement: insn_field,
-    pub immediate: insn_field,
-    pub moffset2: insn_field,
-    pub emulate_prefix_size: i32,
-    pub attr: insn_attr_t,
-    pub opnd_bytes: u8,
-    pub addr_bytes: u8,
-    pub length: u8,
-    pub x86_64: u8,
-    pub kaddr: *const insn_byte_t,
-    pub end_kaddr: *const insn_byte_t,
-    pub next_byte: *const insn_byte_t,
-}
-
-pub const MAX_INSN_SIZE: i32 = 15;
-
-#[inline] pub const fn X86_MODRM_MOD(v: insn_byte_t) -> insn_byte_t { (v & 0xc0) >> 6 }
-#[inline] pub const fn X86_MODRM_REG(v: insn_byte_t) -> insn_byte_t { (v & 0x38) >> 3 }
-#[inline] pub const fn X86_MODRM_RM(v: insn_byte_t) -> insn_byte_t { v & 0x07 }
-#[inline] pub const fn X86_SIB_SCALE(v: insn_byte_t) -> insn_byte_t { (v & 0xc0) >> 6 }
-#[inline] pub const fn X86_SIB_INDEX(v: insn_byte_t) -> insn_byte_t { (v & 0x38) >> 3 }
-#[inline] pub const fn X86_SIB_BASE(v: insn_byte_t) -> insn_byte_t { v & 0x07 }
-#[inline] pub const fn X86_REX2_M(v: insn_byte_t) -> insn_byte_t { v & 0x80 }
-#[inline] pub const fn X86_REX2_R(v: insn_byte_t) -> insn_byte_t { v & 0x40 }
-#[inline] pub const fn X86_REX2_X(v: insn_byte_t) -> insn_byte_t { v & 0x20 }
-#[inline] pub const fn X86_REX2_B(v: insn_byte_t) -> insn_byte_t { v & 0x10 }
-#[inline] pub const fn X86_REX_W(v: insn_byte_t) -> insn_byte_t { v & 8 }
-#[inline] pub const fn X86_REX_R(v: insn_byte_t) -> insn_byte_t { v & 4 }
-#[inline] pub const fn X86_REX_X(v: insn_byte_t) -> insn_byte_t { v & 2 }
-#[inline] pub const fn X86_REX_B(v: insn_byte_t) -> insn_byte_t { v & 1 }
-#[inline] pub const fn X86_VEX_W(v: insn_byte_t) -> insn_byte_t { v & 0x80 }
-#[inline] pub const fn X86_VEX_R(v: insn_byte_t) -> insn_byte_t { v & 0x80 }
-#[inline] pub const fn X86_VEX_X(v: insn_byte_t) -> insn_byte_t { v & 0x40 }
-#[inline] pub const fn X86_VEX_B(v: insn_byte_t) -> insn_byte_t { v & 0x20 }
-#[inline] pub const fn X86_VEX_L(v: insn_byte_t) -> insn_byte_t { v & 0x04 }
-#[inline] pub const fn X86_EVEX_M(v: insn_byte_t) -> insn_byte_t { v & 0x07 }
-#[inline] pub const fn X86_VEX3_M(v: insn_byte_t) -> insn_byte_t { v & 0x1f }
-pub const X86_VEX2_M: insn_byte_t = 1;
-#[inline] pub const fn X86_VEX_V(v: insn_byte_t) -> insn_byte_t { (v & 0x78) >> 3 }
-#[inline] pub const fn X86_VEX_P(v: insn_byte_t) -> insn_byte_t { v & 0x03 }
-pub const X86_VEX_M_MAX: insn_byte_t = 0x1f;
-#[inline] pub const fn X86_XOP_R(v: insn_byte_t) -> insn_byte_t { v & 0x80 }
-#[inline] pub const fn X86_XOP_X(v: insn_byte_t) -> insn_byte_t { v & 0x40 }
-#[inline] pub const fn X86_XOP_B(v: insn_byte_t) -> insn_byte_t { v & 0x20 }
-#[inline] pub const fn X86_XOP_M(v: insn_byte_t) -> insn_byte_t { v & 0x1f }
-#[inline] pub const fn X86_XOP_W(v: insn_byte_t) -> insn_byte_t { v & 0x80 }
-#[inline] pub const fn X86_XOP_V(v: insn_byte_t) -> insn_byte_t { v & 0x78 }
-#[inline] pub const fn X86_XOP_L(v: insn_byte_t) -> insn_byte_t { v & 0x04 }
-#[inline] pub const fn X86_XOP_P(v: insn_byte_t) -> insn_byte_t { v & 0x03 }
-pub const X86_XOP_M_MIN: insn_byte_t = 0x08;
-pub const X86_XOP_M_MAX: insn_byte_t = 0x1f;
-
-extern "C" {
-    pub fn insn_init(insn: *mut insn, kaddr: *const c_void, buf_len: i32, x86_64: i32);
-    pub fn insn_get_prefixes(insn: *mut insn) -> i32;
-    pub fn insn_get_opcode(insn: *mut insn) -> i32;
-    pub fn insn_get_modrm(insn: *mut insn) -> i32;
-    pub fn insn_get_sib(insn: *mut insn) -> i32;
-    pub fn insn_get_displacement(insn: *mut insn) -> i32;
-    pub fn insn_get_immediate(insn: *mut insn) -> i32;
-    pub fn insn_get_length(insn: *mut insn) -> i32;
-    pub fn insn_decode(insn: *mut insn, kaddr: *const c_void, buf_len: i32, m: insn_mode) -> i32;
-    pub fn insn_rip_relative(insn: *mut insn) -> i32;
-}
-
-#[repr(C)]
-#[derive(Copy, Clone)]
-pub enum insn_mode { INSN_MODE_32, INSN_MODE_64, INSN_MODE_KERN, INSN_NUM_MODES }
-
-#[inline]
-pub unsafe fn insn_decode_kernel(i: *mut insn, p: *const c_void) -> i32 { insn_decode(i, p, MAX_INSN_SIZE, insn_mode::INSN_MODE_KERN) }
-#[inline] pub unsafe fn insn_get_attribute(i: *mut insn) { insn_get_modrm(i); }
-#[inline] pub unsafe fn insn_is_rex2(i: *mut insn) -> i32 { if (*i).prefixes.got == 0 { insn_get_prefixes(i); } ((*i).rex_prefix.nbytes == 2) as i32 }
-#[inline] pub unsafe fn insn_rex2_m_bit(i: *mut insn) -> insn_byte_t { X86_REX2_M((*i).rex_prefix.data.bytes[1]) }
-#[inline] pub unsafe fn insn_is_avx_or_xop(i: *mut insn) -> i32 { if (*i).prefixes.got == 0 { insn_get_prefixes(i); } ((*i).vex_prefix.data.value != 0) as i32 }
-#[inline] pub unsafe fn insn_is_evex(i: *mut insn) -> i32 { if (*i).prefixes.got == 0 { insn_get_prefixes(i); } ((*i).vex_prefix.nbytes == 4) as i32 }
-#[inline] pub unsafe fn insn_has_emulate_prefix(i: *mut insn) -> i32 { ((*i).emulate_prefix_size != 0) as i32 }
-pub const POP_SS_OPCODE: insn_byte_t = 0x1f;
-pub const MOV_SREG_OPCODE: insn_byte_t = 0x8e;
-
-extern "C" {
-    pub fn inat_get_opcode_attribute(v: insn_byte_t) -> insn_attr_t;
-    pub fn inat_is_xop_prefix(v: insn_attr_t) -> i32;
-    pub fn inat_get_last_prefix_id(v: insn_byte_t) -> i32;
-}
-
-#[inline]
-pub unsafe fn avx_insn_is_xop(i: *mut insn) -> i32 {
-    inat_is_xop_prefix(inat_get_opcode_attribute((*i).vex_prefix.data.bytes[0]))
-}
-#[inline]
-pub unsafe fn insn_is_xop(i: *mut insn) -> i32 {
-    if insn_is_avx_or_xop(i) == 0 { return 0; }
-    avx_insn_is_xop(i)
-}
-#[inline]
-pub unsafe fn insn_vex_m_bits(i: *mut insn) -> insn_byte_t {
-    if (*i).vex_prefix.nbytes == 2 { X86_VEX2_M }
-    else if (*i).vex_prefix.nbytes == 3 { X86_VEX3_M((*i).vex_prefix.data.bytes[1]) }
-    else { X86_EVEX_M((*i).vex_prefix.data.bytes[1]) }
-}
-#[inline]
-pub unsafe fn insn_vex_p_bits(i: *mut insn) -> insn_byte_t {
-    if (*i).vex_prefix.nbytes == 2 { X86_VEX_P((*i).vex_prefix.data.bytes[1]) }
-    else { X86_VEX_P((*i).vex_prefix.data.bytes[2]) }
-}
-#[inline]
-pub unsafe fn insn_vex_w_bit(i: *mut insn) -> insn_byte_t {
-    if (*i).vex_prefix.nbytes < 3 { 0 } else { X86_VEX_W((*i).vex_prefix.data.bytes[2]) }
-}
-#[inline]
-pub unsafe fn insn_xop_map_bits(i: *mut insn) -> insn_byte_t {
-    if (*i).xop_prefix.nbytes < 3 { 0 } else { X86_XOP_M((*i).xop_prefix.data.bytes[1]) }
-}
-#[inline]
-pub unsafe fn insn_xop_p_bits(i: *mut insn) -> insn_byte_t { X86_XOP_P((*i).vex_prefix.data.bytes[2]) }
-#[inline]
-pub unsafe fn insn_last_prefix_id(i: *mut insn) -> i32 {
-    if insn_is_avx_or_xop(i) != 0 {
-        if avx_insn_is_xop(i) != 0 { return insn_xop_p_bits(i) as i32; }
-        return insn_vex_p_bits(i) as i32;
+impl Input for &[u8] {
+    fn read(&self, offset: usize, destination: &mut [u8]) -> bool {
+        let Some(end) = offset.checked_add(destination.len()) else {
+            return false;
+        };
+        let Some(bytes) = self.get(offset..end) else {
+            return false;
+        };
+        destination.copy_from_slice(bytes);
+        true
     }
-    if (*i).prefixes.data.bytes[3] != 0 { return inat_get_last_prefix_id((*i).prefixes.data.bytes[3]); }
-    0
 }
-#[inline] pub unsafe fn insn_offset_rex_prefix(i: *mut insn) -> i32 { (*i).prefixes.nbytes as i32 }
-#[inline] pub unsafe fn insn_offset_vex_prefix(i: *mut insn) -> i32 { insn_offset_rex_prefix(i) + (*i).rex_prefix.nbytes as i32 }
-#[inline] pub unsafe fn insn_offset_opcode(i: *mut insn) -> i32 { insn_offset_vex_prefix(i) + (*i).vex_prefix.nbytes as i32 }
-#[inline] pub unsafe fn insn_offset_modrm(i: *mut insn) -> i32 { insn_offset_opcode(i) + (*i).opcode.nbytes as i32 }
-#[inline] pub unsafe fn insn_offset_sib(i: *mut insn) -> i32 { insn_offset_modrm(i) + (*i).modrm.nbytes as i32 }
-#[inline] pub unsafe fn insn_offset_displacement(i: *mut insn) -> i32 { insn_offset_sib(i) + (*i).sib.nbytes as i32 }
-#[inline] pub unsafe fn insn_offset_immediate(i: *mut insn) -> i32 { insn_offset_displacement(i) + (*i).displacement.nbytes as i32 }
 
-#[inline]
-pub unsafe fn insn_masking_exception(i: *mut insn) -> i32 {
-    ((*i).opcode.data.bytes[0] == POP_SS_OPCODE ||
-        ((*i).opcode.data.bytes[0] == MOV_SREG_OPCODE && X86_MODRM_REG((*i).modrm.data.bytes[0]) == 2)) as i32
+// Existing host users retain their borrowed-slice API and lifetime.
+pub(crate) type Instruction<'a> = Decoder<&'a [u8]>;
+
+#[derive(Clone, Debug)]
+pub(crate) struct Decoder<R> {
+    pub(crate) prefixes: Field,
+    pub(crate) rex_prefix: Field,
+    pub(crate) vex_prefix: Field,
+    pub(crate) opcode: Field,
+    pub(crate) modrm: Field,
+    pub(crate) sib: Field,
+    pub(crate) displacement: Field,
+    pub(crate) immediate1: Field,
+    pub(crate) immediate2: Field,
+    pub(crate) emulate_prefix_size: usize,
+    pub(crate) attr: u32,
+    pub(crate) opnd_bytes: u8,
+    pub(crate) addr_bytes: u8,
+    pub(crate) length: u8,
+    pub(crate) x86_64: bool,
+    pub(crate) bytes: R,
+    pub(crate) next: usize,
+    // A native caller can rebase kaddr independently of its next-byte cursor.
+    // Keep its wrapping pointer difference separate from bounded read indices.
+    pub(crate) length_bias: usize,
+}
+
+impl<'a> Instruction<'a> {
+    pub(crate) fn new(bytes: &'a [u8], mode: Mode) -> Self {
+        let x86_64 = match mode {
+            Mode::Bits32 => false,
+            Mode::Bits64 => true,
+            Mode::Kernel { x86_64 } => x86_64,
+        };
+        Self {
+            prefixes: Field::default(),
+            rex_prefix: Field::default(),
+            vex_prefix: Field::default(),
+            opcode: Field::default(),
+            modrm: Field::default(),
+            sib: Field::default(),
+            displacement: Field::default(),
+            immediate1: Field::default(),
+            immediate2: Field::default(),
+            emulate_prefix_size: 0,
+            attr: 0,
+            opnd_bytes: 4,
+            addr_bytes: if x86_64 { 8 } else { 4 },
+            length: 0,
+            x86_64,
+            bytes: &bytes[..bytes.len().min(MAX_INSN_SIZE)],
+            next: 0,
+            length_bias: 0,
+        }
+    }
+}
+
+impl<R: Input> Decoder<R> {
+    // These names alias C unions without maintaining duplicate field values.
+    pub(crate) fn immediate(&self) -> &Field {
+        &self.immediate1
+    }
+    pub(crate) fn moffset1(&self) -> &Field {
+        &self.immediate1
+    }
+    pub(crate) fn moffset2(&self) -> &Field {
+        &self.immediate2
+    }
+    pub(crate) fn xop_prefix(&self) -> &Field {
+        &self.vex_prefix
+    }
+
+    pub(crate) fn get_attribute(&mut self) -> u32 {
+        let _ = self.get_modrm();
+        self.attr
+    }
+    pub(crate) fn is_rex2(&mut self) -> bool {
+        if !self.prefixes.got {
+            let _ = self.get_prefixes();
+        }
+        self.rex_prefix.nbytes == 2
+    }
+    pub(crate) fn rex2_m_bit(&self) -> bool {
+        self.rex_prefix.bytes[1] & 0x80 != 0
+    }
+    pub(crate) fn is_avx_or_xop(&mut self) -> bool {
+        if !self.prefixes.got {
+            let _ = self.get_prefixes();
+        }
+        self.vex_prefix.value() != 0
+    }
+    pub(crate) fn is_evex(&mut self) -> bool {
+        if !self.prefixes.got {
+            let _ = self.get_prefixes();
+        }
+        self.vex_prefix.nbytes == 4
+    }
+    pub(crate) fn avx_is_xop(&self) -> bool {
+        inat::inat_is_xop_prefix(inat::inat_get_opcode_attribute(self.vex_prefix.bytes[0]))
+    }
+    pub(crate) fn is_xop(&mut self) -> bool {
+        self.is_avx_or_xop() && self.avx_is_xop()
+    }
+    pub(crate) fn has_emulate_prefix(&self) -> bool {
+        self.emulate_prefix_size != 0
+    }
+    pub(crate) fn vex_m_bits(&self) -> u8 {
+        match self.vex_prefix.nbytes {
+            2 => 1,
+            3 => self.vex_prefix.bytes[1] & 0x1f,
+            _ => self.vex_prefix.bytes[1] & 7,
+        }
+    }
+    pub(crate) fn vex_p_bits(&self) -> u8 {
+        self.vex_prefix.bytes[if self.vex_prefix.nbytes == 2 { 1 } else { 2 }] & 3
+    }
+    pub(crate) fn vex_w_bit(&self) -> bool {
+        self.vex_prefix.nbytes >= 3 && self.vex_prefix.bytes[2] & 0x80 != 0
+    }
+    pub(crate) fn xop_map_bits(&self) -> u8 {
+        if self.vex_prefix.nbytes < 3 {
+            0
+        } else {
+            self.vex_prefix.bytes[1] & 0x1f
+        }
+    }
+    pub(crate) fn xop_p_bits(&self) -> u8 {
+        self.vex_prefix.bytes[2] & 3
+    }
+    pub(crate) fn last_prefix_id(&mut self) -> u8 {
+        if self.is_avx_or_xop() {
+            if self.avx_is_xop() {
+                self.xop_p_bits()
+            } else {
+                self.vex_p_bits()
+            }
+        } else if self.prefixes.bytes[3] != 0 {
+            inat::inat_get_last_prefix_id(self.prefixes.bytes[3])
+        } else {
+            0
+        }
+    }
+    pub(crate) fn offset_rex_prefix(&self) -> usize {
+        self.prefixes.nbytes as usize
+    }
+    pub(crate) fn offset_vex_prefix(&self) -> usize {
+        self.offset_rex_prefix() + self.rex_prefix.nbytes as usize
+    }
+    pub(crate) fn offset_opcode(&self) -> usize {
+        self.offset_vex_prefix() + self.vex_prefix.nbytes as usize
+    }
+    pub(crate) fn offset_modrm(&self) -> usize {
+        self.offset_opcode() + self.opcode.nbytes as usize
+    }
+    pub(crate) fn offset_sib(&self) -> usize {
+        self.offset_modrm() + self.modrm.nbytes as usize
+    }
+    pub(crate) fn offset_displacement(&self) -> usize {
+        self.offset_sib() + self.sib.nbytes as usize
+    }
+    pub(crate) fn offset_immediate(&self) -> usize {
+        self.offset_displacement() + self.displacement.nbytes as usize
+    }
+    pub(crate) fn iter_prefixes(&self) -> impl Iterator<Item = u8> + '_ {
+        self.prefixes
+            .bytes
+            .iter()
+            .copied()
+            .take_while(|&byte| byte != 0)
+    }
+    pub(crate) fn masking_exception(&self) -> bool {
+        self.opcode.bytes[0] == POP_SS_OPCODE
+            || (self.opcode.bytes[0] == MOV_SREG_OPCODE && (self.modrm.bytes[0] >> 3) & 7 == 2)
+    }
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

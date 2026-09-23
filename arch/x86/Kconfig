@@ -345,6 +345,20 @@ config INSTRUCTION_DECODER
 	def_bool y
 	depends on KPROBES || PERF_EVENTS || UPROBES
 
+config RUST_X86_INSN
+	bool "Rust implementation of the x86 instruction decoder"
+	depends on RUST && INSTRUCTION_DECODER
+	help
+	  Build the translated Rust instruction decoder and attribute tables
+	  for the running kernel. The existing C interface remains available
+	  to instruction evaluation, kprobes, uprobes, and perf callers.
+
+	  This does not change the separate decoder used by the compressed
+	  boot image or host tools. Disable this option to keep the original
+	  C implementation. HOST_TOOLS_LANG selects host tools independently.
+
+	  If unsure, say N.
+
 config OUTPUT_FORMAT
 	string
 	default "elf32-i386" if X86_32

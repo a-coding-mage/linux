@@ -68,3 +68,5 @@ fn main() {
     let _ = std::io::stderr().lock().write_all(&errors);
     // Historical mkbb reports all failures through stderr but exits zero.
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -47,6 +47,7 @@ pub mod acpi;
 pub mod alloc;
 #[cfg(CONFIG_AUXILIARY_BUS)]
 pub mod auxiliary;
+pub mod bcd;
 pub mod bitfield;
 pub mod bitmap;
 pub mod bits;
@@ -62,6 +63,7 @@ pub mod cpu;
 pub mod cpufreq;
 pub mod cpumask;
 pub mod cred;
+pub mod ctype;
 pub mod debugfs;
 pub mod device;
 pub mod device_id;

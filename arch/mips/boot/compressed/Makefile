@@ -81,7 +81,11 @@ $(obj)/piggy.o: $(obj)/dummy.o $(obj)/vmlinux.bin.z FORCE
 
 # Calculate the load address of the compressed kernel image
 hostprogs := calc_vmlinuz_load_addr
+ifneq ($(HOST_TOOLS_LANG),c)
 calc_vmlinuz_load_addr-rust := y
+else
+HOSTCFLAGS_calc_vmlinuz_load_addr.o += $(LINUXINCLUDE)
+endif
 
 ifneq (0x0,$(CONFIG_ZBOOT_LOAD_ADDRESS))
 zload-y	= $(CONFIG_ZBOOT_LOAD_ADDRESS)
@@ -121,7 +125,9 @@ endif
 
 # elf2ecoff can only handle 32bit image
 hostprogs += ../elf2ecoff
+ifneq ($(HOST_TOOLS_LANG),c)
 ../elf2ecoff-rust := y
+endif
 
 ifdef CONFIG_32BIT
 	VMLINUZ = $(objtree)/vmlinuz

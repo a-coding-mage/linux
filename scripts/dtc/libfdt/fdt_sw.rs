@@ -205,3 +205,5 @@ pub(crate) fn finish(data: &mut [u8]) -> Result<()> {
     put32(data, 24, 16)?;
     put32(data, 0, FDT_MAGIC)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

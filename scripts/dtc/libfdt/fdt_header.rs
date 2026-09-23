@@ -16,3 +16,5 @@ pub(crate) const FDT_V2_SIZE: usize = 32;
 pub(crate) const FDT_V3_SIZE: usize = 36;
 pub(crate) const FDT_V16_SIZE: usize = 36;
 pub(crate) const FDT_V17_SIZE: usize = 40;
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

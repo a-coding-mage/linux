@@ -9,10 +9,36 @@ equivalent build, runtime, and test behavior. This objective is not yet complete
 The presence of an adjacent ``.rs`` file does not mean that its definitions are
 complete or that Kbuild uses it.
 
+Translated files retain their original ``SOURCE-COMMIT`` comments so the C
+revision used for translation remains identifiable. Refactoring or integrating
+a translation must not delete that provenance marker. Update it only when the
+translation has actually been reconciled with a newer C source revision.
+The provenance regression test records each migrated file's exact expected
+revision in ``scripts/tests/translated_sources.txt``. An intentional revision
+update must update that manifest as well; removing or replacing a marker
+accidentally fails the test.
+
 Host tools
 ----------
 
-The following normal Kbuild targets now select Rust sources:
+Migrated host tools default to Rust. Both implementations remain selectable::
+
+    make O=/tmp/lupos-build HOST_TOOLS_LANG=rust defconfig
+    make O=/tmp/lupos-build HOST_TOOLS_LANG=rust -j8
+
+    make O=/tmp/lupos-build HOST_TOOLS_LANG=c defconfig
+    make O=/tmp/lupos-build HOST_TOOLS_LANG=c -j8
+
+Pass the same choice to each build invocation. Kbuild records the selected
+compiler command and rebuilds affected tools when switching languages, so a
+separate output directory is optional. The C branches retain their original
+source files, object lists, flags and generated-header dependencies. This
+selection applies to migrated host tools, not the target kernel's
+``CONFIG_RUST`` setting or tools which were originally Rust-only.
+``rust-host-tools`` and ``rust-host-tests`` require ``HOST_TOOLS_LANG=rust``;
+the retained C implementations are available through normal Kbuild targets.
+
+The following normal Kbuild targets have Rust implementations:
 
 * ``scripts/basic/fixdep``
 * ``scripts/kallsyms``
@@ -30,12 +56,14 @@ The following normal Kbuild targets now select Rust sources:
 * ``scripts/selinux/mdp/mdp``
 * ``scripts/kconfig/conf``
 * ``scripts/genksyms/genksyms``
+* ``scripts/gendwarfksyms/gendwarfksyms``
 * ``scripts/dtc/dtc``
 * ``scripts/dtc/fdtoverlay``
 * ``scripts/dtc/fdtget`` and ``scripts/dtc/fdtput`` (explicit host targets)
 * ``scripts/ipe/polgen/polgen``
 * ``arch/x86/tools/vdso2c``
 * ``arch/x86/tools/relocs``
+* ``arch/x86/tools/insn_decoder_test`` and ``arch/x86/tools/insn_sanity``
 * ``arch/x86/boot/compressed/mkpiggy``
 * ``arch/x86/boot/mkcpustr``
 * ``arch/powerpc/boot/addnote``
@@ -47,11 +75,16 @@ The following normal Kbuild targets now select Rust sources:
 * ``arch/alpha/boot/tools/mkbb``
 * ``arch/alpha/boot/tools/objstrip``
 * ``arch/mips/tools/elf-entry``
+* ``arch/mips/tools/loongson3-llsc-check``
 * ``arch/mips/boot/elf2ecoff`` (also used by compressed boot)
+* ``arch/mips/boot/tools/relocs``
 * ``arch/mips/boot/compressed/calc_vmlinuz_load_addr``
 * ``arch/mips/vdso/genvdso``
 * ``arch/s390/tools/gen_facilities``
 * ``arch/s390/tools/gen_opcode_table``
+* ``arch/s390/tools/relocs``
+* ``arch/sparc/boot/piggyback``
+* ``arch/sparc/vdso/vdso2c``
 * ``usr/gen_init_cpio``
 
 These tools use the Rust standard library without third-party Rust crates or
@@ -63,6 +96,11 @@ declarations. A small Python helper probes the installed OpenSSL headers using
 the host C compiler to select the correct library ABI; it compiles no C shim.
 The host OpenSSL development headers/library and Python 3 are therefore needed
 when building these tools, including the combined ``rust-host-tools`` target.
+The DWARF symbol-version generator links the existing elfutils ``libdw``
+library, which also requires libelf and zlib. The combined host-tools target
+therefore needs these host libraries as well. Its C-reference tests additionally
+need the elfutils development headers; no C shim or generated Rust binding is
+compiled for the Rust implementation.
 The tracepoint checker and table sorter import ``scripts/elf-parse.rs`` as a
 checked Rust module. Kbuild tracks that module through rustc's dependency output.
 The ASN.1 compiler imports translated tag definitions, and the SELinux policy
@@ -117,7 +155,8 @@ dependencies. This requires a host C compiler/linker, ``HOSTRUSTC``, and
 Python 3. Kconfig, genksyms, and DTC differential tests additionally require Flex
 and Bison to build the original C references; the Rust tools themselves need
 neither. Tests use temporary directories. Normal builds use the Rust tools;
-the C implementations remain available as behavioral references.
+the C implementations remain selectable build implementations and behavioral
+references.
 
 The device-tree compiler uses owned tree nodes, ordered properties and labels,
 byte-valued data with reference markers, and checked blob input/output. Its full
@@ -232,6 +271,32 @@ and immutable name table from ``cpufeatures_header.rs``. Tests verify every
 translated feature bit, compare the generated header against C for both
 kernel widths, and compile the header under multiple required-feature masks.
 
+The x86 instruction-test tools share one allocation-free, core-only Rust decoder
+and immutable attribute tables with the translated architecture sources. Their
+tools-side modules import that canonical implementation. Byte slices and checked
+cursors replace instruction pointers; C union aliases share one stored field.
+Tests compare every intermediate field and failure state with C, including
+legacy, REX/REX2, VEX/EVEX/XOP, addressing and immediate forms, truncation, retries,
+and manually selected operand widths. Real kernel disassembly and seeded random
+streams also match. Target-kernel selection is independent: C remains the
+default, with the opt-in ``CONFIG_RUST_X86_INSN`` integration described below.
+
+``arch/x86/tools/gen_inat_tables.py`` emits an ``apply_patch`` patch for updating
+the checked-in Rust tables from the original opcode map. Its ``--check`` mode
+verifies reproducibility. A compile-time map fingerprint rejects stale tables,
+and rustc tracks the map as a dependency; normal Rust builds run no C table
+generator. The original AWK/C path remains available with ``HOST_TOOLS_LANG=c``.
+CLI tests preserve option parsing, field dumps, raw-byte input, and glibc's
+seeded random sequence. Excess disassembly bytes are rejected instead of
+overflowing a stack buffer, the first short sanity-input tail is initialized
+instead of reading uninitialized bytes, and buffered output errors are reported.
+After a configured x86 kernel build, the normal decoder post-test can be enabled
+with ``CONFIG_X86_DECODER_SELFTEST=y``. An optional C/Rust comparison of its
+complete disassembly stream is available with::
+
+    INSN_KERNEL_BUILD=/tmp/lupos-build \
+        python3 -m unittest discover -s scripts/tests -p test_insn_decoder.py
+
 The PowerPC Open Firmware helpers preserve ELF32/ELF64 notes in both byte
 orders, XCOFF optional-header section indices, and tree-boot image headers,
 checksums, and sector padding. Differential tests compare complete modified
@@ -281,6 +346,14 @@ output instead of interpreting arbitrary bytes as an ELF32 header. Raw-byte
 paths and checked output errors are supported. Normal and compressed-boot Kbuild
 host rules are verified; a MIPS target-kernel boot is not yet validated.
 
+The Loongson LL/SC checker preserves executable-section filtering, instruction
+classification, synchronization checks, branch displacements, the original
+loop-boundary rule, and diagnostic ordering. Its byte-oriented ELF access also
+handles empty sections and extended numbering safely and checks branch targets
+before reading. Tests compare all opcode families, randomized streams, large
+sections, and actual MIPS64 little-endian assembler objects with C; malformed
+headers and output failures are reported without unchecked memory access.
+
 The MIPS vDSO generator repairs ABI sections in both debug and stripped ELF
 images and emits byte-identical C image descriptions for O32, N32, and N64 in
 both byte orders. It preserves in-place inode/permission behavior, ordered
@@ -295,6 +368,26 @@ are verified through target compilation. To compare their raw inputs, repaired
 images and generated source against C, set ``MIPS_VDSO_KERNEL_BUILD`` to the
 corresponding build directory when running ``test_mips_genvdso.py``.
 
+The MIPS relocation processor uses checked ELF32/ELF64 access in both byte
+orders, including MIPS64's mixed-width relocation records. It preserves
+relocation order, symbol and section filtering, offset encoding, all output
+modes, and the original in-place section-size updates, including their effect
+with ``--text`` and ``--bin``. Differential tests compare complete modified
+images, all relocation types and flag combinations, partial table records,
+large relocation streams, and real compiler/linker output. Invalid extents,
+links, indices and overlapping writes are rejected safely. A relocation table
+overflow is diagnosed before modifying the file, unlike C's destructive
+write-before-check behavior; capacity uses an unsigned byte count instead of
+C's signed ``int`` truncation, and output failures are also reported. The
+original C implementation remains available with ``HOST_TOOLS_LANG=c``.
+The normal 32-bit little-endian and 64-bit big-endian Malta kernel builds are
+verified through final linking and relocation insertion. All 16 command-line
+flag combinations also match C on copies of both linked kernels. Set
+``MIPS_RELOCS_KERNEL_BUILD`` to a
+build directory retaining ``.tmp_vmlinux2`` (or ``MIPS_RELOCS_VMLINUX`` to an
+unprocessed linked image) to run that comparison. MIPS kernel boot validation
+is still outstanding.
+
 The s390 facility and disassembler generators preserve all three facility masks,
 configuration-dependent architecture bits, instruction formats, long names,
 opcode grouping, and table ordering. Differential tests cover all 64 feature
@@ -305,6 +398,30 @@ Opcode input is byte-preserving, including ASCII case conversion and whitespace.
 Overlong fields and incomplete multi-byte opcode fragments are rejected instead
 of overflowing C's fixed arrays or reading uninitialized data; input/output
 errors are reported. An s390 target-kernel boot is not yet validated.
+
+The s390 relocation extractor uses checked ELF64 big-endian access, including
+extended section and symbol indices. It preserves allocated-section filtering,
+all supported relocation types, KCFI absolute-symbol exceptions, sorted 32-bit
+offsets, duplicates, ignored entry-size fields, and original diagnostics.
+Differential tests cover over 100,000 relocations, more than 65,536 sections,
+randomized images, and a real s390 compiler/linker executable. Invalid table
+links, symbol indices, and unterminated strings are rejected safely; delayed
+output failures are reported instead of being ignored. The retained C tool
+remains selectable with ``HOST_TOOLS_LANG=c``.
+
+The SPARC boot helper preserves a.out header updates, 32-bit and 64-bit page
+alignment, fixed-column System.map parsing, and in-place ramdisk appending,
+including existing trailing bytes and permissions. It rejects input inode
+aliases that would endlessly append a file to itself and reports ramdisk read
+errors. The SPARC vDSO converter preserves big-endian ELF32/ELF64 load and dynamic
+table validation and byte-identical raw or generated-C outputs. Checked offsets
+replace unchecked pointers; invalid input preserves an existing destination,
+and buffered output failures are reported. Tests cover randomized images, raw
+byte filenames, a real linked SPARC64 vDSO, and compilation and execution of
+generated C to verify embedded bytes and padding. Both host rules pass C/Rust/C
+selection tests. A full SPARC target build and boot are not yet validated: the
+available Clang rejects the tree's existing ``-Wa,--undeclared-regs`` option
+before compiling the kernel vDSO inputs.
 
 The line-oriented Kconfig front end uses owned Rust modules for preprocessing,
 lexing, parsing, expression evaluation, menus, symbols, and configuration I/O.
@@ -342,6 +459,218 @@ against the source-built C reference::
 
     GENKSYMS_KERNEL_BUILD=/tmp/lupos-build \
         python3 -m unittest discover -s scripts/tests -p test_genksyms.py
+
+The DWARF symbol-version generator uses owned symbol and type records,
+byte-preserving names, checked ELF metadata, and explicit traversal stacks.
+Its type expansion, CRC calculation, symbol aliases, export-pointer fallback,
+symtypes output, and kABI stability rules are compared with the original C
+implementation. Fixtures include GCC, Clang and Rust debugging information,
+DWARF versions 2 through 5, both ELF classes and byte orders, compressed and
+separate debug information, and linked compilation units. Anonymous type
+cycles and malformed ELF metadata are rejected without unchecked accesses.
+Buffered output failures are reported instead of silently succeeding.
+
+Only the public elfutils DWARF APIs cross an unsafe boundary. Library handles,
+file descriptors, DIEs, and borrowed strings have checked ownership and
+lifetimes. Regression tests verify the C ABI layouts and function signatures
+against installed headers, reject escaping or cross-thread handles at compile
+time, and check descriptor cleanup. These checks do not replace the external
+library's own input validation. Run this family's focused tests with::
+
+    python3 -m unittest discover -s scripts/tests -p 'test_gendwarf*.py'
+
+For development headers extracted outside the system, set ``GENDWARF_PREFIX``
+to their ``usr`` directory. ``GENDWARF_CFLAGS`` and ``GENDWARF_LIBS`` can override
+the differential tests' compiler and linker flags. Tests do not download or
+install dependencies, and explicitly skip C comparisons when the required
+development headers are absent.
+
+An x86-64 kernel with ``CONFIG_GENDWARFKSYMS=y``, ``CONFIG_MODVERSIONS=y``
+and DWARF 5 debugging information is verified through the normal build,
+emulated boot, and module loading. Its saved compilation-unit CRCs, symtypes,
+``Module.symvers``, linked kernel images, and an external module are compared
+against C. For a completed build made with ``KBUILD_SYMTYPES=1``, run the
+read-only integration audit with::
+
+    python3 scripts/tests/check_gendwarf_kernel.py /tmp/lupos-build \
+        --module /tmp/lupos-external-module
+
+The optional ``--module`` argument may be repeated or omitted. The checker
+writes its reference tools and comparison outputs only in temporary directories.
+Native Rust compilation units use their actual Kbuild export ordering and
+filtering, including the C-built Rust helpers. A native Rust kernel with the
+translated hexadecimal helpers has exact per-unit C/Rust/Kbuild parity for
+423 compilation units and 6,664 CRC records, including their symtypes files.
+The complete ``vmlinux.o`` and final ``vmlinux`` also match C for all 6,664
+exports, diagnostics and symtypes.
+
+Translated target-kernel code
+-----------------------------
+
+``CONFIG_RUST_BCD=y`` selects the translated binary-coded decimal conversions.
+It requires native Rust support, defaults to disabled and is independent of
+``HOST_TOOLS_LANG``. Leaving it disabled retains ``bcd.o``; the Rust choice
+uses ``bcd_rust.o`` plus export-only C metadata. The implementation is pure,
+allocation-free and retains the two exported C functions, including unsigned
+overflow and invalid-digit behavior.
+
+Independent Rust consumers import ``kernel::bcd``. The shared safe helpers do
+not introduce duplicate C exports or foreign calls and work with either build
+selection. Rust cannot reproduce C's ``__builtin_constant_p`` dispatch, so the
+API names distinguish its two arithmetic paths explicitly: ``bcd2bin(u8)``
+and ``bin2bcd(u32)`` match the runtime functions, while ``const_bcd2bin(u32)``
+and ``const_bin2bcd(u32)`` match the full-width unsigned constant expressions.
+For example, ``bin2bcd(1024)`` returns ``0xfa``, whereas
+``const_bin2bcd(1024)`` returns ``0x664`` before any caller-requested narrowing.
+All helpers support Rust constant evaluation without changing these semantics.
+``bcd_is_valid`` and ``const_bcd_is_valid`` check the entire unsigned argument;
+conversion itself does not reject invalid digits.
+
+Rebuild modules after changing this option when using DWARF symbol versioning.
+GCC and Clang omit the original parameter names from the declaration-only
+export metadata, changing both function CRCs without changing their C ABI.
+The C selection restores the original metadata; genksyms versions are retained.
+
+After a completed x86-64 build, check the selected implementation in QEMU::
+
+    python3 scripts/tests/check_bcd_kernel.py /tmp/lupos-build
+    python3 scripts/tests/check_bcd_kernel.py /tmp/lupos-build --caller rust
+
+The first command checks both C exports and the header's constant/runtime
+dispatch. The second builds an independent native ``kernel::bcd`` consumer.
+Each compares 69,646 inputs, including the complete 16-bit range, against the
+unchanged C source and header. Use ``--allow-c-baseline`` for the original C
+selection and ``--make-arg``, ``--qemu`` or ``--qemu-data`` for isolated tools.
+The runner requires modules, printk and multiuser support, plus native Rust
+for the Rust caller, and rejects forced module signatures for its unsigned
+fixtures. It validates linked objects and image freshness before booting and
+never loads modules into the host. Artifacts remain under ``rust-bcd-test/``
+and ``rust-boot-test/``. Focused host tests are in ``test_bcd*.py``.
+
+``CONFIG_RUST_CTYPE=y`` selects the translated, immutable 256-byte character
+classification table. It requires native Rust support, defaults to disabled,
+and is independent of ``HOST_TOOLS_LANG``. The original ``ctype.o`` remains
+available; the Rust selection uses ``ctype_rust.o`` and export-only C metadata.
+Boot, firmware and host-tool copies are unchanged. The table preserves all
+historical Latin-1 entries, including NBSP whitespace and punctuation at
+``0xd7`` and ``0xf7``; this is neither ASCII-only nor Unicode classification.
+
+Native Rust consumers import ``kernel::ctype``. That API reuses the translated
+safe helper definitions with a private, bounded lookup into the selected C or
+Rust table. It introduces no second table, allocation or initialization work.
+Only the table-owning crate includes ``lib/ctype.rs``; independent modules must
+not include that source again. Table-independent helpers remain usable in
+constant expressions. Calls through ``kernel::ctype`` that read the foreign
+table require runtime access, because its contents are resolved at link time.
+
+The helpers retain unsigned-byte truncation where C performs it, the full
+integer comparison used by ``isdigit``, and the original case-conversion
+quirks. Differential tests compare every table byte and helper with the
+unchanged C sources under signed/unsigned ``char``. Independent-crate tests
+check that consumers share exactly one immutable table. Export metadata keeps
+the original symbol versions under GCC and Clang, using both genksyms and
+DWARF versioning; a complete array redeclaration after the public header is
+needed to preserve Clang's original debug type.
+
+After a completed x86-64 build, test C callers inside QEMU with::
+
+    python3 scripts/tests/check_ctype_kernel.py /tmp/lupos-build
+
+Use ``--caller rust`` to test a separately compiled native Rust module using
+``kernel::ctype``, and ``--allow-c-baseline`` to exercise the original C table.
+These checks require ``CONFIG_MODULES=y``, ``CONFIG_PRINTK=y`` and
+``CONFIG_MULTIUSER=y``; the Rust caller also requires ``CONFIG_RUST=y``.
+Forced module signatures must be disabled for the unsigned fixtures. The
+runner checks actual archive membership and image freshness before booting,
+and never loads a module into the host. ``--make-arg``, ``--qemu`` and
+``--qemu-data`` support isolated toolchains and emulators. Test artifacts stay
+under ``rust-ctype-test/`` and ``rust-boot-test/`` in the output directory.
+
+Native x86-64 builds with Rust 1.85 and extended DWARF module versions pass
+all 256 table bytes and 8,194 inputs per caller with both table selections.
+A C module built against the original table also loads unchanged with the
+Rust table, and a separately compiled ``kernel::ctype`` Rust module loads
+unchanged after switching back to C. Both preserve the original ``_ctype``
+symbol version. Host differential, build-selection and runtime-runner checks
+are available through ``test_ctype*.py``.
+
+``CONFIG_RUST_HEXDUMP=y`` selects the translated ``lib/hexdump.rs`` for the
+kernel's hexadecimal conversion and dump functions. This option requires
+native ``CONFIG_RUST`` support and is disabled by default; leaving it disabled
+keeps the original C implementation. It is independent of ``HOST_TOOLS_LANG``.
+``lib/hexdump_rust.rs`` supplies the kernel crate boundary without changing the
+adjacent C source's build rule. The export-only ``hexdump_exports.c`` retains
+the standard C export machinery and prototypes; it contains no conversion or
+formatting implementation.
+
+The translation needs no allocation. It preserves forward overlapping-buffer
+operations, partial writes, native-endian groups, empty-buffer behavior, the
+branch-free hexadecimal-digit conversion, and the kernel's printk formatting
+and pointer policy. ``CONFIG_PRINTK_INDEX`` emits three records using the real
+packed kernel binding and Rust call-site locations. Signed and unsigned host
+``char`` bindings are tested separately from their common pointer ABI.
+
+Rebuild modules when changing this option. In DWARF module-versioning mode,
+GCC omits formal parameter names from the declaration-only export boundary,
+which changes function CRCs despite preserving the machine-level C ABI.
+The C selection retains its original metadata; the Rust selection and modules
+built against it use matching generated versions.
+
+The normal x86-64 build with Rust 1.85, extended module versions and printk
+indexing is verified through QEMU. The unchanged C ``test_hexdump`` module
+passes all 1,184 tests against the Rust implementation. An additional native
+C-caller module checks all seven exported symbols, including conversion errors,
+overlap, null/zero-length calls, and all printk prefix modes. After a completed
+build with ``CONFIG_RUST_HEXDUMP=y``, ``CONFIG_MODULES=y``, ``CONFIG_PRINTK=y``
+and ``CONFIG_MULTIUSER=y``, run it with::
+
+    python3 scripts/tests/check_hexdump_kernel.py /tmp/lupos-build
+
+This runner builds a temporary test module and loads it only inside QEMU,
+never into the host kernel. It checks the linked implementation and rejects
+stale images before booting. Use ``--allow-c-baseline`` to run the same checks
+against the retained C selection, ``--make-arg`` for nonstandard toolchain
+assignments, and ``--qemu``/``--qemu-data`` for an isolated emulator installation.
+Forced module signatures must be disabled for this unsigned test fixture.
+Artifacts remain in ``rust-hexdump-test/`` and ``rust-boot-test/`` under the
+output directory. Host differential, guarded-memory, ABI and build-selection
+regressions are available through ``test_hexdump*.py``.
+
+``CONFIG_RUST_X86_INSN=y`` selects the translated x86 instruction decoder
+and attribute tables for the running kernel. It requires ``CONFIG_RUST`` and
+``CONFIG_INSTRUCTION_DECODER`` and defaults to disabled. The original C
+``insn.o`` and ``inat.o`` remain selected when it is disabled; the C instruction
+evaluator, compressed-boot decoder and objtool decoder are unchanged.
+
+The native boundary uses the actual generated ``asm/insn.h`` bindings and
+provides all ten decoder and six attribute-table C entry points. Field-wise
+updates preserve union aliases, padding, noncanonical cached flags, manually
+selected operand/address widths, and partial state after errors. Bounded reads
+visit only requested bytes; cached stages need not access instruction memory.
+Rebased cursors and input overlapping the state structure are covered. The
+safe, allocation-free decoding core remains shared with the host tools.
+
+Host regressions in ``test_x86_decoder_abi.py`` compare native layouts and
+complete state against the original architecture C headers and implementation,
+including guarded pages and self-aliasing input. Build-selection and runtime
+checker regressions are in ``test_x86_decoder_build.py`` and
+``test_x86_decoder_runtime.py``. To run the unchanged kernel kprobe/kretprobe
+KUnit suite inside QEMU, build with ``CONFIG_KPROBES=y``, ``CONFIG_KUNIT=y``,
+``CONFIG_KPROBES_SANITY_TEST=y``, ``CONFIG_MULTIUSER=y``, and a reliable unwinder
+such as ``CONFIG_UNWINDER_ORC=y``, then run::
+
+    python3 scripts/tests/check_x86_decoder_kernel.py /tmp/lupos-build
+
+The checker verifies linked decoder selection and a current boot image, then
+requires every configured kprobe case to pass without skips. Use
+``--allow-c-baseline`` to run the same tests with the retained C decoder.
+``--qemu`` and ``--qemu-data`` select an isolated emulator installation.
+The minimal ``UNWINDER_GUESS`` configuration fails the original nested-kretprobe
+stacktrace test with both implementations; it is not a decoder regression.
+With ORC, all seven original kprobe/kretprobe cases pass on both C and Rust
+x86-64 kernels built with Rust 1.85. Switching C to Rust and back to C in the
+same output directory also passes all seven cases after each rebuild; stale
+objects from the other selection remain harmless and are not linked.
 
 Kernel pipeline validation
 --------------------------
@@ -386,7 +715,8 @@ Most of the migration is still outstanding. In particular:
 * The remaining Kconfig front ends, device-tree tools,
   architecture tools, and other host utilities still need complete Rust
   implementations and corresponding build changes.
-* Target-kernel C objects still take precedence over adjacent Rust files.
+* Apart from the opt-in BCD, ctype, hexadecimal-helper and x86-decoder integrations above,
+  target-kernel C objects still take precedence over adjacent Rust files.
   Their Rust definitions, shared types, configuration handling, exported
   symbols, and module boundaries must be repaired before selecting them.
 * Some translated files omit core behavior. For example,

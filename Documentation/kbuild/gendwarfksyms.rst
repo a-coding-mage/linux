@@ -19,6 +19,14 @@ Dependencies
 
 gendwarfksyms depends on the libelf, libdw, and zlib libraries.
 
+In this tree, ``HOST_TOOLS_LANG=rust`` (the default) builds the translated
+implementation using ``HOSTRUSTC``. ``HOST_TOOLS_LANG=c`` retains the original
+C implementation and its development-header requirements. Both implementations
+use elfutils for DWARF decoding and support the options below; selecting the
+host-tool language does not enable or disable target-kernel Rust support.
+See Documentation/rust/translation-progress.rst for regression-test commands
+and the remaining migration scope.
+
 Here are a few examples of how to install these dependencies:
 
 * Arch Linux and derivatives::

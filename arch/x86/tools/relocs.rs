@@ -389,3 +389,5 @@ fn process(bytes: &[u8], options: &Options) -> Result<Vec<u8>> {
     }
     Ok(output)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

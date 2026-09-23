@@ -8,6 +8,53 @@ config BINARY_PRINTF
 
 menu "Library routines"
 
+config RUST_BCD
+	bool "Rust implementation of binary-coded decimal helpers"
+	depends on RUST
+	help
+	  Build the translated Rust implementation of _bcd2bin() and _bin2bcd().
+	  The exported C interface and the original unsigned arithmetic are
+	  retained. The implementation needs no allocation.
+
+	  When using DWARF module versioning, rebuild modules after changing
+	  this option: declaration-only export metadata can change version
+	  CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of the HOST_TOOLS_LANG build-tool selector.
+
+	  If unsure, say N.
+
+config RUST_CTYPE
+	bool "Rust implementation of the character classification table"
+	depends on RUST
+	help
+	  Build the translated Rust character classification table used by
+	  the existing C ctype macros and inline functions. Its byte-oriented
+	  classification, including the historical Latin-1 entries, is retained.
+
+	  Disable this option to keep the original C table. This choice is
+	  independent of HOST_TOOLS_LANG and does not change the separate
+	  boot, firmware, or host-tool copies.
+
+	  If unsure, say N.
+
+config RUST_HEXDUMP
+	bool "Rust implementation of hexadecimal conversion helpers"
+	depends on RUST
+	help
+	  Build the translated Rust implementation of hex_to_bin(), hex2bin(),
+	  bin2hex(), hex_dump_to_buffer(), and print_hex_dump(). The exported
+	  C interface and symbol versioning remain available to existing
+	  kernel and module callers. The implementation needs no allocation.
+	  Rebuild modules after changing this option: declaration-only DWARF
+	  export metadata can change version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of the HOST_TOOLS_LANG build-tool selector.
+
+	  If unsure, say N.
+
 config LINEAR_RANGES
 	tristate
 

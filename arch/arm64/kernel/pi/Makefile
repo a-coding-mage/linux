@@ -20,7 +20,9 @@ KBUILD_CFLAGS	:= $(filter-out $(CC_FLAGS_SCS), $(KBUILD_CFLAGS))
 KBUILD_CFLAGS	:= $(filter-out $(CC_FLAGS_LTO), $(KBUILD_CFLAGS))
 
 hostprogs	:= relacheck
+ifneq ($(HOST_TOOLS_LANG),c)
 relacheck-rust	:= y
+endif
 
 quiet_cmd_piobjcopy = $(quiet_cmd_objcopy)
       cmd_piobjcopy = $(cmd_objcopy) && $(obj)/relacheck $(@) $(<)

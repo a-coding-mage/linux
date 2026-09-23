@@ -77,3 +77,5 @@ pub(crate) fn escaped_path(path: &[u8]) -> Vec<u8> {
     }
     result
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

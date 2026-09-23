@@ -1,13 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * x86 instruction attributes
- *
- * Written by Masami Hiramatsu <mhiramat@redhat.com>
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Written by Masami Hiramatsu <mhiramat@redhat.com>.
+//! Integer types used by the x86 instruction attribute decoder.
 
-/* Instruction attributes */
-pub type insn_attr_t = u32;
-pub type insn_byte_t = u8;
-pub type insn_value_t = i32;
+pub(crate) type Attr = u32;
+pub(crate) type Byte = u8;
+pub(crate) type Value = i32;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

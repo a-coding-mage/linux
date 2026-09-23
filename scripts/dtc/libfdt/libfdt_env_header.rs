@@ -39,3 +39,5 @@ pub(super) fn find_string(table: &[u8], name: &[u8]) -> Option<usize> {
         .windows(name.len().checked_add(1)?)
         .position(|s| s[..name.len()] == *name && s[name.len()] == 0)
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

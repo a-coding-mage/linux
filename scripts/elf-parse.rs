@@ -80,6 +80,16 @@ fn host_offset(value: u64) -> Result<usize, String> {
 impl<'a> ElfFile<'a> {
     /// Parse an ELF image, accepting only the specified ELF file types.
     pub(crate) fn parse(data: &'a [u8], types: u32) -> Result<Self, String> {
+        Self::parse_types(data, Some(types))
+    }
+
+    /// Parse metadata independently of the ELF object's file type.
+    #[allow(dead_code)] // Only metadata-only consumers accept arbitrary types.
+    pub(crate) fn parse_any(data: &'a [u8]) -> Result<Self, String> {
+        Self::parse_types(data, None)
+    }
+
+    fn parse_types(data: &'a [u8], types: Option<u32>) -> Result<Self, String> {
         bytes(data, 0, 16)?;
         let little_endian = match data[5] {
             1 => true,
@@ -91,7 +101,7 @@ impl<'a> ElfFile<'a> {
         }
         let read = |offset, size| integer(data, offset, size, little_endian);
         let kind = read(16, 2)?;
-        if kind >= 32 || types & (1 << kind) == 0 {
+        if types.is_some_and(|types| kind >= 32 || types & (1 << kind) == 0) {
             return Err("Invalid ELF type file".into());
         }
         let is_64 = match data[4] {
@@ -398,3 +408,5 @@ impl<'a> ElfFile<'a> {
         self.section(section)
     }
 }
+
+// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
