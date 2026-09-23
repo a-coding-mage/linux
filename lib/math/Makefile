@@ -1,5 +1,11 @@
 # SPDX-License-Identifier: GPL-2.0-only
-obj-y += div64.o gcd.o lcm.o int_log.o int_pow.o int_sqrt.o reciprocal_div.o
+obj-y += div64.o gcd.o lcm.o int_log.o
+ifeq ($(CONFIG_RUST_INT_MATH),y)
+obj-y += int_math_rust.o int_math_exports.o
+else
+obj-y += int_pow.o int_sqrt.o
+endif
+obj-y += reciprocal_div.o
 
 obj-$(CONFIG_CORDIC)		+= cordic.o
 obj-$(CONFIG_POLYNOMIAL)	+= polynomial.o

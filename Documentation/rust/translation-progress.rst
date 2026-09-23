@@ -504,8 +504,34 @@ translated hexadecimal helpers has exact per-unit C/Rust/Kbuild parity for
 The complete ``vmlinux.o`` and final ``vmlinux`` also match C for all 6,664
 exports, diagnostics and symtypes.
 
+The combined native build with Rust BCD, character classification, hexadecimal
+helpers and x86 instruction decoding also passes the same read-only audit:
+439 compilation units and 6,834 CRC records match C/Rust/Kbuild, including
+every symtypes file. Both complete kernel images match the C version tool for
+all 6,834 exported symbols, diagnostics and symtypes.
+
 Translated target-kernel code
 -----------------------------
+
+``CONFIG_RUST_INT_MATH=y`` selects translated integer exponentiation and square
+roots. It requires native Rust support, defaults to disabled and is independent
+of ``HOST_TOOLS_LANG``. The Makefile retains ``int_pow.o`` and ``int_sqrt.o`` for
+the C choice, or selects ``int_math_rust.o`` and export-only metadata for Rust.
+``int_pow`` remains GPL-only; the square-root exports retain their original
+license classification. As in C, ``int_sqrt64`` is an exported symbol only on
+32-bit kernels; 64-bit C callers retain the original inline helper.
+
+Independent Rust consumers import ``kernel::math``. Its pure, safe ``const``
+functions share the translated algorithms without defining duplicate C exports.
+``int_pow`` preserves wrapping 64-bit multiplication, including ``0**0 == 1``.
+``int_sqrt`` uses the native word width, ``int_sqrt32`` offers an explicit 32-bit
+input, and ``int_sqrt64`` consumes all 64 input bits on every architecture.
+Core integer operations replace the translation's fictitious external bit-scan
+functions. These functions need no allocation or foreign calls.
+
+Only the integer-function boundary of ``include/linux/math_header.rs`` has been
+repaired to reuse these algorithms. Its other translated macros and fraction
+types remain pending work and are not exposed through ``kernel::math``.
 
 ``CONFIG_RUST_BCD=y`` selects the translated binary-coded decimal conversions.
 It requires native Rust support, defaults to disabled and is independent of
@@ -546,6 +572,13 @@ for the Rust caller, and rejects forced module signatures for its unsigned
 fixtures. It validates linked objects and image freshness before booting and
 never loads modules into the host. Artifacts remain under ``rust-bcd-test/``
 and ``rust-boot-test/``. Focused host tests are in ``test_bcd*.py``.
+
+Native x86-64 builds with Rust 1.85 and extended DWARF module versions pass
+both callers with C and Rust implementations. Switching C to Rust and back to
+C in one output tree restores the original C CRCs and permits the original
+C test module to load unchanged. The independent Rust API consumer also
+loads unchanged when switching from C to Rust because it shares pure
+helpers rather than depending on either C export's version.
 
 ``CONFIG_RUST_CTYPE=y`` selects the translated, immutable 256-byte character
 classification table. It requires native Rust support, defaults to disabled,
@@ -715,7 +748,8 @@ Most of the migration is still outstanding. In particular:
 * The remaining Kconfig front ends, device-tree tools,
   architecture tools, and other host utilities still need complete Rust
   implementations and corresponding build changes.
-* Apart from the opt-in BCD, ctype, hexadecimal-helper and x86-decoder integrations above,
+* Apart from the opt-in integer-math, BCD, ctype, hexadecimal-helper and x86-decoder
+  integrations above,
   target-kernel C objects still take precedence over adjacent Rust files.
   Their Rust definitions, shared types, configuration handling, exported
   symbols, and module boundaries must be repaired before selecting them.

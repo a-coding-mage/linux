@@ -55,6 +55,24 @@ config RUST_HEXDUMP
 
 	  If unsure, say N.
 
+config RUST_INT_MATH
+	bool "Rust implementation of integer powers and square roots"
+	depends on RUST
+	help
+	  Build the translated Rust int_pow() and int_sqrt() functions, and
+	  int_sqrt64() on 32-bit kernels. The original C interfaces, unsigned
+	  wrapping arithmetic and symbol export licenses are retained. The
+	  implementation needs no allocation.
+
+	  When using DWARF module versioning, rebuild modules after changing
+	  this option: declaration-only export metadata can change version
+	  CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementations. This
+	  choice is independent of the HOST_TOOLS_LANG build-tool selector.
+
+	  If unsure, say N.
+
 config LINEAR_RANGES
 	tristate
 

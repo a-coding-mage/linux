@@ -140,15 +140,15 @@ pub fn reciprocal_scale(val: u32, ep_ro: u32) -> u32 {
     (((val as u64) * (ep_ro as u64)) >> 32) as u32
 }
 
-extern "C" {
-    pub fn int_pow(base: u64, exp: u32) -> u64;
-    pub fn int_sqrt(x: c_ulong) -> c_ulong;
-}
+// Only this integer-function boundary has been repaired and shared with the
+// native implementation. The unrelated legacy macros and structs above remain
+// a partial translation; native Rust callers should use kernel::math instead.
+#[path = "../../lib/math/int_pow.rs"]
+mod integer_power;
+#[path = "../../lib/math/int_sqrt.rs"]
+mod integer_square_root;
 
-/* If BITS_PER_LONG < 64, this is an external declaration; otherwise it is inline. */
-#[inline]
-pub unsafe fn int_sqrt64(x: u64) -> u32 {
-    int_sqrt(x as c_ulong) as u32
-}
+pub use integer_power::int_pow;
+pub use integer_square_root::{int_sqrt, int_sqrt32, int_sqrt64};
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

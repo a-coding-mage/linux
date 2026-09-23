@@ -6,18 +6,14 @@ All ordinary tests use private temporary directories. NATIVE_BCD_KERNEL_BUILD
 optionally audits a completed native kernel read-only, without invoking make.
 """
 
-from contextlib import redirect_stderr, redirect_stdout
-import io
 import os
 from pathlib import Path
 import re
 import shlex
 import shutil
 import subprocess
-import sys
 import tempfile
 import unittest
-from unittest import mock
 
 import check_bcd_kernel as checker
 import gendwarf_test_support as dwarf_support
@@ -28,7 +24,6 @@ ROOT = Path(__file__).resolve().parents[2]
 ORIGINAL = "lib/bcd.o"
 TRANSLATED = ("lib/bcd_rust.o", "lib/bcd_exports.o")
 SOURCES = ("lib/bcd_rust.rs", "lib/bcd.rs", "lib/../include/linux/bcd_header.rs")
-REQUIRED = {"RUST", "RUST_BCD", "MODULES", "PRINTK", "MULTIUSER"}
 MARKERS = {"c": b"LUPOS_BCD_ABI_OK inputs=69646 full16=65536",
            "rust": b"LUPOS_BCD_RUST_API_OK inputs=69646 full16=65536"}
 
@@ -184,6 +179,95 @@ pub use production::*;
                 self.assertEqual(len(matches), 1)
                 self.assertGreater(int(matches[0][1], 16), 0)
                 self.assertEqual(matches[0][2], b"T")
+
+
+class BcdVersioningTests(TemporaryTest):
+    def setUp(self):
+        super().setUp()
+        # Keep the original public BCD/export headers, replacing only compiler
+        # plumbing that would otherwise require an architecture configuration.
+        include = self.work / "include/linux"
+        include.mkdir(parents=True)
+        (include / "compiler.h").write_text('''#ifndef BCD_TEST_COMPILER_H
+#define BCD_TEST_COMPILER_H
+#include <linux/compiler_attributes.h>
+#define __ADDRESSABLE(sym) static void * __used __section(".discard.addressable") \\
+    bcd_addressable_##sym = (void *)&sym;
+#endif
+''')
+        (include / "linkage.h").write_text("#define ASM_NL ;\n")
+        self.flags = ["-I" + str(self.work / "include"), "-I" + str(ROOT / "include"),
+                      "-D__KERNEL__", "-DCONFIG_64BIT", "-DCONFIG_GENDWARFKSYMS"]
+        self.compilers = [shlex.split(os.environ.get("HOSTCC", "cc"))]
+        if shutil.which("clang") and "clang" not in Path(self.compilers[0][0]).name:
+            self.compilers.append(["clang"])
+
+    def genksyms_tools(self):
+        source = ROOT / "scripts/genksyms"
+        c, rust = self.work / "genksyms-c", self.work / "genksyms-rust"
+        subprocess.run([*shlex.split(os.environ.get("YACC", "bison")), "-d", "-t", "-o",
+                        self.work / "parse.tab.c", source / "parse.y"], check=True, capture_output=True)
+        subprocess.run([*shlex.split(os.environ.get("LEX", "flex")), "-d", "-o",
+                        self.work / "lex.lex.c", source / "lex.l"], check=True, capture_output=True)
+        subprocess.run([*shlex.split(os.environ.get("HOSTCC", "cc")), "-O2",
+                        "-I" + str(source), "-I" + str(ROOT / "scripts/include"), "-I" + str(self.work),
+                        source / "genksyms.c", self.work / "parse.tab.c", self.work / "lex.lex.c",
+                        "-o", c], check=True, capture_output=True)
+        subprocess.run([*shlex.split(os.environ.get("HOSTRUSTC", "rustc")), "--edition=2021", "-O",
+                        "-Wmissing-docs", "-Wrust_2018_idioms", "-Wunreachable_pub", "-Dwarnings",
+                        source / "genksyms.rs", "-o", rust], check=True, capture_output=True)
+        return c, rust
+
+    def test_public_declarations_preserve_genksyms_crc_and_symtypes(self):
+        tools = self.genksyms_tools()
+        for compiler in self.compilers:
+            outcomes = []
+            for source in (ROOT / "lib/bcd.c", ROOT / "lib/bcd_exports.c"):
+                preprocessed = subprocess.run([*compiler, *self.flags, "-E", "-D__GENKSYMS__", source],
+                                              check=True, capture_output=True).stdout
+                for tool in tools:
+                    types = self.work / "output.symtypes"
+                    result = subprocess.run([tool, "-T", types], input=preprocessed,
+                                            capture_output=True, check=True)
+                    outcomes.append((result.stdout, result.stderr, types.read_bytes()))
+            with self.subTest(compiler=compiler):
+                self.assertTrue(all(result == outcomes[0] for result in outcomes), outcomes)
+                self.assertEqual(outcomes[0][1], b"")
+                self.assertEqual(dict(re.findall(rb"#SYMVER (\w+) (0x[0-9a-f]+)", outcomes[0][0])),
+                                 {b"_bcd2bin": b"0xdf37db04", b"_bin2bcd": b"0xa5dc760e"})
+                self.assertIn(b"unsigned char", outcomes[0][2])
+
+    def test_dwarf_tools_agree_but_declaration_only_parameter_names_change_crc(self):
+        tools = dwarf_support.build_c(self.work), dwarf_support.build_rust(self.work)
+        original_crc = {b"_bcd2bin": b"0x605be21c", b"_bin2bcd": b"0xf664d2df"}
+        declaration_crc = {b"_bcd2bin": b"0xcf47c3a6", b"_bin2bcd": b"0x198ec728"}
+        for compiler in self.compilers:
+            for version in (4, 5):
+                for optimized in ("-O0", "-O2"):
+                    outcomes = []
+                    for source in (ROOT / "lib/bcd.c", ROOT / "lib/bcd_exports.c"):
+                        obj = self.work / "bcd.o"
+                        subprocess.run([*compiler, *self.flags, "-g", "-gdwarf-" + str(version),
+                                        optimized, "-c", source, "-o", obj], check=True, capture_output=True)
+                        variants = []
+                        for tool in tools:
+                            types = self.work / "output.symtypes"
+                            result = subprocess.run([tool, "--symtypes", types, obj],
+                                                    input=b"_bcd2bin\n_bin2bcd\n",
+                                                    capture_output=True, check=True)
+                            variants.append((result.stdout, result.stderr, types.read_bytes()))
+                        self.assertEqual(variants[0], variants[1])
+                        self.assertEqual(variants[0][1], b"")
+                        outcomes.append(variants[0])
+                    with self.subTest(compiler=compiler, dwarf=version, optimized=optimized):
+                        # Do not pretend these are interchangeable DWARF module
+                        # versions: declarations omit the definition's `val`.
+                        self.assertEqual(outcomes[0][2].replace(b" val )", b" )"), outcomes[1][2])
+                        self.assertIn(b" val )", outcomes[0][2])
+                        self.assertNotEqual(outcomes[0][0], outcomes[1][0])
+                        for outcome, expected in zip(outcomes, (original_crc, declaration_crc)):
+                            self.assertEqual(dict(re.findall(rb"#SYMVER (\w+) (0x[0-9a-f]+)",
+                                                             outcome[0])), expected)
 
 
 class BcdConsumerTests(TemporaryTest):
