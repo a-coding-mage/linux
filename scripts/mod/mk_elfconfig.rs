@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0
 
+//! Detect the target ELF word size from an object supplied on standard input.
+
 use std::io::{self, Read, Write};
 use std::process;
 

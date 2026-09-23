@@ -1,210 +1,400 @@
-// Translated from elf-parse.c.
-// The declarations below are supplied by the corresponding ELF parser header
-// and other translation units.
+// SPDX-License-Identifier: GPL-2.0-only
 
-use std::ffi::CStr;
-use std::os::raw::{c_char, c_int, c_void};
+//! Checked, endian-independent ELF section access for host tools.
 
-extern "C" {
-    static mut elf_parser: elf_funcs;
-
-    fn rle(p: *const c_void) -> u8;
-    fn r2le(p: *const c_void) -> u16;
-    fn r8le(p: *const c_void) -> u64;
-    fn wle(p: *mut c_void, v: u32);
-    fn w8le(p: *mut c_void, v: u64);
-    fn rbe(p: *const c_void) -> u8;
-    fn r2be(p: *const c_void) -> u16;
-    fn r8be(p: *const c_void) -> u64;
-    fn wbe(p: *mut c_void, v: u32);
-    fn w8be(p: *mut c_void, v: u64);
-
-    fn ehdr32_shoff(ehdr: *const c_void) -> u32;
-    fn ehdr32_shentsize(ehdr: *const c_void) -> u16;
-    fn ehdr32_shstrndx(ehdr: *const c_void) -> u16;
-    fn ehdr32_shnum(ehdr: *const c_void) -> u16;
-    fn shdr32_addr(shdr: *const c_void) -> u32;
-    fn shdr32_offset(shdr: *const c_void) -> u32;
-    fn shdr32_link(shdr: *const c_void) -> u32;
-    fn shdr32_size(shdr: *const c_void) -> u32;
-    fn shdr32_name(shdr: *const c_void) -> u32;
-    fn shdr32_type(shdr: *const c_void) -> u32;
-    fn shdr32_entsize(shdr: *const c_void) -> u32;
-    fn sym32_type(sym: *const c_void) -> u8;
-    fn sym32_name(sym: *const c_void) -> u32;
-    fn sym32_value(sym: *const c_void) -> u32;
-    fn sym32_shndx(sym: *const c_void) -> u16;
-    fn rela32_offset(rela: *const c_void) -> u32;
-    fn rela32_info(rela: *const c_void) -> u32;
-    fn rela32_addend(rela: *const c_void) -> i32;
-    fn rela32_write_addend(rela: *mut c_void, value: i32);
-
-    fn ehdr64_shoff(ehdr: *const c_void) -> u64;
-    fn ehdr64_shentsize(ehdr: *const c_void) -> u16;
-    fn ehdr64_shstrndx(ehdr: *const c_void) -> u16;
-    fn ehdr64_shnum(ehdr: *const c_void) -> u16;
-    fn shdr64_addr(shdr: *const c_void) -> u64;
-    fn shdr64_offset(shdr: *const c_void) -> u64;
-    fn shdr64_link(shdr: *const c_void) -> u32;
-    fn shdr64_size(shdr: *const c_void) -> u64;
-    fn shdr64_name(shdr: *const c_void) -> u32;
-    fn shdr64_type(shdr: *const c_void) -> u32;
-    fn shdr64_entsize(shdr: *const c_void) -> u64;
-    fn sym64_type(sym: *const c_void) -> u8;
-    fn sym64_name(sym: *const c_void) -> u32;
-    fn sym64_value(sym: *const c_void) -> u64;
-    fn sym64_shndx(sym: *const c_void) -> u16;
-    fn rela64_offset(rela: *const c_void) -> u64;
-    fn rela64_info(rela: *const c_void) -> u64;
-    fn rela64_addend(rela: *const c_void) -> i64;
-    fn rela64_write_addend(rela: *mut c_void, value: i64);
-
-    fn elf_unmap(addr: *mut c_void, size: usize);
+/// A section header, decoded independently of the host's word size.
+#[derive(Clone, Copy)]
+#[allow(dead_code)] // Different host tools consume different header fields.
+pub(crate) struct Section {
+    name: u32,
+    pub(crate) index: usize,
+    pub(crate) kind: u32,
+    pub(crate) flags: u64,
+    pub(crate) address: u64,
+    pub(crate) offset: u64,
+    pub(crate) size: u64,
+    pub(crate) link: u32,
+    pub(crate) info: u32,
+    pub(crate) alignment: u64,
+    pub(crate) entry_size: u64,
 }
 
-#[repr(C)]
-struct elf_funcs {
-    r: unsafe extern "C" fn(*const c_void) -> u8,
-    r2: unsafe extern "C" fn(*const c_void) -> u16,
-    r8: unsafe extern "C" fn(*const c_void) -> u64,
-    w: unsafe extern "C" fn(*mut c_void, u32),
-    w8: unsafe extern "C" fn(*mut c_void, u64),
-    ehdr_shoff: unsafe extern "C" fn(*const c_void) -> u64,
-    ehdr_shentsize: unsafe extern "C" fn(*const c_void) -> u16,
-    ehdr_shstrndx: unsafe extern "C" fn(*const c_void) -> u16,
-    ehdr_shnum: unsafe extern "C" fn(*const c_void) -> u16,
-    shdr_addr: unsafe extern "C" fn(*const c_void) -> u64,
-    shdr_offset: unsafe extern "C" fn(*const c_void) -> u64,
-    shdr_link: unsafe extern "C" fn(*const c_void) -> u32,
-    shdr_size: unsafe extern "C" fn(*const c_void) -> u64,
-    shdr_name: unsafe extern "C" fn(*const c_void) -> u32,
-    shdr_type: unsafe extern "C" fn(*const c_void) -> u32,
-    shdr_entsize: unsafe extern "C" fn(*const c_void) -> u64,
-    sym_type: unsafe extern "C" fn(*const c_void) -> u8,
-    sym_name: unsafe extern "C" fn(*const c_void) -> u32,
-    sym_value: unsafe extern "C" fn(*const c_void) -> u64,
-    sym_shndx: unsafe extern "C" fn(*const c_void) -> u16,
-    rela_offset: unsafe extern "C" fn(*const c_void) -> u64,
-    rela_info: unsafe extern "C" fn(*const c_void) -> u64,
-    rela_addend: unsafe extern "C" fn(*const c_void) -> i64,
-    rela_write_addend: unsafe extern "C" fn(*mut c_void, i64),
+/// A decoded ELF symbol, with its original section index.
+#[derive(Clone, Copy)]
+#[allow(dead_code)]
+pub(crate) struct Symbol {
+    pub(crate) name: u32,
+    pub(crate) value: u64,
+    pub(crate) size: u64,
+    pub(crate) kind: u8,
+    pub(crate) binding: u8,
+    pub(crate) visibility: u8,
+    pub(crate) section: u16,
 }
 
-#[repr(C)]
-struct Elf32Ehdr {
-    e_ident: [u8; 16],
-    e_type: u16,
-    e_machine: u16,
-    e_version: u32,
-    e_entry: u32,
-    e_phoff: u32,
-    e_shoff: u32,
-    e_flags: u32,
-    e_ehsize: u16,
-    e_phentsize: u16,
-    e_phnum: u16,
-    e_shentsize: u16,
-    e_shnum: u16,
-    e_shstrndx: u16,
+/// A relocation, including its explicit addend when present.
+#[derive(Clone, Copy)]
+#[allow(dead_code)]
+pub(crate) struct Relocation {
+    pub(crate) offset: u64,
+    pub(crate) symbol: u32,
+    pub(crate) kind: u32,
+    pub(crate) addend: Option<i64>,
 }
 
-#[repr(C)]
-struct Elf64Ehdr {
-    e_ident: [u8; 16],
-    e_type: u16,
-    e_machine: u16,
-    e_version: u32,
-    e_entry: u64,
-    e_phoff: u64,
-    e_shoff: u64,
-    e_flags: u32,
-    e_ehsize: u16,
-    e_phentsize: u16,
-    e_phnum: u16,
-    e_shentsize: u16,
-    e_shnum: u16,
-    e_shstrndx: u16,
+/// An ELF image whose section-header table has been checked for bounds.
+pub(crate) struct ElfFile<'a> {
+    data: &'a [u8],
+    little_endian: bool,
+    is_64: bool,
+    section_offset: usize,
+    section_size: usize,
+    section_count: usize,
+    string_index: usize,
 }
 
-#[repr(C)]
-union ElfEhdr {
-    e32: Elf32Ehdr,
-    e64: Elf64Ehdr,
+fn bytes(data: &[u8], offset: usize, length: usize) -> Result<&[u8], String> {
+    let end = offset.checked_add(length).ok_or("ELF offset overflow")?;
+    data.get(offset..end)
+        .ok_or_else(|| "truncated ELF file".into())
 }
 
-const EI_CLASS: usize = 4;
-const EI_DATA: usize = 5;
-const EI_VERSION: usize = 6;
-const ELFDATA2LSB: u8 = 1;
-const ELFDATA2MSB: u8 = 2;
-const ELFCLASS32: u8 = 1;
-const ELFCLASS64: u8 = 2;
-const EV_CURRENT: u8 = 1;
-const SELFMAG: usize = 4;
-const ELFMAG: [u8; 4] = [0x7f, b'E', b'L', b'F'];
+fn integer(data: &[u8], offset: usize, size: usize, little: bool) -> Result<u64, String> {
+    let value = bytes(data, offset, size)?;
+    Ok(if little {
+        value
+            .iter()
+            .rev()
+            .fold(0, |n, byte| (n << 8) | u64::from(*byte))
+    } else {
+        value.iter().fold(0, |n, byte| (n << 8) | u64::from(*byte))
+    })
+}
 
-unsafe fn map_file(fname: *const c_char, size: *mut usize) -> *mut c_void {
-    let fd = libc::open(fname, libc::O_RDWR);
-    if fd < 0 {
-        libc::perror(fname);
-        return std::ptr::null_mut();
+fn host_offset(value: u64) -> Result<usize, String> {
+    value
+        .try_into()
+        .map_err(|_| "ELF offset exceeds host address space".into())
+}
+
+impl<'a> ElfFile<'a> {
+    /// Parse an ELF image, accepting only the specified ELF file types.
+    pub(crate) fn parse(data: &'a [u8], types: u32) -> Result<Self, String> {
+        bytes(data, 0, 16)?;
+        let little_endian = match data[5] {
+            1 => true,
+            2 => false,
+            n => return Err(format!("unrecognized ELF data encoding {n}:")),
+        };
+        if &data[..4] != b"\x7fELF" || data[6] != 1 {
+            return Err("unrecognized ELF file".into());
+        }
+        let read = |offset, size| integer(data, offset, size, little_endian);
+        let kind = read(16, 2)?;
+        if kind >= 32 || types & (1 << kind) == 0 {
+            return Err("Invalid ELF type file".into());
+        }
+        let is_64 = match data[4] {
+            1 => false,
+            2 => true,
+            n => return Err(format!("unrecognized ELF class {n}")),
+        };
+        let (header_size, section_size, table_offset, sizes_offset) = if is_64 {
+            (64, 64, 40, 52)
+        } else {
+            (52, 40, 32, 40)
+        };
+        bytes(data, 0, header_size)?;
+        if read(sizes_offset, 2)? != header_size as u64
+            || read(sizes_offset + 6, 2)? != section_size as u64
+        {
+            return Err("unrecognized ET_EXEC/ET_DYN file:".into());
+        }
+        let section_offset = host_offset(read(table_offset, if is_64 { 8 } else { 4 })?)?;
+        let mut elf = Self {
+            data,
+            little_endian,
+            is_64,
+            section_offset,
+            section_size,
+            section_count: read(sizes_offset + 8, 2)? as usize,
+            string_index: read(sizes_offset + 10, 2)? as usize,
+        };
+        if section_offset == 0 {
+            if elf.section_count != 0 || elf.string_index != 0 {
+                return Err("missing ELF section table:".into());
+            }
+            return Ok(elf);
+        }
+        // Extended section counts and string-table indices live in section 0.
+        let first = elf.read_section(0)?;
+        if elf.section_count == 0 {
+            elf.section_count = host_offset(first.size)?;
+        }
+        if elf.string_index == 0xffff {
+            elf.string_index = first.link as usize;
+        }
+        let table_size = elf
+            .section_count
+            .checked_mul(section_size)
+            .ok_or("ELF section table size overflow:")?;
+        bytes(data, section_offset, table_size)?;
+        if elf.string_index >= elf.section_count {
+            return Err("invalid ELF section name table index:".into());
+        }
+        Ok(elf)
     }
-    let mut sb: libc::stat = std::mem::zeroed();
-    if libc::fstat(fd, &mut sb) < 0 {
-        libc::perror(fname);
-        libc::close(fd);
-        return std::ptr::null_mut();
+
+    fn read_section(&self, index: usize) -> Result<Section, String> {
+        let start = index
+            .checked_mul(self.section_size)
+            .and_then(|offset| self.section_offset.checked_add(offset))
+            .ok_or("ELF section offset overflow:")?;
+        let header = bytes(self.data, start, self.section_size)?;
+        let read = |offset, size| integer(header, offset, size, self.little_endian);
+        let (offset, size, link, width) = if self.is_64 {
+            (24, 32, 40, 8)
+        } else {
+            (16, 20, 24, 4)
+        };
+        Ok(Section {
+            name: read(0, 4)? as u32,
+            index,
+            kind: read(4, 4)? as u32,
+            flags: read(8, width)?,
+            address: read(if self.is_64 { 16 } else { 12 }, width)?,
+            offset: read(offset, width)?,
+            size: read(size, width)?,
+            link: read(link, 4)? as u32,
+            info: read(link + 4, 4)? as u32,
+            alignment: read(if self.is_64 { 48 } else { 32 }, width)?,
+            entry_size: read(if self.is_64 { 56 } else { 36 }, width)?,
+        })
     }
-    if (sb.st_mode & libc::S_IFMT) != libc::S_IFREG {
-        libc::fprintf(libc::stderr, b"not a regular file: %s\0".as_ptr() as *const c_char, fname);
-        libc::close(fd);
-        return std::ptr::null_mut();
+
+    /// Return a section's file contents. NOBITS sections have no stored data.
+    pub(crate) fn section_data(&self, section: &Section) -> Result<&'a [u8], String> {
+        if section.kind == 8 {
+            return Ok(&[]);
+        }
+        bytes(
+            self.data,
+            host_offset(section.offset)?,
+            host_offset(section.size)?,
+        )
     }
-    let addr = libc::mmap(std::ptr::null_mut(), sb.st_size as usize,
-        libc::PROT_READ | libc::PROT_WRITE, libc::MAP_SHARED, fd, 0);
-    libc::close(fd);
-    if addr == libc::MAP_FAILED {
-        libc::fprintf(libc::stderr, b"Could not mmap file: %s\n\0".as_ptr() as *const c_char, fname);
-        return std::ptr::null_mut();
+
+    /// Find a named section, validating string-table references along the way.
+    #[allow(dead_code)] // Some consumers decode the complete section list.
+    pub(crate) fn find_section(&self, name: &[u8]) -> Result<Option<Section>, String> {
+        if self.section_count == 0 || self.string_index == 0 {
+            return Ok(None);
+        }
+        let strings = self.section_data(&self.read_section(self.string_index)?)?;
+        for index in 0..self.section_count {
+            let section = self.read_section(index)?;
+            let tail = strings
+                .get(section.name as usize..)
+                .ok_or("invalid ELF section name offset:")?;
+            let end = tail
+                .iter()
+                .position(|&byte| byte == 0)
+                .ok_or("unterminated ELF section name:")?;
+            if &tail[..end] == name {
+                return Ok(Some(section));
+            }
+        }
+        Ok(None)
     }
-    *size = sb.st_size as usize;
-    addr
 }
 
-unsafe fn elf_parse(fname: *const c_char, addr: *mut c_void, types: u32) -> c_int {
-    let ehdr = addr as *mut ElfEhdr;
-    let data = (*ehdr).e32.e_ident[EI_DATA];
-    match data {
-        ELFDATA2LSB => { elf_parser.r = rle; elf_parser.r2 = r2le; elf_parser.r8 = r8le; elf_parser.w = wle; elf_parser.w8 = w8le; }
-        ELFDATA2MSB => { elf_parser.r = rbe; elf_parser.r2 = r2be; elf_parser.r8 = r8be; elf_parser.w = wbe; elf_parser.w8 = w8be; }
-        _ => { libc::fprintf(libc::stderr, b"unrecognized ELF data encoding %d: %s\n\0".as_ptr() as *const c_char, data as c_int, fname); return -1; }
+// These accessors are shared by table-editing tools; the tracepoint checker
+// intentionally only needs section_data and find_section above.
+#[allow(dead_code)]
+impl<'a> ElfFile<'a> {
+    /// Target architecture identifier from e_machine.
+    pub(crate) fn machine(&self) -> Result<u16, String> {
+        Ok(self.read_integer(18, 2)? as u16)
     }
-    if ELFMAG != (*ehdr).e32.e_ident[..SELFMAG] || (*ehdr).e32.e_ident[EI_VERSION] != EV_CURRENT { return -1; }
-    let typ = (elf_parser.r2)(&(*ehdr).e32.e_type as *const _ as *const c_void);
-    if ((1u32 << typ) & types) == 0 { return -1; }
-    if (*ehdr).e32.e_ident[EI_CLASS] == ELFCLASS32 {
-        if (elf_parser.r2)(&(*ehdr).e32.e_ehsize as *const _ as *const c_void) as usize != std::mem::size_of::<Elf32Ehdr>() || (elf_parser.r2)(&(*ehdr).e32.e_shentsize as *const _ as *const c_void) as usize != 40 { return -1; }
-    } else if (*ehdr).e32.e_ident[EI_CLASS] == ELFCLASS64 {
-        if (elf_parser.r2)(&(*ehdr).e64.e_ehsize as *const _ as *const c_void) as usize != std::mem::size_of::<Elf64Ehdr>() || (elf_parser.r2)(&(*ehdr).e64.e_shentsize as *const _ as *const c_void) as usize != 64 { return -1; }
-    } else { return -1; }
-    0
+
+    /// Width of target addresses in bytes.
+    pub(crate) fn word_size(&self) -> usize {
+        if self.is_64 {
+            8
+        } else {
+            4
+        }
+    }
+
+    /// Whether integers in this image use little-endian encoding.
+    pub(crate) fn little_endian(&self) -> bool {
+        self.little_endian
+    }
+
+    /// Read a target-endian integer at a checked file offset.
+    pub(crate) fn read_integer(&self, offset: u64, width: usize) -> Result<u64, String> {
+        if !matches!(width, 1 | 2 | 4 | 8) {
+            return Err("invalid ELF integer width:".into());
+        }
+        integer(self.data, host_offset(offset)?, width, self.little_endian)
+    }
+
+    /// Return a checked section header by index.
+    pub(crate) fn section(&self, index: usize) -> Result<Section, String> {
+        if index >= self.section_count {
+            return Err("invalid ELF section index:".into());
+        }
+        self.read_section(index)
+    }
+
+    /// Decode all section headers, including the null section.
+    pub(crate) fn sections(&self) -> Result<Vec<Section>, String> {
+        (0..self.section_count)
+            .map(|index| self.section(index))
+            .collect()
+    }
+
+    /// Decode a symbol table, validating its entry size and file extent.
+    pub(crate) fn symbols(&self, table: &Section) -> Result<Vec<Symbol>, String> {
+        let width = if self.is_64 { 24 } else { 16 };
+        if table.entry_size < width || table.size % table.entry_size != 0 {
+            return Err("invalid ELF symbol table entry size:".into());
+        }
+        let data = self.section_data(table)?;
+        let stride = host_offset(table.entry_size)?;
+        data.chunks_exact(stride)
+            .map(|entry| {
+                let read = |offset, width| integer(entry, offset, width, self.little_endian);
+                Ok(Symbol {
+                    name: read(0, 4)? as u32,
+                    value: read(if self.is_64 { 8 } else { 4 }, self.word_size())?,
+                    size: read(if self.is_64 { 16 } else { 8 }, self.word_size())?,
+                    kind: entry[if self.is_64 { 4 } else { 12 }] & 0x0f,
+                    binding: entry[if self.is_64 { 4 } else { 12 }] >> 4,
+                    visibility: entry[if self.is_64 { 5 } else { 13 }] & 3,
+                    section: read(if self.is_64 { 6 } else { 14 }, 2)? as u16,
+                })
+            })
+            .collect()
+    }
+
+    /// Return a NUL-terminated string inside a checked string table.
+    pub(crate) fn string(&self, table: &Section, offset: u32) -> Result<&'a [u8], String> {
+        let tail = self
+            .section_data(table)?
+            .get(offset as usize..)
+            .ok_or("invalid ELF string offset:")?;
+        let end = tail
+            .iter()
+            .position(|&byte| byte == 0)
+            .ok_or("unterminated ELF string:")?;
+        Ok(&tail[..end])
+    }
+
+    /// Return a checked name from the section-name string table.
+    pub(crate) fn section_name(&self, section: &Section) -> Result<&'a [u8], String> {
+        self.string(&self.section(self.string_index)?, section.name)
+    }
+
+    /// Resolve SHN_XINDEX while retaining reserved indices outside the ordinary
+    /// section-number space, as required by modpost's symbol search.
+    pub(crate) fn symbol_section_index(
+        &self,
+        table: &Section,
+        index: usize,
+        symbol: &Symbol,
+    ) -> Result<u32, String> {
+        if symbol.section == 0xffff {
+            let extended = self
+                .sections()?
+                .into_iter()
+                .find(|section| section.kind == 18 && section.link as usize == table.index)
+                .ok_or("missing ELF extended symbol indices:")?;
+            return Ok(integer(
+                self.section_data(&extended)?,
+                index.checked_mul(4).ok_or("ELF symbol index overflow:")?,
+                4,
+                self.little_endian,
+            )? as u32);
+        }
+        Ok(if symbol.section >= 0xff00 {
+            u32::from(symbol.section).wrapping_sub(0x10000)
+        } else {
+            u32::from(symbol.section)
+        })
+    }
+
+    /// Decode REL or RELA entries, including the MIPS64 mixed-width r_info.
+    pub(crate) fn relocations(&self, section: &Section) -> Result<Vec<Relocation>, String> {
+        let explicit = match section.kind {
+            4 => true,
+            9 => false,
+            _ => return Err("invalid ELF relocation section type:".into()),
+        };
+        let word = self.word_size();
+        let minimum = word * if explicit { 3 } else { 2 };
+        let stride = host_offset(section.entry_size)?;
+        if stride < minimum || section.size % section.entry_size != 0 {
+            return Err("invalid ELF relocation entry size:".into());
+        }
+        let mips64 = self.is_64 && self.machine()? == 8;
+        self.section_data(section)?
+            .chunks_exact(stride)
+            .map(|entry| {
+                let read = |offset, width| integer(entry, offset, width, self.little_endian);
+                let info = read(word, word)?;
+                let (symbol, kind) = if mips64 {
+                    (read(word, 4)? as u32, u32::from(entry[word + 7]))
+                } else if self.is_64 {
+                    ((info >> 32) as u32, info as u32)
+                } else {
+                    ((info >> 8) as u32, (info & 0xff) as u32)
+                };
+                Ok(Relocation {
+                    offset: read(0, word)?,
+                    symbol,
+                    kind,
+                    addend: if explicit {
+                        let value = read(word * 2, word)?;
+                        Some(if self.is_64 {
+                            value as i64
+                        } else {
+                            i64::from(value as i32)
+                        })
+                    } else {
+                        None
+                    },
+                })
+            })
+            .collect()
+    }
+
+    /// Resolve ordinary or SHN_XINDEX symbol indices, rejecting reserved values.
+    pub(crate) fn symbol_section(
+        &self,
+        table: &Section,
+        index: usize,
+        symbol: &Symbol,
+    ) -> Result<Section, String> {
+        let section = if symbol.section == 0xffff {
+            let extended = self
+                .sections()?
+                .into_iter()
+                .find(|section| section.kind == 18 && section.link as usize == table.index)
+                .ok_or("missing ELF extended symbol indices:")?;
+            let data = self.section_data(&extended)?;
+            integer(
+                data,
+                index.checked_mul(4).ok_or("ELF symbol index overflow:")?,
+                4,
+                self.little_endian,
+            )? as usize
+        } else {
+            if symbol.section >= 0xff00 || symbol.section == 0 {
+                return Err("invalid ELF symbol section index:".into());
+            }
+            symbol.section as usize
+        };
+        self.section(section)
+    }
 }
-
-#[no_mangle]
-pub unsafe extern "C" fn elf_map_machine(addr: *mut c_void) -> c_int { (elf_parser.r2)(&(*(addr as *mut ElfEhdr)).e32.e_machine as *const _ as *const c_void) as c_int }
-
-#[no_mangle]
-pub unsafe extern "C" fn elf_map_long_size(addr: *mut c_void) -> c_int { if (*(addr as *mut ElfEhdr)).e32.e_ident[EI_CLASS] == ELFCLASS32 { 4 } else { 8 } }
-
-#[no_mangle]
-pub unsafe extern "C" fn elf_map(fname: *const c_char, size: *mut usize, types: u32) -> *mut c_void {
-    let addr = map_file(fname, size);
-    if addr.is_null() { return std::ptr::null_mut(); }
-    if elf_parse(fname, addr, types) < 0 { elf_unmap(addr, *size); return std::ptr::null_mut(); }
-    addr
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn elf_unmap(addr: *mut c_void, size: usize) { libc::munmap(addr, size); }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

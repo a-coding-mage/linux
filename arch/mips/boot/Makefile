@@ -22,6 +22,7 @@ drop-sections := .reginfo .mdebug .comment .note .pdr .options .MIPS.options
 strip-flags   := $(addprefix --remove-section=,$(drop-sections))
 
 hostprogs := elf2ecoff
+elf2ecoff-rust := y
 
 suffix-y			:= bin
 suffix-$(CONFIG_KERNEL_BZIP2)	:= bz2

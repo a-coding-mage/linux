@@ -36,10 +36,9 @@ setup-y		+= video-bios.o
 
 targets		+= $(setup-y)
 hostprogs	+= mkcpustr
-
-HOST_EXTRACFLAGS += -I$(srctree)/tools/include \
-		    -include include/generated/autoconf.h \
-	            -D__EXPORTED_HEADERS__
+mkcpustr-rust	:= y
+HOSTRUSTFLAGS_mkcpustr += --check-cfg='cfg(CONFIG_X86_32)' \
+			$(if $(CONFIG_X86_32),--cfg CONFIG_X86_32)
 
 $(obj)/cpu.o: $(obj)/cpustr.h
 

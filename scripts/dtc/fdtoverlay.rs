@@ -1,153 +1,183 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2017 Konsulko Group Inc. All rights reserved.
- *
- * Author:
- *	 Pantelis Antoniou <pantelis.antoniou@konsulko.com>
- */
-
-use core::ffi::{c_char, c_int, c_void};
-
-// C headers and project headers provide these declarations and common option macros.
-// #define BUF_INCREMENT 65536
-const BUF_INCREMENT: usize = 65536;
-
-#[repr(C)]
-pub struct Option {
-    pub name: *const c_char,
-    pub has_arg: c_int,
-    pub flag: *mut c_int,
-    pub val: c_int,
+//! Apply one or more device-tree overlays with automatic buffer growth.
+// Copyright (c) 2017 Konsulko Group Inc. All rights reserved.
+// Author: Pantelis Antoniou <pantelis.antoniou@konsulko.com>
+mod libfdt;
+mod version_gen_header;
+use libfdt::tools::{self, Arg, Output};
+use std::ffi::{OsStr, OsString};
+use std::os::unix::ffi::OsStrExt;
+fn usage(out: &mut Output, message: Option<&str>) -> i32 {
+    let text=b"Usage: apply a number of overlays to a base blob\n\tfdtoverlay <options> [<overlay.dtbo> [<overlay.dtbo>]]\n\nOptions: -[i:o:vhV]\n  -i, --input <arg>  Input base DT blob\n  -o, --output <arg> Output DT blob\n  -v, --verbose      Verbose messages\n  -h, --help         Print this help and exit\n  -V, --version      Print version and exit\n";
+    if let Some(message) = message {
+        out.err.extend_from_slice(text);
+        out.err
+            .extend_from_slice(format!("\nError: {message}\n").as_bytes());
+        1
+    } else {
+        out.out.extend_from_slice(text);
+        0
+    }
 }
-
-unsafe extern "C" {
-    fn fdt_totalsize(fdt: *const c_void) -> u32;
-    fn fdt_open_into(fdt: *const c_void, buf: *mut c_void, bufsize: c_int) -> c_int;
-    fn fdt_path_offset(fdt: *const c_void, path: *const c_char) -> c_int;
-    fn fdt_overlay_apply(fdt: *mut c_void, fdto: *mut c_void) -> c_int;
-    fn fdt_strerror(errval: c_int) -> *const c_char;
-    fn fdt_pack(fdt: *mut c_void) -> c_int;
-
-    fn xmalloc(size: usize) -> *mut c_void;
-    fn xrealloc(ptr: *mut c_void, size: usize) -> *mut c_void;
-    fn utilfdt_read(filename: *const c_char, len: *mut usize) -> *mut c_char;
-    fn utilfdt_write(filename: *const c_char, blob: *const c_char) -> c_int;
-    fn util_getopt_long() -> c_int;
-    fn usage(message: *const c_char) -> !;
-
-    static mut optarg: *mut c_char;
-    static mut optind: c_int;
+fn failed(out: &mut Output, action: &[u8], path: &OsStr) {
+    out.err.extend_from_slice(b"\nFailed to ");
+    out.err.extend_from_slice(action);
+    out.err.extend_from_slice(b" '");
+    out.err.extend_from_slice(path.as_bytes());
+    out.err.extend_from_slice(b"'\n");
 }
-
-// FDT and getopt constants supplied by libfdt and util.h.
-const FDT_ERR_NOSPACE: c_int = 3;
-const EOF_VALUE: c_int = -1;
-const REQUIRED_ARGUMENT: c_int = 1;
-const NO_ARGUMENT: c_int = 0;
-
-/* Usage related data. */
-static USAGE_SYNOPSIS: &[u8] = b"apply a number of overlays to a base blob\n\tfdtoverlay <options> [<overlay.dtbo> [<overlay.dtbo>]]\0";
-static USAGE_SHORT_OPTS: &[u8] = b"i:o:v\0"; // USAGE_COMMON_SHORT_OPTS is supplied by util.h.
-static USAGE_LONG_OPTS: [Option; 4] = [
-    Option { name: b"input\0".as_ptr() as *const c_char, has_arg: REQUIRED_ARGUMENT, flag: core::ptr::null_mut(), val: b'i' as c_int },
-    Option { name: b"output\0".as_ptr() as *const c_char, has_arg: REQUIRED_ARGUMENT, flag: core::ptr::null_mut(), val: b'o' as c_int },
-    Option { name: b"verbose\0".as_ptr() as *const c_char, has_arg: NO_ARGUMENT, flag: core::ptr::null_mut(), val: b'v' as c_int },
-    Option { name: core::ptr::null(), has_arg: 0, flag: core::ptr::null_mut(), val: 0 }, // USAGE_COMMON_LONG_OPTS
-];
-static USAGE_OPTS_HELP: [&[u8]; 3] = [
-    b"Input base DT blob\0",
-    b"Output DT blob\0",
-    b"Verbose messages\0",
-]; // USAGE_COMMON_OPTS_HELP
-
-#[no_mangle]
-pub static mut verbose: c_int = 0;
-
-unsafe fn apply_one(base: *mut c_char, overlay: *const c_char, buf_len: *mut usize, name: *const c_char) -> *mut c_char {
-    let mut tmp: *mut c_char = core::ptr::null_mut();
-    let tmpo = xmalloc(fdt_totalsize(overlay as *const c_void) as usize) as *mut c_char;
-    let mut ret: c_int;
-    let mut has_symbols: bool;
-
+fn read(out: &mut Output, path: &OsStr, base: bool) -> Option<Vec<u8>> {
+    let Some(blob) = out.read(path) else {
+        failed(out, b"read", path);
+        return None;
+    };
+    // C utilfdt_read accidentally reports allocation size, not bytes read.
+    // Use the actual input length so truncated files cannot expose heap bytes.
+    let total = blob
+        .get(4..8)
+        .map(|v| u32::from_be_bytes(v.try_into().unwrap()) as usize);
+    if total.is_none_or(|size| size > blob.len()) {
+        if base {
+            out.err.extend_from_slice(b"\nBase blob is incomplete (");
+        } else {
+            out.err.extend_from_slice(b"\nOverlay '");
+            out.err.extend_from_slice(path.as_bytes());
+            out.err.extend_from_slice(b"' is incomplete (");
+        }
+        out.err.extend_from_slice(
+            format!("{} / {} bytes read)\n", blob.len(), total.unwrap_or(8)).as_bytes(),
+        );
+        return None;
+    }
+    Some(blob)
+}
+fn apply(
+    out: &mut Output,
+    base: &[u8],
+    overlay: &[u8],
+    capacity: &mut usize,
+    name: &OsStr,
+) -> Option<Vec<u8>> {
+    let total = u32::from_be_bytes(overlay.get(4..8)?.try_into().ok()?) as usize;
+    let mut temp = Vec::new();
     loop {
-        tmp = xrealloc(tmp as *mut c_void, *buf_len) as *mut c_char;
-        ret = fdt_open_into(base as *const c_void, tmp as *mut c_void, *buf_len as c_int);
-        if ret != 0 {
-            eprintln!("\nFailed to make temporary copy: {}", c_string(fdt_strerror(ret)));
-            libc_free(tmpo as *mut c_void);
-            libc_free(tmp as *mut c_void);
-            return core::ptr::null_mut();
+        if *capacity > i32::MAX as usize
+            || temp
+                .try_reserve(capacity.saturating_sub(temp.len()))
+                .is_err()
+        {
+            out.err.extend_from_slice(b"FATAL ERROR: Out of memory\n");
+            return None;
         }
-        ret = fdt_path_offset(tmp as *const c_void, b"/__symbols__\0".as_ptr() as *const c_char);
-        has_symbols = ret >= 0;
-        core::ptr::copy_nonoverlapping(overlay as *const u8, tmpo as *mut u8, fdt_totalsize(overlay as *const c_void) as usize);
-        ret = fdt_overlay_apply(tmp as *mut c_void, tmpo as *mut c_void);
-        if ret == -FDT_ERR_NOSPACE {
-            *buf_len += BUF_INCREMENT;
+        temp.resize(*capacity, 0);
+        if let Err(err) = libfdt::open_into(base, &mut temp) {
+            out.err
+                .extend_from_slice(format!("\nFailed to make temporary copy: {err}\n").as_bytes());
+            return None;
         }
-        if ret != -FDT_ERR_NOSPACE { break; }
+        let has_symbols = libfdt::path_offset(&temp, b"/__symbols__").is_ok();
+        let mut overlay = overlay[..total].to_vec();
+        match libfdt::overlay_apply(&mut temp, &mut overlay) {
+            Ok(()) => return Some(temp),
+            Err(libfdt::Error::NoSpace) => {
+                *capacity = capacity.checked_add(65536)?;
+            }
+            Err(err) => {
+                out.err.extend_from_slice(b"\nFailed to apply '");
+                out.err.extend_from_slice(name.as_bytes());
+                out.err.extend_from_slice(format!("': {err}\n").as_bytes());
+                if !has_symbols {
+                    out.err.extend_from_slice(b"base blob does not have a '/__symbols__' node, make sure you have compiled the base blob with '-@' option\n");
+                }
+                return None;
+            }
+        }
     }
-    if ret != 0 {
-        eprintln!("\nFailed to apply '{}': {}", c_string(name), c_string(fdt_strerror(ret)));
-        if !has_symbols { eprintln!("base blob does not have a '/__symbols__' node, make sure you have compiled the base blob with '-@' option"); }
-        libc_free(tmpo as *mut c_void);
-        libc_free(tmp as *mut c_void);
-        return core::ptr::null_mut();
-    }
-    libc_free(base as *mut c_void);
-    libc_free(tmpo as *mut c_void);
-    tmp
 }
-
-unsafe fn do_fdtoverlay(input_filename: *const c_char, output_filename: *const c_char, argc: c_int, argv: *mut *mut c_char) -> c_int {
-    let mut buf_len = 0usize;
-    let mut blob = utilfdt_read(input_filename, &mut buf_len);
-    if blob.is_null() { eprintln!("\nFailed to read '{}'", c_string(input_filename)); return -1; }
-    if fdt_totalsize(blob as *const c_void) as usize > buf_len { eprintln!("\nBase blob is incomplete ({} bytes read)", buf_len); libc_free(blob as *mut c_void); return -1; }
-    let ovblob = xmalloc(core::mem::size_of::<*mut c_char>() * argc as usize) as *mut *mut c_char;
-    core::ptr::write_bytes(ovblob, 0, argc as usize);
-    for i in 0..argc as isize {
-        let mut ov_len = 0usize;
-        *ovblob.offset(i) = utilfdt_read(*argv.offset(i), &mut ov_len);
-        if (*ovblob.offset(i)).is_null() || fdt_totalsize(*ovblob.offset(i) as *const c_void) as usize > ov_len { eprintln!("\nFailed to read overlay"); return -1; }
-    }
-    buf_len = fdt_totalsize(blob as *const c_void) as usize;
-    for i in 0..argc as isize { blob = apply_one(blob, *ovblob.offset(i), &mut buf_len, *argv.offset(i)); if blob.is_null() { return -1; } }
-    fdt_pack(blob as *mut c_void);
-    let ret = utilfdt_write(output_filename, blob);
-    for i in 0..argc as isize { libc_free(*ovblob.offset(i) as *mut c_void); }
-    libc_free(ovblob as *mut c_void); libc_free(blob as *mut c_void); ret
-}
-
-unsafe fn c_string(p: *const c_char) -> String { if p.is_null() { String::new() } else { core::ffi::CStr::from_ptr(p).to_string_lossy().into_owned() } }
-unsafe fn libc_free(p: *mut c_void) { extern "C" { fn free(ptr: *mut c_void); } free(p); }
-
-#[no_mangle]
-pub unsafe extern "C" fn main(mut argc: c_int, mut argv: *mut *mut c_char) -> c_int {
-    let mut input_filename: *mut c_char = core::ptr::null_mut();
-    let mut output_filename: *mut c_char = core::ptr::null_mut();
-    loop {
-        let opt = util_getopt_long();
-        if opt == EOF_VALUE { break; }
-        match opt {
-            b'i' as c_int => input_filename = optarg,
-            b'o' as c_int => output_filename = optarg,
-            b'v' as c_int => verbose = 1,
-            _ => {}, // case_USAGE_COMMON_FLAGS
+fn run(out: &mut Output) -> i32 {
+    let argv: Vec<OsString> = std::env::args_os().collect();
+    let (mut input, mut output) = (None, None);
+    let mut verbose = false;
+    let mut overlays = Vec::new();
+    let longs: [(&[u8], u8, bool); 5] = [
+        (b"input", b'i', true),
+        (b"output", b'o', true),
+        (b"verbose", b'v', false),
+        (b"help", b'h', false),
+        (b"version", b'V', false),
+    ];
+    for arg in tools::arguments(&argv, b"i:o:vhV", &longs) {
+        match arg {
+            Arg::Operand(value) => overlays.push(value),
+            Arg::Error(message) => {
+                out.err.extend_from_slice(&message);
+                return usage(out, Some("unknown option"));
+            }
+            Arg::Option(b'h', _) => return usage(out, None),
+            Arg::Option(b'V', _) => {
+                let version = version_gen_header::DTC_VERSION;
+                out.out
+                    .extend_from_slice(format!("Version: {version}\n").as_bytes());
+                return 0;
+            }
+            Arg::Option(b'i', value) => input = value,
+            Arg::Option(b'o', value) => output = value,
+            Arg::Option(b'v', _) => verbose = true,
+            _ => {}
         }
     }
-    if input_filename.is_null() { usage(b"missing input file\0".as_ptr() as *const c_char); }
-    if output_filename.is_null() { usage(b"missing output file\0".as_ptr() as *const c_char); }
-    argv = argv.offset(optind as isize);
-    argc -= optind;
-    if argc <= 0 { usage(b"missing overlay file(s)\0".as_ptr() as *const c_char); }
-    if verbose != 0 {
-        println!("input  = {}", c_string(input_filename));
-        println!("output = {}", c_string(output_filename));
-        for i in 0..argc { println!("overlay[{}] = {}", i, c_string(*argv.offset(i as isize))); }
+    let Some(input) = input else {
+        return usage(out, Some("missing input file"));
+    };
+    let Some(output) = output else {
+        return usage(out, Some("missing output file"));
+    };
+    if overlays.is_empty() {
+        return usage(out, Some("missing overlay file(s)"));
     }
-    if do_fdtoverlay(input_filename, output_filename, argc, argv) != 0 { return 1; }
+    if verbose {
+        out.out.extend_from_slice(b"input  = ");
+        out.out.extend_from_slice(input.as_bytes());
+        out.out.extend_from_slice(b"\noutput = ");
+        out.out.extend_from_slice(output.as_bytes());
+        out.out.push(b'\n');
+        for (i, path) in overlays.iter().enumerate() {
+            out.out
+                .extend_from_slice(format!("overlay[{i}] = ").as_bytes());
+            out.out.extend_from_slice(path.as_bytes());
+            out.out.push(b'\n');
+        }
+    }
+    let Some(mut base) = read(out, &input, true) else {
+        return 1;
+    };
+    let mut blobs = Vec::new();
+    for path in &overlays {
+        let Some(blob) = read(out, path, false) else {
+            return 1;
+        };
+        blobs.push(blob);
+    }
+    let mut capacity = u32::from_be_bytes(base[4..8].try_into().unwrap()) as usize;
+    for (path, blob) in overlays.iter().zip(blobs) {
+        let Some(result) = apply(out, &base, &blob, &mut capacity, path) else {
+            return 1;
+        };
+        base = result;
+    }
+    if let Err(err) = libfdt::pack(&mut base) {
+        out.err
+            .extend_from_slice(format!("\nFailed to pack output: {err}\n").as_bytes());
+        return 1;
+    }
+    if !out.write(&output, &base) {
+        failed(out, b"write", &output);
+        return 1;
+    }
     0
 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+fn main() {
+    let mut out = Output::default();
+    let status = run(&mut out);
+    out.finish(status);
+}

@@ -1,57 +1,748 @@
 // SPDX-License-Identifier: GPL-2.0
-/* Faithful Rust translation of conf.c. External kconfig declarations are supplied by other units. */
+//! Line-oriented Kconfig front end, implemented with owned Rust state.
+// Original Kconfig implementation: Copyright (C) 2002 Roman Zippel.
 
-use std::ffi::{CStr, CString};
-use std::io::{self, Read, Write};
-use std::os::raw::{c_char, c_int};
-use std::ptr;
+mod confdata;
+mod expr;
+mod menu;
+mod model;
+mod parser;
+mod preprocess;
+mod symbol;
 
-extern "C" {
-    static mut rootmenu: menu;
-    fn str_new() -> gstr; fn menu_get_ext_help(m:*mut menu,g:*mut gstr);
-    fn str_get(g:*mut gstr)->*const c_char; fn str_free(g:*mut gstr);
-    fn menu_is_visible(m:*mut menu)->bool; fn menu_get_prompt(m:*mut menu)->*const c_char;
-    fn sym_has_value(s:*mut symbol)->bool; fn sym_is_changeable(s:*mut symbol)->bool;
-    fn sym_get_string_value(s:*mut symbol)->*const c_char; fn sym_set_string_value(s:*mut symbol,v:*const c_char)->bool;
-    fn sym_get_tristate_value(s:*mut symbol)->tristate; fn sym_set_tristate_value(s:*mut symbol,v:tristate)->bool;
-    fn sym_tristate_within_range(s:*mut symbol,v:tristate)->bool; fn sym_calc_choice(m:*mut menu)->*mut symbol;
-    fn choice_set_value(m:*mut menu,s:*mut symbol); fn sym_is_choice(s:*mut symbol)->bool;
-    fn sym_is_choice_value(s:*mut symbol)->bool; fn sym_clear_all_valid(); fn sym_get_type(s:*mut symbol)->c_int;
-    fn print_symbol_for_listconfig(s:*mut symbol); fn menu_get_menu_or_parent_menu(m:*mut menu)->*mut menu;
-    fn conf_parse(s:*const c_char); fn conf_read(s:*const c_char)->c_int; fn conf_read_simple(s:*const c_char,d:c_int)->c_int;
-    fn conf_errors()->c_int; fn conf_get_changed()->c_int; fn conf_set_message_callback(p:Option<unsafe extern "C" fn()>);
-    fn sym_dep_errors()->c_int; fn conf_write_defconfig(s:*const c_char)->c_int; fn conf_write(s:*const c_char)->c_int;
-    fn conf_write_autoconf(sync:c_int)->c_int;
+use std::env;
+use std::io::{self, IsTerminal, Write};
+use std::path::{Path, PathBuf};
+use std::process::ExitCode;
+use std::time::{SystemTime, UNIX_EPOCH};
+
+use expr::Tristate;
+use model::{Kconfig, MenuId, MenuType, SymbolId, SymbolType, Value};
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum Mode {
+    OldAsk,
+    Sync,
+    Old,
+    AllNo,
+    AllYes,
+    AllMod,
+    AllDef,
+    Random,
+    Default,
+    SaveDefault,
+    ListNew,
+    HelpNew,
+    OldDefault,
+    YesToMod,
+    ModToYes,
+    ModToNo,
 }
 
-#[repr(C)] pub struct gstr { _p:[u8;0] }
-#[repr(C)] pub struct menu { pub sym:*mut symbol, pub prompt:*mut property, pub list:*mut menu, pub next:*mut menu, pub choice_members:list_head }
-#[repr(C)] pub struct property { pub typ:c_int, pub text:*const c_char }
-#[repr(C)] pub struct list_head { pub next:*mut list_head, pub prev:*mut list_head }
-#[repr(C)] pub struct symbol { pub name:*const c_char, pub typ:c_int, pub def:[symbol_value;8], pub flags:c_int, pub choice_link:list_head }
-#[repr(C)] pub struct symbol_value { pub tri:tristate }
-#[repr(C)] #[derive(Clone,Copy,PartialEq)] pub enum tristate { no=0, mod_=1, yes=2 }
-const S_DEF_USER:c_int=0; const SYMBOL_DEF_USER:c_int=1; const S_BOOLEAN:c_int=1; const S_TRISTATE:c_int=2; const S_INT:c_int=3; const S_HEX:c_int=4; const S_STRING:c_int=5; const P_MENU:c_int=1; const P_COMMENT:c_int=2;
+impl Mode {
+    fn parse(name: &str) -> Option<Self> {
+        Some(match name {
+            "oldaskconfig" => Self::OldAsk,
+            "syncconfig" => Self::Sync,
+            "oldconfig" => Self::Old,
+            "allnoconfig" => Self::AllNo,
+            "allyesconfig" => Self::AllYes,
+            "allmodconfig" => Self::AllMod,
+            "alldefconfig" => Self::AllDef,
+            "randconfig" => Self::Random,
+            "defconfig" => Self::Default,
+            "savedefconfig" => Self::SaveDefault,
+            "listnewconfig" => Self::ListNew,
+            "helpnewconfig" => Self::HelpNew,
+            "olddefconfig" => Self::OldDefault,
+            "yes2modconfig" => Self::YesToMod,
+            "mod2yesconfig" => Self::ModToYes,
+            "mod2noconfig" => Self::ModToNo,
+            _ => return None,
+        })
+    }
+}
 
-#[derive(Clone,Copy,PartialEq)] enum input_mode { oldaskconfig,syncconfig,oldconfig,allnoconfig,allyesconfig,allmodconfig,alldefconfig,randconfig,defconfig,savedefconfig,listnewconfig,helpnewconfig,olddefconfig,yes2modconfig,mod2yesconfig,mod2noconfig }
-#[derive(Clone,Copy,PartialEq)] enum conf_def_mode { def_default,def_yes,def_mod,def_no,def_random }
-static mut input_mode_:input_mode=input_mode::oldaskconfig; static mut input_mode_opt:c_int=0; static mut indent:c_int=1; static mut tty_stdio:bool=false; static mut sync_kconfig:c_int=0; static mut conf_cnt:c_int=0; static mut line:[u8;4096]=[0;4096]; static mut rootEntry:*mut menu=ptr::null_mut();
+fn usage(program: &str) {
+    println!("Usage: {program} [options] kconfig_file\n\nGeneric options:\n  -h, --help              Print this message and exit.\n  -s, --silent            Do not print log.\n\nMode options:\n  --listnewconfig         List new options\n  --helpnewconfig         List new options and help text\n  --oldaskconfig          Start a new configuration using a line-oriented program\n  --oldconfig             Update a configuration using a provided .config as base\n  --syncconfig            Similar to oldconfig but generates configuration in\n                          include/{{generated/,config/}}\n  --olddefconfig          Same as oldconfig but sets new symbols to their default value\n  --defconfig <file>      New config with default defined in <file>\n  --savedefconfig <file>  Save the minimal current configuration to <file>\n  --allnoconfig           New config where all options are answered with no\n  --allyesconfig          New config where all options are answered with yes\n  --allmodconfig          New config where all options are answered with mod\n  --alldefconfig          New config with all symbols set to default\n  --randconfig            New config with random answer to all options\n  --yes2modconfig         Change answers from yes to mod if possible\n  --mod2yesconfig         Change answers from mod to yes if possible\n  --mod2noconfig          Change answers from mod to no if possible\n  (If none of the above is given, --oldaskconfig is the default)\n\nArguments:\n  kconfig_file            Top-level Kconfig file.");
+}
 
-unsafe fn cstr(p:*const c_char)->String { if p.is_null(){String::new()}else{CStr::from_ptr(p).to_string_lossy().into_owned()} }
-unsafe fn print_help(m:*mut menu){let mut h=str_new();menu_get_ext_help(m,&mut h);println!("\n{}",cstr(str_get(&mut h)));str_free(&mut h);}
-unsafe fn strip(){let s=String::from_utf8_lossy(&line).trim().as_bytes().to_vec();line=[0;4096];line[..s.len().min(4095)].copy_from_slice(&s[..s.len().min(4095)]);}
-unsafe fn xfgets(){let mut s=String::new();io::stdin().read_line(&mut s).ok();let b=s.as_bytes();line=[0;4096];line[..b.len().min(4095)].copy_from_slice(&b[..b.len().min(4095)]);if !tty_stdio{print!("{}",s);}}
-unsafe fn conf_askvalue(s:*mut symbol,def:*const c_char)->c_int{if !sym_has_value(s){print!("(NEW) ");}if !sym_is_changeable(s){println!("{}",cstr(def));return 0;}xfgets();1}
+// The additive-feedback generator used by the Linux host's srand()/rand().
+// Keeping its sequence makes a recorded KCONFIG_SEED reproducible after migration.
+struct Random {
+    state: [u32; 31],
+    front: usize,
+    rear: usize,
+}
 
-unsafe fn conf_string(m:*mut menu)->c_int{let s=(*m).sym;loop{print!("{}{} "," ".repeat((indent-1) as usize),cstr(menu_get_prompt(m)));print!("({}) ",cstr((*s).name));let d=sym_get_string_value(s);if !d.is_null(){print!("[{}] ",cstr(d));}if conf_askvalue(s,d)==0{return 0;}strip();let t=CString::new(cstr(line.as_ptr() as *const c_char)).unwrap();if sym_set_string_value(s,t.as_ptr()){return 0;}}}
-unsafe fn conf_sym(m:*mut menu)->c_int{let s=(*m).sym;loop{print!("{}{} "," ".repeat((indent-1) as usize),cstr(menu_get_prompt(m)));let old=sym_get_tristate_value(s);print!("[{}] ",match old{tristate::no=>"N",tristate::mod_=>"M",tristate::yes=>"Y"});if conf_askvalue(s,sym_get_string_value(s))==0{return 0;}strip();let c=line[0] as char;let n=match c{'n'|'N'=>tristate::no,'m'|'M'=>tristate::mod_,'y'|'Y'=>tristate::yes,_=>{if c=='?'{print_help(m);}continue}};if sym_set_tristate_value(s,n){return 0;}}}
+impl Random {
+    fn new(seed: u32) -> Self {
+        let mut state = [0; 31];
+        state[0] = if seed == 0 { 1 } else { seed };
+        let mut word = state[0] as i32 as i64;
+        for value in state.iter_mut().skip(1) {
+            word = 16_807 * (word % 127_773) - 2_836 * (word / 127_773);
+            if word < 0 {
+                word += 2_147_483_647;
+            }
+            *value = word as u32;
+        }
+        let mut random = Self {
+            state,
+            front: 3,
+            rear: 0,
+        };
+        for _ in 0..310 {
+            random.next();
+        }
+        random
+    }
 
-unsafe fn conf_choice(m:*mut menu){let mut child;loop{println!("{}{}"," ".repeat((indent-1) as usize),cstr(menu_get_prompt(m)));let def=sym_calc_choice(m);let mut n=0;child=(*m).list;while !child.is_null(){if menu_is_visible(child)&&!(*child).sym.is_null(){n+=1;println!("{} {}. {} ({})"," ".repeat(indent as usize),n,cstr(menu_get_prompt(child)),cstr((*(*child).sym).name));}child=(*child).next;}if n==1{line[0]=b'1';}else{print!("{}choice[1-{}?]: "," ".repeat((indent-1) as usize),n);xfgets();strip();}let k=if line[0]==0{1}else{atoi_line()};child=(*m).list;let mut i=0;while !child.is_null(){if menu_is_visible(child)&&!(*child).sym.is_null(){i+=1;if i==k{choice_set_value(m,(*child).sym);return;}}child=(*child).next;}let _=def;}}
-unsafe fn atoi_line()->c_int{cstr(line.as_ptr() as *const c_char).parse().unwrap_or(0)}
+    fn next(&mut self) -> u32 {
+        let value = self.state[self.front].wrapping_add(self.state[self.rear]);
+        self.state[self.front] = value;
+        self.front = (self.front + 1) % 31;
+        self.rear = (self.rear + 1) % 31;
+        value >> 1
+    }
 
-unsafe fn conf(m:*mut menu){if !menu_is_visible(m){return;}let s=(*m).sym;if !s.is_null(){if sym_is_choice(s){conf_choice(m);return;}match (*s).typ{S_INT|S_HEX|S_STRING=>{conf_string(m);},_=>{conf_sym(m);}}}let mut c=(*m).list;while !c.is_null(){conf(c);c=(*c).next;}}
-unsafe fn check_conf(m:*mut menu){if !menu_is_visible(m){return;}let s=(*m).sym;if !s.is_null()&&!sym_has_value(s)&&sym_is_changeable(s){if input_mode_==input_mode::listnewconfig{print_symbol_for_listconfig(s)}else if input_mode_==input_mode::helpnewconfig{print_help(m)}else{conf_cnt+=1;rootEntry=menu_get_menu_or_parent_menu(m);conf(rootEntry);}}let mut c=(*m).list;while !c.is_null(){check_conf(c);c=(*c).next;}}
+    fn from_environment() -> Self {
+        let seed = env::var("KCONFIG_SEED")
+            .ok()
+            .and_then(|text| {
+                let text = text.trim_start();
+                let negative = text.starts_with('-');
+                let text = text.strip_prefix(['-', '+']).unwrap_or(text);
+                let (radix, digits) = if let Some(digits) =
+                    text.strip_prefix("0x").or_else(|| text.strip_prefix("0X"))
+                {
+                    (16, digits)
+                } else if text.starts_with('0') {
+                    (8, text)
+                } else {
+                    (10, text)
+                };
+                u64::from_str_radix(digits, radix).ok().map(|seed| {
+                    if negative {
+                        (seed as u32).wrapping_neg()
+                    } else {
+                        seed as u32
+                    }
+                })
+            })
+            .unwrap_or_else(|| {
+                let time = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .unwrap_or_default();
+                (time.as_secs() as u32)
+                    .wrapping_add(1)
+                    .wrapping_mul(time.subsec_micros() + 1)
+            });
+        println!("KCONFIG_SEED=0x{seed:X}");
+        Self::new(seed)
+    }
+}
 
-pub unsafe fn main_c()->c_int{conf_parse(ptr::null());if conf_errors()!=0{return 1;}match input_mode_{input_mode::oldaskconfig=>{rootEntry=&mut rootmenu;conf(&mut rootmenu);input_mode_=input_mode::oldconfig;},input_mode::oldconfig|input_mode::syncconfig|input_mode::listnewconfig|input_mode::helpnewconfig=>{loop{conf_cnt=0;check_conf(&mut rootmenu);if conf_cnt==0{break;}}},_=>{}}if sym_dep_errors()!=0{return 1;}if conf_write(ptr::null())!=0{return 1;}conf_write_autoconf(sync_kconfig);0}
+fn probabilities() -> Result<(u32, u32, u32), String> {
+    let text = env::var("KCONFIG_PROBABILITY").unwrap_or_default();
+    if text.is_empty() {
+        return Ok((50, 33, 33));
+    }
+    let mut values = Vec::new();
+    for text in text.split(':').take(3) {
+        if text.is_empty() {
+            break;
+        }
+        let value = text
+            .trim_start()
+            .parse::<u32>()
+            .map_err(|_| "KCONFIG_PROBABILITY: Numerical result out of range".to_owned())?;
+        if value > 100 {
+            return Err("KCONFIG_PROBABILITY: Numerical result out of range".into());
+        }
+        values.push(value);
+    }
+    let result = match values.as_slice() {
+        [value] => (*value, value - value / 2, value / 2),
+        [yes, module] => (yes + module, *yes, *module),
+        [boolean, yes, module] => (*boolean, *yes, *module),
+        _ => (50, 33, 33),
+    };
+    if result.1 + result.2 > 100 {
+        return Err("KCONFIG_PROBABILITY: Numerical result out of range".into());
+    }
+    Ok(result)
+}
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+fn set_all(kconf: &mut Kconfig, mode: Mode, random: &mut Random) -> Result<(), String> {
+    let (boolean, yes, module) = if mode == Mode::Random {
+        probabilities()?
+    } else {
+        (50, 33, 33)
+    };
+    for menu in kconf.menu_depth_first(0) {
+        let Some(id) = kconf.menus[menu].symbol else {
+            continue;
+        };
+        let symbol = &kconf.symbols[id];
+        if kconf.menus[menu].prompt.is_none()
+            || symbol.user.is_some()
+            || !matches!(symbol.kind, SymbolType::Boolean | SymbolType::Tristate)
+            || symbol.choice.is_some()
+        {
+            continue;
+        }
+        if symbol.choice_menu.is_some() {
+            if mode == Mode::Random {
+                let mut members: Vec<_> = kconf
+                    .menu_depth_first(menu)
+                    .into_iter()
+                    .skip(1)
+                    .filter_map(|entry| kconf.menus[entry].symbol)
+                    .filter(|&member| kconf.symbols[member].user.is_none())
+                    .collect();
+                while !members.is_empty() {
+                    let index = random.next() as usize % members.len();
+                    let member = members.remove(index);
+                    kconf.symbols[member].user = Some(Value::tristate(Tristate::Yes));
+                    kconf.menus[menu].members.retain(|&id| id != member);
+                    kconf.menus[menu].members.push(member);
+                }
+            }
+            continue;
+        }
+        let tri = match mode {
+            Mode::AllYes => Tristate::Yes,
+            Mode::AllMod => Tristate::Mod,
+            Mode::AllNo => Tristate::No,
+            Mode::Random => {
+                let value = random.next() % 100;
+                if symbol.kind == SymbolType::Tristate {
+                    if value < yes {
+                        Tristate::Yes
+                    } else if value < yes + module {
+                        Tristate::Mod
+                    } else {
+                        Tristate::No
+                    }
+                } else if value < boolean {
+                    Tristate::Yes
+                } else {
+                    Tristate::No
+                }
+            }
+            _ => continue,
+        };
+        kconf.symbols[id].user = Some(Value::tristate(tri));
+    }
+    kconf.invalidate();
+    Ok(())
+}
+
+struct Frontend {
+    mode: Mode,
+    indent: usize,
+    root: MenuId,
+    count: usize,
+    tty: bool,
+}
+
+impl Frontend {
+    fn help(&self, kconf: &mut Kconfig, menu: MenuId) {
+        println!("\n{}", kconf.extended_help(menu));
+    }
+
+    fn input(&self) -> io::Result<(String, bool)> {
+        io::stdout().flush()?;
+        let mut line = String::new();
+        let eof = io::stdin().read_line(&mut line)? == 0;
+        if eof {
+            eprintln!("\nError in reading or end of file.");
+            line.push('\n');
+        }
+        if !self.tty {
+            print!("{line}");
+        }
+        Ok((line, eof))
+    }
+
+    fn ask(&self, kconf: &Kconfig, id: SymbolId) -> io::Result<Option<(String, bool)>> {
+        let symbol = &kconf.symbols[id];
+        if symbol.user.is_none() {
+            print!("(NEW) ");
+        }
+        if symbol.visible <= symbol.selected_value
+            || (matches!(self.mode, Mode::Old | Mode::Sync) && symbol.user.is_some())
+        {
+            println!("{}", symbol.current.text);
+            return Ok(None);
+        }
+        self.input().map(Some)
+    }
+
+    fn string(&self, kconf: &mut Kconfig, menu: MenuId, id: SymbolId) -> Result<(), String> {
+        loop {
+            kconf.calculate(id);
+            let default = kconf.symbols[id].current.text.clone();
+            print!(
+                "{}{} ({}) [{}] ",
+                " ".repeat(self.indent - 1),
+                kconf.prompt(menu).unwrap_or(""),
+                kconf.symbols[id].display_name(),
+                default
+            );
+            let Some((line, eof)) = self.ask(kconf, id).map_err(|e| e.to_string())? else {
+                return Ok(());
+            };
+            let line = line.strip_suffix('\n').unwrap_or(&line);
+            if line == "?" {
+                self.help(kconf, menu);
+            } else if kconf.set_string(id, if line.is_empty() { &default } else { line }) {
+                return Ok(());
+            }
+            if eof {
+                return Err(format!(
+                    "\nerror: no value for new symbol '{}' at end of input",
+                    kconf.symbols[id].display_name()
+                ));
+            }
+        }
+    }
+
+    fn boolean(&self, kconf: &mut Kconfig, menu: MenuId, id: SymbolId) -> Result<(), String> {
+        loop {
+            kconf.calculate(id);
+            let old = kconf.symbols[id].current.tri;
+            print!(
+                "{}{} ",
+                " ".repeat(self.indent - 1),
+                kconf.prompt(menu).unwrap_or("")
+            );
+            if let Some(name) = &kconf.symbols[id].name {
+                print!("({name}) ");
+            }
+            print!("[{}", old.to_string().to_ascii_uppercase());
+            for value in [Tristate::No, Tristate::Mod, Tristate::Yes] {
+                if value != old && kconf.within_range(id, value) {
+                    print!("/{value}");
+                }
+            }
+            print!("/?] ");
+            let Some((line, _)) = self.ask(kconf, id).map_err(|e| e.to_string())? else {
+                return Ok(());
+            };
+            let line = line.trim();
+            let value = match line {
+                "n" | "N" | "no" | "No" => Tristate::No,
+                "m" | "M" => Tristate::Mod,
+                "y" | "Y" | "yes" | "Yes" => Tristate::Yes,
+                "" => old,
+                _ if line.starts_with('?') => {
+                    self.help(kconf, menu);
+                    continue;
+                }
+                _ => continue,
+            };
+            if kconf.set_tristate(id, value) {
+                return Ok(());
+            }
+            self.help(kconf, menu);
+        }
+    }
+
+    fn choice(&self, kconf: &mut Kconfig, menu: MenuId) -> Result<(), String> {
+        let mut is_new = false;
+        loop {
+            println!(
+                "{}{}",
+                " ".repeat(self.indent - 1),
+                kconf.prompt(menu).unwrap_or("")
+            );
+            let default = kconf.calculate_choice(menu);
+            let mut children = Vec::new();
+            let mut default_index = 0;
+            for child in kconf.menus[menu].children.clone() {
+                if !kconf.menu_visible(child) {
+                    continue;
+                }
+                let Some(id) = kconf.menus[child].symbol else {
+                    println!(
+                        "{:>width$} {}",
+                        '*',
+                        kconf.prompt(child).unwrap_or(""),
+                        width = self.indent
+                    );
+                    continue;
+                };
+                children.push((child, id));
+                let marker = if Some(id) == default {
+                    default_index = children.len();
+                    '>'
+                } else {
+                    ' '
+                };
+                print!(
+                    "{:>width$} {}. {} ({})",
+                    marker,
+                    children.len(),
+                    kconf.prompt(child).unwrap_or(""),
+                    kconf.symbols[id].display_name(),
+                    width = self.indent
+                );
+                if kconf.symbols[id].user.is_none() {
+                    is_new = true;
+                    print!(" (NEW)");
+                }
+                println!();
+            }
+            if children.is_empty() {
+                return Ok(());
+            }
+            print!("{}choice", " ".repeat(self.indent - 1));
+            let (index, help) = if children.len() == 1 {
+                println!("[1]: 1");
+                (1, false)
+            } else {
+                print!("[1-{}?]: ", children.len());
+                if matches!(self.mode, Mode::Old | Mode::Sync) && !is_new {
+                    println!("{default_index}");
+                    (default_index, false)
+                } else {
+                    let (line, _) = self.input().map_err(|e| e.to_string())?;
+                    let line = line.trim();
+                    if line.starts_with('?') {
+                        self.help(kconf, menu);
+                        continue;
+                    }
+                    if line.is_empty() {
+                        (default_index, false)
+                    } else {
+                        let number: String =
+                            line.chars().take_while(|ch| ch.is_ascii_digit()).collect();
+                        (number.parse::<usize>().unwrap_or(0), line.ends_with('?'))
+                    }
+                }
+            };
+            let Some(&(child, id)) = index.checked_sub(1).and_then(|index| children.get(index))
+            else {
+                continue;
+            };
+            if help {
+                self.help(kconf, child);
+                continue;
+            }
+            kconf.set_choice(menu, id);
+            return Ok(());
+        }
+    }
+
+    fn configure(&mut self, kconf: &mut Kconfig, menu: MenuId) -> Result<(), String> {
+        if !kconf.menu_visible(menu) {
+            return Ok(());
+        }
+        let symbol = kconf.menus[menu].symbol;
+        if kconf.menus[menu].prompt.is_some() {
+            if kconf.menus[menu].kind == MenuType::Menu
+                && self.mode != Mode::OldAsk
+                && self.root != menu
+            {
+                return self.check(kconf, menu);
+            }
+            if matches!(kconf.menus[menu].kind, MenuType::Menu | MenuType::Comment) {
+                if let Some(prompt) = kconf.prompt(menu) {
+                    println!(
+                        "{:>width$}\n{:>width$} {}\n{:>width$}",
+                        '*',
+                        '*',
+                        prompt,
+                        '*',
+                        width = self.indent
+                    );
+                }
+            }
+        }
+        if let Some(id) = symbol {
+            if kconf.symbols[id].choice_menu.is_some() {
+                return self.choice(kconf, menu);
+            }
+            match kconf.symbols[id].kind {
+                SymbolType::Int | SymbolType::Hex | SymbolType::String => {
+                    self.string(kconf, menu, id)?
+                }
+                _ => self.boolean(kconf, menu, id)?,
+            }
+            self.indent += 2;
+        }
+        for child in kconf.menus[menu].children.clone() {
+            self.configure(kconf, child)?;
+        }
+        if symbol.is_some() {
+            self.indent -= 2;
+        }
+        Ok(())
+    }
+
+    fn check(&mut self, kconf: &mut Kconfig, menu: MenuId) -> Result<(), String> {
+        if !kconf.menu_visible(menu) {
+            return Ok(());
+        }
+        if let Some(id) = kconf.menus[menu].symbol {
+            let symbol = &kconf.symbols[id];
+            if symbol.choice_menu.is_none()
+                && symbol.user.is_none()
+                && symbol.visible > symbol.selected_value
+            {
+                match self.mode {
+                    Mode::ListNew => print!("{}", confdata::symbol_line(kconf, id, true, false)),
+                    Mode::HelpNew => {
+                        println!("-----");
+                        self.help(kconf, menu);
+                        println!("-----");
+                    }
+                    _ => {
+                        if self.count == 0 {
+                            println!("*\n* Restart config...\n*");
+                        }
+                        self.count += 1;
+                        let mut root = menu;
+                        while root != 0 && kconf.menus[root].kind != MenuType::Menu {
+                            root = kconf.menus[root].parent.unwrap_or(0);
+                        }
+                        self.root = root;
+                        self.configure(kconf, root)?;
+                    }
+                }
+            }
+        }
+        for child in kconf.menus[menu].children.clone() {
+            self.check(kconf, child)?;
+        }
+        Ok(())
+    }
+}
+
+fn run() -> Result<(), String> {
+    let mut args = env::args_os();
+    let program = args
+        .next()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .into_owned();
+    let mut mode = Mode::OldAsk;
+    let mut silent = false;
+    let mut sync = false;
+    let mut config = None;
+    let mut kconfig = None;
+    let mut random = Random::new(1);
+    let mut options = true;
+    while let Some(argument) = args.next() {
+        let text = argument.to_string_lossy();
+        if options && text == "--" {
+            options = false;
+            continue;
+        }
+        if options && matches!(text.as_ref(), "-h" | "--help") {
+            usage(&program);
+            return Err(String::new());
+        }
+        if options && matches!(text.as_ref(), "-s" | "--silent") {
+            silent = true;
+            continue;
+        }
+        if options && text.starts_with('-') {
+            let option = text
+                .strip_prefix("--")
+                .ok_or_else(|| format!("{program}: invalid option: {text}"))?;
+            let (name, value) = option
+                .split_once('=')
+                .map_or((option, None), |(name, value)| (name, Some(value)));
+            mode = Mode::parse(name)
+                .ok_or_else(|| format!("{program}: unrecognized option '--{name}'"))?;
+            if matches!(mode, Mode::Default | Mode::SaveDefault) {
+                config = Some(match value {
+                    Some(value) => PathBuf::from(value),
+                    None => PathBuf::from(args.next().ok_or_else(|| {
+                        format!("{program}: option '--{name}' requires an argument")
+                    })?),
+                });
+            } else if value.is_some() {
+                return Err(format!(
+                    "{program}: option '--{name}' doesn't allow an argument"
+                ));
+            }
+            if mode == Mode::Sync {
+                silent = true;
+                sync = true;
+            }
+            if mode == Mode::Random {
+                random = Random::from_environment();
+            }
+        } else if kconfig.is_none() {
+            kconfig = Some(argument);
+        }
+    }
+    let Some(kconfig) = kconfig else {
+        eprintln!("{program}: Kconfig file missing");
+        usage(&program);
+        return Err(String::new());
+    };
+    let filename = kconfig
+        .to_str()
+        .ok_or("Kconfig filename is not valid UTF-8")?;
+    let mut kconf = parser::parse(filename)?;
+    kconf.finalize()?;
+    match mode {
+        Mode::Default => {
+            let path = config.as_deref().expect("--defconfig requires a pathname");
+            confdata::read(&mut kconf, Some(path), silent).map_err(|_| {
+                format!(
+                    "***\n*** Can't find default configuration \"{}\"!\n***",
+                    path.display()
+                )
+            })?;
+        }
+        Mode::AllNo | Mode::AllYes | Mode::AllMod | Mode::AllDef | Mode::Random => {
+            if let Some(name) = env::var_os("KCONFIG_ALLCONFIG") {
+                if !name.is_empty() && name != "1" {
+                    confdata::read_simple(&mut kconf, Some(Path::new(&name)), silent).map_err(
+                        |_| {
+                            format!(
+                                "*** Can't read seed configuration \"{}\"!",
+                                name.to_string_lossy()
+                            )
+                        },
+                    )?;
+                } else {
+                    let name = match mode {
+                        Mode::AllNo => "allno.config",
+                        Mode::AllYes => "allyes.config",
+                        Mode::AllMod => "allmod.config",
+                        Mode::AllDef => "alldef.config",
+                        _ => "allrandom.config",
+                    };
+                    if confdata::read_simple(&mut kconf, Some(Path::new(name)), silent).is_err()
+                        && confdata::read_simple(&mut kconf, Some(Path::new("all.config")), silent)
+                            .is_err()
+                    {
+                        return Err(format!("*** KCONFIG_ALLCONFIG set, but no \"{name}\" or \"all.config\" file found"));
+                    }
+                }
+            }
+        }
+        _ => {
+            if let Err(error) = confdata::read(&mut kconf, None, silent) {
+                if error.kind() == io::ErrorKind::InvalidData {
+                    return Err(format!(
+                        "{}: cannot read configuration: {error}",
+                        confdata::config_name().display()
+                    ));
+                }
+            }
+        }
+    }
+    if kconf.config_warnings != 0 && env::var_os("KCONFIG_WERROR").is_some() {
+        return Err(String::new());
+    }
+    let no_write = sync && confdata::enabled("KCONFIG_NOSILENTUPDATE");
+    if no_write && kconf.changed {
+        return Err("\n*** The configuration requires explicit update.\n".into());
+    }
+    match mode {
+        Mode::AllNo | Mode::AllYes | Mode::AllMod | Mode::AllDef | Mode::Random | Mode::Default => {
+            set_all(&mut kconf, mode, &mut random)?
+        }
+        Mode::YesToMod | Mode::ModToYes | Mode::ModToNo => {
+            let (old, new) = match mode {
+                Mode::YesToMod => (Tristate::Yes, Tristate::Mod),
+                Mode::ModToYes => (Tristate::Mod, Tristate::Yes),
+                _ => (Tristate::Mod, Tristate::No),
+            };
+            for id in confdata::symbol_order(&kconf) {
+                if kconf.effective_type(id) == SymbolType::Tristate {
+                    if let Some(value) = &mut kconf.symbols[id].user {
+                        if value.tri == old {
+                            *value = Value::tristate(new);
+                        }
+                    }
+                }
+            }
+            kconf.invalidate();
+        }
+        Mode::OldAsk | Mode::Old | Mode::Sync | Mode::ListNew | Mode::HelpNew => {
+            let mut frontend = Frontend {
+                mode,
+                indent: 1,
+                root: 0,
+                count: 0,
+                tty: io::stdin().is_terminal() && io::stdout().is_terminal(),
+            };
+            if mode == Mode::OldAsk {
+                frontend.configure(&mut kconf, 0)?;
+                frontend.mode = Mode::Old;
+            }
+            loop {
+                frontend.count = 0;
+                frontend.check(&mut kconf, 0)?;
+                if frontend.count == 0 {
+                    break;
+                }
+            }
+        }
+        _ => {}
+    }
+    if kconf.errors != 0
+        || (kconf.dependency_warnings != 0 && env::var_os("KCONFIG_WERROR").is_some())
+    {
+        return Err(String::new());
+    }
+    if mode == Mode::SaveDefault {
+        let path = config
+            .as_deref()
+            .expect("--savedefconfig requires a pathname");
+        confdata::write_defconfig(&mut kconf, path)
+            .map_err(|_| format!("n*** Error while saving defconfig to: {}\n", path.display()))?;
+    } else if !matches!(mode, Mode::ListNew | Mode::HelpNew) {
+        if !no_write {
+            confdata::write(&mut kconf, silent)
+                .map_err(|_| "\n*** Error during writing of the configuration.\n".to_owned())?;
+        }
+        if confdata::write_autoconf(&mut kconf, sync).is_err() {
+            if sync {
+                return Err("\n*** Error during sync of the configuration.\n".into());
+            }
+        }
+    }
+    Ok(())
+}
+
+fn main() -> ExitCode {
+    match run() {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            if !error.is_empty() {
+                eprintln!("{error}");
+            }
+            ExitCode::FAILURE
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Random;
+
+    #[test]
+    fn random_sequence_matches_linux_host() {
+        let mut random = Random::new(1);
+        assert_eq!(
+            (0..5).map(|_| random.next()).collect::<Vec<_>>(),
+            [
+                1_804_289_383,
+                846_930_886,
+                1_681_692_777,
+                1_714_636_915,
+                1_957_747_793
+            ]
+        );
+    }
+}

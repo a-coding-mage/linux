@@ -1,55 +1,40 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+// SPDX-License-Identifier: GPL-2.0
+//! Shared options and target-format definitions for MIPS kernel relocations.
 
-// C dependencies supplied by other translation units / bindings:
-// stdio.h, stdarg.h, stdlib.h, stdint.h, inttypes.h, string.h, errno.h,
-// unistd.h, elf.h, byteswap.h, endian.h, and regex.h.
-
-unsafe extern "C" {
-    pub fn die(fmt: *mut libc::c_char, ...);
+#[derive(Default)]
+pub(crate) struct Options {
+    pub(crate) text: bool,
+    pub(crate) binary: bool,
+    pub(crate) info: bool,
+    pub(crate) keep: bool,
 }
 
-/*
- * Introduced for MIPSr6
- */
-pub const R_MIPS_PC21_S2: libc::c_int = 60;
-
-pub const R_MIPS_PC26_S2: libc::c_int = 61;
-
-/*
- * GNU extension that available in glibc only since 2023, not available on musl.
- */
-pub const R_MIPS_PC32: libc::c_int = 248;
-
-#[inline]
-pub const fn array_size<T, const N: usize>(_: &[T; N]) -> usize {
-    N
+pub(crate) struct Format {
+    pub(crate) bits: u32,
+    pub(crate) class: u8,
+    pub(crate) header_size: usize,
+    pub(crate) program_size: u64,
+    pub(crate) section_size: u64,
+    pub(crate) symbol_size: u64,
+    pub(crate) relocation_size: u64,
+    pub(crate) relocation_kind: u32,
+    pub(crate) machine_name: &'static str,
 }
 
-#[repr(C)]
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum symtype {
-    S_ABS,
-    S_REL,
-    S_SEG,
-    S_LIN,
-    S_NSYMTYPES,
+pub(crate) struct Edit {
+    pub(crate) offset: u64,
+    pub(crate) bytes: Vec<u8>,
 }
 
-unsafe extern "C" {
-    pub fn process_32(
-        fp: *mut libc::FILE,
-        as_text: libc::c_int,
-        as_bin: libc::c_int,
-        show_reloc_info: libc::c_int,
-        keep_relocs: libc::c_int,
-    );
-    pub fn process_64(
-        fp: *mut libc::FILE,
-        as_text: libc::c_int,
-        as_bin: libc::c_int,
-        show_reloc_info: libc::c_int,
-        keep_relocs: libc::c_int,
-    );
+pub(crate) fn relocation_name(kind: u32) -> &'static str {
+    match kind {
+        0 => "R_MIPS_NONE", 1 => "R_MIPS_16", 2 => "R_MIPS_32",
+        3 => "R_MIPS_REL32", 4 => "R_MIPS_26", 5 => "R_MIPS_HI16",
+        6 => "R_MIPS_LO16", 7 => "R_MIPS_GPREL16", 8 => "R_MIPS_LITERAL",
+        9 => "R_MIPS_GOT16", 10 => "R_MIPS_PC16", 11 => "R_MIPS_CALL16",
+        12 => "R_MIPS_GPREL32", 18 => "R_MIPS_64", 28 => "R_MIPS_HIGHER",
+        29 => "R_MIPS_HIGHEST", 60 => "R_MIPS_PC21_S2",
+        61 => "R_MIPS_PC26_S2", 248 => "R_MIPS_PC32",
+        _ => "unknown type rel type name",
+    }
 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

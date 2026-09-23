@@ -1,58 +1,35 @@
 // SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
-// The declarations and constants below are supplied by libfdt's headers.
-
-#[repr(C)]
-struct FdtErrtabent {
-    str_: *const core::ffi::c_char,
-}
-
-static FDT_ERRTABLE: [FdtErrtabent; FDT_ERRTABSIZE as usize] = [
-    FdtErrtabent { str_: core::ptr::null() },
-    FdtErrtabent { str_: b"FDT_ERR_NOTFOUND\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_EXISTS\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_NOSPACE\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADOFFSET\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADPATH\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADPHANDLE\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADSTATE\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_TRUNCATED\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADMAGIC\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADVERSION\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADSTRUCTURE\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADLAYOUT\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_INTERNAL\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADNCELLS\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADVALUE\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADOVERLAY\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_NOPHANDLES\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_BADFLAGS\0".as_ptr() as *const core::ffi::c_char },
-    FdtErrtabent { str_: b"FDT_ERR_ALIGNMENT\0".as_ptr() as *const core::ffi::c_char },
-];
-
-const FDT_ERRTABSIZE: i32 = 20;
-
-pub unsafe fn fdt_strerror(errval: i32) -> *const core::ffi::c_char {
-    if errval > 0 {
-        b"<valid offset/length>\0".as_ptr() as *const core::ffi::c_char
-    } else if errval == 0 {
-        b"<no error>\0".as_ptr() as *const core::ffi::c_char
-    } else if -errval < FDT_ERRTABSIZE {
-        let s = FDT_ERRTABLE[(-errval) as usize].str_;
-
-        if !s.is_null() {
-            return s;
-        }
-
-        b"<unknown error>\0".as_ptr() as *const core::ffi::c_char
+//! Stable names for the original libfdt result codes.
+// Copyright (C) 2006 David Gibson, IBM Corporation.
+pub(crate) fn strerror(code: i32) -> &'static str {
+    const NAMES: [&str; 20] = [
+        "<no error>",
+        "FDT_ERR_NOTFOUND",
+        "FDT_ERR_EXISTS",
+        "FDT_ERR_NOSPACE",
+        "FDT_ERR_BADOFFSET",
+        "FDT_ERR_BADPATH",
+        "FDT_ERR_BADPHANDLE",
+        "FDT_ERR_BADSTATE",
+        "FDT_ERR_TRUNCATED",
+        "FDT_ERR_BADMAGIC",
+        "FDT_ERR_BADVERSION",
+        "FDT_ERR_BADSTRUCTURE",
+        "FDT_ERR_BADLAYOUT",
+        "FDT_ERR_INTERNAL",
+        "FDT_ERR_BADNCELLS",
+        "FDT_ERR_BADVALUE",
+        "FDT_ERR_BADOVERLAY",
+        "FDT_ERR_NOPHANDLES",
+        "FDT_ERR_BADFLAGS",
+        "FDT_ERR_ALIGNMENT",
+    ];
+    if code > 0 {
+        "<valid offset/length>"
     } else {
-        b"<unknown error>\0".as_ptr() as *const core::ffi::c_char
+        NAMES
+            .get(code.unsigned_abs() as usize)
+            .copied()
+            .unwrap_or("<unknown error>")
     }
 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

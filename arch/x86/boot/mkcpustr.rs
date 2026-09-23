@@ -1,68 +1,43 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/* ----------------------------------------------------------------------- *
- *
- *   Copyright 2008 rPath, Inc. - All Rights Reserved
- *
- * ----------------------------------------------------------------------- */
+//! Generate the compact CPU feature strings consumed by x86 setup code.
+// Copyright 2008 rPath, Inc. - All Rights Reserved
 
-/*
- * This is a host program to preprocess the CPU strings into a
- * compact format suitable for the setup code.
- */
+// The shared definitions export every CPU and bug bit for target-kernel users.
+// This host consumer only needs the name table and its dimension.
+#[allow(dead_code, missing_docs, non_snake_case, unreachable_pub)]
+#[path = "../include/asm/cpufeatures_header.rs"]
+mod cpufeatures;
 
-use std::ffi::{c_char, CStr};
+use std::io::{self, Write};
+use std::process::ExitCode;
 
-// The following names are supplied by the translated CPU feature dependencies.
-// C preprocessor constants and included declarations are intentionally retained
-// as external source-level references.
-extern "C" {
-    static x86_cap_flags: *const *const c_char;
-}
-
-fn main() {
-    let mut i: usize;
-    let mut j: usize;
-    let mut str_: *const c_char;
-
-    print!("#include <asm/cpufeaturemasks.h>\n\n");
-    print!("static const char x86_cap_strs[] =\n");
-
-    i = 0;
-    while i < NCAPINTS {
-        j = 0;
-        while j < 32 {
-            unsafe {
-                str_ = *x86_cap_flags.add(i * 32 + j);
-
-                if i == NCAPINTS - 1 && j == 31 {
-                    /* The last entry must be unconditional; this
-                       also consumes the compiler-added null
-                       character */
-                    if str_.is_null() {
-                        str_ = b"\0".as_ptr() as *const c_char;
-                    }
-                    print!(
-                        "\t\\x{:02x}\\x{:02x}\"\"{}\"\n",
-                        i,
-                        j,
-                        CStr::from_ptr(str_).to_string_lossy()
-                    );
-                } else if !str_.is_null() {
-                    print!(
-                        "#if REQUIRED_MASK{} & (1 << {})\n\t\"\\x{:02x}\\x{:02x}\"\"{}\\0\"\n#endif\n",
-                        i,
-                        j,
-                        i,
-                        j,
-                        CStr::from_ptr(str_).to_string_lossy()
-                    );
-                }
-            }
-            j += 1;
+fn write_table(output: &mut impl Write, flags: &[Option<&str>]) -> io::Result<()> {
+    writeln!(output, "#include <asm/cpufeaturemasks.h>\n")?;
+    writeln!(output, "static const char x86_cap_strs[] =")?;
+    for (index, flag) in flags.iter().enumerate() {
+        let word = index / 32;
+        let bit = index % 32;
+        if index + 1 == flags.len() {
+            // The last record is unconditional and uses the compiler's final NUL.
+            writeln!(
+                output,
+                "\t\"\\x{word:02x}\\x{bit:02x}\"\"{}\"",
+                flag.unwrap_or("")
+            )?;
+        } else if let Some(name) = flag {
+            writeln!(output, "#if REQUIRED_MASK{word} & (1 << {bit})\n\t\"\\x{word:02x}\\x{bit:02x}\"\"{name}\\0\"\n#endif")?;
         }
-        i += 1;
     }
-    print!("\t;\n");
+    writeln!(output, "\t;")
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+fn main() -> ExitCode {
+    let mut output = io::BufWriter::new(io::stdout().lock());
+    match write_table(&mut output, &cpufeatures::X86_CAP_FLAGS).and_then(|()| output.flush()) {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            eprintln!("mkcpustr: {error}");
+            ExitCode::FAILURE
+        }
+    }
+}

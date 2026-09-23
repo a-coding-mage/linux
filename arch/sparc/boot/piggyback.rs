@@ -1,101 +1,231 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/*
-   Simple utility to make a single-image install kernel with initial ramdisk
-   for Sparc tftpbooting without need to set up nfs.
+// Copyright (C) 1996,1997 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
+// Pete Zaitcev <zaitcev@yahoo.com> endian fixes for cross-compiles, 2000.
+// Copyright (C) 2011 Sam Ravnborg <sam@ravnborg.org>
+//! Append an initial ramdisk to a SPARC a.out tftpboot kernel in place.
 
-   Copyright (C) 1996,1997 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
-   Pete Zaitcev <zaitcev@yahoo.com> endian fixes for cross-compiles, 2000.
-   Copyright (C) 2011 Sam Ravnborg <sam@ravnborg.org>
- */
+#![forbid(unsafe_code)]
 
-// C headers and platform declarations are supplied by the surrounding build.
+use std::env;
+use std::ffi::{c_char, OsStr};
+use std::fs::{self, File, OpenOptions};
+use std::io::{self, BufRead, BufReader, Read, Seek, SeekFrom, Write};
+use std::os::unix::ffi::OsStrExt;
+use std::os::unix::fs::MetadataExt;
+use std::process::ExitCode;
 
-const AOUT_TEXT_OFFSET: libc::off_t = 32;
-static mut IS64BIT: libc::c_int = 0;
+type Result<T> = std::result::Result<T, Vec<u8>>;
 
-/* align to power-of-two size */
-unsafe fn align(n: libc::c_int) -> libc::c_int {
-    if IS64BIT != 0 { (n + 0x1fff) & !0x1fff } else { (n + 0xfff) & !0xfff }
+fn error(name: &[u8], err: io::Error) -> Vec<u8> {
+    let message = err.to_string();
+    let message = message.split(" (os error ").next().unwrap_or(&message);
+    [name, b": ", message.as_bytes(), b"\n"].concat()
 }
 
-/* read two bytes as big endian */
-unsafe fn ld2(p: *mut libc::c_char) -> libc::c_ushort {
-    (((*p as libc::c_ushort) << 8) | *((p.add(1)) as *mut libc::c_ushort))
+fn align(value: u32, wide: bool) -> u32 {
+    let mask = if wide { 8191 } else { 4095 };
+    value.wrapping_add(mask) & !mask
 }
 
-/* save 4 bytes as big endian */
-unsafe fn st4(p: *mut libc::c_char, x: libc::c_uint) {
-    *p = (x >> 24) as libc::c_char;
-    *p.add(1) = (x >> 16) as libc::c_char;
-    *p.add(2) = (x >> 8) as libc::c_char;
-    *p.add(3) = x as libc::c_char;
-}
-
-unsafe fn die(str_: *const libc::c_char) -> ! {
-    libc::perror(str_);
-    libc::exit(1);
-}
-
-unsafe fn usage() -> ! {
-    libc::fputs(b"Usage: piggyback bits vmlinux.aout System.map fs_img.gz\n\0".as_ptr() as *const libc::c_char, libc::stderr);
-    libc::fputs(b"\tKernel image will be modified in place.\n\0".as_ptr() as *const libc::c_char, libc::stderr);
-    libc::exit(1);
-}
-
-unsafe fn start_line(line: *const libc::c_char) -> libc::c_int {
-    if libc::strcmp(line.add(10), b" _start\n\0".as_ptr() as *const libc::c_char) == 0 || libc::strcmp(line.add(18), b" _start\n\0".as_ptr() as *const libc::c_char) == 0 { 1 } else { 0 }
-}
-
-unsafe fn end_line(line: *const libc::c_char) -> libc::c_int {
-    if libc::strcmp(line.add(10), b" _end\n\0".as_ptr() as *const libc::c_char) == 0 || libc::strcmp(line.add(18), b" _end\n\0".as_ptr() as *const libc::c_char) == 0 { 1 } else { 0 }
-}
-
-unsafe fn get_start_end(filename: *const libc::c_char, start: *mut libc::c_uint, end: *mut libc::c_uint) -> libc::c_int {
-    let mut buffer = [0 as libc::c_char; 1024];
-    *start = 0; *end = 0;
-    let map = libc::fopen(filename, b"r\0".as_ptr() as *const libc::c_char);
-    if map.is_null() { die(filename); }
-    while !libc::fgets(buffer.as_mut_ptr(), 1024, map).is_null() {
-        if start_line(buffer.as_ptr()) != 0 { *start = libc::strtoul(buffer.as_ptr(), core::ptr::null_mut(), 16) as libc::c_uint; }
-        else if end_line(buffer.as_ptr()) != 0 { *end = libc::strtoul(buffer.as_ptr(), core::ptr::null_mut(), 16) as libc::c_uint; }
+// strtoul(base 16), including native unsigned-long overflow and truncation
+// to the original unsigned-int start/end storage.
+fn address(mut value: &[u8]) -> u32 {
+    while matches!(value.first(), Some(b' ' | b'\t'..=b'\r')) {
+        value = &value[1..];
     }
-    libc::fclose(map);
-    if *start == 0 || *end == 0 { 0 } else { 1 }
+    let negative = value.first() == Some(&b'-');
+    if matches!(value.first(), Some(b'+' | b'-')) {
+        value = &value[1..];
+    }
+    if value.starts_with(b"0x") || value.starts_with(b"0X") {
+        value = &value[2..];
+    }
+    let mut result = 0usize;
+    let mut overflow = false;
+    for byte in value {
+        let digit = match byte {
+            b'0'..=b'9' => byte - b'0',
+            b'a'..=b'f' => byte - b'a' + 10,
+            b'A'..=b'F' => byte - b'A' + 10,
+            _ => break,
+        };
+        match result
+            .checked_mul(16)
+            .and_then(|n| n.checked_add(digit as usize))
+        {
+            Some(n) => result = n,
+            None => {
+                overflow = true;
+                result = usize::MAX;
+            }
+        }
+    }
+    if overflow {
+        usize::MAX as u32
+    } else if negative {
+        result.wrapping_neg() as u32
+    } else {
+        result as u32
+    }
 }
 
-const LOOKBACK: libc::off_t = 128 * 4;
-const BUFSIZE: libc::c_int = 1024;
-
-unsafe fn get_hdrs_offset(kernelfd: libc::c_int, filename: *const libc::c_char) -> libc::off_t {
-    let mut buffer = [0 as libc::c_char; 1024];
-    if libc::lseek(kernelfd, 0, libc::SEEK_SET) < 0 { die(b"lseek\0".as_ptr() as *const libc::c_char); }
-    if libc::read(kernelfd, buffer.as_mut_ptr() as *mut libc::c_void, BUFSIZE as usize) != BUFSIZE as isize { die(filename); }
-    if buffer[40] == b'H' as libc::c_char && buffer[41] == b'd' as libc::c_char && buffer[42] == b'r' as libc::c_char && buffer[43] == b'S' as libc::c_char { return 40; }
-    let mut offset = ((ld2(buffer.as_mut_ptr().add(AOUT_TEXT_OFFSET as usize + 2)) as libc::off_t) << 2) - LOOKBACK + AOUT_TEXT_OFFSET;
-    if offset < 0 { libc::set_errno(libc::errno::consts::EINVAL); die(b"Calculated a negative offset, probably elftoaout generated an invalid image. Did you use a recent elftoaout ?\0".as_ptr() as *const libc::c_char); }
-    if libc::lseek(kernelfd, offset, libc::SEEK_SET) < 0 { die(b"lseek\0".as_ptr() as *const libc::c_char); }
-    if libc::read(kernelfd, buffer.as_mut_ptr() as *mut libc::c_void, BUFSIZE as usize) != BUFSIZE as isize { die(filename); }
-    for i in (0..LOOKBACK as usize).step_by(4) { if buffer[i] == b'H' as libc::c_char && buffer[i+1] == b'd' as libc::c_char && buffer[i+2] == b'r' as libc::c_char && buffer[i+3] == b'S' as libc::c_char { return offset + i as libc::off_t; } }
-    libc::fprintf(libc::stderr, b"Couldn't find headers signature in %s\n\0".as_ptr() as *const libc::c_char, filename); libc::exit(1)
+fn start_end(name: &OsStr) -> Result<(u32, u32)> {
+    let file = File::open(name).map_err(|err| error(name.as_bytes(), err))?;
+    let mut map = BufReader::new(file);
+    let (mut start, mut end) = (0, 0);
+    let mut buffer = [0; 1024];
+    loop {
+        // fgets reads at most 1023 bytes, including the newline when present.
+        let mut line = Vec::new();
+        match (&mut map).take(1023).read_until(b'\n', &mut line) {
+            Ok(0) | Err(_) => break,
+            Ok(_) => {}
+        }
+        // fgets only overwrites the new line and its terminating NUL. Keep
+        // the suffix of the preceding line for the original fixed-column
+        // comparisons, even when a following line is unusually short.
+        buffer[..line.len()].copy_from_slice(&line);
+        buffer[line.len()] = 0;
+        let matches = |suffix: &[u8]| {
+            [10, 18]
+                .iter()
+                .any(|offset| buffer[*offset..].split(|byte| *byte == 0).next() == Some(suffix))
+        };
+        if matches(b" _start\n") {
+            start = address(&buffer);
+        } else if matches(b" _end\n") {
+            end = address(&buffer);
+        }
+    }
+    if start == 0 || end == 0 {
+        Err([
+            b"Could not determine start and end from ",
+            name.as_bytes(),
+            b"\n",
+        ]
+        .concat())
+    } else {
+        Ok((start, end))
+    }
 }
 
-pub unsafe fn main(argc: libc::c_int, argv: *mut *mut libc::c_char) -> libc::c_int {
-    let aout_magic = [1u8, 3, 1, 7]; let mut buffer = [0 as libc::c_char; 1024];
-    if argc != 5 { usage(); }
-    if libc::strcmp(*argv.add(1), b"64\0".as_ptr() as *const libc::c_char) == 0 { IS64BIT = 1; }
-    let mut s = core::mem::MaybeUninit::<libc::stat>::uninit(); if libc::stat(*argv.add(4), s.as_mut_ptr()) < 0 { die(*argv.add(4)); } let s = s.assume_init();
-    let (mut start, mut end) = (0u32, 0u32); if get_start_end(*argv.add(3), &mut start, &mut end) == 0 { libc::fprintf(libc::stderr, b"Could not determine start and end from %s\n\0".as_ptr() as *const libc::c_char, *argv.add(3)); libc::exit(1); }
-    let image = libc::open(*argv.add(2), libc::O_RDWR); if image < 0 { die(*argv.add(2)); }
-    if libc::read(image, buffer.as_mut_ptr() as *mut libc::c_void, 512) != 512 { die(*argv.add(2)); }
-    if libc::memcmp(buffer.as_ptr() as *const libc::c_void, aout_magic.as_ptr() as *const libc::c_void, 4) != 0 { libc::fprintf(libc::stderr, b"Not a.out. Don't blame me.\n\0".as_ptr() as *const libc::c_char); libc::exit(1); }
-    let offset = get_hdrs_offset(image, *argv.add(2)) + 10; if libc::lseek(image, offset, 0) < 0 { die(b"lseek\0".as_ptr() as *const libc::c_char); }
-    st4(buffer.as_mut_ptr(), 0); st4(buffer.as_mut_ptr().add(4), 0x01000000); st4(buffer.as_mut_ptr().add(8), align((end + 32) as libc::c_int) as libc::c_uint); st4(buffer.as_mut_ptr().add(12), s.st_size as libc::c_uint);
-    if libc::write(image, buffer.as_ptr().add(2) as *const libc::c_void, 14) != 14 { die(*argv.add(2)); }
-    if IS64BIT != 0 { if libc::lseek(image, 4, 0) < 0 { die(b"lseek\0".as_ptr() as *const libc::c_char); } st4(buffer.as_mut_ptr(), (align((end + 32 + 8191) as libc::c_int) as libc::c_uint).wrapping_sub(start & !0x3fffff).wrapping_add(s.st_size as libc::c_uint)); st4(buffer.as_mut_ptr().add(4), 0); st4(buffer.as_mut_ptr().add(8), 0); if libc::write(image, buffer.as_ptr() as *const libc::c_void, 12) != 12 { die(*argv.add(2)); } }
-    if libc::lseek(image, AOUT_TEXT_OFFSET - start as libc::off_t + align((end + 32) as libc::c_int) as libc::off_t, 0) < 0 { die(b"lseek\0".as_ptr() as *const libc::c_char); }
-    let tail = libc::open(*argv.add(4), libc::O_RDONLY); if tail < 0 { die(*argv.add(4)); }
-    let mut i: isize; while { i = libc::read(tail, buffer.as_mut_ptr() as *mut libc::c_void, 1024); i > 0 } { if libc::write(image, buffer.as_ptr() as *const libc::c_void, i as usize) != i { die(*argv.add(2)); } }
-    if libc::close(image) < 0 { die(b"close\0".as_ptr() as *const libc::c_char); } if libc::close(tail) < 0 { die(b"close\0".as_ptr() as *const libc::c_char); } 0
+fn seek(image: &mut File, offset: u64) -> Result<()> {
+    image
+        .seek(SeekFrom::Start(offset))
+        .map(|_| ())
+        .map_err(|err| error(b"lseek", err))
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+fn read_once(image: &mut File, buffer: &mut [u8], name: &[u8]) -> Result<()> {
+    match image.read(buffer) {
+        Ok(n) if n == buffer.len() => Ok(()),
+        Ok(_) => Err(error(name, io::Error::from_raw_os_error(0))),
+        Err(err) => Err(error(name, err)),
+    }
+}
+
+fn write_once(image: &mut File, buffer: &[u8], name: &[u8]) -> Result<()> {
+    match image.write(buffer) {
+        Ok(n) if n == buffer.len() => Ok(()),
+        Ok(_) => Err(error(name, io::Error::from_raw_os_error(0))),
+        Err(err) => Err(error(name, err)),
+    }
+}
+
+fn headers_offset(image: &mut File, name: &[u8]) -> Result<u64> {
+    seek(image, 0)?;
+    let mut buffer = [0; 1024];
+    read_once(image, &mut buffer, name)?;
+    if &buffer[40..44] == b"HdrS" {
+        return Ok(40);
+    }
+    // Preserve ld2(char *): hosts with signed char sign-extend the low byte.
+    let branch = (((buffer[34] as c_char as i32) << 8) | buffer[35] as c_char as i32) as u16;
+    let offset = i64::from(branch) * 4 - 512 + 32;
+    if offset < 0 {
+        return Err(error(b"Calculated a negative offset, probably elftoaout generated an invalid image. Did you use a recent elftoaout ?", io::Error::from_raw_os_error(-22)));
+    }
+    seek(image, offset as u64)?;
+    read_once(image, &mut buffer, name)?;
+    for index in (0..512).step_by(4) {
+        if &buffer[index..index + 4] == b"HdrS" {
+            return Ok(offset as u64 + index as u64);
+        }
+    }
+    Err([b"Couldn't find headers signature in ", name, b"\n"].concat())
+}
+
+fn run() -> Result<()> {
+    let args: Vec<_> = env::args_os().collect();
+    if args.len() != 5 {
+        return Err(b"Usage: piggyback bits vmlinux.aout System.map fs_img.gz\n\tKernel image will be modified in place.\n".to_vec());
+    }
+    let wide = args[1] == "64";
+    let ramdisk = fs::metadata(&args[4]).map_err(|err| error(args[4].as_bytes(), err))?;
+    let size = ramdisk.len();
+    let (start, end) = start_end(&args[3])?;
+    let name = args[2].as_bytes();
+    let mut image = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&args[2])
+        .map_err(|err| error(name, err))?;
+    let kernel = image.metadata().map_err(|err| error(name, err))?;
+    if kernel.dev() == ramdisk.dev() && kernel.ino() == ramdisk.ino() {
+        // Appending a file to itself through a second descriptor can keep
+        // extending the file forever. Reject aliases before modifying it.
+        return Err(b"Ramdisk image aliases kernel image.\n".to_vec());
+    }
+    let mut buffer = [0; 1024];
+    read_once(&mut image, &mut buffer[..512], name)?;
+    if buffer[..4] != [1, 3, 1, 7] {
+        return Err(b"Not a.out. Don't blame me.\n".to_vec());
+    }
+    let offset = headers_offset(&mut image, name)?;
+    seek(&mut image, offset + 10)?;
+    let ramdisk_address = align(end.wrapping_add(32), wide);
+    for (chunk, value) in
+        buffer[..16]
+            .chunks_exact_mut(4)
+            .zip([0, 0x01000000, ramdisk_address, size as u32])
+    {
+        chunk.copy_from_slice(&value.to_be_bytes());
+    }
+    write_once(&mut image, &buffer[2..16], name)?;
+    if wide {
+        seek(&mut image, 4)?;
+        let text_size = align(end.wrapping_add(32 + 8191), wide)
+            .wrapping_sub(start & !0x3fffff)
+            .wrapping_add(size as u32);
+        buffer[..4].copy_from_slice(&text_size.to_be_bytes());
+        buffer[4..12].fill(0);
+        write_once(&mut image, &buffer[..12], name)?;
+    }
+    // C performs unsigned-int arithmetic before conversion to off_t, including
+    // for kernels whose virtual start address is in the high half.
+    seek(
+        &mut image,
+        u64::from(32u32.wrapping_sub(start).wrapping_add(ramdisk_address)),
+    )?;
+    let mut tail = File::open(&args[4]).map_err(|err| error(args[4].as_bytes(), err))?;
+    loop {
+        let size = tail
+            .read(&mut buffer)
+            .map_err(|err| error(args[4].as_bytes(), err))?;
+        if size == 0 {
+            break;
+        }
+        write_once(&mut image, &buffer[..size], name)?;
+    }
+    Ok(())
+}
+
+fn main() -> ExitCode {
+    match run() {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(message) => {
+            let _ = io::stderr().write_all(&message);
+            ExitCode::FAILURE
+        }
+    }
+}

@@ -1,164 +1,211 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Rust translation of vdso2c.h.  The original header is included twice from
- * vdso2c.c and BITSFUNC supplies the architecture-specific function prefix.
- */
+// SPDX-License-Identifier: GPL-2.0
+//! Shared ELF32/ELF64 vDSO validation and C-image generation.
 
-use core::ffi::{c_char, c_int, c_void};
-use core::ptr;
+use crate::elf::{ElfFile, Section};
+use std::io::Write;
 
-extern "C" {
-    fn fprintf(outfile: *mut FILE, format: *const c_char, ...) -> c_int;
-    fn fwrite(ptr: *const c_void, size: usize, count: usize, stream: *mut FILE) -> usize;
-    fn strcmp(lhs: *const c_char, rhs: *const c_char) -> c_int;
-    fn fail(format: *const c_char, ... ) -> !;
+const SYMBOLS: [&str; 10] = [
+    "__kernel_vsyscall",
+    "__kernel_sigreturn",
+    "__kernel_rt_sigreturn",
+    "int80_landing_pad",
+    "vdso32_rt_sigreturn_landing_pad",
+    "vdso32_sigreturn_landing_pad",
+    "__futex_list64_try_unlock_cs_start",
+    "__futex_list64_try_unlock_cs_end",
+    "__futex_list32_try_unlock_cs_start",
+    "__futex_list32_try_unlock_cs_end",
+];
+
+fn extent(data: &[u8], offset: u64, length: u64) -> Result<&[u8], String> {
+    let start = usize::try_from(offset).map_err(|_| "ELF offset exceeds host address space")?;
+    let end = offset
+        .checked_add(length)
+        .and_then(|end| usize::try_from(end).ok())
+        .ok_or("ELF extent overflow")?;
+    data.get(start..end)
+        .ok_or_else(|| "truncated ELF data".into())
 }
 
-#[repr(C)]
-pub struct FILE { _private: [u8; 0] }
-
-/* These architecture-dependent types, constants, and helpers are supplied by
- * the including translation unit, as in the original C header. */
-extern "C" {
-    static required_syms: [RequiredSym; NSYMS];
-}
-
-#[repr(C)]
-pub struct RequiredSym {
-    pub name: *const c_char,
-    pub export: c_int,
-}
-
-const NSYMS: usize = 0; // Supplied by the including architecture-specific source.
-
-#[allow(non_snake_case)]
-pub unsafe fn BITSFUNC_copy(outfile: *mut FILE, data: *const u8, len: usize) {
-    let mut i = 0usize;
-    while i < len {
-        if i % 10 == 0 {
-            fprintf(outfile, b"\n\t\0".as_ptr() as *const c_char);
-        }
-        fprintf(outfile, b"0x%02X, \0".as_ptr() as *const c_char, *data.add(i) as c_int);
-        i += 1;
+fn segments(elf: &ElfFile<'_>, raw: &[u8], stripped: &[u8]) -> Result<(), String> {
+    let word = elf.word_size();
+    let wide = word == 8;
+    let phoff = elf.read_integer(if wide { 32 } else { 28 }, word)?;
+    let stride = elf.read_integer(if wide { 54 } else { 42 }, 2)?;
+    let count = elf.read_integer(if wide { 56 } else { 44 }, 2)?;
+    if stride != if wide { 56 } else { 32 } {
+        return Err("invalid program header size".into());
     }
-}
-
-pub unsafe fn BITSFUNC_extract(
-    data: *const u8,
-    data_len: usize,
-    outfile: *mut FILE,
-    sec: *mut ElfShdr,
-    name: *const c_char,
-) {
-    let offset = GET_LE(&(*sec).sh_offset) as usize;
-    let len = GET_LE(&(*sec).sh_size) as usize;
-
-    if offset + len > data_len {
-        fail(b"section to extract overruns input data\0".as_ptr() as *const c_char);
-    }
-
-    fprintf(outfile, b"static const unsigned char %s[%zu] = {\0".as_ptr() as *const c_char, name, len);
-    BITSFUNC_copy(outfile, data.add(offset), len);
-    fprintf(outfile, b"\n};\n\n\0".as_ptr() as *const c_char);
-}
-
-pub unsafe fn BITSFUNC_go(
-    raw_addr: *mut c_void,
-    raw_len: usize,
-    stripped_addr: *mut c_void,
-    stripped_len: usize,
-    outfile: *mut FILE,
-    image_name: *const c_char,
-) {
-    let mut found_load = 0;
-    let mut load_size: u64 = u64::MAX;
-    let mut mapping_size: u64;
-    let hdr = raw_addr as *mut ElfEhdr;
-    let mut symtab_hdr: *mut ElfShdr = ptr::null_mut();
-    let mut strtab_hdr: *mut ElfShdr;
-    let mut secstrings_hdr: *mut ElfShdr;
-    let mut alt_sec: *mut ElfShdr = ptr::null_mut();
-    let mut extable_sec: *mut ElfShdr = ptr::null_mut();
-    let mut dyn_: *mut ElfDyn = ptr::null_mut();
-    let mut dyn_end: *mut ElfDyn = ptr::null_mut();
-    let mut i: u64;
-    let mut syms_nr: u64;
-    let secstrings: *const c_char;
-    let mut syms = [0i64; NSYMS];
-    let pt = (raw_addr as *mut u8).add(GET_LE(&(*hdr).e_phoff) as usize) as *mut ElfPhdr;
-
-    if GET_LE(&(*hdr).e_type) != ET_DYN { fail(b"input is not a shared object\n\0".as_ptr() as *const c_char); }
-    i = 0;
-    while i < GET_LE(&(*hdr).e_phnum) as u64 {
-        if GET_LE(&(*pt.add(i as usize)).p_type) == PT_LOAD {
-            if found_load != 0 { fail(b"multiple PT_LOAD segs\n\0".as_ptr() as *const c_char); }
-            if GET_LE(&(*pt.add(i as usize)).p_offset) != 0 || GET_LE(&(*pt.add(i as usize)).p_vaddr) != 0 { fail(b"PT_LOAD in wrong place\n\0".as_ptr() as *const c_char); }
-            if GET_LE(&(*pt.add(i as usize)).p_memsz) != GET_LE(&(*pt.add(i as usize)).p_filesz) { fail(b"cannot handle memsz != filesz\n\0".as_ptr() as *const c_char); }
-            load_size = GET_LE(&(*pt.add(i as usize)).p_memsz); found_load = 1;
-        } else if GET_LE(&(*pt.add(i as usize)).p_type) == PT_DYNAMIC {
-            dyn_ = (raw_addr as *mut u8).add(GET_LE(&(*pt.add(i as usize)).p_offset) as usize) as *mut ElfDyn;
-            dyn_end = (dyn_ as *mut u8).add(GET_LE(&(*pt.add(i as usize)).p_memsz) as usize) as *mut ElfDyn;
-        }
-        i += 1;
-    }
-    if found_load == 0 { fail(b"no PT_LOAD seg\n\0".as_ptr() as *const c_char); }
-    if stripped_len < load_size as usize { fail(b"stripped input is too short\n\0".as_ptr() as *const c_char); }
-    if dyn_.is_null() { fail(b"input has no PT_DYNAMIC section -- your toolchain is buggy\n\0".as_ptr() as *const c_char); }
-
-    i = 0;
-    while dyn_.add(i as usize) < dyn_end && GET_LE(&(*dyn_.add(i as usize)).d_tag) != DT_NULL {
-        let tag = GET_LE(&(*dyn_.add(i as usize)).d_tag);
-        if tag == DT_REL || tag == DT_RELSZ || tag == DT_RELA || tag == DT_RELENT || tag == DT_TEXTREL { fail(b"vdso image contains dynamic relocations\n\0".as_ptr() as *const c_char); }
-        i += 1;
-    }
-
-    secstrings_hdr = (raw_addr as *mut u8).add((GET_LE(&(*hdr).e_shoff) + GET_LE(&(*hdr).e_shentsize) * GET_LE(&(*hdr).e_shstrndx)) as usize) as *mut ElfShdr;
-    secstrings = (raw_addr as *mut u8).add(GET_LE(&(*secstrings_hdr).sh_offset) as usize) as *const c_char;
-    i = 0;
-    while i < GET_LE(&(*hdr).e_shnum) as u64 {
-        let sh = (raw_addr as *mut u8).add((GET_LE(&(*hdr).e_shoff) + GET_LE(&(*hdr).e_shentsize) * i) as usize) as *mut ElfShdr;
-        if GET_LE(&(*sh).sh_type) == SHT_SYMTAB { symtab_hdr = sh; }
-        if strcmp(secstrings.add(GET_LE(&(*sh).sh_name) as usize), b".altinstructions\0".as_ptr() as *const c_char) == 0 { alt_sec = sh; }
-        if strcmp(secstrings.add(GET_LE(&(*sh).sh_name) as usize), b"__ex_table\0".as_ptr() as *const c_char) == 0 { extable_sec = sh; }
-        i += 1;
-    }
-    if symtab_hdr.is_null() { fail(b"no symbol table\n\0".as_ptr() as *const c_char); }
-    strtab_hdr = (raw_addr as *mut u8).add((GET_LE(&(*hdr).e_shoff) + GET_LE(&(*hdr).e_shentsize) * GET_LE(&(*symtab_hdr).sh_link)) as usize) as *mut ElfShdr;
-    syms_nr = GET_LE(&(*symtab_hdr).sh_size) / GET_LE(&(*symtab_hdr).sh_entsize);
-    i = 0;
-    while i < syms_nr {
-        let sym = (raw_addr as *mut u8).add((GET_LE(&(*symtab_hdr).sh_offset) + GET_LE(&(*symtab_hdr).sh_entsize) * i) as usize) as *mut ElfSym;
-        let sym_name = (raw_addr as *mut u8).add((GET_LE(&(*strtab_hdr).sh_offset) + GET_LE(&(*sym).st_name)) as usize) as *const c_char;
-        let mut k = 0usize;
-        while k < NSYMS {
-            if strcmp(sym_name, required_syms[k].name) == 0 {
-                if syms[k] != 0 { fail(b"duplicate symbol %s\n\0".as_ptr() as *const c_char, required_syms[k].name); }
-                syms[k] = GET_LE(&(*sym).st_value) as i64;
+    extent(
+        raw,
+        phoff,
+        count
+            .checked_mul(stride)
+            .ok_or("program header size overflow")?,
+    )?;
+    let mut load = None;
+    let mut dynamic = None;
+    for index in 0..count {
+        let base = phoff + index * stride;
+        let kind = elf.read_integer(base, 4)?;
+        let offset = elf.read_integer(base + if wide { 8 } else { 4 }, word)?;
+        let size = elf.read_integer(base + if wide { 40 } else { 20 }, word)?;
+        match kind {
+            1 => {
+                if load.is_some() {
+                    return Err("multiple PT_LOAD segs".into());
+                }
+                let address = elf.read_integer(base + if wide { 16 } else { 8 }, word)?;
+                if offset != 0 || address != 0 {
+                    return Err("PT_LOAD in wrong place".into());
+                }
+                if size != elf.read_integer(base + if wide { 32 } else { 16 }, word)? {
+                    return Err("cannot handle memsz != filesz".into());
+                }
+                load = Some(size);
             }
-            k += 1;
+            2 => dynamic = Some((offset, size)),
+            _ => {}
         }
-        i += 1;
     }
-    if image_name.is_null() { fwrite(stripped_addr, stripped_len, 1, outfile); return; }
-    mapping_size = ((stripped_len as u64 + 4095) / 4096) * 4096;
-    fprintf(outfile, b"/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n\0".as_ptr() as *const c_char);
-    fprintf(outfile, b"#include <linux/linkage.h>\n#include <linux/init.h>\n#include <asm/page_types.h>\n#include <asm/vdso.h>\n\n\0".as_ptr() as *const c_char);
-    fprintf(outfile, b"static unsigned char raw_data[%lu] __ro_after_init __aligned(PAGE_SIZE) = {\0".as_ptr() as *const c_char, mapping_size);
-    i = 0;
-    while i < stripped_len as u64 {
-        if i % 10 == 0 { fprintf(outfile, b"\n\t\0".as_ptr() as *const c_char); }
-        fprintf(outfile, b"0x%02X, \0".as_ptr() as *const c_char, *(stripped_addr as *const u8).add(i as usize) as c_int);
-        i += 1;
+    let load = load.ok_or("no PT_LOAD seg")?;
+    if (stripped.len() as u64) < load {
+        return Err("stripped input is too short".into());
     }
-    fprintf(outfile, b"\n};\n\n\0".as_ptr() as *const c_char);
-    if !extable_sec.is_null() { BITSFUNC_extract(raw_addr as *const u8, raw_len, outfile, extable_sec, b"extable\0".as_ptr() as *const c_char); }
-    fprintf(outfile, b"const struct vdso_image %s = {\n\t.data = raw_data,\n\t.size = %lu,\n\0".as_ptr() as *const c_char, image_name, mapping_size);
-    if !alt_sec.is_null() { fprintf(outfile, b"\t.alt = %lu,\n\t.alt_len = %lu,\n\0".as_ptr() as *const c_char, GET_LE(&(*alt_sec).sh_offset), GET_LE(&(*alt_sec).sh_size)); }
-    if !extable_sec.is_null() { fprintf(outfile, b"\t.extable_base = %lu,\n\t.extable_len = %lu,\n\t.extable = extable,\n\0".as_ptr() as *const c_char, GET_LE(&(*extable_sec).sh_offset), GET_LE(&(*extable_sec).sh_size)); }
-    i = 0;
-    while i < NSYMS as u64 { if required_syms[i as usize].export != 0 && syms[i as usize] != 0 { fprintf(outfile, b"\t.sym_%s = %lld,\n\0".as_ptr() as *const c_char, required_syms[i as usize].name, syms[i as usize]); } i += 1; }
-    fprintf(outfile, b"};\n\nstatic __init int init_%s(void) {\n\treturn init_vdso_image(&%s);\n};\nsubsys_initcall(init_%s);\n\0".as_ptr() as *const c_char, image_name, image_name, image_name);
-    let _ = (raw_len, mapping_size, alt_sec, extable_sec, required_syms);
+    let (offset, size) =
+        dynamic.ok_or("input has no PT_DYNAMIC section -- your toolchain is buggy")?;
+    extent(raw, offset, size)?;
+    let stride = 2 * word as u64;
+    if size % stride != 0 {
+        return Err("invalid dynamic table size".into());
+    }
+    for index in 0..size / stride {
+        let tag = elf.read_integer(offset + index * stride, word)?;
+        if tag == 0 {
+            break;
+        }
+        if matches!(tag, 7 | 17 | 18 | 19 | 22) {
+            return Err("vdso image contains dynamic relocations".into());
+        }
+    }
+    Ok(())
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+fn copy(output: &mut Vec<u8>, bytes: &[u8]) {
+    for (index, byte) in bytes.iter().enumerate() {
+        if index % 10 == 0 {
+            output.extend_from_slice(b"\n\t");
+        }
+        // A Vec writer cannot fail other than allocation failure.
+        let _ = write!(output, "0x{byte:02X}, ");
+    }
+}
+
+fn extracted<'a>(elf: &ElfFile<'a>, section: &Section) -> Result<&'a [u8], String> {
+    elf.section_data(section)
+        .map_err(|_| "section to extract overruns input data".into())
+}
+
+pub(crate) fn generate(
+    raw: &[u8],
+    stripped: &[u8],
+    name: Option<&[u8]>,
+) -> Result<Vec<u8>, String> {
+    if !matches!(raw.get(4), Some(1 | 2)) {
+        return Err("unknown ELF class".into());
+    }
+    if raw.get(16..18) != Some(&[3, 0]) {
+        return Err("input is not a shared object".into());
+    }
+    let elf = ElfFile::parse(raw, 1 << 3)?;
+    if !elf.little_endian() {
+        return Err("x86 vDSO must use little-endian encoding".into());
+    }
+    segments(&elf, raw, stripped)?;
+    let sections = elf.sections()?;
+    let table = sections
+        .iter()
+        .rev()
+        .find(|section| section.kind == 2)
+        .ok_or("no symbol table")?;
+    let strings = elf.section(table.link as usize)?;
+    let alternatives = elf.find_section(b".altinstructions")?;
+    let exceptions = elf.find_section(b"__ex_table")?;
+    let mut values = [0i64; SYMBOLS.len()];
+    for symbol in elf.symbols(table)? {
+        let symbol_name = elf.string(&strings, symbol.name)?;
+        if let Some(index) = SYMBOLS
+            .iter()
+            .position(|name| name.as_bytes() == symbol_name)
+        {
+            if values[index] != 0 {
+                return Err(format!("duplicate symbol {}", SYMBOLS[index]));
+            }
+            values[index] = if elf.word_size() == 8 {
+                symbol.value as i64
+            } else {
+                symbol.value as u32 as i32 as i64
+            };
+        }
+    }
+    let Some(name) = name else {
+        return Ok(stripped.to_vec());
+    };
+    let mapping_size = stripped
+        .len()
+        .checked_add(4095)
+        .ok_or("vDSO mapping size overflow")?
+        / 4096
+        * 4096;
+    let mut output = Vec::new();
+    output.extend_from_slice(b"/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n#include <linux/linkage.h>\n#include <linux/init.h>\n#include <asm/page_types.h>\n#include <asm/vdso.h>\n\n");
+    let _ = write!(
+        output,
+        "static unsigned char raw_data[{mapping_size}] __ro_after_init __aligned(PAGE_SIZE) = {{"
+    );
+    copy(&mut output, stripped);
+    output.extend_from_slice(b"\n};\n\n");
+    if let Some(section) = exceptions {
+        let data = extracted(&elf, &section)?;
+        let _ = write!(
+            output,
+            "static const unsigned char extable[{}] = {{",
+            data.len()
+        );
+        copy(&mut output, data);
+        output.extend_from_slice(b"\n};\n\n");
+    }
+    output.extend_from_slice(b"const struct vdso_image ");
+    output.extend_from_slice(name);
+    let _ = write!(
+        output,
+        " = {{\n\t.data = raw_data,\n\t.size = {mapping_size},\n"
+    );
+    if let Some(section) = alternatives {
+        let _ = write!(
+            output,
+            "\t.alt = {},\n\t.alt_len = {},\n",
+            section.offset, section.size
+        );
+    }
+    if let Some(section) = exceptions {
+        let _ = write!(
+            output,
+            "\t.extable_base = {},\n\t.extable_len = {},\n\t.extable = extable,\n",
+            section.offset, section.size
+        );
+    }
+    for (symbol, value) in SYMBOLS.iter().zip(values) {
+        if value != 0 {
+            let _ = writeln!(output, "\t.sym_{symbol} = {value},");
+        }
+    }
+    output.extend_from_slice(b"};\n\nstatic __init int init_");
+    output.extend_from_slice(name);
+    output.extend_from_slice(b"(void) {\n\treturn init_vdso_image(&");
+    output.extend_from_slice(name);
+    output.extend_from_slice(b");\n};\nsubsys_initcall(init_");
+    output.extend_from_slice(name);
+    output.extend_from_slice(b");\n");
+    Ok(output)
+}

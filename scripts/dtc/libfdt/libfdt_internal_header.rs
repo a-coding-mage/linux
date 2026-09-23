@@ -1,111 +1,105 @@
-/* SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause) */
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- *
- * Rust translation of libfdt_internal.h.  Names supplied by fdt.h and other
- * libfdt translation units are intentionally left as external dependencies.
- */
+// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
+//! Shared checked header access and structure-block indexing.
+use super::*;
 
-#[allow(improper_ctypes)]
-extern "C" {
-    pub fn fdt_ro_probe_(fdt: *const core::ffi::c_void) -> i32;
-    pub fn fdt_check_node_offset_(fdt: *const core::ffi::c_void, offset: i32) -> i32;
-    pub fn fdt_check_prop_offset_(fdt: *const core::ffi::c_void, offset: i32) -> i32;
-    pub fn fdt_find_string_len_(
-        strtab: *const core::ffi::c_char,
-        tabsize: i32,
-        s: *const core::ffi::c_char,
-        s_len: usize,
-    ) -> *const core::ffi::c_char;
-    pub fn fdt_node_end_offset_(fdt: *mut core::ffi::c_void, nodeoffset: i32) -> i32;
-    pub fn strlen(s: *const core::ffi::c_char) -> usize;
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Header {
+    pub(crate) magic: u32,
+    pub(crate) totalsize: usize,
+    pub(crate) off_dt_struct: usize,
+    pub(crate) off_dt_strings: usize,
+    pub(crate) off_mem_rsvmap: usize,
+    pub(crate) version: u32,
+    pub(crate) last_comp_version: u32,
+    pub(crate) boot_cpuid_phys: u32,
+    pub(crate) size_dt_strings: usize,
+    pub(crate) size_dt_struct: usize,
 }
-
-#[inline]
-pub unsafe fn fdt_find_string_(
-    strtab: *const core::ffi::c_char,
-    tabsize: i32,
-    s: *const core::ffi::c_char,
-) -> *const core::ffi::c_char {
-    fdt_find_string_len_(strtab, tabsize, s, strlen(s))
+impl Header {
+    pub(crate) fn read(data: &[u8]) -> Result<Self> {
+        let version = u32_at(data, 20)?;
+        bytes(data, 0, header_size(version))?;
+        Ok(Self {
+            magic: u32_at(data, 0)?,
+            totalsize: u32_at(data, 4)? as usize,
+            off_dt_struct: u32_at(data, 8)? as usize,
+            off_dt_strings: u32_at(data, 12)? as usize,
+            off_mem_rsvmap: u32_at(data, 16)? as usize,
+            version,
+            last_comp_version: u32_at(data, 24)?,
+            boot_cpuid_phys: if version >= 2 { u32_at(data, 28)? } else { 0 },
+            size_dt_strings: if version >= 3 {
+                u32_at(data, 32)? as usize
+            } else {
+                0
+            },
+            size_dt_struct: if version >= 17 {
+                u32_at(data, 36)? as usize
+            } else {
+                0
+            },
+        })
+    }
 }
-
-#[inline]
-pub unsafe fn fdt_offset_ptr_(fdt: *const core::ffi::c_void, offset: isize) -> *const core::ffi::c_char {
-    (fdt as *const core::ffi::c_char)
-        .add(fdt_off_dt_struct(fdt) as usize)
-        .offset(offset)
-}
-
-#[inline]
-pub unsafe fn fdt_offset_ptr_w_(fdt: *mut core::ffi::c_void, offset: isize) -> *mut core::ffi::c_void {
-    fdt_offset_ptr_(fdt as *const core::ffi::c_void, offset) as *mut core::ffi::c_void
-}
-
-#[inline]
-pub unsafe fn fdt_mem_rsv_(fdt: *const core::ffi::c_void, n: isize) -> *const fdt_reserve_entry {
-    let rsv_table = (fdt as *const core::ffi::c_char)
-        .add(fdt_off_mem_rsvmap(fdt) as usize) as *const fdt_reserve_entry;
-    rsv_table.offset(n)
-}
-
-#[inline]
-pub unsafe fn fdt_mem_rsv_w_(fdt: *mut core::ffi::c_void, n: isize) -> *mut fdt_reserve_entry {
-    fdt_mem_rsv_(fdt as *const core::ffi::c_void, n) as *mut fdt_reserve_entry
-}
-
-/* Structural accesses assume naturally aligned or gracefully unaligned data. */
-#[inline]
-pub unsafe fn fdt32_ld_(p: *const fdt32_t) -> u32 { fdt32_to_cpu(*p) }
-
-#[inline]
-pub unsafe fn fdt64_ld_(p: *const fdt64_t) -> u64 { fdt64_to_cpu(*p) }
-
-pub const FDT_SW_MAGIC: u32 = !FDT_MAGIC;
-
-pub const FDT_ASSUME_MASK: i32 = 0;
-
-pub const ASSUME_PERFECT: i32 = 0xff;
-pub const ASSUME_VALID_DTB: i32 = 1 << 0;
-pub const ASSUME_VALID_INPUT: i32 = 1 << 1;
-pub const ASSUME_LATEST: i32 = 1 << 2;
-pub const ASSUME_NO_ROLLBACK: i32 = 1 << 3;
-pub const ASSUME_LIBFDT_ORDER: i32 = 1 << 4;
-pub const ASSUME_LIBFDT_FLAWLESS: i32 = 1 << 5;
-
-#[inline]
-pub const fn can_assume_(mask: i32) -> bool {
-    (FDT_ASSUME_MASK & mask) != 0
-}
-
-/* The C FDT_RO_PROBE macro performs an early return from its caller. */
-#[macro_export]
-macro_rules! FDT_RO_PROBE {
-    ($fdt:expr) => {{
-        if !$crate::can_assume_(ASSUME_VALID_DTB) {
-            let totalsize_ = unsafe { $crate::fdt_ro_probe_($fdt) };
-            if totalsize_ < 0 { return totalsize_; }
+pub(super) fn ro_probe(data: &[u8]) -> Result<Header> {
+    let h = Header::read(data)?;
+    match h.magic {
+        FDT_MAGIC => {
+            if h.version < 2 || h.last_comp_version > 17 {
+                return Err(Error::BadVersion);
+            }
         }
-    }};
+        FDT_SW_MAGIC => {
+            if h.size_dt_struct == 0 {
+                return Err(Error::BadState);
+            }
+        }
+        _ => return Err(Error::BadMagic),
+    }
+    if h.totalsize >= i32::MAX as usize || h.totalsize > data.len() {
+        return Err(Error::Truncated);
+    }
+    Ok(h)
 }
-
-#[macro_export]
-macro_rules! FDT_ALIGN { ($x:expr, $a:expr) => {
-    (($x + $a - 1) & !($a - 1))
-} }
-
-#[macro_export]
-macro_rules! FDT_TAGALIGN { ($x:expr) => { FDT_ALIGN!($x, FDT_TAGSIZE) } }
-
-extern "C" {
-    fn fdt_off_dt_struct(fdt: *const core::ffi::c_void) -> u32;
-    fn fdt_off_mem_rsvmap(fdt: *const core::ffi::c_void) -> u32;
-    fn fdt32_to_cpu(value: fdt32_t) -> u32;
-    fn fdt64_to_cpu(value: fdt64_t) -> u64;
+pub(super) fn struct_range(data: &[u8], offset: i32, len: usize) -> Result<std::ops::Range<usize>> {
+    let h = Header::read(data)?;
+    let off = usize::try_from(offset).map_err(|_| Error::Truncated)?;
+    let end = off.checked_add(len).ok_or(Error::Truncated)?;
+    if h.version >= 17 && end > h.size_dt_struct {
+        return Err(Error::Truncated);
+    }
+    let abs = h.off_dt_struct.checked_add(off).ok_or(Error::Truncated)?;
+    let abs_end = abs.checked_add(len).ok_or(Error::Truncated)?;
+    if abs_end > h.totalsize || abs_end > data.len() {
+        return Err(Error::Truncated);
+    }
+    Ok(abs..abs_end)
 }
-
-/* fdt32_t, fdt64_t, fdt_reserve_entry, FDT_MAGIC, and FDT_TAGSIZE are
- * supplied by the translated fdt.h dependency. */
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+pub(super) fn struct_abs(data: &[u8], offset: i32, len: usize) -> Result<usize> {
+    Ok(struct_range(data, offset, len)?.start)
+}
+pub(super) fn check_node_offset(data: &[u8], offset: i32) -> Result<i32> {
+    if offset < 0 || offset % 4 != 0 {
+        return Err(Error::BadOffset);
+    }
+    match next_tag(data, offset) {
+        (FDT_BEGIN_NODE, Ok(next)) => Ok(next),
+        _ => Err(Error::BadOffset),
+    }
+}
+pub(super) fn check_prop_offset(data: &[u8], offset: i32) -> Result<i32> {
+    if offset < 0 || offset % 4 != 0 {
+        return Err(Error::BadOffset);
+    }
+    match next_tag(data, offset) {
+        (FDT_PROP, Ok(next)) => Ok(next),
+        _ => Err(Error::BadOffset),
+    }
+}
+pub(super) fn node_end_offset(data: &[u8], mut offset: i32) -> Result<i32> {
+    let mut depth = 0;
+    while depth >= 0 {
+        offset = next_node(data, offset, Some(&mut depth))?;
+    }
+    Ok(offset)
+}

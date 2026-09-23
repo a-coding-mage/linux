@@ -13,8 +13,8 @@ hostprogs-always-$(CONFIG_RUST_KERNEL_DOCTESTS)		+= rustdoc_test_builder
 hostprogs-always-$(CONFIG_RUST_KERNEL_DOCTESTS)		+= rustdoc_test_gen
 hostprogs-always-$(CONFIG_TRACEPOINTS)			+= tracepoint-update
 
-sorttable-objs := sorttable.o elf-parse.o
-tracepoint-update-objs := tracepoint-update.o elf-parse.o
+sorttable-rust := y
+tracepoint-update-rust := y
 
 ifneq ($(or $(CONFIG_X86_64),$(CONFIG_X86_32)),)
 always-$(CONFIG_RUST)					+= target.json
@@ -26,31 +26,28 @@ endif
 
 hostprogs += generate_rust_target
 generate_rust_target-rust := y
+kallsyms-rust := y
+gen_packed_field_checks-rust := y
+asn1_compiler-rust := y
+unifdef-rust := y
+insert-sys-cert-rust := y
+sign-file-rust := y
+recordmcount-rust := y
 rustdoc_test_builder-rust := y
 rustdoc_test_gen-rust := y
 
-HOSTCFLAGS_tracepoint-update.o = -I$(srctree)/tools/include
-HOSTCFLAGS_elf-parse.o = -I$(srctree)/tools/include
-HOSTCFLAGS_sorttable.o = -I$(srctree)/tools/include
-HOSTLDLIBS_sorttable = -lpthread
-HOSTCFLAGS_asn1_compiler.o = -I$(srctree)/include
-HOSTCFLAGS_sign-file.o = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null)
-HOSTCFLAGS_sign-file.o += -I$(srctree)/tools/include/uapi/
-HOSTLDLIBS_sign-file = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
+HOSTRUSTFLAGS_sorttable += --check-cfg='cfg(UNWINDER_ORC_ENABLED)' \
+			  --check-cfg='cfg(MCOUNT_SORT_ENABLED)'
+include $(srctree)/scripts/Makefile.openssl
+HOSTRUSTFLAGS_sign-file += $(openssl-host-rustflags)
+$(obj)/sign-file: $(srctree)/scripts/openssl_config.py
 
 ifdef CONFIG_UNWINDER_ORC
-ifeq ($(ARCH),x86_64)
-SRCARCH := x86
-endif
-ifeq ($(ARCH),loongarch)
-SRCARCH := loongarch
-endif
-HOSTCFLAGS_sorttable.o += -I$(srctree)/tools/arch/$(SRCARCH)/include
-HOSTCFLAGS_sorttable.o += -DUNWINDER_ORC_ENABLED
+HOSTRUSTFLAGS_sorttable += --cfg UNWINDER_ORC_ENABLED
 endif
 
 ifdef CONFIG_BUILDTIME_MCOUNT_SORT
-HOSTCFLAGS_sorttable.o += -DMCOUNT_SORT_ENABLED
+HOSTRUSTFLAGS_sorttable += --cfg MCOUNT_SORT_ENABLED
 endif
 
 # The following programs are only built on demand

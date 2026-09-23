@@ -1,50 +1,68 @@
 // SPDX-License-Identifier: GPL-2.0
+//! i386 kernel and real-mode relocation classification.
 
-// Dependency provided by relocs.h.
+use crate::elf::{Relocation, Symbol};
+use crate::relocs_header::{matches, relocation_type, SymbolClass, Width};
+use crate::{Failure, Result};
 
-pub const ELF_BITS: u32 = 32;
-
-pub const ELF_MACHINE: _ = EM_386;
-pub const ELF_MACHINE_NAME: &str = "i386";
-pub const SHT_REL_TYPE: _ = SHT_REL;
-
-// C macro: Elf_Rel is ElfW(Rel).  The concrete ElfW expansion is supplied by
-// the surrounding ELF definitions.
-pub type Elf_Rel = ElfW<Rel>;
-
-pub const ELF_CLASS: _ = ELFCLASS32;
-
-macro_rules! ELF_R_SYM {
-    ($val:expr) => {
-        ELF32_R_SYM($val)
-    };
+pub(crate) fn classify(
+    rel: &Relocation,
+    sym: &Symbol,
+    name: &[u8],
+    real: bool,
+) -> Result<Option<Width>> {
+    let absolute = sym.section == 0xfff1 && !matches(SymbolClass::Relative, name, false, real);
+    let accepted_absolute = matches(SymbolClass::Absolute, name, false, real);
+    match rel.kind {
+        0 | 2 | 4 | 21 | 23 => Ok(None),
+        1 if !real => {
+            if absolute {
+                if accepted_absolute {
+                    return Ok(None);
+                }
+                return Err(Failure::named(
+                    "Invalid absolute R_386_32 relocation: ",
+                    name,
+                    "\n",
+                ));
+            }
+            Ok(Some(Width::Bits32))
+        }
+        1 if real => {
+            if !absolute {
+                return Ok(matches(SymbolClass::Linear, name, false, true).then_some(Width::Bits32));
+            }
+            if accepted_absolute {
+                return Ok(None);
+            }
+            Err(Failure::named(
+                "Invalid absolute R_386_32 relocation: ",
+                name,
+                "\n",
+            ))
+        }
+        20 if real => {
+            if absolute {
+                if accepted_absolute {
+                    return Ok(None);
+                }
+                if matches(SymbolClass::Segment, name, false, true) {
+                    return Ok(Some(Width::Bits16));
+                }
+            } else if !matches(SymbolClass::Linear, name, false, true) {
+                return Ok(None);
+            }
+            let kind = if absolute { "absolute" } else { "relative" };
+            Err(Failure::named(
+                &format!("Invalid {kind} R_386_16 relocation: "),
+                name,
+                "\n",
+            ))
+        }
+        kind => Err(format!(
+            "Unsupported relocation type: {} ({kind})\n",
+            relocation_type(kind, false)
+        )
+        .into()),
+    }
 }
-
-macro_rules! ELF_R_TYPE {
-    ($val:expr) => {
-        ELF32_R_TYPE($val)
-    };
-}
-
-macro_rules! ELF_ST_TYPE {
-    ($o:expr) => {
-        ELF32_ST_TYPE($o)
-    };
-}
-
-macro_rules! ELF_ST_BIND {
-    ($o:expr) => {
-        ELF32_ST_BIND($o)
-    };
-}
-
-macro_rules! ELF_ST_VISIBILITY {
-    ($o:expr) => {
-        ELF32_ST_VISIBILITY($o)
-    };
-}
-
-// The remainder of this translation is supplied by the shared implementation
-// included by the C source: #include "relocs.c"
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

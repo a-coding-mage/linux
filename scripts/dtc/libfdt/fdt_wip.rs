@@ -1,144 +1,43 @@
 // SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- */
+//! Mutations that preserve structure offsets.
+// Copyright (C) 2006 David Gibson, IBM Corporation.
+use super::*;
 
-use core::ffi::{c_char, c_void};
-use core::{mem, ptr};
-
-extern "C" {
-    fn fdt_getprop_namelen_w(
-        fdt: *mut c_void,
-        nodeoffset: i32,
-        name: *const c_char,
-        namelen: i32,
-        lenp: *mut i32,
-    ) -> *mut c_void;
-    fn fdt_getprop(
-        fdt: *mut c_void,
-        nodeoffset: i32,
-        name: *const c_char,
-        lenp: *mut i32,
-    ) -> *const c_void;
-    fn fdt_get_property_w(
-        fdt: *mut c_void,
-        nodeoffset: i32,
-        name: *const c_char,
-        lenp: *mut i32,
-    ) -> *mut fdt_property;
-    fn fdt_next_node(fdt: *mut c_void, offset: i32, depth: *mut i32) -> i32;
-    fn fdt_offset_ptr_w(fdt: *mut c_void, offset: i32, len: i32) -> *mut c_void;
-    fn strlen(s: *const c_char) -> usize;
-}
-
-#[repr(C)]
-pub struct fdt_property {
-    _private: [u8; 0],
-}
-
-const FDT_ERR_NOSPACE: i32 = 3;
-const FDT_NOP: u32 = 4;
-
-#[inline]
-unsafe fn cpu_to_fdt32(x: u32) -> u32 {
-    x.to_be()
-}
-
-pub unsafe fn fdt_setprop_inplace_namelen_partial(
-    fdt: *mut c_void,
-    nodeoffset: i32,
-    name: *const c_char,
-    namelen: i32,
-    idx: u32,
-    val: *const c_void,
-    len: i32,
-) -> i32 {
-    let mut proplen: i32 = 0;
-    let propval = fdt_getprop_namelen_w(fdt, nodeoffset, name, namelen, &mut proplen);
-    if propval.is_null() {
-        return proplen;
+pub(crate) fn setprop_inplace_partial(
+    data: &mut [u8],
+    node: i32,
+    name: &[u8],
+    index: usize,
+    value: &[u8],
+) -> Result<()> {
+    let prop = property(data, node, name)?;
+    if index
+        .checked_add(value.len())
+        .is_none_or(|end| end > prop.data.len())
+    {
+        return Err(Error::NoSpace);
     }
-
-    if (proplen as u32) < (len as u32).wrapping_add(idx) {
-        return -FDT_ERR_NOSPACE;
-    }
-
-    ptr::copy_nonoverlapping(
-        val as *const u8,
-        (propval as *mut u8).add(idx as usize),
-        len as usize,
-    );
-    0
+    put(data, prop.data_offset + index, value)
 }
-
-pub unsafe fn fdt_setprop_inplace(
-    fdt: *mut c_void,
-    nodeoffset: i32,
-    name: *const c_char,
-    val: *const c_void,
-    len: i32,
-) -> i32 {
-    let mut proplen: i32 = 0;
-    let propval = fdt_getprop(fdt, nodeoffset, name, &mut proplen);
-    if propval.is_null() {
-        return proplen;
+pub(crate) fn setprop_inplace(data: &mut [u8], node: i32, name: &[u8], value: &[u8]) -> Result<()> {
+    if getprop(data, node, name)?.len() != value.len() {
+        return Err(Error::NoSpace);
     }
-
-    if proplen != len {
-        return -FDT_ERR_NOSPACE;
-    }
-
-    fdt_setprop_inplace_namelen_partial(
-        fdt,
-        nodeoffset,
-        name,
-        strlen(name) as i32,
-        0,
-        val,
-        len,
-    )
+    setprop_inplace_partial(data, node, name, 0, value)
 }
-
-unsafe fn fdt_nop_region_(start: *mut c_void, len: i32) {
-    let mut p = start as *mut u32;
-    let end = (start as *mut u8).add(len as usize);
-    while (p as *mut u8) < end {
-        *p = cpu_to_fdt32(FDT_NOP);
-        p = p.add(1);
+fn nop_region(data: &mut [u8], start: usize, len: usize) -> Result<()> {
+    let len = align(len, 4)?;
+    bytes(data, start, len)?;
+    for at in (start..start + len).step_by(4) {
+        put32(data, at, FDT_NOP)?;
     }
+    Ok(())
 }
-
-pub unsafe fn fdt_nop_property(fdt: *mut c_void, nodeoffset: i32, name: *const c_char) -> i32 {
-    let mut len: i32 = 0;
-    let prop = fdt_get_property_w(fdt, nodeoffset, name, &mut len);
-    if prop.is_null() {
-        return len;
-    }
-
-    fdt_nop_region_(prop as *mut c_void, len + mem::size_of::<fdt_property>() as i32);
-    0
+pub(crate) fn nop_property(data: &mut [u8], node: i32, name: &[u8]) -> Result<()> {
+    let prop = get_property(data, node, name)?;
+    nop_region(data, prop.data_offset - 12, prop.data.len() + 12)
 }
-
-pub unsafe fn fdt_node_end_offset_(fdt: *mut c_void, mut offset: i32) -> i32 {
-    let mut depth: i32 = 0;
-    while offset >= 0 && depth >= 0 {
-        offset = fdt_next_node(fdt, offset, &mut depth);
-    }
-    offset
+pub(crate) fn nop_node(data: &mut [u8], node: i32) -> Result<()> {
+    let end = node_end_offset(data, node)?;
+    nop_region(data, struct_abs(data, node, 0)?, (end - node) as usize)
 }
-
-pub unsafe fn fdt_nop_node(fdt: *mut c_void, nodeoffset: i32) -> i32 {
-    let endoffset = fdt_node_end_offset_(fdt, nodeoffset);
-    if endoffset < 0 {
-        return endoffset;
-    }
-
-    fdt_nop_region_(
-        fdt_offset_ptr_w(fdt, nodeoffset, 0),
-        endoffset - nodeoffset,
-    );
-    0
-}
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

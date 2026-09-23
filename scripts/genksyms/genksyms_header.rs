@@ -1,119 +1,82 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Generate kernel symbol version hashes.
-   Copyright 1996, 1997 Linux International.
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Generate kernel symbol version hashes.
+// Copyright 1996, 1997 Linux International.
+// Original implementation: Richard Henderson <rth@tamu.edu>, based on work
+// by Bjorn Ekwall <bj0rn@blox.se>. This file was part of Linux modutils.
 
-   New implementation contributed by Richard Henderson <rth@tamu.edu>
-   Based on original work by Bjorn Ekwall <bj0rn@blox.se>
-
-   This file is part of the Linux modutils.
-
- */
-
-// C dependencies: <stdbool.h>, <stdio.h>, and <list_types.h>.
-
-use core::ffi::{c_char, c_int, c_void};
-
-// `hlist_node` is supplied by the translated list_types dependency.
-use crate::list_types::hlist_node;
-
-#[repr(C)]
-#[derive(Copy, Clone, PartialEq, Eq)]
-pub enum symbol_type {
-    SYM_NORMAL,
-    SYM_TYPEDEF,
-    SYM_ENUM,
-    SYM_STRUCT,
-    SYM_UNION,
-    SYM_ENUM_CONST,
+/// Genksyms keeps C tag names separate from ordinary identifiers.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(super) enum Kind {
+    #[default]
+    Normal,
+    Typedef,
+    Enum,
+    Struct,
+    Union,
+    EnumConst,
 }
 
-#[repr(C)]
-#[derive(Copy, Clone, PartialEq, Eq)]
-pub enum symbol_status {
-    STATUS_UNCHANGED,
-    STATUS_DEFINED,
-    STATUS_MODIFIED,
-}
-
-#[repr(C)]
-pub struct string_list {
-    pub next: *mut string_list,
-    pub tag: symbol_type,
-    pub in_source_file: c_int,
-    pub string: *mut c_char,
-}
-
-#[repr(C)]
-pub struct symbol {
-    pub hnode: hlist_node,
-    pub name: *mut c_char,
-    pub type_: symbol_type,
-    pub defn: *mut string_list,
-    pub expansion_trail: *mut symbol,
-    pub visited: *mut symbol,
-    pub is_extern: c_int,
-    pub is_declared: c_int,
-    pub status: symbol_status,
-    pub is_override: c_int,
-}
-
-pub type yystype = *mut *mut string_list;
-pub type YYSTYPE = yystype;
-
-extern "C" {
-    pub static mut cur_line: c_int;
-    pub static mut cur_filename: *mut c_char;
-    pub static mut in_source_file: c_int;
-
-    pub fn find_symbol(name: *const c_char, ns: symbol_type, exact: c_int) -> *mut symbol;
-    pub fn add_symbol(
-        name: *const c_char,
-        type_: symbol_type,
-        defn: *mut string_list,
-        is_extern: c_int,
-    ) -> *mut symbol;
-    pub fn export_symbol(name: *const c_char);
-
-    pub fn free_node(list: *mut string_list);
-    pub fn free_list(s: *mut string_list, e: *mut string_list);
-    pub fn copy_node(list: *mut string_list) -> *mut string_list;
-    pub fn copy_list_range(start: *mut string_list, end: *mut string_list) -> *mut string_list;
-
-    pub fn yylex() -> c_int;
-    pub fn yyparse() -> c_int;
-
-    pub static mut dont_want_type_specifier: bool;
-
-    pub fn error_with_pos(fmt: *const c_char, ...);
-}
-
-/*----------------------------------------------------------------------*/
-#[macro_export]
-macro_rules! xmalloc {
-    ($size:expr) => {{
-        let __ptr = unsafe { ::libc::malloc($size) };
-        if __ptr.is_null() && $size != 0 {
-            unsafe {
-                ::libc::fprintf(::libc::stderr, b"out of memory\n\0".as_ptr() as *const c_char);
-                ::libc::exit(1);
-            }
+impl Kind {
+    pub(super) fn namespace(self) -> bool {
+        matches!(self, Self::Enum | Self::Struct | Self::Union)
+    }
+    pub(super) fn tag(self) -> Option<u8> {
+        match self {
+            Self::Normal => None,
+            Self::Typedef => Some(b't'),
+            Self::Enum => Some(b'e'),
+            Self::Struct => Some(b's'),
+            Self::Union => Some(b'u'),
+            Self::EnumConst => Some(b'E'),
         }
-        __ptr
-    }};
-}
-
-#[macro_export]
-macro_rules! xstrdup {
-    ($str:expr) => {{
-        let __str = unsafe { ::libc::strdup($str) };
-        if __str.is_null() {
-            unsafe {
-                ::libc::fprintf(::libc::stderr, b"out of memory\n\0".as_ptr() as *const c_char);
-                ::libc::exit(1);
-            }
+    }
+    pub(super) fn name(self) -> &'static str {
+        match self {
+            Self::Normal => "",
+            Self::Typedef => "typedef",
+            Self::Enum => "enum",
+            Self::Struct => "struct",
+            Self::Union => "union",
+            Self::EnumConst => "enum constant",
         }
-        __str
-    }};
+    }
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub(super) struct Word {
+    pub(super) text: Vec<u8>,
+    pub(super) kind: Kind,
+}
+
+impl Word {
+    pub(super) fn plain(text: impl AsRef<[u8]>) -> Self {
+        Self {
+            text: text.as_ref().to_vec(),
+            kind: Kind::Normal,
+        }
+    }
+    pub(super) fn print(&self, output: &mut Vec<u8>) {
+        if let Some(tag) = self.kind.tag() {
+            output.extend_from_slice(&[tag, b'#']);
+        }
+        output.extend_from_slice(&self.text);
+    }
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub(super) enum Status {
+    Unchanged,
+    Defined,
+    Modified,
+}
+
+pub(super) struct Symbol {
+    pub(super) name: Vec<u8>,
+    pub(super) kind: Kind,
+    pub(super) definition: Vec<Word>,
+    pub(super) external: bool,
+    pub(super) declared: bool,
+    pub(super) status: Status,
+    pub(super) override_version: bool,
+    pub(super) visited: bool,
+}

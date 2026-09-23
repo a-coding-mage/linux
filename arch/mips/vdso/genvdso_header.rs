@@ -1,157 +1,157 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2015 Imagination Technologies
- * Author: Alex Smith <alex.smith@imgtec.com>
- */
+// SPDX-License-Identifier: GPL-2.0-or-later
+// Copyright (C) 2015 Imagination Technologies
+// Author: Alex Smith <alex.smith@imgtec.com>
+//! Checked MIPS vDSO section repair and ABI-specific symbol extraction.
 
-// External ELF types, constants, helpers, globals, and C I/O/string symbols
-// referenced below are supplied by the surrounding translation unit.
+use crate::elf::ElfFile;
 
-pub unsafe fn patch_vdso(path: *const std::os::raw::c_char, vdso: *mut u8) -> bool {
-    let ehdr = vdso as *const Ehdr;
-    let shdrs: *mut u8;
-    let mut shdr: *mut Shdr;
-    let shstrtab: *mut std::os::raw::c_char;
-    let mut name: *mut std::os::raw::c_char;
-    let sh_count: u16;
-    let sh_entsize: u16;
-
-    shdrs = vdso.add(swap_uint((*ehdr).e_shoff) as usize);
-    sh_count = swap_uint16((*ehdr).e_shnum);
-    sh_entsize = swap_uint16((*ehdr).e_shentsize);
-
-    shdr = shdrs
-        .add((sh_entsize as usize) * (swap_uint16((*ehdr).e_shstrndx) as usize))
-        as *mut Shdr;
-    shstrtab = vdso.add(swap_uint((*shdr).sh_offset) as usize)
-        as *mut std::os::raw::c_char;
-
-    for i in 0..sh_count {
-        shdr = shdrs.add((i as usize) * (sh_entsize as usize)) as *mut Shdr;
-        name = shstrtab.add(swap_uint32((*shdr).sh_name) as usize);
-
-        /*
-         * Ensure there are no relocation sections - ld.so does not
-         * relocate the VDSO so if there are relocations things will
-         * break.
-         */
-        match swap_uint32((*shdr).sh_type) {
-            SHT_REL | SHT_RELA => {
-                fprintf(
-                    stderr,
-                    b"%s: '%s' contains relocation sections\n\0".as_ptr() as _,
-                    program_name,
-                    path,
-                );
-                return false;
-            }
-            _ => {}
-        }
-
-        /* Check for existing sections. */
-        if strcmp(name, b".MIPS.abiflags\0".as_ptr() as _) == 0 {
-            fprintf(
-                stderr,
-                b"%s: '%s' already contains a '.MIPS.abiflags' section\n\0".as_ptr()
-                    as _,
-                program_name,
-                path,
-            );
-            return false;
-        }
-
-        if strcmp(name, b".mips_abiflags\0".as_ptr() as _) == 0 {
-            strcpy(name, b".MIPS.abiflags\0".as_ptr() as _);
-            (*shdr).sh_type = swap_uint32(SHT_MIPS_ABIFLAGS);
-            (*shdr).sh_entsize = (*shdr).sh_size;
-        }
-    }
-
-    true
+fn image(data: &[u8]) -> Result<ElfFile<'_>, String> {
+    ElfFile::parse(data, 1 << 3).map_err(|error| format!("has malformed ELF data: {error}"))
 }
 
-pub unsafe fn get_symbols(path: *const std::os::raw::c_char, vdso: *mut u8) -> bool {
-    let ehdr = vdso as *const Ehdr;
-    let shdrs: *mut u8;
-    let mut symtab: *mut u8;
-    let mut shdr: *mut Shdr;
-    let mut sym: *const Sym;
-    let strtab: *mut std::os::raw::c_char;
-    let mut name: *mut std::os::raw::c_char;
-    let sh_count: u16;
-    let sh_entsize: u16;
-    let st_count: u16;
-    let st_entsize: u16;
-    let mut offset: u64;
-    let flags: u32;
-
-    shdrs = vdso.add(swap_uint((*ehdr).e_shoff) as usize);
-    sh_count = swap_uint16((*ehdr).e_shnum);
-    sh_entsize = swap_uint16((*ehdr).e_shentsize);
-
-    let mut i = 0u16;
-    while i < sh_count {
-        shdr = shdrs.add((i as usize) * (sh_entsize as usize)) as *mut Shdr;
-        if swap_uint32((*shdr).sh_type) == SHT_SYMTAB {
-            break;
-        }
-        i += 1;
+pub(crate) fn validate(data: &[u8]) -> Result<(u8, u8), String> {
+    if data.get(..4) != Some(b"\x7fELF") {
+        return Err("is not an ELF file".into());
     }
-
-    if i == sh_count {
-        fprintf(stderr, b"%s: '%s' has no symbol table\n\0".as_ptr() as _, program_name, path);
-        return false;
+    let class = *data.get(4).ok_or("has a truncated ELF header")?;
+    if !matches!(class, 1 | 2) {
+        return Err("has invalid ELF class".into());
     }
+    let order = *data.get(5).ok_or("has a truncated ELF header")?;
+    if !matches!(order, 1 | 2) {
+        return Err("has invalid ELF data order".into());
+    }
+    let half = |offset: usize| -> Result<u16, String> {
+        let bytes: [u8; 2] = data
+            .get(offset..offset + 2)
+            .ok_or("has a truncated ELF header")?
+            .try_into()
+            .unwrap();
+        Ok(if order == 1 {
+            u16::from_le_bytes(bytes)
+        } else {
+            u16::from_be_bytes(bytes)
+        })
+    };
+    if half(18)? != 8 {
+        return Err("has invalid ELF machine (expected EM_MIPS)".into());
+    }
+    if half(16)? != 3 {
+        return Err("has invalid ELF type (expected ET_DYN)".into());
+    }
+    image(data)?;
+    Ok((class, order))
+}
 
-    /* Get flags */
-    flags = swap_uint32((*ehdr).e_flags);
-    if elf_class == ELFCLASS64 {
-        elf_abi = ABI_N64;
-    } else if flags & EF_MIPS_ABI2 != 0 {
-        elf_abi = ABI_N32;
+fn store(data: &mut [u8], offset: u64, bytes: &[u8]) -> Result<(), String> {
+    let offset: usize = offset
+        .try_into()
+        .map_err(|_| "has an oversized ELF offset")?;
+    let end = offset
+        .checked_add(bytes.len())
+        .ok_or("has an overflowing ELF offset")?;
+    data.get_mut(offset..end)
+        .ok_or("has a truncated ELF section")?
+        .copy_from_slice(bytes);
+    Ok(())
+}
+
+pub(crate) fn patch(data: &mut [u8]) -> Result<(), String> {
+    let elf = image(data)?;
+    let count = elf.sections()?.len();
+    let width = elf.word_size();
+    let little = elf.little_endian();
+    let table = elf.read_integer(if width == 8 { 40 } else { 32 }, width)?;
+    let stride = if width == 8 { 64 } else { 40 };
+    let string_index = elf.read_integer(if width == 8 { 62 } else { 50 }, 2)?;
+    let string_index = if string_index == 0xffff {
+        elf.section(0)?.link as usize
     } else {
-        elf_abi = ABI_O32;
-    }
-
-    /* Get symbol table. */
-    symtab = vdso.add(swap_uint((*shdr).sh_offset) as usize);
-    st_entsize = swap_uint((*shdr).sh_entsize) as u16;
-    st_count = (swap_uint((*shdr).sh_size) / st_entsize as u32) as u16;
-
-    /* Get string table. */
-    shdr = shdrs.add((swap_uint32((*shdr).sh_link) as usize) * sh_entsize as usize)
-        as *mut Shdr;
-    strtab = vdso.add(swap_uint((*shdr).sh_offset) as usize) as *mut _;
-
-    /* Write offsets for symbols needed by the kernel. */
-    let mut si = 0usize;
-    while !(*vdso_symbols.add(si)).name.is_null() {
-        if (*vdso_symbols.add(si)).abis & elf_abi == 0 {
-            si += 1;
+        string_index as usize
+    };
+    let strings = elf.section(string_index)?;
+    for index in 0..count {
+        // Re-read names after each repair: two sections may share a string
+        // offset, and the second must see the first one's renamed value.
+        let elf = image(data)?;
+        let section = elf.section(index)?;
+        if matches!(section.kind, 4 | 9) {
+            return Err("contains relocation sections".into());
+        }
+        let name = elf.section_name(&section)?;
+        if name == b".MIPS.abiflags" {
+            return Err("already contains a '.MIPS.abiflags' section".into());
+        }
+        if name != b".mips_abiflags" {
             continue;
         }
-
-        let mut j = 0u16;
-        while j < st_count {
-            sym = symtab.add((j as usize) * st_entsize as usize) as *const Sym;
-            name = strtab.add(swap_uint32((*sym).st_name) as usize);
-
-            if strcmp(name, (*vdso_symbols.add(si)).name) == 0 {
-                offset = swap_uint((*sym).st_value);
-                fprintf(out_file, b"\t.%s = 0x%lx,\n\0".as_ptr() as _, (*vdso_symbols.add(si)).offset_name, offset);
-                break;
-            }
-            j += 1;
-        }
-
-        if j == st_count {
-            fprintf(stderr, b"%s: '%s' is missing required symbol '%s'\n\0".as_ptr() as _, program_name, path, (*vdso_symbols.add(si)).name);
-            return false;
-        }
-        si += 1;
+        let header = table
+            .checked_add(index as u64 * stride)
+            .ok_or("has an overflowing ELF section table")?;
+        let name_offset = strings
+            .offset
+            .checked_add(elf.read_integer(header, 4)?)
+            .ok_or("has an overflowing ELF string offset")?;
+        let kind: u32 = 0x7000_002a;
+        let kind = if little {
+            kind.to_le_bytes()
+        } else {
+            kind.to_be_bytes()
+        };
+        let size = if little {
+            section.size.to_le_bytes()
+        } else {
+            section.size.to_be_bytes()
+        };
+        store(data, name_offset, b".MIPS.abiflags")?;
+        store(data, header + 4, &kind)?;
+        let encoded_size = if little {
+            &size[..width]
+        } else {
+            &size[8 - width..]
+        };
+        store(
+            data,
+            header + if width == 8 { 56 } else { 36 },
+            encoded_size,
+        )?;
     }
-
-    true
+    Ok(())
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+pub(crate) fn symbol_offsets(data: &[u8]) -> Result<Vec<(&'static str, u64)>, String> {
+    let elf = image(data)?;
+    let table = elf
+        .sections()?
+        .into_iter()
+        .find(|section| section.kind == 2)
+        .ok_or("has no symbol table")?;
+    let symbols = elf.symbols(&table)?;
+    let strings = elf.section(table.link as usize)?;
+    let flags = elf.read_integer(if elf.word_size() == 8 { 48 } else { 36 }, 4)?;
+    let o32 = elf.word_size() == 4 && flags & 0x20 == 0;
+    let mut offsets = Vec::new();
+    for (name, field, required) in [
+        (b"__vdso_sigreturn".as_slice(), "off_sigreturn", o32),
+        (b"__vdso_rt_sigreturn".as_slice(), "off_rt_sigreturn", true),
+    ] {
+        if !required {
+            continue;
+        }
+        let mut found = None;
+        for symbol in &symbols {
+            if elf.string(&strings, symbol.name)? == name {
+                found = Some(symbol.value);
+                break;
+            }
+        }
+        let value = found.ok_or_else(|| {
+            format!(
+                "is missing required symbol '{}'",
+                String::from_utf8_lossy(name)
+            )
+        })?;
+        offsets.push((field, value));
+    }
+    Ok(offsets)
+}

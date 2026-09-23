@@ -1,77 +1,41 @@
-/* SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause) */
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- * Copyright 2012 Kim Phillips, Freescale Semiconductor.
- */
+// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
+//! Checked wire-format accessors replacing native C endian/layout helpers.
+use super::{Error, Result};
 
-pub type fdt16_t = u16;
-pub type fdt32_t = u32;
-pub type fdt64_t = u64;
-
-macro_rules! EXTRACT_BYTE {
-    ($x:expr, $n:expr) => {{
-        let value = $x;
-        unsafe { (*((&value as *const _ as *const u8).add($n))) as u64 }
-    }};
+pub(super) fn bytes(data: &[u8], at: usize, len: usize) -> Result<&[u8]> {
+    data.get(at..at.checked_add(len).ok_or(Error::Truncated)?)
+        .ok_or(Error::Truncated)
 }
-
-macro_rules! CPU_TO_FDT16 {
-    ($x:expr) => {
-        (EXTRACT_BYTE!($x, 0) << 8) | EXTRACT_BYTE!($x, 1)
-    };
+pub(super) fn u32_at(data: &[u8], at: usize) -> Result<u32> {
+    Ok(u32::from_be_bytes(bytes(data, at, 4)?.try_into().unwrap()))
 }
-
-macro_rules! CPU_TO_FDT32 {
-    ($x:expr) => {
-        (EXTRACT_BYTE!($x, 0) << 24)
-            | (EXTRACT_BYTE!($x, 1) << 16)
-            | (EXTRACT_BYTE!($x, 2) << 8)
-            | EXTRACT_BYTE!($x, 3)
-    };
+pub(super) fn u64_at(data: &[u8], at: usize) -> Result<u64> {
+    Ok(u64::from_be_bytes(bytes(data, at, 8)?.try_into().unwrap()))
 }
-
-macro_rules! CPU_TO_FDT64 {
-    ($x:expr) => {
-        (EXTRACT_BYTE!($x, 0) << 56)
-            | (EXTRACT_BYTE!($x, 1) << 48)
-            | (EXTRACT_BYTE!($x, 2) << 40)
-            | (EXTRACT_BYTE!($x, 3) << 32)
-            | (EXTRACT_BYTE!($x, 4) << 24)
-            | (EXTRACT_BYTE!($x, 5) << 16)
-            | (EXTRACT_BYTE!($x, 6) << 8)
-            | EXTRACT_BYTE!($x, 7)
-    };
+pub(super) fn put(data: &mut [u8], at: usize, value: &[u8]) -> Result<()> {
+    let end = at.checked_add(value.len()).ok_or(Error::Truncated)?;
+    data.get_mut(at..end)
+        .ok_or(Error::Truncated)?
+        .copy_from_slice(value);
+    Ok(())
 }
-
-#[inline]
-pub fn fdt16_to_cpu(x: fdt16_t) -> u16 {
-    CPU_TO_FDT16!(x) as u16
+pub(super) fn put32(data: &mut [u8], at: usize, value: u32) -> Result<()> {
+    put(data, at, &value.to_be_bytes())
 }
-
-#[inline]
-pub fn cpu_to_fdt16(x: u16) -> fdt16_t {
-    CPU_TO_FDT16!(x) as fdt16_t
+pub(super) fn put64(data: &mut [u8], at: usize, value: u64) -> Result<()> {
+    put(data, at, &value.to_be_bytes())
 }
-
-#[inline]
-pub fn fdt32_to_cpu(x: fdt32_t) -> u32 {
-    CPU_TO_FDT32!(x) as u32
+pub(super) fn align(value: usize, by: usize) -> Result<usize> {
+    value
+        .checked_add(by - 1)
+        .map(|x| x & !(by - 1))
+        .ok_or(Error::NoSpace)
 }
-
-#[inline]
-pub fn cpu_to_fdt32(x: u32) -> fdt32_t {
-    CPU_TO_FDT32!(x) as fdt32_t
+pub(super) fn cstr(data: &[u8]) -> Result<&[u8]> {
+    Ok(&data[..data.iter().position(|&c| c == 0).ok_or(Error::Truncated)?])
 }
-
-#[inline]
-pub fn fdt64_to_cpu(x: fdt64_t) -> u64 {
-    CPU_TO_FDT64!(x) as u64
+pub(super) fn find_string(table: &[u8], name: &[u8]) -> Option<usize> {
+    table
+        .windows(name.len().checked_add(1)?)
+        .position(|s| s[..name.len()] == *name && s[name.len()] == 0)
 }
-
-#[inline]
-pub fn cpu_to_fdt64(x: u64) -> fdt64_t {
-    CPU_TO_FDT64!(x) as fdt64_t
-}
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

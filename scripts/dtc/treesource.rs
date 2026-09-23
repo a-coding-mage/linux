@@ -1,140 +1,400 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2005.
- */
+// (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation. 2005.
 
-// Dependencies supplied by the surrounding translation unit.
+//! Byte-preserving DTS output and inferred property-value markers.
 
-extern "C" {
-    static mut yyin: *mut FILE;
-    fn yyparse() -> c_int;
-    static mut yylloc: YYLTYPE;
-}
+use crate::dtc_header::{
+    Diagnostics, DtInfo, Label, Marker, MarkerKind, NodeId, Options, Property, SourcePos,
+    DTSF_PLUGIN,
+};
+use crate::srcpos;
 
-static mut parser_output: *mut dt_info = std::ptr::null_mut();
-static mut treesource_error: bool = false;
-
-unsafe fn delim_start(t: markertype) -> *const c_char { match t { TYPE_UINT8=>b"[\0".as_ptr() as *const c_char, TYPE_UINT16=>b"/bits/ 16 <\0".as_ptr() as *const c_char, TYPE_UINT32=>b"<\0".as_ptr() as *const c_char, TYPE_UINT64=>b"/bits/ 64 <\0".as_ptr() as *const c_char, _=>b"\0".as_ptr() as *const c_char } }
-
-pub unsafe fn dt_from_source(fname: *const c_char) -> *mut dt_info {
-    parser_output = std::ptr::null_mut();
-    treesource_error = false;
-    srcfile_push(fname);
-    yyin = (*current_srcfile).f;
-    yylloc.file = current_srcfile;
-    if yyparse() != 0 { die(b"Unable to parse input tree\n\0".as_ptr() as *const c_char); }
-    if treesource_error { die(b"Syntax error parsing input tree\n\0".as_ptr() as *const c_char); }
-    parser_output
-}
-
-unsafe fn write_prefix(f: *mut FILE, level: c_int) {
-    for _ in 0..level { fputc(b'\t' as c_int, f); }
-}
-
-unsafe fn isstring(c: c_char) -> bool {
-    isprint(c as c_uchar) != 0 || c == 0 || libc::strchr(b"\x07\x08\t\n\x0b\x0c\r\0".as_ptr() as *const c_char, c as c_int) != std::ptr::null_mut()
-}
-
-unsafe fn write_propval_string(f: *mut FILE, s: *const c_char, len: usize) {
-    let end = s.add(len.wrapping_sub(1));
-    if len == 0 { return; }
-    assert!(*end == 0);
-    fprintf(f, b"\"\0".as_ptr() as *const c_char);
-    let mut p = s;
-    while p < end {
-        let c = *p; p = p.add(1);
-        let esc = match c { 7=>b"\\a\0",8=>b"\\b\0",9=>b"\\t\0",10=>b"\\n\0",11=>b"\\v\0",12=>b"\\f\0",13=>b"\\r\0",92=>b"\\\\\0",34=>b"\\\"\0",0=>b"\\0\0", _=>std::ptr::null() };
-        if !esc.is_null() { fprintf(f, esc.as_ptr() as *const c_char); }
-        else if isprint(c as c_uchar) != 0 { fprintf(f, b"%c\0".as_ptr() as *const c_char, c as c_int); }
-        else { fprintf(f, b"\\x%02x\0".as_ptr() as *const c_char, c as c_uchar as c_uint); }
-    }
-    fprintf(f, b"\"\0".as_ptr() as *const c_char);
-}
-
-unsafe fn write_propval_int(f: *mut FILE, p: *const c_char, len: usize, width: usize) {
-    assert!(len % width == 0);
-    let mut q = p;
-    let end = p.add(len);
-    while q < end {
-        match width {
-            1 => fprintf(f, b"%02x\0".as_ptr() as *const c_char, *(q as *const u8) as c_uint),
-            2 => fprintf(f, b"0x%02x\0".as_ptr() as *const c_char, dtb_ld16(q) as c_uint),
-            4 => fprintf(f, b"0x%02x\0".as_ptr() as *const c_char, dtb_ld32(q) as c_uint),
-            8 => fprintf(f, b"0x%02x\0".as_ptr() as *const c_char, dtb_ld64(q) as c_ulonglong),
-            _ => (),
+pub(crate) fn property_add_marker(
+    property: &mut Property,
+    kind: MarkerKind,
+    offset: usize,
+    reference: Option<Vec<u8>>,
+) {
+    let markers = &mut property.data.markers;
+    let mut index = markers.partition_point(|marker| marker.offset < offset);
+    if let Some(marker) = markers.get(index) {
+        if marker.offset == offset && marker.kind.is_type() {
+            if kind.is_type() {
+                return;
+            }
+            index += 1;
         }
-        q = q.add(width);
-        if q < end { fputc(b' ' as c_int, f); }
+    }
+    if markers
+        .get(index)
+        .is_some_and(|marker| marker.offset == offset && marker.kind == kind)
+    {
+        return;
+    }
+    markers.insert(
+        index,
+        Marker {
+            kind,
+            offset,
+            reference,
+        },
+    );
+}
+
+pub(crate) fn add_phandle_marker(
+    tree: &mut DtInfo,
+    node: NodeId,
+    property: usize,
+    offset: usize,
+    options: &Options,
+    diagnostics: &mut Diagnostics,
+) {
+    let prop = &tree.nodes[node].properties[property];
+    let Some(bytes) = offset
+        .checked_add(4)
+        .and_then(|end| prop.data.bytes.get(offset..end))
+    else {
+        if options.quiet < 1 {
+            diagnostics.raw(b"Warning: property ");
+            diagnostics.raw(&prop.name);
+            diagnostics.raw(format!(
+                " too short to contain a phandle at offset {offset}\n"
+            ));
+        }
+        return;
+    };
+    let phandle = u32::from_be_bytes(bytes.try_into().unwrap());
+    let reference = tree.node_by_phandle(phandle).map(|id| {
+        let candidate = &tree.nodes[id];
+        candidate
+            .labels
+            .first()
+            .map_or_else(|| candidate.fullpath.clone(), |label| label.name.clone())
+    });
+    if let Some(reference) = reference {
+        property_add_marker(
+            &mut tree.nodes[node].properties[property],
+            MarkerKind::RefPhandle,
+            offset,
+            Some(reference),
+        );
+    } else if options.quiet < 1 {
+        diagnostics.raw(format!(
+            "Warning: node referenced by phandle 0x{phandle:x} in property "
+        ));
+        diagnostics.raw(&prop.name);
+        diagnostics.raw(b" not found\n");
     }
 }
 
-unsafe fn add_marker(mi: *mut *mut marker, typ: markertype, offset: c_uint, ref_: *mut c_char) -> *mut *mut marker {
-    while !(*mi).is_null() && (**mi).offset < offset { mi = &mut (**mi).next; }
-    if !(*mi).is_null() && (**mi).offset == offset && is_type_marker((**mi).typ) {
-        if is_type_marker(typ) { return mi; }
-        mi = &mut (**mi).next;
+fn guess_range(property: &mut Property, start: usize, end: usize) -> Result<(), Vec<u8>> {
+    if start == end {
+        return Ok(());
     }
-    if !(*mi).is_null() && (**mi).offset == offset && typ == (**mi).typ { return mi; }
-    let nm = xmalloc(std::mem::size_of::<marker>()) as *mut marker;
-    (*nm).typ = typ; (*nm).offset = offset; (*nm).ref_ = ref_; (*nm).next = *mi; *mi = nm; &mut (*nm).next
-}
-
-pub unsafe fn property_add_marker(prop: *mut property, typ: markertype, offset: c_uint, ref_: *mut c_char) { add_marker(&mut (*prop).val.markers, typ, offset, ref_); }
-
-unsafe fn add_string_markers(prop: *mut property, offset: c_uint, len: c_int) {
-    let mut l = libc::strlen((*prop).val.val.add(offset as usize)) as c_int + 1;
-    let mut mi = &mut (*prop).val.markers as *mut *mut marker;
-    while l < len { mi = add_marker(mi, TYPE_STRING, offset + l as c_uint, std::ptr::null_mut()); l += libc::strlen((*prop).val.val.add((offset as c_int + l) as usize)) as c_int + 1; }
-}
-
-pub unsafe fn add_phandle_marker(dti: *mut dt_info, prop: *mut property, offset: c_uint) {
-    if (*prop).val.len < offset + 4 { if quiet < 1 { fprintf(stderr, b"Warning: property %s too short to contain a phandle at offset %u\n\0".as_ptr() as *const c_char, (*prop).name, offset); } return; }
-    let phandle = dtb_ld32((*prop).val.val.add(offset as usize));
-    let refn = get_node_by_phandle((*dti).dt, phandle);
-    if refn.is_null() { if quiet < 1 { fprintf(stderr, b"Warning: node referenced by phandle 0x%x in property %s not found\n\0".as_ptr() as *const c_char, phandle, (*prop).name); } return; }
-    let ref_ = if !(*refn).labels.is_null() { (*(*refn).labels).label } else { (*refn).fullpath };
-    add_marker(&mut (*prop).val.markers, REF_PHANDLE, offset, ref_);
-}
-
-unsafe fn guess_value_type(prop: *mut property, offset: c_uint, len: c_int) -> markertype {
-    let p = (*prop).val.val.add(offset as usize); let mut nnotstring=0; let mut nnul=0;
-    for i in 0..len { if !isstring(*p.add(i as usize)) { nnotstring+=1; } if *p.add(i as usize)==0 { nnul+=1; } }
-    if *p.add((len-1) as usize)==0 && nnotstring==0 && nnul <= len-nnul { if nnul>1 { add_string_markers(prop, offset, len); } TYPE_STRING } else if len % std::mem::size_of::<cell_t>() as c_int == 0 { TYPE_UINT32 } else { TYPE_UINT8 }
-}
-
-unsafe fn guess_type_markers(prop: *mut property) {
-    let mut m = &mut (*prop).val.markers as *mut *mut marker; let mut offset=0;
-    while !(*m).is_null() { if is_type_marker((**m).typ) { return; } if (**m).offset > offset { m=add_marker(m, guess_value_type(prop, offset, (**m).offset-offset as c_uint), offset, std::ptr::null_mut()); offset=(**m).offset; } if (**m).typ==REF_PHANDLE { m=add_marker(m, TYPE_UINT32, offset, std::ptr::null_mut()); offset+=4; } m=&mut (**m).next; }
-    if offset < (*prop).val.len { add_marker(m, guess_value_type(prop, offset, (*prop).val.len-offset as usize as c_int), offset, std::ptr::null_mut()); }
-}
-
-unsafe fn write_propval(f: *mut FILE, prop: *mut property) {
-    let len=(*prop).val.len; if len==0 { fprintf(f,b";\n\0".as_ptr() as *const c_char); return; }
-    fprintf(f,b" =\0".as_ptr() as *const c_char); guess_type_markers(prop);
-    let mut m=(*prop).val.markers; let mut emit=TYPE_NONE;
-    while !m.is_null() { let chunk=if !(*m).next.is_null(){(*m).next.offset-(*m).offset}else{len as c_uint-(*m).offset}; let p=(*prop).val.val.add((*m).offset as usize);
-        if is_type_marker((*m).typ) { emit=(*m).typ; fprintf(f,b" %s\0".as_ptr() as *const c_char,delim_start(emit)); } else if (*m).typ==LABEL { fprintf(f,b" %s:\0".as_ptr() as *const c_char,(*m).ref_); }
-        if emit!=TYPE_NONE && chunk!=0 { match emit { TYPE_UINT16=>write_propval_int(f,p,chunk as usize,2), TYPE_UINT32=>write_propval_int(f,p,chunk as usize,4), TYPE_UINT64=>write_propval_int(f,p,chunk as usize,8), TYPE_STRING=>write_propval_string(f,p,chunk as usize), _=>write_propval_int(f,p,chunk as usize,1) } }
-        if !(*m).next.is_null() { m=(*m).next; } else { break; }
+    let bytes = property
+        .data
+        .bytes
+        .get(start..end)
+        .ok_or_else(|| b"Invalid property marker offset".to_vec())?;
+    let zeroes = bytes.iter().filter(|&&byte| byte == 0).count();
+    let string = bytes.last() == Some(&0)
+        && zeroes <= bytes.len() - zeroes
+        && bytes
+            .iter()
+            .all(|byte| matches!(byte, 0 | 7..=13 | 32..=126));
+    let kind = if string {
+        MarkerKind::String
+    } else if bytes.len() % 4 == 0 {
+        MarkerKind::Uint32
+    } else {
+        MarkerKind::Uint8
+    };
+    let starts = if string {
+        bytes
+            .iter()
+            .enumerate()
+            .filter_map(|(index, &byte)| {
+                (byte == 0 && index + 1 < bytes.len()).then_some(start + index + 1)
+            })
+            .collect::<Vec<_>>()
+    } else {
+        Vec::new()
+    };
+    property_add_marker(property, kind, start, None);
+    for offset in starts {
+        property_add_marker(property, MarkerKind::String, offset, None);
     }
-    fprintf(f,b";\n\0".as_ptr() as *const c_char);
+    Ok(())
 }
 
-unsafe fn write_tree_source_node(f: *mut FILE, tree: *mut node, level: c_int) {
-    write_prefix(f,level); let mut l=(*tree).labels; while !l.is_null(){fprintf(f,b"%s: \0".as_ptr() as *const c_char,(*l).label);l=(*l).next;}
-    if !(*tree).name.is_null() && *(*tree).name!=0 {fprintf(f,b"%s {\n\0".as_ptr() as *const c_char,(*tree).name);} else {fprintf(f,b"/ {\n\0".as_ptr() as *const c_char);}
-    let mut p=(*tree).proplist; while !p.is_null(){write_prefix(f,level+1);let mut pl=(*p).labels;while !pl.is_null(){fprintf(f,b"%s: \0".as_ptr() as *const c_char,(*pl).label);pl=(*pl).next;}fprintf(f,b"%s\0".as_ptr() as *const c_char,(*p).name);write_propval(f,p);p=(*p).next;}
-    let mut c=(*tree).children;while !c.is_null(){fprintf(f,b"\n\0".as_ptr() as *const c_char);write_tree_source_node(f,c,level+1);c=(*c).next_sibling;}
-    write_prefix(f,level);fprintf(f,b"};\n\0".as_ptr() as *const c_char);
+fn infer_types(property: &mut Property) -> Result<(), Vec<u8>> {
+    if property
+        .data
+        .markers
+        .iter()
+        .any(|marker| marker.kind.is_type())
+    {
+        return Ok(());
+    }
+    let mut offset = 0;
+    for marker in property.data.markers.clone() {
+        if marker.offset > offset {
+            guess_range(property, offset, marker.offset)?;
+            offset = marker.offset;
+        }
+        if marker.kind == MarkerKind::RefPhandle {
+            property_add_marker(property, MarkerKind::Uint32, offset, None);
+            offset = offset
+                .checked_add(4)
+                .ok_or_else(|| b"Invalid property marker offset".to_vec())?;
+        }
+    }
+    if offset < property.data.bytes.len() {
+        guess_range(property, offset, property.data.bytes.len())?;
+    }
+    Ok(())
 }
 
-// The remaining source-level emission routines retain the same external data model.
-pub unsafe fn dt_to_source(f: *mut FILE, dti: *mut dt_info) {
-    fprintf(f, b"/dts-v1/;\n\0".as_ptr() as *const c_char);
-    if (*dti).dtsflags & DTSF_PLUGIN != 0 { fprintf(f, b"/plugin/;\n\0".as_ptr() as *const c_char); }
-    fprintf(f, b"\n\0".as_ptr() as *const c_char);
-    let mut re=(*dti).reservelist; while !re.is_null() { let mut l=(*re).labels; while !l.is_null() { fprintf(f,b"%s: \0".as_ptr() as *const c_char,(*l).label); l=(*l).next; } fprintf(f,b"/memreserve/\t0x%016llx 0x%016llx;\n\0".as_ptr() as *const c_char,(*re).address as c_ulonglong,(*re).size as c_ulonglong); re=(*re).next; }
-    write_tree_source_node(f, (*dti).dt, 0);
+fn write_string(output: &mut Vec<u8>, bytes: &[u8]) -> Result<(), Vec<u8>> {
+    if bytes.is_empty() {
+        return Ok(());
+    }
+    if bytes.last() != Some(&0) {
+        return Err(b"Unterminated string property marker".to_vec());
+    }
+    output.push(b'"');
+    for &byte in &bytes[..bytes.len() - 1] {
+        let escape: Option<&[u8]> = match byte {
+            0 => Some(b"\\0"),
+            7 => Some(b"\\a"),
+            8 => Some(b"\\b"),
+            9 => Some(b"\\t"),
+            10 => Some(b"\\n"),
+            11 => Some(b"\\v"),
+            12 => Some(b"\\f"),
+            13 => Some(b"\\r"),
+            b'\\' => Some(b"\\\\"),
+            b'"' => Some(b"\\\""),
+            _ => None,
+        };
+        if let Some(escape) = escape {
+            output.extend_from_slice(escape);
+        } else if (32..=126).contains(&byte) {
+            output.push(byte);
+        } else {
+            // Match the C tool's char promotion, including long hexadecimal
+            // escapes on signed-char hosts. Its parser truncates them to u8.
+            let promoted = byte as std::ffi::c_char as i32 as u32;
+            output.extend_from_slice(format!("\\x{promoted:02x}").as_bytes());
+        }
+    }
+    output.push(b'"');
+    Ok(())
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+fn write_integers(output: &mut Vec<u8>, bytes: &[u8], width: usize) -> Result<(), Vec<u8>> {
+    if bytes.len() % width != 0 {
+        return Err(b"Unaligned integer property marker".to_vec());
+    }
+    for (index, bytes) in bytes.chunks_exact(width).enumerate() {
+        if index != 0 {
+            output.push(b' ');
+        }
+        let value = bytes
+            .iter()
+            .fold(0u64, |value, &byte| (value << 8) | u64::from(byte));
+        if width != 1 {
+            output.extend_from_slice(b"0x");
+        }
+        output.extend_from_slice(format!("{value:02x}").as_bytes());
+    }
+    Ok(())
+}
+
+fn delimiters(kind: MarkerKind) -> (&'static [u8], &'static [u8]) {
+    match kind {
+        MarkerKind::Uint8 => (b"[", b"]"),
+        MarkerKind::Uint16 => (b"/bits/ 16 <", b">"),
+        MarkerKind::Uint32 => (b"<", b">"),
+        MarkerKind::Uint64 => (b"/bits/ 64 <", b">"),
+        _ => (b"", b""),
+    }
+}
+
+fn annotation(
+    output: &mut Vec<u8>,
+    positions: &[SourcePos],
+    tree: &DtInfo,
+    options: &Options,
+    first: bool,
+) {
+    if options.annotate != 0 {
+        if let Some(comment) =
+            srcpos::comment(positions, &tree.initial_path, first, options.annotate)
+        {
+            output.extend_from_slice(b" /* ");
+            output.extend_from_slice(&comment);
+            output.extend_from_slice(b" */");
+        }
+    }
+}
+
+fn write_value(
+    output: &mut Vec<u8>,
+    property: &Property,
+    tree: &DtInfo,
+    options: &Options,
+) -> Result<(), Vec<u8>> {
+    let mut property = property.clone();
+    let length = property.data.bytes.len();
+    if length != 0 {
+        output.extend_from_slice(b" =");
+        infer_types(&mut property)?;
+        let markers = &property.data.markers;
+        let mut emit = MarkerKind::None;
+        for (index, marker) in markers.iter().enumerate() {
+            let end = markers.get(index + 1).map_or(length, |next| next.offset);
+            let data_end = markers[index + 1..]
+                .iter()
+                .find(|next| next.kind.is_type())
+                .map_or(length, |next| next.offset);
+            let chunk = property
+                .data
+                .bytes
+                .get(marker.offset..end)
+                .ok_or_else(|| b"Invalid property marker offset".to_vec())?;
+            if marker.kind.is_type() {
+                emit = marker.kind;
+                output.push(b' ');
+                output.extend_from_slice(delimiters(emit).0);
+            } else if marker.kind == MarkerKind::Label {
+                output.push(b' ');
+                output.extend_from_slice(marker.reference.as_deref().unwrap_or_default());
+                output.push(b':');
+            }
+            if emit == MarkerKind::None || chunk.is_empty() {
+                continue;
+            }
+            match emit {
+                MarkerKind::Uint32 => {
+                    if let Some(reference) = markers.iter().find(|other| {
+                        other.kind == MarkerKind::RefPhandle && other.offset == marker.offset
+                    }) {
+                        let name = reference.reference.as_deref().unwrap_or_default();
+                        output.push(b'&');
+                        if name.starts_with(b"/") {
+                            output.push(b'{');
+                        }
+                        output.extend_from_slice(name);
+                        if name.starts_with(b"/") {
+                            output.push(b'}');
+                        }
+                        if chunk.len() < 4 {
+                            return Err(b"Truncated phandle property marker".to_vec());
+                        }
+                        if chunk.len() > 4 {
+                            output.push(b' ');
+                            write_integers(output, &chunk[4..], 4)?;
+                        }
+                    } else {
+                        write_integers(output, chunk, 4)?;
+                    }
+                    if data_end > end {
+                        output.push(b' ');
+                    }
+                }
+                MarkerKind::String => write_string(output, chunk)?,
+                kind => write_integers(output, chunk, kind.bits().unwrap_or(8) / 8)?,
+            }
+            if end == data_end {
+                output.extend_from_slice(delimiters(emit).1);
+                if end != length {
+                    output.push(b',');
+                }
+                emit = MarkerKind::None;
+            }
+        }
+    }
+    output.push(b';');
+    annotation(output, &property.srcpos, tree, options, true);
+    output.push(b'\n');
+    Ok(())
+}
+
+fn labels(output: &mut Vec<u8>, labels: &[Label]) {
+    for label in labels.iter().filter(|label| !label.deleted) {
+        output.extend_from_slice(&label.name);
+        output.extend_from_slice(b": ");
+    }
+}
+
+fn write_node(
+    output: &mut Vec<u8>,
+    tree: &DtInfo,
+    id: NodeId,
+    level: usize,
+    options: &Options,
+) -> Result<(), Vec<u8>> {
+    let root = id;
+    let mut pending = vec![(id, level, false)];
+    while let Some((id, level, end)) = pending.pop() {
+        let node = &tree.nodes[id];
+        if end {
+            output.extend(std::iter::repeat(b'\t').take(level));
+            output.extend_from_slice(b"};");
+            annotation(output, &node.srcpos, tree, options, false);
+            output.push(b'\n');
+            continue;
+        }
+        if id != root {
+            output.push(b'\n');
+        }
+        output.extend(std::iter::repeat(b'\t').take(level));
+        labels(output, &node.labels);
+        output.extend_from_slice(if node.name.is_empty() {
+            b"/"
+        } else {
+            &node.name
+        });
+        output.extend_from_slice(b" {");
+        annotation(output, &node.srcpos, tree, options, true);
+        output.push(b'\n');
+        for property in node.properties.iter().filter(|property| !property.deleted) {
+            output.extend(std::iter::repeat(b'\t').take(level + 1));
+            labels(output, &property.labels);
+            output.extend_from_slice(&property.name);
+            write_value(output, property, tree, options)?;
+        }
+        pending.push((id, level, true));
+        for &child in node.children.iter().rev() {
+            if !tree.nodes[child].deleted {
+                pending.push((child, level + 1, false));
+            }
+        }
+    }
+    Ok(())
+}
+
+pub(crate) fn to_source(
+    tree: &DtInfo,
+    options: &Options,
+    _diagnostics: &mut Diagnostics,
+) -> Result<Vec<u8>, Vec<u8>> {
+    let mut output = b"/dts-v1/;\n".to_vec();
+    if tree.dtsflags & DTSF_PLUGIN != 0 {
+        output.extend_from_slice(b"/plugin/;\n");
+    }
+    output.push(b'\n');
+    for reserve in &tree.reserves {
+        labels(&mut output, &reserve.labels);
+        output.extend_from_slice(
+            format!(
+                "/memreserve/\t0x{:016x} 0x{:016x};\n",
+                reserve.address, reserve.size
+            )
+            .as_bytes(),
+        );
+    }
+    write_node(&mut output, tree, tree.root, 0, options)?;
+    Ok(output)
+}

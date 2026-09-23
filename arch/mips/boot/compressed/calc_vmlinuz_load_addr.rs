@@ -1,64 +1,77 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010 "Wu Zhangjin" <wuzhangjin@gmail.com>
- */
+// Copyright (C) 2010 "Wu Zhangjin" <wuzhangjin@gmail.com>
+//! Compute the compressed kernel's load address using the original 64-KiB gap.
 
-use std::env;
-use std::fs;
+#[path = "../host_tool.rs"]
+mod host_tool;
+
 use std::io::{self, Write};
 
-const SZ_64K: u64 = 64 * 1024;
-
-fn main() {
-    let argv: Vec<String> = env::args().collect();
-    let argc = argv.len();
-
-    let failure = 1;
-    let success = 0;
-
-    if argc != 3 {
-        eprintln!("Usage: {} <pathname> <vmlinux_load_addr>", argv[0]);
-        std::process::exit(failure);
+fn hexadecimal(mut text: &[u8]) -> Option<u64> {
+    while text
+        .first()
+        .is_some_and(|b| matches!(b, b' ' | b'\t'..=b'\r'))
+    {
+        text = &text[1..];
     }
-
-    let sb = match fs::metadata(&argv[1]) {
-        Ok(metadata) => metadata,
-        Err(error) => {
-            eprintln!("stat: {}", error);
-            std::process::exit(failure);
+    let negative = text.first() == Some(&b'-');
+    if matches!(text.first(), Some(b'+' | b'-')) {
+        text = &text[1..];
+    }
+    let mut found = false;
+    if text.starts_with(b"0x") || text.starts_with(b"0X") {
+        // sscanf("%llx") accepts a bare hexadecimal prefix as zero.
+        found = true;
+        text = &text[2..];
+    }
+    let mut value = 0u64;
+    let mut overflow = false;
+    for &byte in text {
+        let digit = match byte {
+            b'0'..=b'9' => byte - b'0',
+            b'a'..=b'f' => byte - b'a' + 10,
+            b'A'..=b'F' => byte - b'A' + 10,
+            _ => break,
+        };
+        found = true;
+        if let Some(next) = value
+            .checked_mul(16)
+            .and_then(|n| n.checked_add(u64::from(digit)))
+        {
+            value = next;
+        } else {
+            overflow = true;
         }
-    };
-
-    /* Convert hex characters to dec number */
-    let address_text = argv[2].trim_start();
-    let address_text = address_text
-        .strip_prefix("0x")
-        .or_else(|| address_text.strip_prefix("0X"))
-        .unwrap_or(address_text);
-    let vmlinux_load_addr = match u64::from_str_radix(address_text, 16) {
-        Ok(value) => value,
-        Err(_) => {
-            eprintln!("No matching characters");
-            std::process::exit(failure);
+    }
+    found.then(|| {
+        if overflow {
+            u64::MAX
+        } else if negative {
+            value.wrapping_neg()
+        } else {
+            value
         }
-    };
-
-    let vmlinux_size = sb.len();
-    let mut vmlinuz_load_addr = vmlinux_load_addr.wrapping_add(vmlinux_size);
-
-    /*
-     * Align with 64KB: KEXEC needs load sections to be aligned to PAGE_SIZE,
-     * which may be as large as 64KB depending on the kernel configuration.
-     */
-
-    vmlinuz_load_addr = vmlinuz_load_addr
-        .wrapping_add(SZ_64K.wrapping_sub(vmlinux_size % SZ_64K));
-
-    println!("0x{:x}", vmlinuz_load_addr);
-
-    // Keep the C program's explicit success return status.
-    let _ = io::stdout().flush();
-    std::process::exit(success);
+    })
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+fn run() -> Result<(), Vec<u8>> {
+    let arguments: Vec<_> = std::env::args_os().collect();
+    if arguments.len() != 3 {
+        let mut message = b"Usage: ".to_vec();
+        message.extend_from_slice(arguments[0].as_encoded_bytes());
+        message.extend_from_slice(b" <pathname> <vmlinux_load_addr>\n");
+        return Err(message);
+    }
+    let size = std::fs::metadata(&arguments[1])
+        .map_err(|error| host_tool::perror("stat", error))?
+        .len();
+    let load = hexadecimal(arguments[2].as_encoded_bytes())
+        .ok_or_else(|| b"No matching characters\n".to_vec())?;
+    let address = load.wrapping_add(size).wrapping_add(65536 - size % 65536);
+    writeln!(io::stdout().lock(), "0x{address:x}")
+        .map_err(|error| host_tool::perror("write", error))?;
+    Ok(())
+}
+fn main() {
+    host_tool::finish(run());
+}

@@ -4,6 +4,7 @@
 include $(srctree)/lib/vdso/Makefile.include
 
 hostprogs := vdsomunge
+vdsomunge-rust := y
 
 obj-vdso := vgettimeofday.o note.o
 

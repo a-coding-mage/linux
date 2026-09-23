@@ -1,186 +1,403 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+// SPDX-License-Identifier: GPL-2.0
+//! SELinux security classes and permissions, in their policy ABI order.
 
-#[repr(C)]
-pub struct security_class_mapping {
-    pub name: Option<&'static [u8]>,
-    pub perms: &'static [Option<&'static [u8]>],
+/// One security class and its ordered permission names.
+pub(crate) struct SecurityClassMapping {
+    /// The policy language name of this class.
+    pub(crate) name: &'static str,
+    /// Permission bit names, starting with the least significant bit.
+    pub(crate) permissions: &'static [&'static str],
 }
 
-macro_rules! s {
-    ($name:literal) => {
-        Some(concat!($name, "\0").as_bytes())
-    };
-}
-
-macro_rules! common_file_sock_perms {
-    () => {
-        s!("ioctl"), s!("read"), s!("write"), s!("create"), s!("getattr"), s!("setattr"),
-        s!("lock"), s!("relabelfrom"), s!("relabelto"), s!("append"), s!("map")
-    };
-}
-
-macro_rules! common_file_perms {
-    () => {
-        common_file_sock_perms!(), s!("unlink"), s!("link"), s!("rename"), s!("execute"),
-        s!("quotaon"), s!("mounton"), s!("audit_access"), s!("open"), s!("execmod"),
-        s!("watch"), s!("watch_mount"), s!("watch_sb"), s!("watch_with_perm"),
-        s!("watch_reads"), s!("watch_mountns")
-    };
-}
-
-macro_rules! common_sock_perms {
-    () => {
-        common_file_sock_perms!(), s!("bind"), s!("connect"), s!("listen"), s!("accept"),
-        s!("getopt"), s!("setopt"), s!("shutdown"), s!("recvfrom"), s!("sendto"),
-        s!("name_bind")
-    };
-}
-
-macro_rules! common_ipc_perms {
-    () => {
-        s!("create"), s!("destroy"), s!("getattr"), s!("setattr"), s!("read"), s!("write"),
-        s!("associate"), s!("unix_read"), s!("unix_write")
-    };
-}
-
-macro_rules! common_cap_perms {
-    () => {
-        s!("chown"), s!("dac_override"), s!("dac_read_search"), s!("fowner"), s!("fsetid"),
-        s!("kill"), s!("setgid"), s!("setuid"), s!("setpcap"), s!("linux_immutable"),
-        s!("net_bind_service"), s!("net_broadcast"), s!("net_admin"), s!("net_raw"),
-        s!("ipc_lock"), s!("ipc_owner"), s!("sys_module"), s!("sys_rawio"),
-        s!("sys_chroot"), s!("sys_ptrace"), s!("sys_pacct"), s!("sys_admin"),
-        s!("sys_boot"), s!("sys_nice"), s!("sys_resource"), s!("sys_time"),
-        s!("sys_tty_config"), s!("mknod"), s!("lease"), s!("audit_write"),
-        s!("audit_control"), s!("setfcap")
-    };
-}
-
-macro_rules! common_cap2_perms {
-    () => {
-        s!("mac_override"), s!("mac_admin"), s!("syslog"), s!("wake_alarm"),
-        s!("block_suspend"), s!("audit_read"), s!("perfmon"), s!("bpf"),
-        s!("checkpoint_restore")
-    };
-}
-
-/*
- * In the C header this check is enabled only under __KERNEL__:
- * include <linux/capability.h>
- * if CAP_LAST_CAP > CAP_CHECKPOINT_RESTORE, fail the build and update
- * COMMON_CAP2_PERMS.
- */
-
-/*
- * Note: The name for any socket class should be suffixed by "socket",
- *	 and doesn't contain more than one substr of "socket".
- */
-pub static secclass_map: [security_class_mapping; 108] = [
-    security_class_mapping { name: s!("security"), perms: &[s!("compute_av"), s!("compute_create"), s!("compute_member"), s!("check_context"), s!("load_policy"), s!("compute_relabel"), s!("compute_user"), s!("setenforce"), s!("setbool"), s!("setsecparam"), s!("setcheckreqprot"), s!("read_policy"), s!("validate_trans"), None] },
-    security_class_mapping { name: s!("process"), perms: &[s!("fork"), s!("transition"), s!("sigchld"), s!("sigkill"), s!("sigstop"), s!("signull"), s!("signal"), s!("ptrace"), s!("getsched"), s!("setsched"), s!("getsession"), s!("getpgid"), s!("setpgid"), s!("getcap"), s!("setcap"), s!("share"), s!("getattr"), s!("setexec"), s!("setfscreate"), s!("noatsecure"), s!("siginh"), s!("setrlimit"), s!("rlimitinh"), s!("dyntransition"), s!("setcurrent"), s!("execmem"), s!("execstack"), s!("execheap"), s!("setkeycreate"), s!("setsockcreate"), s!("getrlimit"), None] },
-    security_class_mapping { name: s!("process2"), perms: &[s!("nnp_transition"), s!("nosuid_transition"), None] },
-    security_class_mapping { name: s!("system"), perms: &[s!("ipc_info"), s!("syslog_read"), s!("syslog_mod"), s!("syslog_console"), s!("module_request"), s!("module_load"), s!("firmware_load"), s!("kexec_image_load"), s!("kexec_initramfs_load"), s!("policy_load"), s!("x509_certificate_load"), None] },
-    security_class_mapping { name: s!("capability"), perms: &[common_cap_perms!(), None] },
-    security_class_mapping { name: s!("filesystem"), perms: &[s!("mount"), s!("remount"), s!("unmount"), s!("getattr"), s!("relabelfrom"), s!("relabelto"), s!("associate"), s!("quotamod"), s!("quotaget"), s!("watch"), None] },
-    security_class_mapping { name: s!("file"), perms: &[common_file_perms!(), s!("execute_no_trans"), s!("entrypoint"), None] },
-    security_class_mapping { name: s!("dir"), perms: &[common_file_perms!(), s!("add_name"), s!("remove_name"), s!("reparent"), s!("search"), s!("rmdir"), None] },
-    security_class_mapping { name: s!("fd"), perms: &[s!("use"), None] },
-    security_class_mapping { name: s!("lnk_file"), perms: &[common_file_perms!(), None] },
-    security_class_mapping { name: s!("chr_file"), perms: &[common_file_perms!(), None] },
-    security_class_mapping { name: s!("blk_file"), perms: &[common_file_perms!(), None] },
-    security_class_mapping { name: s!("sock_file"), perms: &[common_file_perms!(), None] },
-    security_class_mapping { name: s!("fifo_file"), perms: &[common_file_perms!(), None] },
-    security_class_mapping { name: s!("socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("tcp_socket"), perms: &[common_sock_perms!(), s!("node_bind"), s!("name_connect"), None] },
-    security_class_mapping { name: s!("udp_socket"), perms: &[common_sock_perms!(), s!("node_bind"), None] },
-    security_class_mapping { name: s!("rawip_socket"), perms: &[common_sock_perms!(), s!("node_bind"), None] },
-    security_class_mapping { name: s!("node"), perms: &[s!("recvfrom"), s!("sendto"), None] },
-    security_class_mapping { name: s!("netif"), perms: &[s!("ingress"), s!("egress"), None] },
-    security_class_mapping { name: s!("netlink_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("packet_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("key_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("unix_stream_socket"), perms: &[common_sock_perms!(), s!("connectto"), None] },
-    security_class_mapping { name: s!("unix_dgram_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("sem"), perms: &[common_ipc_perms!(), None] },
-    security_class_mapping { name: s!("msg"), perms: &[s!("send"), s!("receive"), None] },
-    security_class_mapping { name: s!("msgq"), perms: &[common_ipc_perms!(), s!("enqueue"), None] },
-    security_class_mapping { name: s!("shm"), perms: &[common_ipc_perms!(), s!("lock"), None] },
-    security_class_mapping { name: s!("ipc"), perms: &[common_ipc_perms!(), None] },
-    security_class_mapping { name: s!("netlink_route_socket"), perms: &[common_sock_perms!(), s!("nlmsg_read"), s!("nlmsg_write"), s!("nlmsg"), None] },
-    security_class_mapping { name: s!("netlink_tcpdiag_socket"), perms: &[common_sock_perms!(), s!("nlmsg_read"), s!("nlmsg_write"), s!("nlmsg"), None] },
-    security_class_mapping { name: s!("netlink_nflog_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_xfrm_socket"), perms: &[common_sock_perms!(), s!("nlmsg_read"), s!("nlmsg_write"), s!("nlmsg"), None] },
-    security_class_mapping { name: s!("netlink_selinux_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_iscsi_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_audit_socket"), perms: &[common_sock_perms!(), s!("nlmsg_read"), s!("nlmsg_write"), s!("nlmsg_relay"), s!("nlmsg_readpriv"), s!("nlmsg_tty_audit"), s!("nlmsg"), None] },
-    security_class_mapping { name: s!("netlink_fib_lookup_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_connector_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_netfilter_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_dnrt_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("association"), perms: &[s!("sendto"), s!("recvfrom"), s!("setcontext"), s!("polmatch"), None] },
-    security_class_mapping { name: s!("netlink_kobject_uevent_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_generic_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_scsitransport_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_rdma_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netlink_crypto_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("appletalk_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("packet"), perms: &[s!("send"), s!("recv"), s!("relabelto"), s!("forward_in"), s!("forward_out"), None] },
-    security_class_mapping { name: s!("key"), perms: &[s!("view"), s!("read"), s!("write"), s!("search"), s!("link"), s!("setattr"), s!("create"), None] },
-    security_class_mapping { name: s!("memprotect"), perms: &[s!("mmap_zero"), None] },
-    security_class_mapping { name: s!("peer"), perms: &[s!("recv"), None] },
-    security_class_mapping { name: s!("capability2"), perms: &[common_cap2_perms!(), None] },
-    security_class_mapping { name: s!("kernel_service"), perms: &[s!("use_as_override"), s!("create_files_as"), None] },
-    security_class_mapping { name: s!("tun_socket"), perms: &[common_sock_perms!(), s!("attach_queue"), None] },
-    security_class_mapping { name: s!("binder"), perms: &[s!("impersonate"), s!("call"), s!("set_context_mgr"), s!("transfer"), None] },
-    security_class_mapping { name: s!("cap_userns"), perms: &[common_cap_perms!(), None] },
-    security_class_mapping { name: s!("cap2_userns"), perms: &[common_cap2_perms!(), None] },
-    security_class_mapping { name: s!("sctp_socket"), perms: &[common_sock_perms!(), s!("node_bind"), s!("name_connect"), s!("association"), None] },
-    security_class_mapping { name: s!("icmp_socket"), perms: &[common_sock_perms!(), s!("node_bind"), None] },
-    security_class_mapping { name: s!("ax25_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("ipx_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("netrom_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("atmpvc_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("x25_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("rose_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("decnet_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("atmsvc_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("rds_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("irda_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("pppox_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("llc_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("can_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("tipc_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("bluetooth_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("iucv_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("rxrpc_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("isdn_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("phonet_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("ieee802154_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("caif_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("alg_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("nfc_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("vsock_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("kcm_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("qipcrtr_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("smc_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("infiniband_pkey"), perms: &[s!("access"), None] },
-    security_class_mapping { name: s!("infiniband_endport"), perms: &[s!("manage_subnet"), None] },
-    security_class_mapping { name: s!("bpf"), perms: &[s!("map_create"), s!("map_read"), s!("map_write"), s!("prog_load"), s!("prog_run"), s!("map_create_as"), s!("prog_load_as"), None] },
-    security_class_mapping { name: s!("xdp_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("mctp_socket"), perms: &[common_sock_perms!(), None] },
-    security_class_mapping { name: s!("perf_event"), perms: &[s!("open"), s!("cpu"), s!("kernel"), s!("tracepoint"), s!("read"), s!("write"), None] },
-    security_class_mapping { name: s!("anon_inode"), perms: &[common_file_perms!(), None] },
-    security_class_mapping { name: s!("io_uring"), perms: &[s!("override_creds"), s!("sqpoll"), s!("cmd"), s!("allowed"), None] },
-    security_class_mapping { name: s!("user_namespace"), perms: &[s!("create"), None] },
-    security_class_mapping { name: s!("memfd_file"), perms: &[common_file_perms!(), s!("execute_no_trans"), s!("entrypoint"), None] },
-    /* last one */ security_class_mapping { name: None, perms: &[] },
+const COMMON_FILE_SOCK_PERMS: &[&str] = &[
+    "ioctl",
+    "read",
+    "write",
+    "create",
+    "getattr",
+    "setattr",
+    "lock",
+    "relabelfrom",
+    "relabelto",
+    "append",
+    "map",
 ];
 
-/*
- * In the C header this check is enabled only under __KERNEL__:
- * include <linux/socket.h>
- * if PF_MAX > 46, fail the build and update secclass_map.
- */
+const fn append<const N: usize>(
+    first: &[&'static str],
+    second: &[&'static str],
+) -> [&'static str; N] {
+    assert!(N == first.len() + second.len());
+    assert!(N <= u32::BITS as usize);
+    let mut result = [""; N];
+    let mut index = 0;
+    while index < first.len() {
+        result[index] = first[index];
+        index += 1;
+    }
+    while index < N {
+        result[index] = second[index - first.len()];
+        index += 1;
+    }
+    result
+}
 
+const COMMON_FILE_PERMS: &[&str] = &append::<26>(
+    COMMON_FILE_SOCK_PERMS,
+    &[
+        "unlink",
+        "link",
+        "rename",
+        "execute",
+        "quotaon",
+        "mounton",
+        "audit_access",
+        "open",
+        "execmod",
+        "watch",
+        "watch_mount",
+        "watch_sb",
+        "watch_with_perm",
+        "watch_reads",
+        "watch_mountns",
+    ],
+);
+const COMMON_SOCK_PERMS: &[&str] = &append::<21>(
+    COMMON_FILE_SOCK_PERMS,
+    &[
+        "bind",
+        "connect",
+        "listen",
+        "accept",
+        "getopt",
+        "setopt",
+        "shutdown",
+        "recvfrom",
+        "sendto",
+        "name_bind",
+    ],
+);
+const COMMON_IPC_PERMS: &[&str] = &[
+    "create",
+    "destroy",
+    "getattr",
+    "setattr",
+    "read",
+    "write",
+    "associate",
+    "unix_read",
+    "unix_write",
+];
+const COMMON_CAP_PERMS: &[&str] = &[
+    "chown",
+    "dac_override",
+    "dac_read_search",
+    "fowner",
+    "fsetid",
+    "kill",
+    "setgid",
+    "setuid",
+    "setpcap",
+    "linux_immutable",
+    "net_bind_service",
+    "net_broadcast",
+    "net_admin",
+    "net_raw",
+    "ipc_lock",
+    "ipc_owner",
+    "sys_module",
+    "sys_rawio",
+    "sys_chroot",
+    "sys_ptrace",
+    "sys_pacct",
+    "sys_admin",
+    "sys_boot",
+    "sys_nice",
+    "sys_resource",
+    "sys_time",
+    "sys_tty_config",
+    "mknod",
+    "lease",
+    "audit_write",
+    "audit_control",
+    "setfcap",
+];
+const COMMON_CAP2_PERMS: &[&str] = &[
+    "mac_override",
+    "mac_admin",
+    "syslog",
+    "wake_alarm",
+    "block_suspend",
+    "audit_read",
+    "perfmon",
+    "bpf",
+    "checkpoint_restore",
+];
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+macro_rules! class {
+    ($name:literal, [$($permission:literal),* $(,)?]) => {
+        SecurityClassMapping { name: $name, permissions: &[$($permission),*] }
+    };
+    ($name:literal, $common:ident $(, $permission:literal)* $(,)?) => {{
+        const EXTRA: &[&str] = &[$($permission),*];
+        SecurityClassMapping {
+            name: $name,
+            permissions: &append::<{ $common.len() + EXTRA.len() }>($common, EXTRA),
+        }
+    }};
+}
+
+/// Classes in security class number order (the first class has number one).
+/// Socket class names contain exactly one `socket` suffix.
+pub(crate) const SECCLASS_MAP: &[SecurityClassMapping] = &[
+    class!(
+        "security",
+        [
+            "compute_av",
+            "compute_create",
+            "compute_member",
+            "check_context",
+            "load_policy",
+            "compute_relabel",
+            "compute_user",
+            "setenforce",
+            "setbool",
+            "setsecparam",
+            "setcheckreqprot",
+            "read_policy",
+            "validate_trans"
+        ]
+    ),
+    class!(
+        "process",
+        [
+            "fork",
+            "transition",
+            "sigchld",
+            "sigkill",
+            "sigstop",
+            "signull",
+            "signal",
+            "ptrace",
+            "getsched",
+            "setsched",
+            "getsession",
+            "getpgid",
+            "setpgid",
+            "getcap",
+            "setcap",
+            "share",
+            "getattr",
+            "setexec",
+            "setfscreate",
+            "noatsecure",
+            "siginh",
+            "setrlimit",
+            "rlimitinh",
+            "dyntransition",
+            "setcurrent",
+            "execmem",
+            "execstack",
+            "execheap",
+            "setkeycreate",
+            "setsockcreate",
+            "getrlimit"
+        ]
+    ),
+    class!("process2", ["nnp_transition", "nosuid_transition"]),
+    class!(
+        "system",
+        [
+            "ipc_info",
+            "syslog_read",
+            "syslog_mod",
+            "syslog_console",
+            "module_request",
+            "module_load",
+            "firmware_load",
+            "kexec_image_load",
+            "kexec_initramfs_load",
+            "policy_load",
+            "x509_certificate_load"
+        ]
+    ),
+    class!("capability", COMMON_CAP_PERMS),
+    class!(
+        "filesystem",
+        [
+            "mount",
+            "remount",
+            "unmount",
+            "getattr",
+            "relabelfrom",
+            "relabelto",
+            "associate",
+            "quotamod",
+            "quotaget",
+            "watch"
+        ]
+    ),
+    class!("file", COMMON_FILE_PERMS, "execute_no_trans", "entrypoint"),
+    class!(
+        "dir",
+        COMMON_FILE_PERMS,
+        "add_name",
+        "remove_name",
+        "reparent",
+        "search",
+        "rmdir"
+    ),
+    class!("fd", ["use"]),
+    class!("lnk_file", COMMON_FILE_PERMS),
+    class!("chr_file", COMMON_FILE_PERMS),
+    class!("blk_file", COMMON_FILE_PERMS),
+    class!("sock_file", COMMON_FILE_PERMS),
+    class!("fifo_file", COMMON_FILE_PERMS),
+    class!("socket", COMMON_SOCK_PERMS),
+    class!("tcp_socket", COMMON_SOCK_PERMS, "node_bind", "name_connect"),
+    class!("udp_socket", COMMON_SOCK_PERMS, "node_bind"),
+    class!("rawip_socket", COMMON_SOCK_PERMS, "node_bind"),
+    class!("node", ["recvfrom", "sendto"]),
+    class!("netif", ["ingress", "egress"]),
+    class!("netlink_socket", COMMON_SOCK_PERMS),
+    class!("packet_socket", COMMON_SOCK_PERMS),
+    class!("key_socket", COMMON_SOCK_PERMS),
+    class!("unix_stream_socket", COMMON_SOCK_PERMS, "connectto"),
+    class!("unix_dgram_socket", COMMON_SOCK_PERMS),
+    class!("sem", COMMON_IPC_PERMS),
+    class!("msg", ["send", "receive"]),
+    class!("msgq", COMMON_IPC_PERMS, "enqueue"),
+    class!("shm", COMMON_IPC_PERMS, "lock"),
+    class!("ipc", COMMON_IPC_PERMS),
+    class!(
+        "netlink_route_socket",
+        COMMON_SOCK_PERMS,
+        "nlmsg_read",
+        "nlmsg_write",
+        "nlmsg"
+    ),
+    class!(
+        "netlink_tcpdiag_socket",
+        COMMON_SOCK_PERMS,
+        "nlmsg_read",
+        "nlmsg_write",
+        "nlmsg"
+    ),
+    class!("netlink_nflog_socket", COMMON_SOCK_PERMS),
+    class!(
+        "netlink_xfrm_socket",
+        COMMON_SOCK_PERMS,
+        "nlmsg_read",
+        "nlmsg_write",
+        "nlmsg"
+    ),
+    class!("netlink_selinux_socket", COMMON_SOCK_PERMS),
+    class!("netlink_iscsi_socket", COMMON_SOCK_PERMS),
+    class!(
+        "netlink_audit_socket",
+        COMMON_SOCK_PERMS,
+        "nlmsg_read",
+        "nlmsg_write",
+        "nlmsg_relay",
+        "nlmsg_readpriv",
+        "nlmsg_tty_audit",
+        "nlmsg"
+    ),
+    class!("netlink_fib_lookup_socket", COMMON_SOCK_PERMS),
+    class!("netlink_connector_socket", COMMON_SOCK_PERMS),
+    class!("netlink_netfilter_socket", COMMON_SOCK_PERMS),
+    class!("netlink_dnrt_socket", COMMON_SOCK_PERMS),
+    class!(
+        "association",
+        ["sendto", "recvfrom", "setcontext", "polmatch"]
+    ),
+    class!("netlink_kobject_uevent_socket", COMMON_SOCK_PERMS),
+    class!("netlink_generic_socket", COMMON_SOCK_PERMS),
+    class!("netlink_scsitransport_socket", COMMON_SOCK_PERMS),
+    class!("netlink_rdma_socket", COMMON_SOCK_PERMS),
+    class!("netlink_crypto_socket", COMMON_SOCK_PERMS),
+    class!("appletalk_socket", COMMON_SOCK_PERMS),
+    class!(
+        "packet",
+        ["send", "recv", "relabelto", "forward_in", "forward_out"]
+    ),
+    class!(
+        "key",
+        ["view", "read", "write", "search", "link", "setattr", "create"]
+    ),
+    class!("memprotect", ["mmap_zero"]),
+    class!("peer", ["recv"]),
+    class!("capability2", COMMON_CAP2_PERMS),
+    class!("kernel_service", ["use_as_override", "create_files_as"]),
+    class!("tun_socket", COMMON_SOCK_PERMS, "attach_queue"),
+    class!(
+        "binder",
+        ["impersonate", "call", "set_context_mgr", "transfer"]
+    ),
+    class!("cap_userns", COMMON_CAP_PERMS),
+    class!("cap2_userns", COMMON_CAP2_PERMS),
+    class!(
+        "sctp_socket",
+        COMMON_SOCK_PERMS,
+        "node_bind",
+        "name_connect",
+        "association"
+    ),
+    class!("icmp_socket", COMMON_SOCK_PERMS, "node_bind"),
+    class!("ax25_socket", COMMON_SOCK_PERMS),
+    class!("ipx_socket", COMMON_SOCK_PERMS),
+    class!("netrom_socket", COMMON_SOCK_PERMS),
+    class!("atmpvc_socket", COMMON_SOCK_PERMS),
+    class!("x25_socket", COMMON_SOCK_PERMS),
+    class!("rose_socket", COMMON_SOCK_PERMS),
+    class!("decnet_socket", COMMON_SOCK_PERMS),
+    class!("atmsvc_socket", COMMON_SOCK_PERMS),
+    class!("rds_socket", COMMON_SOCK_PERMS),
+    class!("irda_socket", COMMON_SOCK_PERMS),
+    class!("pppox_socket", COMMON_SOCK_PERMS),
+    class!("llc_socket", COMMON_SOCK_PERMS),
+    class!("can_socket", COMMON_SOCK_PERMS),
+    class!("tipc_socket", COMMON_SOCK_PERMS),
+    class!("bluetooth_socket", COMMON_SOCK_PERMS),
+    class!("iucv_socket", COMMON_SOCK_PERMS),
+    class!("rxrpc_socket", COMMON_SOCK_PERMS),
+    class!("isdn_socket", COMMON_SOCK_PERMS),
+    class!("phonet_socket", COMMON_SOCK_PERMS),
+    class!("ieee802154_socket", COMMON_SOCK_PERMS),
+    class!("caif_socket", COMMON_SOCK_PERMS),
+    class!("alg_socket", COMMON_SOCK_PERMS),
+    class!("nfc_socket", COMMON_SOCK_PERMS),
+    class!("vsock_socket", COMMON_SOCK_PERMS),
+    class!("kcm_socket", COMMON_SOCK_PERMS),
+    class!("qipcrtr_socket", COMMON_SOCK_PERMS),
+    class!("smc_socket", COMMON_SOCK_PERMS),
+    class!("infiniband_pkey", ["access"]),
+    class!("infiniband_endport", ["manage_subnet"]),
+    class!(
+        "bpf",
+        [
+            "map_create",
+            "map_read",
+            "map_write",
+            "prog_load",
+            "prog_run",
+            "map_create_as",
+            "prog_load_as"
+        ]
+    ),
+    class!("xdp_socket", COMMON_SOCK_PERMS),
+    class!("mctp_socket", COMMON_SOCK_PERMS),
+    class!(
+        "perf_event",
+        ["open", "cpu", "kernel", "tracepoint", "read", "write"]
+    ),
+    class!("anon_inode", COMMON_FILE_PERMS),
+    class!("io_uring", ["override_creds", "sqpoll", "cmd", "allowed"]),
+    class!("user_namespace", ["create"]),
+    class!(
+        "memfd_file",
+        COMMON_FILE_PERMS,
+        "execute_no_trans",
+        "entrypoint"
+    ),
+];

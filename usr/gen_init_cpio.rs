@@ -1,1098 +1,764 @@
 // SPDX-License-Identifier: GPL-2.0
-// Translated from gen_init_cpio.c. C include dependencies are represented as
-// local FFI declarations and constants.
-
-#![allow(non_camel_case_types)]
-#![allow(non_upper_case_globals)]
-#![allow(non_snake_case)]
-#![allow(dead_code)]
+//! Generate a newc/crc initramfs archive from the gen_init_cpio file-list format.
+//! Keep the archive and command-line interface compatible with gen_init_cpio.c.
+//
+// Original work by Jeff Garzik. External file lists, symlinks, pipes, and
+// FIFOs by Thayne Harbaugh. Hard-link support by Luciano Rocha.
 
 use std::env;
-use std::ffi::{CStr, CString};
-use std::mem;
-use std::os::raw::{c_char, c_int, c_long, c_uint, c_ulong, c_void};
-use std::ptr;
+use std::ffi::{OsStr, OsString};
+use std::fs::{File, OpenOptions};
+use std::io::{self, BufRead, BufReader, Read, Seek, Write};
+use std::os::fd::AsFd;
+use std::os::unix::ffi::OsStrExt;
+use std::os::unix::fs::{MetadataExt, OpenOptionsExt};
+use std::time::{SystemTime, UNIX_EPOCH};
 
-type size_t = usize;
-type ssize_t = isize;
-type time_t = c_long;
-type uid_t = c_uint;
-type gid_t = c_uint;
-type mode_t = c_uint;
-
-const CPIO_HDR_LEN: usize = 110;
-const CPIO_TRAILER: &[u8] = b"TRAILER!!!\0";
 const PATH_MAX: usize = 4096;
-const STDOUT_FILENO: c_int = 1;
-const SEEK_SET: c_int = 0;
-const EINVAL: c_int = 22;
-const O_RDONLY: c_int = 0;
-const O_WRONLY: c_int = 1;
-const O_CREAT: c_int = 0o100;
-const O_TRUNC: c_int = 0o1000;
-const O_LARGEFILE: c_int = 0;
-const S_IFLNK: c_uint = 0o120000;
-const S_IFDIR: mode_t = 0o040000;
-const S_IFIFO: mode_t = 0o010000;
-const S_IFSOCK: mode_t = 0o140000;
-const S_IFBLK: c_uint = 0o060000;
-const S_IFCHR: c_uint = 0o020000;
-const S_IFREG: c_uint = 0o100000;
+const HEADER_LEN: usize = 110;
+const LINE_SIZE: usize = 2 * PATH_MAX + 50;
+const REGULAR: u32 = 0o100000;
+const DIRECTORY: u32 = 0o040000;
+const SYMLINK: u32 = 0o120000;
+const FIFO: u32 = 0o010000;
+const SOCKET: u32 = 0o140000;
+const BLOCK: u32 = 0o060000;
+const CHARACTER: u32 = 0o020000;
 
-#[repr(C)]
-struct FILE {
-    _private: [u8; 0],
+// This is also the historical best-effort alignment rule for alignments that
+// are multiples of four but not powers of two.
+fn padding(offset: u32, alignment: u32) -> usize {
+    ((alignment - (offset & (alignment - 1))) % alignment) as usize
 }
 
-#[repr(C)]
-struct stat {
-    st_dev: c_ulong,
-    st_ino: c_ulong,
-    st_nlink: c_ulong,
-    st_mode: c_uint,
-    st_uid: c_uint,
-    st_gid: c_uint,
-    __pad0: c_int,
-    st_rdev: c_ulong,
-    st_size: c_long,
-    st_blksize: c_long,
-    st_blocks: c_long,
-    st_atime: time_t,
-    st_atime_nsec: c_long,
-    st_mtime: time_t,
-    st_mtime_nsec: c_long,
-    st_ctime: time_t,
-    st_ctime_nsec: c_long,
-    __glibc_reserved: [c_long; 3],
+fn display(bytes: &[u8]) -> std::borrow::Cow<'_, str> {
+    String::from_utf8_lossy(bytes)
 }
 
-type file_handler_fn = unsafe fn(*const c_char) -> c_int;
-
-#[repr(C)]
-struct file_handler {
-    type_: *const c_char,
-    handler: Option<file_handler_fn>,
+fn is_space(byte: &u8) -> bool {
+    matches!(byte, b' ' | b'\t' | b'\n' | b'\r' | 0x0b | 0x0c)
 }
 
-#[repr(C)]
-struct generic_type {
-    type_: *const c_char,
-    mode: mode_t,
+fn trim_space(bytes: &[u8]) -> &[u8] {
+    &bytes[bytes
+        .iter()
+        .position(|byte| !is_space(byte))
+        .unwrap_or(bytes.len())..]
 }
 
-#[derive(Copy, Clone)]
-enum generic_types {
-    GT_DIR = 0,
-    GT_PIPE = 1,
-    GT_SOCK = 2,
+#[derive(Clone, Copy)]
+struct Attributes {
+    mode: u32,
+    uid: u32,
+    gid: u32,
 }
 
-unsafe extern "C" {
-    static mut stdin: *mut FILE;
-    static mut stderr: *mut FILE;
-    static mut errno: c_int;
-    static mut optarg: *mut c_char;
-    static mut optind: c_int;
-
-    fn write(fd: c_int, buf: *const c_void, count: size_t) -> ssize_t;
-    fn read(fd: c_int, buf: *mut c_void, count: size_t) -> ssize_t;
-    fn dprintf(fd: c_int, format: *const c_char, ...) -> c_int;
-    fn fsync(fd: c_int) -> c_int;
-    fn strlen(s: *const c_char) -> size_t;
-    fn sscanf(s: *const c_char, format: *const c_char, ...) -> c_int;
-    fn fprintf(stream: *mut FILE, format: *const c_char, ...) -> c_int;
-    fn open(pathname: *const c_char, flags: c_int, ...) -> c_int;
-    fn fstat(fd: c_int, statbuf: *mut stat) -> c_int;
-    fn lseek(fd: c_int, offset: c_long, whence: c_int) -> c_long;
-    fn close(fd: c_int) -> c_int;
-    fn copy_file_range(
-        fd_in: c_int,
-        off_in: *mut c_long,
-        fd_out: c_int,
-        off_out: *mut c_long,
-        len: size_t,
-        flags: c_uint,
-    ) -> ssize_t;
-    fn strstr(haystack: *const c_char, needle: *const c_char) -> *mut c_char;
-    fn strchr(s: *const c_char, c: c_int) -> *mut c_char;
-    fn getenv(name: *const c_char) -> *mut c_char;
-    fn snprintf(s: *mut c_char, maxlen: size_t, format: *const c_char, ...) -> c_int;
-    fn strcpy(dest: *mut c_char, src: *const c_char) -> *mut c_char;
-    fn malloc(size: size_t) -> *mut c_void;
-    fn free(ptr: *mut c_void);
-    fn memcpy(dest: *mut c_void, src: *const c_void, n: size_t) -> *mut c_void;
-    fn isgraph(c: c_int) -> c_int;
-    fn fopen(pathname: *const c_char, mode: *const c_char) -> *mut FILE;
-    fn fgets(s: *mut c_char, size: c_int, stream: *mut FILE) -> *mut c_char;
-    fn strtok(str: *mut c_char, delim: *const c_char) -> *mut c_char;
-    fn strcmp(s1: *const c_char, s2: *const c_char) -> c_int;
-    fn strerror(errnum: c_int) -> *mut c_char;
-    fn getopt(argc: c_int, argv: *const *mut c_char, optstring: *const c_char) -> c_int;
-    fn strtol(nptr: *const c_char, endptr: *mut *mut c_char, base: c_int) -> c_long;
-    fn strtoul(nptr: *const c_char, endptr: *mut *mut c_char, base: c_int) -> c_ulong;
-    fn time(tloc: *mut time_t) -> time_t;
-    fn exit(status: c_int) -> !;
+struct Archive {
+    output: File,
+    offset: u32,
+    inode: u32,
+    timestamp: u32,
+    override_timestamp: bool,
+    checksum: bool,
+    alignment: u32,
 }
 
-static mut padding: [c_char; PATH_MAX] = [0; PATH_MAX];
-static mut offset: c_uint = 0;
-static mut ino: c_uint = 721;
-static mut default_mtime: time_t = 0;
-static mut do_file_mtime: bool = false;
-static mut do_csum: bool = false;
-static mut outfd: c_int = STDOUT_FILENO;
-static mut dalign: c_uint = 0;
-
-const fn padlen(off: usize, align: usize) -> usize {
-    ((align - (off & (align - 1))) % align)
-}
-
-unsafe fn push_buf(name: *const c_char, name_len: size_t) -> c_int {
-    let len = unsafe { write(outfd, name as *const c_void, name_len) };
-    if len != name_len as ssize_t {
-        return -1;
+impl Archive {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<()> {
+        self.output.write_all(bytes)?;
+        self.offset = self.offset.wrapping_add(bytes.len() as u32);
+        Ok(())
     }
 
-    unsafe { offset = offset.wrapping_add(name_len as c_uint) };
-    0
-}
-
-unsafe fn push_pad(padlen_: size_t) -> c_int {
-    let mut len: ssize_t = 0;
-
-    if padlen_ == 0 {
-        return 0;
+    fn pad(&mut self, count: usize) -> io::Result<()> {
+        self.write(&[0; PATH_MAX][..count])
     }
 
-    if padlen_ < PATH_MAX {
-        len = unsafe { write(outfd, padding.as_ptr() as *const c_void, padlen_) };
-    }
-    if len != padlen_ as ssize_t {
-        return -1;
+    fn align(&mut self, alignment: u32) -> io::Result<()> {
+        self.pad(padding(self.offset, alignment))
     }
 
-    unsafe { offset = offset.wrapping_add(padlen_ as c_uint) };
-    0
-}
-
-unsafe fn push_rest(name: *const c_char, name_len: size_t) -> c_int {
-    let len = unsafe { write(outfd, name as *const c_void, name_len) };
-    if len != name_len as ssize_t {
-        return -1;
+    fn header(&mut self, fields: [u32; 13]) -> io::Result<()> {
+        let mut header = String::with_capacity(HEADER_LEN);
+        header.push_str(if self.checksum { "070702" } else { "070701" });
+        for field in fields {
+            use std::fmt::Write;
+            write!(&mut header, "{field:08X}").expect("writing to a String cannot fail");
+        }
+        self.write(header.as_bytes())
     }
 
-    unsafe { offset = offset.wrapping_add(name_len as c_uint) };
-
-    unsafe { push_pad(padlen(name_len + CPIO_HDR_LEN, 4)) }
-}
-
-unsafe fn cpio_trailer() -> c_int {
-    let namesize: c_uint = CPIO_TRAILER.len() as c_uint;
-    let len = unsafe {
-        dprintf(
-            outfd,
-            c"%s%08X%08X%08lX%08lX%08X%08lX%08X%08X%08X%08X%08X%08X%08X".as_ptr(),
-            if do_csum { c"070702".as_ptr() } else { c"070701".as_ptr() },
-            0,
-            0,
-            0 as c_long,
-            0 as c_long,
-            1,
-            0 as c_long,
-            0,
-            0,
-            0,
-            0,
-            0,
-            namesize,
-            0,
-        )
-    };
-    unsafe { offset = offset.wrapping_add(len as c_uint) };
-
-    if len != CPIO_HDR_LEN as c_int
-        || unsafe { push_rest(CPIO_TRAILER.as_ptr() as *const c_char, namesize as size_t) } < 0
-        || unsafe { push_pad(padlen(offset as usize, 512)) } < 0
-    {
-        return -1;
-    }
-
-    if unsafe { fsync(outfd) } < 0 && unsafe { errno } != EINVAL {
-        return -1;
-    }
-
-    0
-}
-
-unsafe fn cpio_mkslink(
-    mut name: *const c_char,
-    target: *const c_char,
-    mut mode: c_uint,
-    uid: uid_t,
-    gid: gid_t,
-) -> c_int {
-    let targetsize: c_uint = unsafe { strlen(target).wrapping_add(1) as c_uint };
-
-    if unsafe { *name } == b'/' as c_char {
-        name = unsafe { name.add(1) };
-    }
-    let namesize: c_uint = unsafe { strlen(name).wrapping_add(1) as c_uint };
-
-    mode |= S_IFLNK;
-    let len = unsafe {
-        dprintf(
-            outfd,
-            c"%s%08X%08X%08lX%08lX%08X%08lX%08X%08X%08X%08X%08X%08X%08X".as_ptr(),
-            if do_csum { c"070702".as_ptr() } else { c"070701".as_ptr() },
-            {
-                let v = ino;
-                ino = ino.wrapping_add(1);
-                v
-            },
-            mode,
-            uid as c_long,
-            gid as c_long,
-            1,
-            default_mtime as c_long,
-            targetsize,
-            3,
-            1,
-            0,
-            0,
-            namesize,
-            0,
-        )
-    };
-    unsafe { offset = offset.wrapping_add(len as c_uint) };
-
-    if len != CPIO_HDR_LEN as c_int
-        || unsafe { push_buf(name, namesize as size_t) } < 0
-        || unsafe { push_pad(padlen(offset as usize, 4)) } < 0
-        || unsafe { push_buf(target, targetsize as size_t) } < 0
-        || unsafe { push_pad(padlen(offset as usize, 4)) } < 0
-    {
-        return -1;
-    }
-
-    0
-}
-
-unsafe fn cpio_mkslink_line(line: *const c_char) -> c_int {
-    let mut name = [0 as c_char; PATH_MAX + 1];
-    let mut target = [0 as c_char; PATH_MAX + 1];
-    let mut mode: c_uint = 0;
-    let mut uid: c_int = 0;
-    let mut gid: c_int = 0;
-    let mut rc: c_int = -1;
-
-    if unsafe {
-        sscanf(
-            line,
-            c"%4096s %4096s %o %d %d".as_ptr(),
-            name.as_mut_ptr(),
-            target.as_mut_ptr(),
-            &mut mode,
-            &mut uid,
-            &mut gid,
-        )
-    } != 5
-    {
-        unsafe { fprintf(stderr, c"Unrecognized dir format '%s'".as_ptr(), line) };
-    } else {
-        rc = unsafe { cpio_mkslink(name.as_ptr(), target.as_ptr(), mode, uid as uid_t, gid as gid_t) };
-    }
-    rc
-}
-
-unsafe fn cpio_mkgeneric(
-    mut name: *const c_char,
-    mode: c_uint,
-    uid: uid_t,
-    gid: gid_t,
-) -> c_int {
-    if unsafe { *name } == b'/' as c_char {
-        name = unsafe { name.add(1) };
-    }
-    let namesize: c_uint = unsafe { strlen(name).wrapping_add(1) as c_uint };
-
-    let len = unsafe {
-        dprintf(
-            outfd,
-            c"%s%08X%08X%08lX%08lX%08X%08lX%08X%08X%08X%08X%08X%08X%08X".as_ptr(),
-            if do_csum { c"070702".as_ptr() } else { c"070701".as_ptr() },
-            {
-                let v = ino;
-                ino = ino.wrapping_add(1);
-                v
-            },
-            mode,
-            uid as c_long,
-            gid as c_long,
-            2,
-            default_mtime as c_long,
-            0,
-            3,
-            1,
-            0,
-            0,
-            namesize,
-            0,
-        )
-    };
-    unsafe { offset = offset.wrapping_add(len as c_uint) };
-
-    if len != CPIO_HDR_LEN as c_int || unsafe { push_rest(name, namesize as size_t) } < 0 {
-        return -1;
-    }
-
-    0
-}
-
-static generic_type_table: [generic_type; 3] = [
-    generic_type {
-        type_: c"dir".as_ptr(),
-        mode: S_IFDIR,
-    },
-    generic_type {
-        type_: c"pipe".as_ptr(),
-        mode: S_IFIFO,
-    },
-    generic_type {
-        type_: c"sock".as_ptr(),
-        mode: S_IFSOCK,
-    },
-];
-
-unsafe fn cpio_mkgeneric_line(line: *const c_char, gt: generic_types) -> c_int {
-    let mut name = [0 as c_char; PATH_MAX + 1];
-    let mut mode: c_uint = 0;
-    let mut uid: c_int = 0;
-    let mut gid: c_int = 0;
-    let mut rc: c_int = -1;
-    let idx = gt as usize;
-
-    if unsafe {
-        sscanf(
-            line,
-            c"%4096s %o %d %d".as_ptr(),
-            name.as_mut_ptr(),
-            &mut mode,
-            &mut uid,
-            &mut gid,
-        )
-    } != 4
-    {
-        unsafe {
-            fprintf(
-                stderr,
-                c"Unrecognized %s format '%s'".as_ptr(),
-                line,
-                generic_type_table[idx].type_,
-            )
-        };
-    } else {
-        mode |= generic_type_table[idx].mode;
-        rc = unsafe { cpio_mkgeneric(name.as_ptr(), mode, uid as uid_t, gid as gid_t) };
-    }
-    rc
-}
-
-unsafe fn cpio_mkdir_line(line: *const c_char) -> c_int {
-    unsafe { cpio_mkgeneric_line(line, generic_types::GT_DIR) }
-}
-
-unsafe fn cpio_mkpipe_line(line: *const c_char) -> c_int {
-    unsafe { cpio_mkgeneric_line(line, generic_types::GT_PIPE) }
-}
-
-unsafe fn cpio_mksock_line(line: *const c_char) -> c_int {
-    unsafe { cpio_mkgeneric_line(line, generic_types::GT_SOCK) }
-}
-
-unsafe fn cpio_mknod(
-    mut name: *const c_char,
-    mut mode: c_uint,
-    uid: uid_t,
-    gid: gid_t,
-    dev_type: c_char,
-    maj: c_uint,
-    min: c_uint,
-) -> c_int {
-    if dev_type == b'b' as c_char {
-        mode |= S_IFBLK;
-    } else {
-        mode |= S_IFCHR;
-    }
-
-    if unsafe { *name } == b'/' as c_char {
-        name = unsafe { name.add(1) };
-    }
-    let namesize: c_uint = unsafe { strlen(name).wrapping_add(1) as c_uint };
-
-    let len = unsafe {
-        dprintf(
-            outfd,
-            c"%s%08X%08X%08lX%08lX%08X%08lX%08X%08X%08X%08X%08X%08X%08X".as_ptr(),
-            if do_csum { c"070702".as_ptr() } else { c"070701".as_ptr() },
-            {
-                let v = ino;
-                ino = ino.wrapping_add(1);
-                v
-            },
-            mode,
-            uid as c_long,
-            gid as c_long,
-            1,
-            default_mtime as c_long,
-            0,
-            3,
-            1,
-            maj,
-            min,
-            namesize,
-            0,
-        )
-    };
-    unsafe { offset = offset.wrapping_add(len as c_uint) };
-
-    if len != CPIO_HDR_LEN as c_int || unsafe { push_rest(name, namesize as size_t) } < 0 {
-        return -1;
-    }
-
-    0
-}
-
-unsafe fn cpio_mknod_line(line: *const c_char) -> c_int {
-    let mut name = [0 as c_char; PATH_MAX + 1];
-    let mut mode: c_uint = 0;
-    let mut uid: c_int = 0;
-    let mut gid: c_int = 0;
-    let mut dev_type: c_char = 0;
-    let mut maj: c_uint = 0;
-    let mut min: c_uint = 0;
-    let mut rc: c_int = -1;
-
-    if unsafe {
-        sscanf(
-            line,
-            c"%4096s %o %d %d %c %u %u".as_ptr(),
-            name.as_mut_ptr(),
-            &mut mode,
-            &mut uid,
-            &mut gid,
-            &mut dev_type,
-            &mut maj,
-            &mut min,
-        )
-    } != 7
-    {
-        unsafe { fprintf(stderr, c"Unrecognized nod format '%s'".as_ptr(), line) };
-    } else {
-        rc = unsafe { cpio_mknod(name.as_ptr(), mode, uid as uid_t, gid as gid_t, dev_type, maj, min) };
-    }
-    rc
-}
-
-unsafe fn cpio_mkfile_csum(fd: c_int, mut size: c_ulong, csum: *mut u32) -> c_int {
-    while size != 0 {
-        let mut filebuf = [0u8; 65536];
-        let this_size: size_t = if size < filebuf.len() as c_ulong {
-            size as size_t
+    fn name(&mut self, name: &[u8], extra_padding: usize) -> io::Result<()> {
+        self.write(name)?;
+        self.write(&[0])?;
+        if extra_padding == 0 {
+            self.align(4)
         } else {
-            filebuf.len()
+            self.pad(extra_padding)
+        }
+    }
+
+    fn special(
+        &mut self,
+        name: &[u8],
+        attributes: Attributes,
+        links: u32,
+        device: (u32, u32),
+        target: Option<&[u8]>,
+    ) -> io::Result<()> {
+        let name = name.strip_prefix(b"/").unwrap_or(name);
+        self.header([
+            self.inode,
+            attributes.mode,
+            attributes.uid,
+            attributes.gid,
+            links,
+            self.timestamp,
+            target.map_or(0, |s| s.len() as u32 + 1),
+            3,
+            1,
+            device.0,
+            device.1,
+            name.len() as u32 + 1,
+            0,
+        ])?;
+        self.inode = self.inode.wrapping_add(1);
+        self.name(name, 0)?;
+        if let Some(target) = target {
+            self.write(target)?;
+            self.write(&[0])?;
+            self.align(4)?;
+        }
+        Ok(())
+    }
+
+    fn regular(
+        &mut self,
+        names: &[&[u8]],
+        location: &[u8],
+        attributes: Attributes,
+    ) -> Result<(), ()> {
+        let mut input = File::open(OsStr::from_bytes(location)).map_err(|_| {
+            eprintln!("File {} could not be opened for reading", display(location));
+        })?;
+        let metadata = input.metadata().map_err(|_| {
+            eprintln!("File {} could not be stat()'ed", display(location));
+        })?;
+        let timestamp = if self.override_timestamp {
+            self.timestamp
+        } else if metadata.mtime() < 0 {
+            eprintln!("{}: Timestamp negative, clipping.", display(location));
+            0
+        } else if metadata.mtime() > u32::MAX as i64 {
+            eprintln!(
+                "{}: Timestamp exceeds maximum cpio timestamp, clipping.",
+                display(location)
+            );
+            u32::MAX
+        } else {
+            metadata.mtime() as u32
         };
-        let this_read = unsafe { read(fd, filebuf.as_mut_ptr() as *mut c_void, this_size) };
-        if this_read <= 0 || this_read as size_t > this_size {
-            return -1;
-        }
+        let size = u32::try_from(metadata.len()).map_err(|_| {
+            eprintln!("{}: Size exceeds maximum cpio file size", display(location));
+        })?;
+        let checksum = if self.checksum {
+            file_checksum(&mut input, size).map_err(|_| {
+                eprintln!("Failed to checksum file {}", display(location));
+            })?
+        } else {
+            0
+        };
 
-        for i in 0..this_read as usize {
-            unsafe { *csum = (*csum).wrapping_add(filebuf[i] as u32) };
-        }
-
-        size = size.wrapping_sub(this_read as c_ulong);
-    }
-    /* seek back to the start for data segment I/O */
-    if unsafe { lseek(fd, 0, SEEK_SET) } < 0 {
-        return -1;
-    }
-
-    0
-}
-
-unsafe fn cpio_mkfile(
-    mut name: *const c_char,
-    location: *const c_char,
-    mut mode: c_uint,
-    uid: uid_t,
-    gid: gid_t,
-    nlinks: c_uint,
-) -> c_int {
-    let mut buf: stat = unsafe { mem::zeroed() };
-    let mut size: c_ulong;
-    let mut file: c_int;
-    let mut retval: c_int;
-    let mut len: c_int;
-    let mut rc: c_int = -1;
-    let mut mtime: time_t;
-    let mut namesize: c_int;
-    let mut namepadlen: c_int;
-    let mut i: c_uint;
-    let mut csum: u32 = 0;
-    let mut this_read: ssize_t;
-
-    mode |= S_IFREG;
-
-    file = unsafe { open(location, O_RDONLY) };
-    if file < 0 {
-        unsafe { fprintf(stderr, c"File %s could not be opened for reading\n".as_ptr(), location) };
-        return rc;
-    }
-
-    retval = unsafe { fstat(file, &mut buf) };
-    if retval != 0 {
-        unsafe { fprintf(stderr, c"File %s could not be stat()'ed\n".as_ptr(), location) };
-        unsafe { close(file) };
-        return rc;
-    }
-
-    if unsafe { do_file_mtime } {
-        mtime = unsafe { default_mtime };
-    } else {
-        mtime = buf.st_mtime;
-        if mtime > 0xffffffff {
-            unsafe {
-                fprintf(
-                    stderr,
-                    c"%s: Timestamp exceeds maximum cpio timestamp, clipping.\n".as_ptr(),
-                    location,
-                )
-            };
-            mtime = 0xffffffff;
-        }
-
-        if mtime < 0 {
-            unsafe {
-                fprintf(
-                    stderr,
-                    c"%s: Timestamp negative, clipping.\n".as_ptr(),
-                    location,
-                )
-            };
-            mtime = 0;
-        }
-    }
-
-    if buf.st_size > 0xffffffff {
-        unsafe { fprintf(stderr, c"%s: Size exceeds maximum cpio file size\n".as_ptr(), location) };
-        unsafe { close(file) };
-        return rc;
-    }
-
-    if unsafe { do_csum } && unsafe { cpio_mkfile_csum(file, buf.st_size as c_ulong, &mut csum) } < 0 {
-        unsafe { fprintf(stderr, c"Failed to checksum file %s\n".as_ptr(), location) };
-        unsafe { close(file) };
-        return rc;
-    }
-
-    size = 0;
-    namepadlen = 0;
-    i = 1;
-    while i <= nlinks {
-        if unsafe { *name } == b'/' as c_char {
-            name = unsafe { name.add(1) };
-        }
-        namesize = unsafe { strlen(name).wrapping_add(1) as c_int };
-
-        /* data goes on last link, after any alignment padding */
-        if i == nlinks {
-            size = buf.st_size as c_ulong;
-        }
-
-        if unsafe { dalign } != 0 && size > unsafe { dalign as c_ulong } {
-            namepadlen = padlen(
-                unsafe { offset as usize } + CPIO_HDR_LEN + namesize as usize,
-                unsafe { dalign as usize },
-            ) as c_int;
-            if namesize + namepadlen > PATH_MAX as c_int {
-                unsafe {
-                    fprintf(
-                        stderr,
-                        c"%s: best-effort alignment %u missed\n".as_ptr(),
-                        name,
-                        dalign,
-                    )
-                };
-                namepadlen = 0;
+        for (index, name) in names.iter().enumerate() {
+            let name = name.strip_prefix(b"/").unwrap_or(name);
+            let size = if index + 1 == names.len() { size } else { 0 };
+            let namesize = name.len() as u32 + 1;
+            let mut name_padding = 0;
+            if self.alignment != 0 && size > self.alignment {
+                name_padding = padding(
+                    self.offset
+                        .wrapping_add(HEADER_LEN as u32)
+                        .wrapping_add(namesize),
+                    self.alignment,
+                );
+                if namesize as usize + name_padding > PATH_MAX {
+                    eprintln!(
+                        "{}: best-effort alignment {} missed",
+                        display(name),
+                        self.alignment
+                    );
+                    name_padding = 0;
+                }
             }
-        }
-
-        len = unsafe {
-            dprintf(
-                outfd,
-                c"%s%08X%08X%08lX%08lX%08X%08lX%08lX%08X%08X%08X%08X%08X%08X".as_ptr(),
-                if do_csum { c"070702".as_ptr() } else { c"070701".as_ptr() },
-                ino,
-                mode,
-                uid as c_long,
-                gid as c_long,
-                nlinks,
-                mtime as c_long,
-                size as c_ulong,
+            self.header([
+                self.inode,
+                attributes.mode | REGULAR,
+                attributes.uid,
+                attributes.gid,
+                names.len() as u32,
+                timestamp,
+                size,
                 3,
                 1,
                 0,
                 0,
-                (namesize + namepadlen) as c_uint,
-                if size != 0 { csum } else { 0 },
-            )
-        };
-        unsafe { offset = offset.wrapping_add(len as c_uint) };
-
-        if len != CPIO_HDR_LEN as c_int
-            || unsafe { push_buf(name, namesize as size_t) } < 0
-            || unsafe {
-                push_pad(if namepadlen != 0 {
-                    namepadlen as size_t
-                } else {
-                    padlen(offset as usize, 4)
-                })
-            } < 0
-        {
-            unsafe { close(file) };
-            return rc;
-        }
-
-        if size != 0 {
-            this_read = unsafe { copy_file_range(file, ptr::null_mut(), outfd, ptr::null_mut(), size as size_t, 0) };
-            if this_read > 0 {
-                if this_read as c_ulong > size {
-                    unsafe { close(file) };
-                    return rc;
-                }
-                unsafe { offset = offset.wrapping_add(this_read as c_uint) };
-                size = size.wrapping_sub(this_read as c_ulong);
-            }
-            /* short or failed copy falls back to read/write... */
-        }
-
-        while size != 0 {
-            let mut filebuf = [0u8; 65536];
-            let this_size: size_t = if size < filebuf.len() as c_ulong {
-                size as size_t
-            } else {
-                filebuf.len()
-            };
-
-            this_read = unsafe { read(file, filebuf.as_mut_ptr() as *mut c_void, this_size) };
-            if this_read <= 0 || this_read as size_t > this_size {
-                unsafe { fprintf(stderr, c"Can not read %s file\n".as_ptr(), location) };
-                unsafe { close(file) };
-                return rc;
-            }
-
-            if unsafe { write(outfd, filebuf.as_ptr() as *const c_void, this_read as size_t) } != this_read {
-                unsafe { fprintf(stderr, c"writing filebuf failed\n".as_ptr()) };
-                unsafe { close(file) };
-                return rc;
-            }
-            unsafe { offset = offset.wrapping_add(this_read as c_uint) };
-            size = size.wrapping_sub(this_read as c_ulong);
-        }
-        if unsafe { push_pad(padlen(offset as usize, 4)) } < 0 {
-            unsafe { close(file) };
-            return rc;
-        }
-
-        name = unsafe { name.add(namesize as usize) };
-        i = i.wrapping_add(1);
-    }
-    unsafe { ino = ino.wrapping_add(1) };
-    rc = 0;
-
-    if file >= 0 {
-        unsafe { close(file) };
-    }
-    rc
-}
-
-unsafe fn cpio_replace_env(new_location: *mut c_char) -> *mut c_char {
-    let mut expanded = [0 as c_char; PATH_MAX + 1];
-    let mut start: *mut c_char;
-    let mut end: *mut c_char;
-    let mut var: *mut c_char;
-
-    loop {
-        start = unsafe { strstr(new_location, c"${".as_ptr()) };
-        if start.is_null() {
-            break;
-        }
-        end = unsafe { strchr(start.add(2), b'}' as c_int) };
-        if end.is_null() {
-            break;
-        }
-        unsafe {
-            *start = 0;
-            *end = 0;
-        }
-        var = unsafe { getenv(start.add(2)) };
-        unsafe {
-            snprintf(
-                expanded.as_mut_ptr(),
-                expanded.len(),
-                c"%s%s%s".as_ptr(),
-                new_location,
-                if !var.is_null() { var } else { c"".as_ptr() as *mut c_char },
-                end.add(1),
-            );
-            strcpy(new_location, expanded.as_ptr());
-        }
-    }
-
-    new_location
-}
-
-unsafe fn cpio_mkfile_line(line: *const c_char) -> c_int {
-    let mut name = [0 as c_char; PATH_MAX + 1];
-    let mut dname: *mut c_char = ptr::null_mut(); /* malloc'ed buffer for hard links */
-    let mut location = [0 as c_char; PATH_MAX + 1];
-    let mut mode: c_uint = 0;
-    let mut uid: c_int = 0;
-    let mut gid: c_int = 0;
-    let mut nlinks: c_int = 1;
-    let mut end: c_int = 0;
-    let mut dname_len: c_int = 0;
-    let mut rc: c_int = -1;
-
-    if unsafe {
-        sscanf(
-            line,
-            c"%4096s %4096s %o %d %d %n".as_ptr(),
-            name.as_mut_ptr(),
-            location.as_mut_ptr(),
-            &mut mode,
-            &mut uid,
-            &mut gid,
-            &mut end,
-        )
-    } > 5
-    {
-        // This branch is unreachable for the C condition `5 > sscanf(...)`.
-    }
-    if unsafe {
-        sscanf(
-            line,
-            c"%4096s %4096s %o %d %d %n".as_ptr(),
-            name.as_mut_ptr(),
-            location.as_mut_ptr(),
-            &mut mode,
-            &mut uid,
-            &mut gid,
-            &mut end,
-        )
-    } < 5
-    {
-        unsafe { fprintf(stderr, c"Unrecognized file format '%s'".as_ptr(), line) };
-    } else {
-        if end != 0 && unsafe { isgraph(*line.add(end as usize) as c_int) } != 0 {
-            let mut len_: c_int;
-            let mut nend: c_int;
-
-            dname = unsafe { malloc(strlen(line)) as *mut c_char };
-            if dname.is_null() {
-                unsafe { fprintf(stderr, c"out of memory (%d)\n".as_ptr(), dname_len) };
-            } else {
-                dname_len = unsafe { strlen(name.as_ptr()).wrapping_add(1) as c_int };
-                unsafe { memcpy(dname as *mut c_void, name.as_ptr() as *const c_void, dname_len as size_t) };
-
-                loop {
-                    nend = 0;
-                    if unsafe {
-                        sscanf(
-                            line.add(end as usize),
-                            c"%4096s %n".as_ptr(),
-                            name.as_mut_ptr(),
-                            &mut nend,
-                        )
-                    } < 1
-                    {
-                        break;
+                namesize + name_padding as u32,
+                if size == 0 { 0 } else { checksum },
+            ])
+            .map_err(|_| ())?;
+            self.name(name, name_padding).map_err(|_| ())?;
+            let mut remaining = size as usize;
+            let mut buffer = [0; 65536];
+            while remaining != 0 {
+                let limit = remaining.min(buffer.len());
+                let read = match input.read(&mut buffer[..limit]) {
+                    Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
+                    Ok(read) if read != 0 => read,
+                    _ => {
+                        eprintln!("Can not read {} file", display(location));
+                        return Err(());
                     }
-                    len_ = unsafe { strlen(name.as_ptr()).wrapping_add(1) as c_int };
-                    unsafe {
-                        memcpy(
-                            dname.add(dname_len as usize) as *mut c_void,
-                            name.as_ptr() as *const c_void,
-                            len_ as size_t,
-                        )
-                    };
-                    dname_len += len_;
-                    nlinks += 1;
-                    end += nend;
-                    if unsafe { isgraph(*line.add(end as usize) as c_int) } == 0 {
-                        break;
-                    }
-                }
-                rc = unsafe {
-                    cpio_mkfile(
-                        dname,
-                        cpio_replace_env(location.as_mut_ptr()),
-                        mode,
-                        uid as uid_t,
-                        gid as gid_t,
-                        nlinks as c_uint,
-                    )
                 };
+                self.write(&buffer[..read])
+                    .map_err(|_| eprintln!("writing filebuf failed"))?;
+                remaining -= read;
             }
-        } else {
-            dname = name.as_mut_ptr();
-            rc = unsafe {
-                cpio_mkfile(
-                    dname,
-                    cpio_replace_env(location.as_mut_ptr()),
-                    mode,
-                    uid as uid_t,
-                    gid as gid_t,
-                    nlinks as c_uint,
-                )
-            };
+            self.align(4).map_err(|_| ())?;
+        }
+        self.inode = self.inode.wrapping_add(1);
+        Ok(())
+    }
+
+    fn trailer(&mut self) -> io::Result<()> {
+        self.header([0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 11, 0])?;
+        self.name(b"TRAILER!!!", 0)?;
+        self.align(512)?;
+        match self.output.sync_all() {
+            Err(error) if error.kind() == io::ErrorKind::InvalidInput => Ok(()),
+            result => result,
         }
     }
-    if dname_len != 0 {
-        unsafe { free(dname as *mut c_void) };
+}
+
+fn file_checksum(input: &mut File, size: u32) -> io::Result<u32> {
+    let mut remaining = size as usize;
+    let mut checksum = 0u32;
+    let mut buffer = [0; 65536];
+    while remaining != 0 {
+        let count = remaining.min(buffer.len());
+        input.read_exact(&mut buffer[..count])?;
+        checksum = buffer[..count]
+            .iter()
+            .fold(checksum, |sum, &byte| sum.wrapping_add(byte as u32));
+        remaining -= count;
     }
-    rc
+    input.rewind()?;
+    Ok(checksum)
 }
 
-unsafe fn usage(prog: *const c_char) {
-    unsafe {
-        fprintf(
-            stderr,
-            c"Usage:\n\t%s [-t <timestamp>] [-c] [-o <output_file>] [-a <data_align>] <cpio_list>\n\n<cpio_list> is a file containing newline separated entries that\ndescribe the files to be included in the initramfs archive:\n\n# a comment\nfile <name> <location> <mode> <uid> <gid> [<hard links>]\ndir <name> <mode> <uid> <gid>\nnod <name> <mode> <uid> <gid> <dev_type> <maj> <min>\nslink <name> <target> <mode> <uid> <gid>\npipe <name> <mode> <uid> <gid>\nsock <name> <mode> <uid> <gid>\n\n<name>       name of the file/dir/nod/etc in the archive\n<location>   location of the file in the current filesystem\n             expands shell variables quoted with ${}\n<target>     link target\n<mode>       mode/permissions of the file\n<uid>        user id (0=root)\n<gid>        group id (0=root)\n<dev_type>   device type (b=block, c=character)\n<maj>        major number of nod\n<min>        minor number of nod\n<hard links> space separated list of other links to file\n\nexample:\n# A simple initramfs\ndir /dev 0755 0 0\nnod /dev/console 0600 0 0 c 5 1\ndir /root 0700 0 0\ndir /sbin 0755 0 0\nfile /sbin/kinit /usr/src/klibc/kinit/kinit 0755 0 0\n\n<timestamp> is time in seconds since Epoch that will be used\nas mtime for symlinks, directories, regular and special files.\nThe default is to use the current time for all files, but\npreserve modification time for regular files.\n-c: calculate and store 32-bit checksums for file data.\n<output_file>: write cpio to this file instead of stdout\n<data_align>: attempt to align file data by zero-padding the\nfilename field up to data_align. Must be a multiple of 4.\nAlignment is best-effort; PATH_MAX limits filename padding.\n".as_ptr(),
-            prog,
-        )
-    };
+// Scan bytes, rather than UTF-8 strings: Unix filenames, link targets, and
+// environment values need not be Unicode. Numeric conversions retain sscanf's
+// prefix parsing, signed uid/gid conversion, and octal permission syntax.
+struct Scanner<'a> {
+    remaining: &'a [u8],
 }
 
-static file_handler_table: [file_handler; 7] = [
-    file_handler {
-        type_: c"file".as_ptr(),
-        handler: Some(cpio_mkfile_line),
-    },
-    file_handler {
-        type_: c"nod".as_ptr(),
-        handler: Some(cpio_mknod_line),
-    },
-    file_handler {
-        type_: c"dir".as_ptr(),
-        handler: Some(cpio_mkdir_line),
-    },
-    file_handler {
-        type_: c"slink".as_ptr(),
-        handler: Some(cpio_mkslink_line),
-    },
-    file_handler {
-        type_: c"pipe".as_ptr(),
-        handler: Some(cpio_mkpipe_line),
-    },
-    file_handler {
-        type_: c"sock".as_ptr(),
-        handler: Some(cpio_mksock_line),
-    },
-    file_handler {
-        type_: ptr::null(),
-        handler: None,
-    },
-];
+impl<'a> Scanner<'a> {
+    fn whitespace(&mut self) {
+        self.remaining = trim_space(self.remaining);
+    }
 
-const LINE_SIZE: usize = 2 * PATH_MAX + 50;
+    fn word(&mut self) -> Option<&'a [u8]> {
+        self.whitespace();
+        let length = self
+            .remaining
+            .iter()
+            .position(is_space)
+            .unwrap_or(self.remaining.len())
+            .min(PATH_MAX);
+        if length == 0 {
+            return None;
+        }
+        let (word, rest) = self.remaining.split_at(length);
+        self.remaining = rest;
+        Some(word)
+    }
 
-unsafe fn c_main(argc: c_int, argv: *mut *mut c_char) -> c_int {
-    let mut cpio_list: *mut FILE;
-    let mut line = [0 as c_char; LINE_SIZE];
-    let mut args: *mut c_char;
-    let mut type_: *mut c_char;
-    let mut ec: c_int = 0;
-    let mut line_nr: c_int = 0;
-    let filename: *const c_char;
+    fn number(&mut self, radix: u32) -> Option<u32> {
+        self.whitespace();
+        let (number, length) = parse_number(self.remaining, radix)?;
+        self.remaining = &self.remaining[length..];
+        Some(number as u32)
+    }
 
-    unsafe { default_mtime = time(ptr::null_mut()) };
-    loop {
-        let opt = unsafe { getopt(argc, argv, c"t:cho:a:".as_ptr()) };
-        let mut invalid: *mut c_char = ptr::null_mut();
+    fn character(&mut self) -> Option<u8> {
+        self.whitespace();
+        let (&byte, rest) = self.remaining.split_first()?;
+        self.remaining = rest;
+        Some(byte)
+    }
 
-        if opt == -1 {
+    fn attributes(&mut self) -> Option<Attributes> {
+        Some(Attributes {
+            mode: self.number(8)?,
+            uid: self.number(10)?,
+            gid: self.number(10)?,
+        })
+    }
+}
+
+fn parse_number(bytes: &[u8], radix: u32) -> Option<(u64, usize)> {
+    let mut index = 0;
+    let negative = bytes.first() == Some(&b'-');
+    if negative || bytes.first() == Some(&b'+') {
+        index += 1;
+    }
+    let start = index;
+    let mut number = 0u64;
+    let mut overflow = false;
+    while let Some(&byte) = bytes.get(index) {
+        if !byte.is_ascii_digit() || (byte - b'0') as u32 >= radix {
             break;
         }
-        match opt {
-            x if x == b't' as c_int => {
-                unsafe { default_mtime = strtol(optarg, &mut invalid, 10) };
-                if unsafe { *optarg == 0 } || unsafe { *invalid != 0 } {
-                    unsafe {
-                        fprintf(stderr, c"Invalid timestamp: %s\n".as_ptr(), optarg);
-                        usage(*argv);
-                        exit(1);
-                    }
-                }
-                unsafe { do_file_mtime = true };
-            }
-            x if x == b'c' as c_int => unsafe {
-                do_csum = true;
-            },
-            x if x == b'o' as c_int => {
-                unsafe {
-                    outfd = open(optarg, O_WRONLY | O_CREAT | O_LARGEFILE | O_TRUNC, 0o600);
-                    if outfd < 0 {
-                        fprintf(stderr, c"failed to open %s\n".as_ptr(), optarg);
-                        usage(*argv);
-                        exit(1);
-                    }
-                }
-            }
-            x if x == b'a' as c_int => {
-                unsafe { dalign = strtoul(optarg, &mut invalid, 10) as c_uint };
-                if unsafe { *optarg == 0 } || unsafe { *invalid != 0 } || unsafe { (dalign & 3) != 0 } {
-                    unsafe {
-                        fprintf(stderr, c"Invalid data_align: %s\n".as_ptr(), optarg);
-                        usage(*argv);
-                        exit(1);
-                    }
-                }
-            }
-            x if x == b'h' as c_int || x == b'?' as c_int => unsafe {
-                usage(*argv);
-                exit(if opt == b'h' as c_int { 0 } else { 1 });
-            },
-            _ => {}
+        match number
+            .checked_mul(radix as u64)
+            .and_then(|n| n.checked_add((byte - b'0') as u64))
+        {
+            Some(n) => number = n,
+            None => overflow = true,
         }
+        index += 1;
     }
-
-    /*
-     * Timestamps after 2106-02-07 06:28:15 UTC have an ascii hex time_t
-     * representation that exceeds 8 chars and breaks the cpio header
-     * specification. Negative timestamps similarly exceed 8 chars.
-     */
-    if unsafe { default_mtime > 0xffffffff || default_mtime < 0 } {
-        unsafe {
-            fprintf(stderr, c"ERROR: Timestamp out of range for cpio format\n".as_ptr());
-            exit(1);
-        }
-    }
-
-    if argc - unsafe { optind } != 1 {
-        unsafe {
-            usage(*argv);
-            exit(1);
-        }
-    }
-    filename = unsafe { *argv.add(optind as usize) };
-    if unsafe { strcmp(filename, c"-".as_ptr()) } == 0 {
-        cpio_list = unsafe { stdin };
+    if index == start {
+        None
     } else {
-        cpio_list = unsafe { fopen(filename, c"r".as_ptr()) };
-        if cpio_list.is_null() {
-            unsafe {
-                fprintf(
-                    stderr,
-                    c"ERROR: unable to open '%s': %s\n\n".as_ptr(),
-                    filename,
-                    strerror(errno),
+        Some((
+            if overflow {
+                u64::MAX
+            } else if negative {
+                number.wrapping_neg()
+            } else {
+                number
+            },
+            index,
+        ))
+    }
+}
+
+fn expand_environment(location: &[u8]) -> Vec<u8> {
+    let mut expanded = location.to_vec();
+    // C expands inserted values recursively. Detect cycles so malformed user
+    // input cannot hang the build forever.
+    let mut seen = std::collections::HashSet::new();
+    while seen.insert(expanded.clone()) {
+        let Some(start) = expanded.windows(2).position(|window| window == b"${") else {
+            break;
+        };
+        let Some(end) = expanded[start + 2..].iter().position(|&byte| byte == b'}') else {
+            break;
+        };
+        let end = start + 2 + end;
+        let value = env::var_os(OsStr::from_bytes(&expanded[start + 2..end]));
+        let mut replacement = expanded[..start].to_vec();
+        if let Some(value) = value {
+            replacement.extend_from_slice(value.as_bytes());
+        }
+        replacement.extend_from_slice(&expanded[end + 1..]);
+        replacement.truncate(PATH_MAX);
+        expanded = replacement;
+    }
+    expanded
+}
+
+fn entry(archive: &mut Archive, kind: &[u8], line: &[u8]) -> Result<(), ()> {
+    let mut scanner = Scanner { remaining: line };
+    let parsed = (|| -> Option<Result<(), ()>> {
+        let name = scanner.word()?;
+        match kind {
+            b"file" => {
+                let location = scanner.word()?;
+                let attributes = scanner.attributes()?;
+                let mut names = vec![name];
+                scanner.whitespace();
+                while scanner.remaining.first().is_some_and(u8::is_ascii_graphic) {
+                    names.push(scanner.word()?);
+                    scanner.whitespace();
+                }
+                Some(archive.regular(&names, &expand_environment(location), attributes))
+            }
+            b"slink" => {
+                let target = scanner.word()?;
+                let mut attributes = scanner.attributes()?;
+                attributes.mode |= SYMLINK;
+                Some(
+                    archive
+                        .special(name, attributes, 1, (0, 0), Some(target))
+                        .map_err(|_| ()),
+                )
+            }
+            b"nod" => {
+                let mut attributes = scanner.attributes()?;
+                let device_type = scanner.character()?;
+                let major = scanner.number(10)?;
+                let minor = scanner.number(10)?;
+                attributes.mode |= if device_type == b'b' {
+                    BLOCK
+                } else {
+                    CHARACTER
+                };
+                Some(
+                    archive
+                        .special(name, attributes, 1, (major, minor), None)
+                        .map_err(|_| ()),
+                )
+            }
+            _ => {
+                let mut attributes = scanner.attributes()?;
+                attributes.mode |= match kind {
+                    b"dir" => DIRECTORY,
+                    b"pipe" => FIFO,
+                    _ => SOCKET,
+                };
+                Some(
+                    archive
+                        .special(name, attributes, 2, (0, 0), None)
+                        .map_err(|_| ()),
+                )
+            }
+        }
+    })();
+    parsed.unwrap_or_else(|| {
+        if matches!(kind, b"dir" | b"pipe" | b"sock") {
+            // The generic C handler prints these arguments in this order.
+            eprint!("Unrecognized {} format '{}'", display(line), display(kind));
+        } else {
+            let kind = if kind == b"slink" { &b"dir"[..] } else { kind };
+            eprint!("Unrecognized {} format '{}'", display(kind), display(line));
+        }
+        Err(())
+    })
+}
+
+fn usage(program: &OsStr) {
+    eprint!(
+        "Usage:\n\t{} [-t <timestamp>] [-c] [-o <output_file>] [-a <data_align>] <cpio_list>\n\n\
+<cpio_list> is a file containing newline separated entries that\n\
+describe the files to be included in the initramfs archive:\n\n\
+# a comment\n\
+file <name> <location> <mode> <uid> <gid> [<hard links>]\n\
+dir <name> <mode> <uid> <gid>\n\
+nod <name> <mode> <uid> <gid> <dev_type> <maj> <min>\n\
+slink <name> <target> <mode> <uid> <gid>\n\
+pipe <name> <mode> <uid> <gid>\n\
+sock <name> <mode> <uid> <gid>\n\n\
+<name>       name of the file/dir/nod/etc in the archive\n\
+<location>   location of the file in the current filesystem\n\
+\x20            expands shell variables quoted with ${{}}\n\
+<target>     link target\n\
+<mode>       mode/permissions of the file\n\
+<uid>        user id (0=root)\n\
+<gid>        group id (0=root)\n\
+<dev_type>   device type (b=block, c=character)\n\
+<maj>        major number of nod\n\
+<min>        minor number of nod\n\
+<hard links> space separated list of other links to file\n\n\
+example:\n\
+# A simple initramfs\n\
+dir /dev 0755 0 0\n\
+nod /dev/console 0600 0 0 c 5 1\n\
+dir /root 0700 0 0\n\
+dir /sbin 0755 0 0\n\
+file /sbin/kinit /usr/src/klibc/kinit/kinit 0755 0 0\n\n\
+<timestamp> is time in seconds since Epoch that will be used\n\
+as mtime for symlinks, directories, regular and special files.\n\
+The default is to use the current time for all files, but\n\
+preserve modification time for regular files.\n\
+-c: calculate and store 32-bit checksums for file data.\n\
+<output_file>: write cpio to this file instead of stdout\n\
+<data_align>: attempt to align file data by zero-padding the\n\
+filename field up to data_align. Must be a multiple of 4.\n\
+Alignment is best-effort; PATH_MAX limits filename padding.\n",
+        program.to_string_lossy()
+    );
+}
+
+struct Options {
+    timestamp: u32,
+    override_timestamp: bool,
+    checksum: bool,
+    alignment: u32,
+    output: Option<File>,
+    list: OsString,
+}
+
+fn options(program: &OsStr, args: &[OsString]) -> Result<Options, i32> {
+    let mut timestamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(u64::MAX, |t| t.as_secs());
+    let mut override_timestamp = false;
+    let mut checksum = false;
+    let mut alignment = 0;
+    let mut output = None;
+    let mut positional = Vec::new();
+    let mut parse_options = true;
+    let mut index = 0;
+    while index < args.len() {
+        let argument = args[index].as_bytes();
+        index += 1;
+        if parse_options && argument == b"--" {
+            parse_options = false;
+            continue;
+        }
+        if !parse_options || argument.len() < 2 || argument[0] != b'-' {
+            positional.push(args[index - 1].clone());
+            if env::var_os("POSIXLY_CORRECT").is_some() {
+                parse_options = false;
+            }
+            continue;
+        }
+        let mut option_index = 1;
+        while option_index < argument.len() {
+            let option = argument[option_index];
+            option_index += 1;
+            match option {
+                b'h' => {
+                    usage(program);
+                    return Err(0);
+                }
+                b'c' => {
+                    checksum = true;
+                    continue;
+                }
+                b't' | b'o' | b'a' => {}
+                _ => {
+                    eprintln!(
+                        "{}: invalid option -- '{}'",
+                        program.to_string_lossy(),
+                        option as char
+                    );
+                    usage(program);
+                    return Err(1);
+                }
+            }
+            let value = if option_index < argument.len() {
+                let value = &argument[option_index..];
+                option_index = argument.len();
+                value
+            } else if let Some(value) = args.get(index) {
+                index += 1;
+                value.as_bytes()
+            } else {
+                eprintln!(
+                    "{}: option requires an argument -- '{}'",
+                    program.to_string_lossy(),
+                    option as char
                 );
-                usage(*argv);
-                exit(1);
+                usage(program);
+                return Err(1);
+            };
+            if option == b'o' {
+                output = Some(
+                    OpenOptions::new()
+                        .write(true)
+                        .create(true)
+                        .truncate(true)
+                        .mode(0o600)
+                        .open(OsStr::from_bytes(value))
+                        .map_err(|_| {
+                            eprintln!("failed to open {}", display(value));
+                            usage(program);
+                            1
+                        })?,
+                );
+            } else {
+                let number_text = trim_space(value);
+                let number = parse_number(number_text, 10)
+                    .filter(|(_, length)| *length == number_text.len());
+                let Some((number, _)) =
+                    number.filter(|(number, _)| option != b'a' || *number as u32 & 3 == 0)
+                else {
+                    eprintln!(
+                        "Invalid {}: {}",
+                        if option == b't' {
+                            "timestamp"
+                        } else {
+                            "data_align"
+                        },
+                        display(value)
+                    );
+                    usage(program);
+                    return Err(1);
+                };
+                if option == b't' {
+                    timestamp = if number_text.starts_with(b"-")
+                        && number_text[1..].iter().any(|&byte| byte != b'0')
+                    {
+                        u64::MAX
+                    } else {
+                        number
+                    };
+                    override_timestamp = true;
+                } else {
+                    alignment = number as u32;
+                }
             }
         }
     }
+    let timestamp = u32::try_from(timestamp).map_err(|_| {
+        eprintln!("ERROR: Timestamp out of range for cpio format");
+        1
+    })?;
+    if positional.len() != 1 {
+        usage(program);
+        return Err(1);
+    }
+    Ok(Options {
+        timestamp,
+        override_timestamp,
+        checksum,
+        alignment,
+        output,
+        list: positional.remove(0),
+    })
+}
 
-    while !unsafe { fgets(line.as_mut_ptr(), LINE_SIZE as c_int, cpio_list) }.is_null() {
-        let mut type_idx: c_int;
-        let slen = unsafe { strlen(line.as_ptr()) };
-
-        line_nr += 1;
-
-        if b'#' as c_char == line[0] {
-            /* comment - skip to next line */
-            continue;
-        }
-
-        type_ = unsafe { strtok(line.as_mut_ptr(), c" \t".as_ptr()) };
-        if type_.is_null() {
-            unsafe {
-                fprintf(
-                    stderr,
-                    c"ERROR: incorrect format, could not locate file type line %d: '%s'\n".as_ptr(),
-                    line_nr,
-                    line.as_ptr(),
-                )
-            };
-            ec = -1;
+// fgets splits overlong lines into LINE_SIZE-1 byte pieces. Keep that boundary
+// so line numbers and the accepted file-list grammar agree with the C tool.
+fn read_line(reader: &mut dyn BufRead, line: &mut Vec<u8>) -> io::Result<usize> {
+    line.clear();
+    while line.len() < LINE_SIZE - 1 {
+        let available = reader.fill_buf()?;
+        if available.is_empty() {
             break;
         }
-
-        if b'\n' as c_char == unsafe { *type_ } {
-            /* a blank line */
-            continue;
+        let available = &available[..available.len().min(LINE_SIZE - 1 - line.len())];
+        let count = available
+            .iter()
+            .position(|&byte| byte == b'\n')
+            .map_or(available.len(), |i| i + 1);
+        let newline = available[count - 1] == b'\n';
+        line.extend_from_slice(&available[..count]);
+        reader.consume(count);
+        if newline {
+            break;
         }
+    }
+    Ok(line.len())
+}
 
-        if slen == unsafe { strlen(type_) } {
-            /* must be an empty line */
-            continue;
-        }
-
-        args = unsafe { strtok(ptr::null_mut(), c"\n".as_ptr()) };
-        if args.is_null() {
-            unsafe {
-                fprintf(
-                    stderr,
-                    c"ERROR: incorrect format, newline required line %d: '%s'\n".as_ptr(),
-                    line_nr,
-                    line.as_ptr(),
-                )
-            };
-            ec = -1;
-        }
-
-        type_idx = 0;
-        while !file_handler_table[type_idx as usize].type_.is_null() {
-            let mut rc: c_int;
-            if unsafe { strcmp(line.as_ptr(), file_handler_table[type_idx as usize].type_) } == 0 {
-                rc = unsafe { (file_handler_table[type_idx as usize].handler.unwrap())(args) };
-                if rc != 0 {
-                    ec = rc;
-                    unsafe { fprintf(stderr, c" line %d\n".as_ptr(), line_nr) };
-                }
-                break;
+fn run() -> Result<(), i32> {
+    let mut arguments = env::args_os();
+    let program = arguments
+        .next()
+        .unwrap_or_else(|| OsString::from("gen_init_cpio"));
+    let options = options(&program, &arguments.collect::<Vec<_>>())?;
+    let mut list: Box<dyn BufRead> = if options.list == "-" {
+        Box::new(BufReader::new(io::stdin()))
+    } else {
+        Box::new(BufReader::new(File::open(&options.list).map_err(
+            |error| {
+                let error = error.to_string();
+                let error = error.split(" (os error ").next().unwrap_or(&error);
+                eprintln!(
+                    "ERROR: unable to open '{}': {}\n",
+                    options.list.to_string_lossy(),
+                    error
+                );
+                usage(&program);
+                1
+            },
+        )?))
+    };
+    let output = match options.output {
+        Some(output) => output,
+        None => File::from(io::stdout().as_fd().try_clone_to_owned().map_err(|error| {
+            eprintln!("Unable to open stdout: {error}");
+            1
+        })?),
+    };
+    let mut archive = Archive {
+        output,
+        offset: 0,
+        inode: 721,
+        timestamp: options.timestamp,
+        override_timestamp: options.override_timestamp,
+        checksum: options.checksum,
+        alignment: options.alignment,
+    };
+    let mut line = Vec::with_capacity(LINE_SIZE);
+    let mut line_number = 0;
+    let mut failed = false;
+    loop {
+        match read_line(&mut *list, &mut line) {
+            Ok(0) => break,
+            Ok(_) => {}
+            Err(error) => {
+                eprintln!("Unable to read file list: {error}");
+                return Err(255);
             }
-            type_idx += 1;
         }
-
-        if file_handler_table[type_idx as usize].type_.is_null() {
-            unsafe {
-                fprintf(
-                    stderr,
-                    c"unknown file type line %d: '%s'\n".as_ptr(),
-                    line_nr,
-                    line.as_ptr(),
-                )
-            };
+        line_number += 1;
+        let line = line.split(|&byte| byte == 0).next().unwrap_or(&[]);
+        if line.first() == Some(&b'#') {
+            continue;
+        }
+        let start = line.iter().position(|byte| !matches!(byte, b' ' | b'\t'));
+        let Some(start) = start else {
+            eprintln!(
+                "ERROR: incorrect format, could not locate file type line {}: '{}'",
+                line_number,
+                display(line)
+            );
+            failed = true;
+            break;
+        };
+        let end = line[start..]
+            .iter()
+            .position(|byte| matches!(byte, b' ' | b'\t'))
+            .map_or(line.len(), |i| start + i);
+        let kind = &line[start..end];
+        if kind.first() == Some(&b'\n') || line.len() == kind.len() {
+            continue;
+        }
+        // strtok changes only the first type delimiter. Leading whitespace was
+        // never accepted as an entry prefix by the original parser.
+        let printed_kind = if start == 0 { kind } else { &line[..end] };
+        let args = line.get(end + 1..).unwrap_or(&[]);
+        let args = args
+            .split(|&byte| byte == b'\n')
+            .find(|piece| !piece.is_empty());
+        if args.is_none() {
+            eprintln!(
+                "ERROR: incorrect format, newline required line {}: '{}'",
+                line_number,
+                display(printed_kind)
+            );
+            failed = true;
+        }
+        if start != 0
+            || !matches!(
+                kind,
+                b"file" | b"nod" | b"dir" | b"slink" | b"pipe" | b"sock"
+            )
+        {
+            eprintln!(
+                "unknown file type line {}: '{}'",
+                line_number,
+                display(printed_kind)
+            );
+        } else if entry(&mut archive, kind, args.unwrap_or(&[])).is_err() {
+            failed = true;
+            eprintln!(" line {line_number}");
         }
     }
-    if ec == 0 {
-        ec = unsafe { cpio_trailer() };
+    if failed {
+        return Err(255);
     }
-
-    unsafe { exit(ec) };
+    archive.trailer().map_err(|_| 255)
 }
 
 fn main() {
-    let mut args: Vec<CString> = env::args()
-        .map(|arg| CString::new(arg).unwrap_or_else(|_| CString::new("").unwrap()))
-        .collect();
-    let mut argv: Vec<*mut c_char> = args.iter_mut().map(|arg| arg.as_ptr() as *mut c_char).collect();
-    argv.push(ptr::null_mut());
-    unsafe {
-        c_main((argv.len() - 1) as c_int, argv.as_mut_ptr());
+    if let Err(status) = run() {
+        std::process::exit(status);
     }
 }
-
-// SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

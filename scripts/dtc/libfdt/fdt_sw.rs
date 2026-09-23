@@ -1,113 +1,207 @@
 // SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- */
+//! Sequential construction with libfdt's reservation/structure/completion states.
+// Copyright (C) 2006 David Gibson, IBM Corporation.
+use super::*;
 
-use core::ffi::{c_char, c_int, c_void};
-
-extern "C" {
-    fn fdt_magic(fdt: *const c_void) -> u32;
-    fn fdt_last_comp_version(fdt: *const c_void) -> u32;
-    fn fdt_off_dt_strings(fdt: *const c_void) -> c_int;
-    fn fdt_totalsize(fdt: *const c_void) -> c_int;
-    fn fdt_off_dt_struct(fdt: *const c_void) -> c_int;
-    fn fdt_size_dt_struct(fdt: *const c_void) -> c_int;
-    fn fdt_size_dt_strings(fdt: *const c_void) -> c_int;
-    fn fdt_set_magic(fdt: *mut c_void, value: u32);
-    fn fdt_set_version(fdt: *mut c_void, value: u32);
-    fn fdt_set_last_comp_version(fdt: *mut c_void, value: u32);
-    fn fdt_set_totalsize(fdt: *mut c_void, value: c_int);
-    fn fdt_set_off_mem_rsvmap(fdt: *mut c_void, value: c_int);
-    fn fdt_set_off_dt_struct(fdt: *mut c_void, value: c_int);
-    fn fdt_set_off_dt_strings(fdt: *mut c_void, value: c_int);
-    fn fdt_set_size_dt_struct(fdt: *mut c_void, value: c_int);
-    fn fdt_set_size_dt_strings(fdt: *mut c_void, value: c_int);
-    fn fdt_offset_ptr_w_(fdt: *mut c_void, offset: c_int) -> *mut c_void;
-    fn fdt_next_tag(fdt: *mut c_void, offset: c_int, nextoffset: *mut c_int) -> u32;
-    fn fdt_find_string_(strtab: *const c_char, tabsize: c_int, s: *const c_char) -> *const c_char;
-    fn can_assume_valid_input() -> bool;
-    fn can_assume_valid_dtb() -> bool;
-}
-
-const FDT_MAGIC: u32 = 0xd00dfeed;
-const FDT_SW_MAGIC: u32 = 0xffffffff;
-const FDT_LAST_SUPPORTED_VERSION: u32 = 17;
-const FDT_LAST_COMPATIBLE_VERSION: u32 = 16;
-const FDT_CREATE_FLAG_NO_NAME_DEDUP: u32 = 1;
-const FDT_CREATE_FLAGS_ALL: u32 = FDT_CREATE_FLAG_NO_NAME_DEDUP;
-const FDT_BEGIN_NODE: u32 = 1;
-const FDT_END_NODE: u32 = 2;
-const FDT_PROP: u32 = 3;
-const FDT_END: u32 = 9;
-const FDT_TAGSIZE: usize = 4;
-const FDT_ERR_NOSPACE: c_int = 3;
-const FDT_ERR_BADMAGIC: c_int = 9;
-const FDT_ERR_BADSTATE: c_int = 5;
-const FDT_ERR_BADFLAGS: c_int = 8;
-const FDT_ERR_INTERNAL: c_int = 14;
-
-#[repr(C)] struct FdtReserveEntry { address: u64, size: u64 }
-#[repr(C)] struct FdtNodeHeader { tag: u32, name: [c_char; 0] }
-#[repr(C)] struct FdtProperty { tag: u32, len: u32, nameoff: u32, data: [u8; 0] }
-
-unsafe fn probe(fdt: *mut c_void) -> c_int {
-    if !can_assume_valid_input() {
-        if fdt_magic(fdt) == FDT_MAGIC { return -FDT_ERR_BADSTATE; }
-        if fdt_magic(fdt) != FDT_SW_MAGIC { return -FDT_ERR_BADMAGIC; }
+fn sw_probe(data: &[u8]) -> Result<Header> {
+    let h = Header::read(data)?;
+    match h.magic {
+        FDT_SW_MAGIC => {
+            if h.totalsize > data.len() {
+                return Err(Error::Truncated);
+            }
+            Ok(h)
+        }
+        FDT_MAGIC => Err(Error::BadState),
+        _ => Err(Error::BadMagic),
     }
-    0
 }
-unsafe fn probe_memrsv(fdt: *mut c_void) -> c_int {
-    let err = probe(fdt); if err != 0 { return err; }
-    if !can_assume_valid_input() && fdt_off_dt_strings(fdt) != 0 { return -FDT_ERR_BADSTATE; } 0
+fn sw_structure(data: &[u8]) -> Result<Header> {
+    let h = sw_probe(data)?;
+    if h.off_dt_strings != h.totalsize {
+        return Err(Error::BadState);
+    }
+    Ok(h)
 }
-unsafe fn probe_struct(fdt: *mut c_void) -> c_int {
-    let err = probe(fdt); if err != 0 { return err; }
-    if !can_assume_valid_input() && fdt_off_dt_strings(fdt) != fdt_totalsize(fdt) { return -FDT_ERR_BADSTATE; } 0
+fn grab_space(data: &mut [u8], len: usize) -> Result<usize> {
+    let h = Header::read(data)?;
+    let at = h
+        .off_dt_struct
+        .checked_add(h.size_dt_struct)
+        .ok_or(Error::NoSpace)?;
+    let end = at.checked_add(len).ok_or(Error::NoSpace)?;
+    if end
+        > h.totalsize
+            .checked_sub(h.size_dt_strings)
+            .ok_or(Error::NoSpace)?
+        || end > data.len()
+    {
+        return Err(Error::NoSpace);
+    }
+    put32(data, 36, (h.size_dt_struct + len) as u32)?;
+    Ok(at)
 }
-unsafe fn sw_flags(fdt: *mut c_void) -> u32 { fdt_last_comp_version(fdt) }
-unsafe fn grab_space(fdt: *mut c_void, len: usize) -> *mut c_void {
-    let offset = fdt_size_dt_struct(fdt) as usize;
-    let spaceleft = fdt_totalsize(fdt) as usize - fdt_off_dt_struct(fdt) as usize - fdt_size_dt_strings(fdt) as usize;
-    if offset.checked_add(len).is_none() || offset + len > spaceleft { return core::ptr::null_mut(); }
-    fdt_set_size_dt_struct(fdt, (offset + len) as c_int); fdt_offset_ptr_w_(fdt, offset as c_int)
+pub(crate) fn create_with_flags(data: &mut [u8], flags: u32) -> Result<()> {
+    if data.len() < 48 || data.len() > i32::MAX as usize {
+        return Err(Error::NoSpace);
+    }
+    if flags & !CREATE_FLAG_NO_NAME_DEDUP != 0 {
+        return Err(Error::BadFlags);
+    }
+    data.fill(0);
+    put32(data, 0, FDT_SW_MAGIC)?;
+    put32(data, 20, 17)?;
+    put32(data, 24, flags)?;
+    put32(data, 4, data.len() as u32)?;
+    put32(data, 16, 48)?;
+    put32(data, 8, 48)
 }
-
-#[no_mangle] pub unsafe extern "C" fn fdt_create_with_flags(buf: *mut c_void, bufsize: c_int, flags: u32) -> c_int {
-    let hdrsize = (core::mem::size_of::<[u8; 40]>() + 7) & !7;
-    if bufsize < hdrsize as c_int { return -FDT_ERR_NOSPACE; }
-    if flags & !FDT_CREATE_FLAGS_ALL != 0 { return -FDT_ERR_BADFLAGS; }
-    core::ptr::write_bytes(buf as *mut u8, 0, bufsize as usize);
-    fdt_set_magic(buf, FDT_SW_MAGIC); fdt_set_version(buf, FDT_LAST_SUPPORTED_VERSION); fdt_set_last_comp_version(buf, flags);
-    fdt_set_totalsize(buf, bufsize); fdt_set_off_mem_rsvmap(buf, hdrsize as c_int); fdt_set_off_dt_struct(buf, hdrsize as c_int); fdt_set_off_dt_strings(buf, 0); 0
+pub(crate) fn create(data: &mut [u8]) -> Result<()> {
+    create_with_flags(data, 0)
 }
-#[no_mangle] pub unsafe extern "C" fn fdt_create(buf: *mut c_void, bufsize: c_int) -> c_int { fdt_create_with_flags(buf, bufsize, 0) }
-
-#[no_mangle] pub unsafe extern "C" fn fdt_resize(fdt: *mut c_void, buf: *mut c_void, bufsize: c_int) -> c_int {
-    let err = probe(fdt); if err != 0 { return err; } if bufsize < 0 { return -FDT_ERR_NOSPACE; }
-    let headsize = fdt_off_dt_struct(fdt) as usize + fdt_size_dt_struct(fdt) as usize; let tailsize = fdt_size_dt_strings(fdt) as usize;
-    if !can_assume_valid_dtb() && headsize + tailsize > fdt_totalsize(fdt) as usize { return -FDT_ERR_INTERNAL; }
-    if headsize + tailsize > bufsize as usize { return -FDT_ERR_NOSPACE; }
-    let oldtail = (fdt as *mut u8).add(fdt_totalsize(fdt) as usize - tailsize); let newtail = (buf as *mut u8).add(bufsize as usize - tailsize);
-    if (buf as usize) <= (fdt as usize) { core::ptr::copy(fdt, buf, headsize); core::ptr::copy(oldtail, newtail, tailsize); } else { core::ptr::copy(oldtail, newtail, tailsize); core::ptr::copy(fdt, buf, headsize); }
-    fdt_set_totalsize(buf, bufsize); if fdt_off_dt_strings(buf) != 0 { fdt_set_off_dt_strings(buf, bufsize); } 0
+pub(crate) fn resize(data: &[u8], dest: &mut [u8]) -> Result<()> {
+    let h = sw_probe(data)?;
+    let head = h
+        .off_dt_struct
+        .checked_add(h.size_dt_struct)
+        .ok_or(Error::Internal)?;
+    let tail = h.size_dt_strings;
+    let total = head.checked_add(tail).ok_or(Error::Internal)?;
+    if total > h.totalsize {
+        return Err(Error::Internal);
+    }
+    if total > dest.len() || dest.len() > i32::MAX as usize {
+        return Err(Error::NoSpace);
+    }
+    put(dest, 0, bytes(data, 0, head)?)?;
+    put(
+        dest,
+        dest.len() - tail,
+        bytes(data, h.totalsize - tail, tail)?,
+    )?;
+    put32(dest, 4, dest.len() as u32)?;
+    if h.off_dt_strings != 0 {
+        put32(dest, 12, dest.len() as u32)?;
+    }
+    Ok(())
 }
-
-#[no_mangle] pub unsafe extern "C" fn fdt_add_reservemap_entry(fdt: *mut c_void, addr: u64, size: u64) -> c_int {
-    let err = probe_memrsv(fdt); if err != 0 { return err; } let offset = fdt_off_dt_struct(fdt) as usize;
-    if offset + core::mem::size_of::<FdtReserveEntry>() > fdt_totalsize(fdt) as usize { return -FDT_ERR_NOSPACE; }
-    let re = (fdt as *mut u8).add(offset) as *mut FdtReserveEntry; (*re).address = addr.to_be(); (*re).size = size.to_be(); fdt_set_off_dt_struct(fdt, (offset + 16) as c_int); 0
+pub(crate) fn add_reservemap_entry(data: &mut [u8], address: u64, size: u64) -> Result<()> {
+    let h = sw_probe(data)?;
+    if h.off_dt_strings != 0 {
+        return Err(Error::BadState);
+    }
+    if h.off_dt_struct
+        .checked_add(16)
+        .is_none_or(|end| end > h.totalsize || end > data.len())
+    {
+        return Err(Error::NoSpace);
+    }
+    put64(data, h.off_dt_struct, address)?;
+    put64(data, h.off_dt_struct + 8, size)?;
+    put32(data, 8, (h.off_dt_struct + 16) as u32)
 }
-#[no_mangle] pub unsafe extern "C" fn fdt_finish_reservemap(fdt: *mut c_void) -> c_int { let err = fdt_add_reservemap_entry(fdt, 0, 0); if err != 0 { return err; } fdt_set_off_dt_strings(fdt, fdt_totalsize(fdt)); 0 }
-
-unsafe fn libc_strlen(s: *const c_char) -> usize { let mut n = 0; while *s.add(n) != 0 { n += 1; } n }
-#[no_mangle] pub unsafe extern "C" fn fdt_begin_node(fdt: *mut c_void, name: *const c_char) -> c_int { let e=probe_struct(fdt); if e!=0{return e;} let n=libc_strlen(name)+1; let p=grab_space(fdt,8+((n+3)&!3)); if p.is_null(){return -FDT_ERR_NOSPACE;} *(p as *mut u32)=FDT_BEGIN_NODE.to_be(); core::ptr::copy_nonoverlapping(name as *const u8,(p as *mut u8).add(4),n);0 }
-#[no_mangle] pub unsafe extern "C" fn fdt_end_node(fdt:*mut c_void)->c_int {let e=probe_struct(fdt);if e!=0{return e;}let p=grab_space(fdt,4);if p.is_null(){return -FDT_ERR_NOSPACE;}*(p as *mut u32)=FDT_END_NODE.to_be();0}
-unsafe fn add_string(fdt:*mut c_void,s:*const c_char)->c_int{let base=(fdt as *mut u8).add(fdt_totalsize(fdt)as usize);let sz=fdt_size_dt_strings(fdt)as usize;let n=libc_strlen(s)+1;let off=sz+n;let top=fdt_off_dt_struct(fdt)as usize+fdt_size_dt_struct(fdt)as usize;if fdt_totalsize(fdt)as usize-off<top{return 0;}core::ptr::copy_nonoverlapping(s as *const u8,base.sub(off),n);fdt_set_size_dt_strings(fdt,(sz+n)as c_int);-(off as c_int)}
-unsafe fn del_string(fdt:*mut c_void,s:*const c_char){fdt_set_size_dt_strings(fdt,fdt_size_dt_strings(fdt)-(libc_strlen(s)+1)as c_int)}
-#[no_mangle] pub unsafe extern "C" fn fdt_property_placeholder(fdt:*mut c_void,name:*const c_char,len:c_int,valp:*mut *mut c_void)->c_int{let e=probe_struct(fdt);if e!=0{return e;}let no=add_string(fdt,name);if no==0{return -FDT_ERR_NOSPACE;}let p=grab_space(fdt,12+((len as usize+3)&!3));if p.is_null(){del_string(fdt,name);return -FDT_ERR_NOSPACE;}let q=p as *mut FdtProperty;(*q).tag=FDT_PROP.to_be();(*q).nameoff=(no as u32).to_be();(*q).len=(len as u32).to_be();*valp=(p as *mut u8).add(12)as *mut c_void;0}
-#[no_mangle] pub unsafe extern "C" fn fdt_property(fdt:*mut c_void,name:*const c_char,val:*const c_void,len:c_int)->c_int{let mut p=core::ptr::null_mut();let e=fdt_property_placeholder(fdt,name,len,&mut p);if e!=0{return e;}core::ptr::copy_nonoverlapping(val as *const u8,p as *mut u8,len as usize);0}
-#[no_mangle] pub unsafe extern "C" fn fdt_finish(fdt:*mut c_void)->c_int{let e=probe_struct(fdt);if e!=0{return e;}let x=grab_space(fdt,4);if x.is_null(){return -FDT_ERR_NOSPACE;}*(x as *mut u32)=FDT_END.to_be();let old=fdt_totalsize(fdt)as usize-fdt_size_dt_strings(fdt)as usize;let new=fdt_off_dt_struct(fdt)as usize+fdt_size_dt_struct(fdt)as usize;let sz=fdt_size_dt_strings(fdt)as usize;core::ptr::copy((fdt as *mut u8).add(old),(fdt as *mut u8).add(new),sz);fdt_set_off_dt_strings(fdt,new as c_int);fdt_set_totalsize(fdt,(new+sz)as c_int);fdt_set_last_comp_version(fdt,FDT_LAST_COMPATIBLE_VERSION);fdt_set_magic(fdt,FDT_MAGIC);0}
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+pub(crate) fn finish_reservemap(data: &mut [u8]) -> Result<()> {
+    add_reservemap_entry(data, 0, 0)?;
+    put32(data, 12, Header::read(data)?.totalsize as u32)
+}
+pub(crate) fn begin_node(data: &mut [u8], name: &[u8]) -> Result<()> {
+    sw_structure(data)?;
+    let at = grab_space(data, 4 + align(name.len() + 1, 4)?)?;
+    put32(data, at, FDT_BEGIN_NODE)?;
+    put(data, at + 4, name)?;
+    data[at + 4 + name.len()] = 0;
+    Ok(())
+}
+pub(crate) fn end_node(data: &mut [u8]) -> Result<()> {
+    sw_structure(data)?;
+    let at = grab_space(data, 4)?;
+    put32(data, at, FDT_END_NODE)
+}
+fn add_string(data: &mut [u8], name: &[u8], dedup: bool) -> Result<(i32, bool)> {
+    let h = Header::read(data)?;
+    let start = h
+        .totalsize
+        .checked_sub(h.size_dt_strings)
+        .ok_or(Error::NoSpace)?;
+    if dedup {
+        if let Some(offset) = find_string(bytes(data, start, h.size_dt_strings)?, name) {
+            return Ok((
+                (offset as i32).wrapping_sub(h.size_dt_strings as i32),
+                false,
+            ));
+        }
+    }
+    let newsize = h
+        .size_dt_strings
+        .checked_add(name.len() + 1)
+        .ok_or(Error::NoSpace)?;
+    let at = h.totalsize.checked_sub(newsize).ok_or(Error::NoSpace)?;
+    if at < h.off_dt_struct + h.size_dt_struct {
+        return Err(Error::NoSpace);
+    }
+    put(data, at, name)?;
+    data[at + name.len()] = 0;
+    put32(data, 32, newsize as u32)?;
+    Ok((-(newsize as i32), true))
+}
+pub(crate) fn property_placeholder<'a>(
+    data: &'a mut [u8],
+    name: &[u8],
+    len: usize,
+) -> Result<&'a mut [u8]> {
+    let h = sw_structure(data)?;
+    if len > i32::MAX as usize {
+        return Err(Error::NoSpace);
+    }
+    let (nameoff, allocated) = add_string(
+        data,
+        name,
+        h.last_comp_version & CREATE_FLAG_NO_NAME_DEDUP == 0,
+    )?;
+    let at = match grab_space(data, 12 + align(len, 4)?) {
+        Ok(at) => at,
+        Err(err) => {
+            if allocated {
+                put32(data, 32, h.size_dt_strings as u32)?;
+            }
+            return Err(err);
+        }
+    };
+    put32(data, at, FDT_PROP)?;
+    put32(data, at + 4, len as u32)?;
+    put32(data, at + 8, nameoff as u32)?;
+    Ok(&mut data[at + 12..at + 12 + len])
+}
+pub(crate) fn property_write(data: &mut [u8], name: &[u8], value: &[u8]) -> Result<()> {
+    property_placeholder(data, name, value.len())?.copy_from_slice(value);
+    Ok(())
+}
+pub(crate) fn finish(data: &mut [u8]) -> Result<()> {
+    sw_structure(data)?;
+    let at = grab_space(data, 4)?;
+    put32(data, at, FDT_END)?;
+    let h = Header::read(data)?;
+    let old = h.totalsize - h.size_dt_strings;
+    let new = h.off_dt_struct + h.size_dt_struct;
+    bytes(data, old, h.size_dt_strings)?;
+    bytes(data, new, h.size_dt_strings)?;
+    data.copy_within(old..old + h.size_dt_strings, new);
+    put32(data, 12, new as u32)?;
+    let mut at = 0;
+    loop {
+        let (tag, next) = next_tag(data, at);
+        if tag == FDT_END {
+            next?;
+            break;
+        }
+        if tag == FDT_PROP {
+            let offset = struct_abs(data, at + 8, 4)?;
+            let name = u32_at(data, offset)?.wrapping_add(h.size_dt_strings as u32);
+            put32(data, offset, name)?;
+        }
+        at = next?;
+    }
+    put32(data, 4, (new + h.size_dt_strings) as u32)?;
+    put32(data, 24, 16)?;
+    put32(data, 0, FDT_MAGIC)
+}

@@ -8,37 +8,37 @@
 /* Class */
 #[repr(i32)]
 pub enum asn1_class {
-    ASN1_UNIV = 0,  /* Universal */
-    ASN1_APPL = 1,  /* Application */
-    ASN1_CONT = 2,  /* Context */
-    ASN1_PRIV = 3,  /* Private */
+    ASN1_UNIV = 0, /* Universal */
+    ASN1_APPL = 1, /* Application */
+    ASN1_CONT = 2, /* Context */
+    ASN1_PRIV = 3, /* Private */
 }
 pub const ASN1_CLASS_BITS: i32 = 0xc0;
 
 #[repr(i32)]
 pub enum asn1_method {
-    ASN1_PRIM = 0,  /* Primitive */
-    ASN1_CONS = 1,  /* Constructed */
+    ASN1_PRIM = 0, /* Primitive */
+    ASN1_CONS = 1, /* Constructed */
 }
 pub const ASN1_CONS_BIT: i32 = 0x20;
 
 /* Tag */
 #[repr(i32)]
 pub enum asn1_tag {
-    ASN1_EOC = 0,       /* End Of Contents or N/A */
-    ASN1_BOOL = 1,      /* Boolean */
-    ASN1_INT = 2,       /* Integer */
-    ASN1_BTS = 3,       /* Bit String */
-    ASN1_OTS = 4,       /* Octet String */
-    ASN1_NULL = 5,      /* Null */
-    ASN1_OID = 6,       /* Object Identifier  */
-    ASN1_ODE = 7,       /* Object Description */
-    ASN1_EXT = 8,       /* External */
-    ASN1_REAL = 9,      /* Real float */
-    ASN1_ENUM = 10,     /* Enumerated */
-    ASN1_EPDV = 11,     /* Embedded PDV */
-    ASN1_UTF8STR = 12,  /* UTF8 String */
-    ASN1_RELOID = 13,   /* Relative OID */
+    ASN1_EOC = 0,      /* End Of Contents or N/A */
+    ASN1_BOOL = 1,     /* Boolean */
+    ASN1_INT = 2,      /* Integer */
+    ASN1_BTS = 3,      /* Bit String */
+    ASN1_OTS = 4,      /* Octet String */
+    ASN1_NULL = 5,     /* Null */
+    ASN1_OID = 6,      /* Object Identifier  */
+    ASN1_ODE = 7,      /* Object Description */
+    ASN1_EXT = 8,      /* External */
+    ASN1_REAL = 9,     /* Real float */
+    ASN1_ENUM = 10,    /* Enumerated */
+    ASN1_EPDV = 11,    /* Embedded PDV */
+    ASN1_UTF8STR = 12, /* UTF8 String */
+    ASN1_RELOID = 13,  /* Relative OID */
     /* 14 - Reserved */
     /* 15 - Reserved */
     ASN1_SEQ = 16,      /* Sequence and Sequence of */

@@ -1,107 +1,153 @@
 // SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- */
+//! Header validation and structure-tag traversal.
+// Copyright (C) 2006 David Gibson, IBM Corporation.
+use super::*;
 
-/* Dependencies are supplied by the surrounding libfdt translation unit. */
-
-/*
- * Minimal sanity check for a read-only tree. fdt_ro_probe_() checks
- * that the given buffer contains what appears to be a flattened
- * device tree with sane information in its header.
- */
-pub unsafe fn fdt_ro_probe_(fdt: *const core::ffi::c_void) -> i32 {
-    let totalsize = fdt_totalsize(fdt);
-
-    if can_assume(VALID_DTB) { return totalsize as i32; }
-    if (fdt as usize) & 7 != 0 { return -FDT_ERR_ALIGNMENT; }
-    if fdt_magic(fdt) == FDT_MAGIC {
-        if !can_assume(LATEST) {
-            if fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION { return -FDT_ERR_BADVERSION; }
-            if fdt_last_comp_version(fdt) > FDT_LAST_SUPPORTED_VERSION { return -FDT_ERR_BADVERSION; }
+pub(crate) fn header_size(version: u32) -> usize {
+    match version {
+        0..=1 => FDT_V1_SIZE,
+        2 => FDT_V2_SIZE,
+        3..=16 => FDT_V3_SIZE,
+        _ => FDT_V17_SIZE,
+    }
+}
+pub(crate) fn check_header(data: &[u8]) -> Result<()> {
+    if u32_at(data, 0)? != FDT_MAGIC {
+        return Err(Error::BadMagic);
+    }
+    let h = Header::read(data)?;
+    if h.version < 2 || h.last_comp_version > 17 || h.version < h.last_comp_version {
+        return Err(Error::BadVersion);
+    }
+    let hdrsize = header_size(h.version);
+    if h.totalsize < hdrsize || h.totalsize > i32::MAX as usize || h.totalsize > data.len() {
+        return Err(Error::Truncated);
+    }
+    if h.off_mem_rsvmap % 8 != 0 || h.off_dt_struct % 4 != 0 {
+        return Err(Error::Alignment);
+    }
+    let check = |base: usize, size: usize| {
+        base >= hdrsize && base.checked_add(size).is_some_and(|end| end <= h.totalsize)
+    };
+    if !check(h.off_mem_rsvmap, 0)
+        || !check(
+            h.off_dt_struct,
+            if h.version >= 17 { h.size_dt_struct } else { 0 },
+        )
+        || !check(h.off_dt_strings, h.size_dt_strings)
+    {
+        return Err(Error::Truncated);
+    }
+    Ok(())
+}
+pub(crate) fn offset_ptr(data: &[u8], offset: i32, len: usize) -> Result<&[u8]> {
+    Ok(&data[struct_range(data, offset, len)?])
+}
+pub(crate) fn next_tag(data: &[u8], offset: i32) -> (u32, Result<i32>) {
+    let read = |at| -> Result<u32> {
+        Ok(u32::from_be_bytes(
+            offset_ptr(data, at, 4)?.try_into().unwrap(),
+        ))
+    };
+    let Ok(tag) = read(offset) else {
+        return (FDT_END, Err(Error::Truncated));
+    };
+    let scan = || -> Result<i32> {
+        let mut at = offset.checked_add(4).ok_or(Error::BadStructure)?;
+        match tag {
+            FDT_BEGIN_NODE => loop {
+                let byte = offset_ptr(data, at, 1).map_err(|_| Error::BadStructure)?[0];
+                at = at.checked_add(1).ok_or(Error::BadStructure)?;
+                if byte == 0 {
+                    break;
+                }
+            },
+            FDT_PROP => {
+                let len = read(at).map_err(|_| Error::BadStructure)?;
+                if u64::from(len) + at as u64 >= i32::MAX as u64 {
+                    return Err(Error::BadStructure);
+                }
+                at = at
+                    .checked_add(8)
+                    .and_then(|v| v.checked_add(len as i32))
+                    .ok_or(Error::BadStructure)?;
+                if Header::read(data)?.version < 16 && len >= 8 && (at - len as i32) % 8 != 0 {
+                    at = at.checked_add(4).ok_or(Error::BadStructure)?;
+                }
+            }
+            FDT_END | FDT_END_NODE | FDT_NOP => {}
+            _ => return Err(Error::BadStructure),
         }
-    } else if fdt_magic(fdt) == FDT_SW_MAGIC {
-        if !can_assume(VALID_INPUT) && fdt_size_dt_struct(fdt) == 0 { return -FDT_ERR_BADSTATE; }
-    } else { return -FDT_ERR_BADMAGIC; }
-    if totalsize < INT32_MAX as u32 { totalsize as i32 } else { -FDT_ERR_TRUNCATED }
-}
-
-unsafe fn check_off_(hdrsize: u32, totalsize: u32, off: u32) -> bool { off >= hdrsize && off <= totalsize }
-
-unsafe fn check_block_(hdrsize: u32, totalsize: u32, base: u32, size: u32) -> bool {
-    if !check_off_(hdrsize, totalsize, base) { return false; }
-    let end = base.wrapping_add(size);
-    if end < base { return false; }
-    if !check_off_(hdrsize, totalsize, end) { return false; }
-    true
-}
-
-pub fn fdt_header_size_(version: u32) -> usize {
-    if version <= 1 { FDT_V1_SIZE } else if version <= 2 { FDT_V2_SIZE } else if version <= 3 { FDT_V3_SIZE } else if version <= 16 { FDT_V16_SIZE } else { FDT_V17_SIZE }
-}
-
-pub unsafe fn fdt_header_size(fdt: *const core::ffi::c_void) -> usize {
-    if can_assume(LATEST) { FDT_V17_SIZE } else { fdt_header_size_(fdt_version(fdt)) }
-}
-
-pub unsafe fn fdt_check_header(fdt: *const core::ffi::c_void) -> i32 {
-    if (fdt as usize) & 7 != 0 { return -FDT_ERR_ALIGNMENT; }
-    if fdt_magic(fdt) != FDT_MAGIC { return -FDT_ERR_BADMAGIC; }
-    if !can_assume(LATEST) {
-        if fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION || fdt_last_comp_version(fdt) > FDT_LAST_SUPPORTED_VERSION || fdt_version(fdt) < fdt_last_comp_version(fdt) { return -FDT_ERR_BADVERSION; }
+        offset_ptr(data, offset, (at - offset) as usize).map_err(|_| Error::BadStructure)?;
+        i32::try_from(align(at as usize, 4)?).map_err(|_| Error::BadStructure)
+    };
+    match scan() {
+        Ok(next) => (tag, Ok(next)),
+        Err(err) => (FDT_END, Err(err)),
     }
-    let hdrsize = fdt_header_size(fdt) as u32;
-    if !can_assume(VALID_DTB) {
-        let total = fdt_totalsize(fdt);
-        if total < hdrsize || total > INT_MAX as u32 { return -FDT_ERR_TRUNCATED; }
-        if fdt_off_mem_rsvmap(fdt) % core::mem::size_of::<u64>() as u32 != 0 { return -FDT_ERR_ALIGNMENT; }
-        if fdt_off_dt_struct(fdt) % FDT_TAGSIZE != 0 { return -FDT_ERR_ALIGNMENT; }
-        if !check_off_(hdrsize, total, fdt_off_mem_rsvmap(fdt)) { return -FDT_ERR_TRUNCATED; }
-        if !can_assume(LATEST) && fdt_version(fdt) < 17 {
-            if !check_off_(hdrsize, total, fdt_off_dt_struct(fdt)) { return -FDT_ERR_TRUNCATED; }
-        } else if !check_block_(hdrsize, total, fdt_off_dt_struct(fdt), fdt_size_dt_struct(fdt)) { return -FDT_ERR_TRUNCATED; }
-        if !check_block_(hdrsize, total, fdt_off_dt_strings(fdt), fdt_size_dt_strings(fdt)) { return -FDT_ERR_TRUNCATED; }
+}
+pub(crate) fn next_node(data: &[u8], offset: i32, mut depth: Option<&mut i32>) -> Result<i32> {
+    let mut next = if offset >= 0 {
+        check_node_offset(data, offset)?
+    } else {
+        0
+    };
+    loop {
+        let at = next;
+        let (tag, result) = next_tag(data, at);
+        match tag {
+            FDT_BEGIN_NODE => {
+                if let Some(d) = depth.as_deref_mut() {
+                    *d += 1;
+                }
+                return Ok(at);
+            }
+            FDT_END_NODE => {
+                if let Some(d) = depth.as_deref_mut() {
+                    *d -= 1;
+                    if *d < 0 {
+                        return result;
+                    }
+                }
+            }
+            FDT_END => {
+                return Err(match result {
+                    Ok(_) => Error::NotFound,
+                    Err(Error::Truncated) if depth.is_none() => Error::NotFound,
+                    Err(err) => err,
+                })
+            }
+            _ => {}
+        }
+        next = result?;
     }
-    0
 }
-
-pub unsafe fn fdt_offset_ptr(fdt: *const core::ffi::c_void, offset: i32, len: u32) -> *const core::ffi::c_void {
-    let uoffset = offset as u32;
-    let absoffset = uoffset.wrapping_add(fdt_off_dt_struct(fdt));
-    if offset < 0 { return core::ptr::null(); }
-    if !can_assume(VALID_INPUT) && (absoffset < uoffset || absoffset.wrapping_add(len) < absoffset || absoffset.wrapping_add(len) > fdt_totalsize(fdt)) { return core::ptr::null(); }
-    if can_assume(LATEST) || fdt_version(fdt) >= 0x11 { if uoffset.wrapping_add(len) < uoffset || (offset as u32).wrapping_add(len) > fdt_size_dt_struct(fdt) { return core::ptr::null(); } }
-    fdt_offset_ptr_(fdt, offset)
-}
-
-pub unsafe fn fdt_next_tag(fdt: *const core::ffi::c_void, startoffset: i32, nextoffset: *mut i32) -> u32 {
-    *nextoffset = -FDT_ERR_TRUNCATED;
-    let mut offset = startoffset;
-    let tagp = fdt_offset_ptr(fdt, offset, FDT_TAGSIZE);
-    if !can_assume(VALID_DTB) && tagp.is_null() { return FDT_END; }
-    let tag = fdt32_to_cpu(*(tagp as *const fdt32_t));
-    offset += FDT_TAGSIZE as i32;
-    *nextoffset = -FDT_ERR_BADSTRUCTURE;
-    match tag {
-        FDT_BEGIN_NODE => { loop { let p = fdt_offset_ptr(fdt, offset, 1) as *const i8; offset += 1; if p.is_null() || *p == 0 { if !can_assume(VALID_DTB) && p.is_null() { return FDT_END; } break; } } }
-        FDT_PROP => { let lenp = fdt_offset_ptr(fdt, offset, core::mem::size_of::<fdt32_t>() as u32); if !can_assume(VALID_DTB) && lenp.is_null() { return FDT_END; } let len = fdt32_to_cpu(*(lenp as *const fdt32_t)); let sum = len.wrapping_add(offset as u32); if !can_assume(VALID_DTB) && (INT_MAX as u32 <= sum || sum < offset as u32) { return FDT_END; } offset += (core::mem::size_of::<fdt_property>() - FDT_TAGSIZE as usize) as i32 + len as i32; if !can_assume(LATEST) && fdt_version(fdt) < 0x10 && len >= 8 && ((offset - len as i32) % 8) != 0 { offset += 4; } }
-        FDT_END | FDT_END_NODE | FDT_NOP => {}
-        _ => return FDT_END,
+pub(crate) fn first_subnode(data: &[u8], offset: i32) -> Result<i32> {
+    let mut depth = 0;
+    let off = next_node(data, offset, Some(&mut depth)).map_err(|_| Error::NotFound)?;
+    if depth == 1 {
+        Ok(off)
+    } else {
+        Err(Error::NotFound)
     }
-    if fdt_offset_ptr(fdt, startoffset, (offset - startoffset) as u32).is_null() { return FDT_END; }
-    *nextoffset = FDT_TAGALIGN(offset as u32) as i32;
-    tag
 }
-
-pub unsafe fn fdt_check_node_offset_(fdt: *const core::ffi::c_void, offset: i32) -> i32 { if !can_assume(VALID_INPUT) && (offset < 0 || offset % FDT_TAGSIZE as i32 != 0) { return -FDT_ERR_BADOFFSET; } let mut n = 0; if fdt_next_tag(fdt, offset, &mut n) != FDT_BEGIN_NODE { return -FDT_ERR_BADOFFSET; } n }
-pub unsafe fn fdt_check_prop_offset_(fdt: *const core::ffi::c_void, offset: i32) -> i32 { if !can_assume(VALID_INPUT) && (offset < 0 || offset % FDT_TAGSIZE as i32 != 0) { return -FDT_ERR_BADOFFSET; } let mut n = 0; if fdt_next_tag(fdt, offset, &mut n) != FDT_PROP { return -FDT_ERR_BADOFFSET; } n }
-
-pub unsafe fn fdt_next_node(fdt: *const core::ffi::c_void, mut offset: i32, depth: *mut i32) -> i32 { let mut nextoffset = 0; let mut tag; if offset >= 0 { nextoffset = fdt_check_node_offset_(fdt, offset); if nextoffset < 0 { return nextoffset; } } loop { offset = nextoffset; tag = fdt_next_tag(fdt, offset, &mut nextoffset); match tag { FDT_PROP | FDT_NOP => {}, FDT_BEGIN_NODE => if !depth.is_null() { *depth += 1; }, FDT_END_NODE => if !depth.is_null() { *depth -= 1; if *depth < 0 { return nextoffset; } }, FDT_END => { if nextoffset >= 0 || (nextoffset == -FDT_ERR_TRUNCATED && depth.is_null()) { return -FDT_ERR_NOTFOUND; } return nextoffset; }, _ => {} } if tag == FDT_BEGIN_NODE { return offset; } } }
-pub unsafe fn fdt_first_subnode(fdt: *const core::ffi::c_void, mut offset: i32) -> i32 { let mut depth = 0; offset = fdt_next_node(fdt, offset, &mut depth); if offset < 0 || depth != 1 { -FDT_ERR_NOTFOUND } else { offset } }
-pub unsafe fn fdt_next_subnode(fdt: *const core::ffi::c_void, mut offset: i32) -> i32 { let mut depth = 1; loop { offset = fdt_next_node(fdt, offset, &mut depth); if offset < 0 || depth < 1 { return -FDT_ERR_NOTFOUND; } if depth <= 1 { return offset; } } }
-
-pub unsafe fn fdt_find_string_len_(strtab: *const i8, tabsize: i32, s: *const i8, slen: i32) -> *const i8 { let last = strtab.add((tabsize - slen - 1) as usize); let mut p = strtab; while p <= last { if memcmp(p as *const _, s as *const _, slen as usize) == 0 && *p.add(slen as usize) == 0 { return p; } p = p.add(1); } core::ptr::null() }
-pub unsafe fn fdt_move(fdt: *const core::ffi::c_void, buf: *mut core::ffi::c_void, bufsize: i32) -> i32 { if !can_assume(VALID_INPUT) && bufsize < 0 { return -FDT_ERR_NOSPACE; } FDT_RO_PROBE(fdt); if fdt_totalsize(fdt) > bufsize as u32 { return -FDT_ERR_NOSPACE; } memmove(buf, fdt, fdt_totalsize(fdt) as usize); 0 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+pub(crate) fn next_subnode(data: &[u8], mut offset: i32) -> Result<i32> {
+    let mut depth = 1;
+    loop {
+        offset = next_node(data, offset, Some(&mut depth)).map_err(|_| Error::NotFound)?;
+        if depth < 1 {
+            return Err(Error::NotFound);
+        }
+        if depth == 1 {
+            return Ok(offset);
+        }
+    }
+}
+pub(crate) fn move_into(data: &[u8], dest: &mut [u8]) -> Result<()> {
+    let h = ro_probe(data)?;
+    if h.totalsize > dest.len() {
+        return Err(Error::NoSpace);
+    }
+    dest[..h.totalsize].copy_from_slice(&data[..h.totalsize]);
+    Ok(())
+}

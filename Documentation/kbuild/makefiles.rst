@@ -804,10 +804,10 @@ Example::
 Using Rust for host programs
 ----------------------------
 
-Kbuild offers support for host programs written in Rust. However,
-since a Rust toolchain is not mandatory for kernel compilation,
-it may only be used in scenarios where Rust is required to be
-available (e.g. when  ``CONFIG_RUST`` is enabled).
+Kbuild offers support for host programs written in Rust. In this tree,
+the migrated build tools require a host Rust compiler even when
+``CONFIG_RUST`` is disabled. They use the host standard library and do not
+require kernel Rust bindings.
 
 Example::
 

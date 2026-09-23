@@ -59,7 +59,7 @@ PPP                    2.4.0            pppd --version
 procps                 3.2.0            ps --version
 Python                 3.9.x            python3 --version
 quota-tools            3.09             quota -V
-Rust (optional)        1.85.0           rustc --version
+Rust                   1.85.0           rustc --version
 Sphinx\ [#f1]_         3.4.3            sphinx-build --version
 squashfs-tools         4.0              mksquashfs -version
 udev                   081              udevadm --version
@@ -87,10 +87,17 @@ kernels. Older releases aren't guaranteed to work, and we may drop workarounds
 from the kernel that were used to support older versions. Please see additional
 docs on :ref:`Building Linux with Clang/LLVM <kbuild_llvm>`.
 
-Rust (optional)
----------------
+Rust
+----
 
-A recent version of the Rust compiler is required.
+A recent version of the Rust compiler and its host standard library are
+required, including when ``CONFIG_RUST`` is disabled. The dependency generator
+and other migrated build tools are compiled with ``HOSTRUSTC``.
+
+The additional target-kernel requirements (including ``rust-src`` and
+``bindgen``) still depend on ``CONFIG_RUST``. See
+Documentation/rust/translation-progress.rst for the migration status and
+host-tool validation commands.
 
 Please see Documentation/rust/quick-start.rst for instructions on how to
 satisfy the build requirements of Rust support. In particular, the ``Makefile``

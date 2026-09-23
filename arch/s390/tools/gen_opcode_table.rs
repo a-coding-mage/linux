@@ -1,211 +1,247 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Generate opcode table initializers for the in-kernel disassembler.
- *
- *    Copyright IBM Corp. 2017
- *
- */
+// SPDX-License-Identifier: GPL-2.0
+// Copyright IBM Corp. 2017
+//! Generate the s390 disassembler's opcode, format, and long-name tables.
 
-const STRING_SIZE_MAX: usize = 20;
+use std::io::{self, Read, Write};
 
+#[derive(Clone, Copy)]
 struct InsnType {
     byte: u8,
     mask: u8,
-    format: &'static [&'static str],
+    formats: &'static [&'static [u8]],
 }
 
-struct Insn {
-    type_: &'static InsnType,
-    opcode: String,
-    name: String,
-    upper: String,
-    format: String,
-    name_len: usize,
-}
-
-struct InsnGroup {
-    type_: &'static InsnType,
-    offset: i32,
-    count: i32,
-    opcode: String,
-}
-
-struct InsnFormat {
-    format: String,
-    type_: i32,
-}
-
-struct GenOpcode {
-    insn: Vec<Insn>,
-    nr: i32,
-    group: Vec<InsnGroup>,
-    nr_groups: i32,
-}
-
-/*
- * Table of instruction format types. Each opcode is defined with
- * at least one byte (two nibbles), three nibbles, or two bytes (four
- * nibbles).
- * The byte member of each instruction format type entry defines
- * within which byte of an instruction the third (and fourth) nibble
- * of an opcode can be found. The mask member is the and-mask that
- * needs to be applied on this byte in order to get the third (and
- * fourth) nibble of the opcode.
- * The format array defines all instruction formats (as defined in the
- * Principles of Operation) which have the same position of the opcode
- * nibbles.
- * A special case are instruction formats with 1-byte opcodes. In this
- * case the byte member always is zero, so that the mask is applied on
- * the (only) byte that contains the opcode.
- */
-static INSN_TYPE_TABLE: [InsnType; 4] = [
-    InsnType { byte: 0, mask: 0xff, format: &["MII", "RR", "RS", "RSI", "RX", "SI", "SMI", "SS"] },
-    InsnType { byte: 1, mask: 0x0f, format: &["RI", "RIL", "SSF"] },
-    InsnType { byte: 1, mask: 0xff, format: &["E", "IE", "RRE", "RRF", "RRR", "S", "SIL", "SSE"] },
-    InsnType { byte: 5, mask: 0xff, format: &["RIE", "RIS", "RRS", "RSE", "RSL", "RSY", "RXE", "RXF", "RXY", "SIY", "VRI", "VRR", "VRS", "VRV", "VRX", "VSI"] },
+// The first opcode byte is implicit for multi-byte formats. `byte` locates
+// the remaining opcode fragment, and `mask` selects its significant bits.
+const TYPES: &[InsnType] = &[
+    InsnType {
+        byte: 0,
+        mask: 0xff,
+        formats: &[b"MII", b"RR", b"RS", b"RSI", b"RX", b"SI", b"SMI", b"SS"],
+    },
+    InsnType {
+        byte: 1,
+        mask: 0x0f,
+        formats: &[b"RI", b"RIL", b"SSF"],
+    },
+    InsnType {
+        byte: 1,
+        mask: 0xff,
+        formats: &[b"E", b"IE", b"RRE", b"RRF", b"RRR", b"S", b"SIL", b"SSE"],
+    },
+    InsnType {
+        byte: 5,
+        mask: 0xff,
+        formats: &[
+            b"RIE", b"RIS", b"RRS", b"RSE", b"RSL", b"RSY", b"RXE", b"RXF", b"RXY", b"SIY", b"VRI",
+            b"VRR", b"VRS", b"VRV", b"VRX", b"VSI",
+        ],
+    },
 ];
 
-fn insn_format_to_type(format: &str) -> &'static InsnType {
-    let base_format = format.split('_').next().unwrap_or(format);
-    for insn_type in &INSN_TYPE_TABLE {
-        for entry in insn_type.format {
-            if *entry == base_format {
-                return insn_type;
-            }
+struct Instruction<'a> {
+    kind: InsnType,
+    opcode: &'a [u8],
+    name: &'a [u8],
+    upper: Vec<u8>,
+    format: &'a [u8],
+}
+
+impl Instruction<'_> {
+    fn prefix(&self) -> [u8; 2] {
+        [
+            self.opcode.first().copied().unwrap_or(0),
+            self.opcode.get(1).copied().unwrap_or(0),
+        ]
+    }
+}
+
+struct Group {
+    kind: InsnType,
+    opcode: [u8; 2],
+    offset: usize,
+    count: usize,
+}
+
+fn c_string(s: &[u8]) -> &[u8] {
+    &s[..s.iter().position(|&b| b == 0).unwrap_or(s.len())]
+}
+
+fn instructions(input: &[u8]) -> Result<Vec<Instruction<'_>>, ()> {
+    let mut words = input
+        .split(|b| matches!(*b, b' ' | b'\t'..=b'\r'))
+        .filter(|s| !s.is_empty());
+    let mut instructions = Vec::new();
+    while let Some(opcode) = words.next() {
+        let name = words.next().ok_or(())?;
+        let format = words.next().ok_or(())?;
+        // C uses scanf("%s") into three 20-byte arrays. Refuse overlong
+        // fields instead of overflowing them; retain C-string NUL handling.
+        if [opcode, name, format].iter().any(|s| s.len() >= 20) {
+            return Err(());
         }
-    }
-    std::process::exit(1);
-}
-
-fn read_instructions(desc: &mut GenOpcode) {
-    let input = std::io::read_to_string(std::io::stdin()).unwrap();
-    for line in input.split_whitespace().collect::<Vec<_>>().chunks(3) {
-        if line.len() != 3 {
-            std::process::exit(1);
+        let (opcode, name, format) = (c_string(opcode), c_string(name), c_string(format));
+        let base = format.split(|&b| b == b'_').next().unwrap_or_default();
+        let kind = TYPES
+            .iter()
+            .find(|t| t.formats.contains(&base))
+            .copied()
+            .ok_or(())?;
+        if kind.byte != 0 && opcode.len() < 2 {
+            return Err(());
         }
-        let opcode = line[0].to_string();
-        let name = line[1].to_string();
-        let format = line[2].to_string();
-        let type_ = insn_format_to_type(&format);
-        let name_len = name.len();
-        let upper = name.to_uppercase();
-        desc.nr += 1;
-        desc.insn.push(Insn { type_, opcode, name, upper, format, name_len });
+        instructions.push(Instruction {
+            kind,
+            opcode,
+            name,
+            upper: name.to_ascii_uppercase(),
+            format,
+        });
     }
+    Ok(instructions)
 }
 
-fn print_formats(desc: &mut GenOpcode) {
-    desc.insn.sort_by(|a, b| a.format.cmp(&b.format));
-    let mut format = String::new();
-    let mut count = 0;
-    println!("enum {{");
-    for insn in &desc.insn {
-        if format == insn.format { continue; }
-        count += 1;
-        format = insn.format.clone();
-        println!("\tINSTR_{},", format);
+fn name(output: &mut impl Write, name: &[u8]) -> io::Result<()> {
+    output.write_all(b"{")?;
+    for &byte in name {
+        output.write_all(&[b' ', b'\'', byte, b'\'', b','])?;
     }
-    println!("}}; /* {} */\n", count);
+    output.write_all(b" }")
 }
 
-fn print_insn_name(name: &str) {
-    print!("{{");
-    for byte in name.bytes() { print!(" '{}',", byte as char); }
-    print!(" }}");
-}
-
-fn print_long_insn(desc: &mut GenOpcode) {
-    desc.insn.sort_by(|a, b| a.name.cmp(&b.name));
-    let count = desc.insn.iter().filter(|insn| insn.name_len >= 6).count();
-    println!("enum {{");
-    for insn in &desc.insn {
-        if insn.name_len >= 6 { println!("\tLONG_INSN_{},", insn.upper); }
-    }
-    println!("}}; /* {} */\n", count);
-    println!("#define LONG_INSN_INITIALIZER {{ \\");
-    for insn in &desc.insn {
-        if insn.name_len < 6 { continue; }
-        print!("\t[LONG_INSN_{}] = ", insn.upper);
-        print_insn_name(&insn.name);
-        println!(", \\");
-    }
-    println!("}}\n");
-}
-
-fn print_opcode(insn: &Insn, nr: i32) {
-    let opcode = if insn.type_.byte != 0 { &insn.opcode[2..] } else { &insn.opcode };
-    print!("\t[{nr:4}] = {{ .opfrag = 0x{opcode}, .format = INSTR_{}, ", insn.format);
-    if insn.name_len < 6 {
-        print!(".name =  ");
-        print_insn_name(&insn.name);
+fn opcode(output: &mut impl Write, insn: &Instruction<'_>, index: usize) -> io::Result<()> {
+    write!(output, "\t[{index:4}] = {{ .opfrag = 0x")?;
+    output.write_all(if insn.kind.byte == 0 {
+        insn.opcode
     } else {
-        print!(".offset = LONG_INSN_{}", insn.upper);
+        &insn.opcode[2..]
+    })?;
+    output.write_all(b", .format = INSTR_")?;
+    output.write_all(insn.format)?;
+    if insn.name.len() < 6 {
+        output.write_all(b", .name =  ")?;
+        name(output, insn.name)?;
+    } else {
+        output.write_all(b", .offset = LONG_INSN_")?;
+        output.write_all(&insn.upper)?;
     }
-    println!(" }}, \\");
+    output.write_all(b" }, \\\n")
 }
 
-fn add_to_group(desc: &mut GenOpcode, insn: &Insn, offset: i32) {
-    if let Some(group) = desc.group.last_mut() {
-        if group.opcode[..2] == insn.opcode[..2] || group.type_.byte == 0 {
+fn add_to_group(groups: &mut Vec<Group>, insn: &Instruction<'_>, offset: usize) {
+    if let Some(group) = groups.last_mut() {
+        if group.opcode == insn.prefix() || group.kind.byte == 0 {
             group.count += 1;
             return;
         }
     }
-    desc.nr_groups += 1;
-    desc.group.push(InsnGroup { opcode: insn.opcode[..2].to_string(), type_: insn.type_, offset, count: 1 });
+    groups.push(Group {
+        kind: insn.kind,
+        opcode: insn.prefix(),
+        offset,
+        count: 1,
+    });
 }
 
-fn print_opcode_table(desc: &mut GenOpcode) {
-    desc.insn.sort_by(|a, b| a.opcode.cmp(&b.opcode));
-    println!("#define OPCODE_TABLE_INITIALIZER {{ \\");
-    let mut offset = 0;
-    let mut opcode = String::new();
-    for i in 0..desc.insn.len() {
-        if desc.insn[i].type_.byte == 0 { continue; }
-        let insn = &desc.insn[i];
-        add_to_group(desc, insn, offset);
-        if opcode != insn.opcode[..2] {
-            opcode = insn.opcode[..2].to_string();
-            println!("\t/* {:.2} */ \\", opcode);
+fn generate(output: &mut impl Write, insns: &mut [Instruction<'_>]) -> io::Result<()> {
+    output.write_all(
+        b"#ifndef __S390_GENERATED_DIS_DEFS_H__\n#define __S390_GENERATED_DIS_DEFS_H__\n",
+    )?;
+    let source = file!().strip_suffix(".rs").unwrap_or(file!());
+    writeln!(
+        output,
+        "/*\n * DO NOT MODIFY.\n *\n * This file was generated by {source}.c\n */\n"
+    )?;
+
+    insns.sort_by(|a, b| a.format.cmp(b.format));
+    output.write_all(b"enum {\n")?;
+    let mut previous = b"".as_slice();
+    let mut count = 0;
+    for insn in insns.iter() {
+        if previous != insn.format {
+            previous = insn.format;
+            count += 1;
+            output.write_all(b"\tINSTR_")?;
+            output.write_all(insn.format)?;
+            output.write_all(b",\n")?;
         }
-        print_opcode(insn, offset);
+    }
+    writeln!(output, "}}; /* {count} */\n")?;
+
+    insns.sort_by(|a, b| a.name.cmp(b.name));
+    output.write_all(b"enum {\n")?;
+    let mut count = 0;
+    for insn in insns.iter().filter(|i| i.name.len() >= 6) {
+        output.write_all(b"\tLONG_INSN_")?;
+        output.write_all(&insn.upper)?;
+        output.write_all(b",\n")?;
+        count += 1;
+    }
+    writeln!(output, "}}; /* {count} */\n")?;
+    output.write_all(b"#define LONG_INSN_INITIALIZER { \\\n")?;
+    for insn in insns.iter().filter(|i| i.name.len() >= 6) {
+        output.write_all(b"\t[LONG_INSN_")?;
+        output.write_all(&insn.upper)?;
+        output.write_all(b"] = ")?;
+        name(output, insn.name)?;
+        output.write_all(b", \\\n")?;
+    }
+    output.write_all(b"}\n\n")?;
+
+    insns.sort_by(|a, b| a.opcode.cmp(b.opcode));
+    output.write_all(b"#define OPCODE_TABLE_INITIALIZER { \\\n")?;
+    let mut groups = Vec::new();
+    let mut previous = [0; 2];
+    let mut offset = 0;
+    for insn in insns.iter().filter(|i| i.kind.byte != 0) {
+        add_to_group(&mut groups, insn, offset);
+        if previous != insn.opcode[..2] {
+            previous.copy_from_slice(&insn.opcode[..2]);
+            output.write_all(b"\t/* ")?;
+            output.write_all(&previous)?;
+            output.write_all(b" */ \\\n")?;
+        }
+        opcode(output, insn, offset)?;
         offset += 1;
     }
-    println!("\t/* 1-byte opcode instructions */ \\");
-    for i in 0..desc.insn.len() {
-        if desc.insn[i].type_.byte != 0 { continue; }
-        let insn = &desc.insn[i];
-        add_to_group(desc, insn, offset);
-        print_opcode(insn, offset);
+    output.write_all(b"\t/* 1-byte opcode instructions */ \\\n")?;
+    for insn in insns.iter().filter(|i| i.kind.byte == 0) {
+        add_to_group(&mut groups, insn, offset);
+        opcode(output, insn, offset)?;
         offset += 1;
     }
-    println!("}}\n");
+    output.write_all(b"}\n\n#define OPCODE_OFFSET_INITIALIZER { \\\n")?;
+    for group in groups {
+        output.write_all(b"\t{ .opcode = 0x")?;
+        output.write_all(c_string(&group.opcode))?;
+        writeln!(
+            output,
+            ", .mask = 0x{:02x}, .byte = {}, .offset = {}, .count = {} }}, \\",
+            group.kind.mask, group.kind.byte, group.offset, group.count
+        )?;
+    }
+    output.write_all(b"}\n\n#endif\n")
 }
 
-fn print_opcode_table_offsets(desc: &GenOpcode) {
-    println!("#define OPCODE_OFFSET_INITIALIZER {{ \\");
-    for group in &desc.group {
-        println!("\t{{ .opcode = 0x{}, .mask = 0x{:02x}, .byte = {}, .offset = {}, .count = {} }}, \\", group.opcode, group.type_.mask, group.type_.byte, group.offset, group.count);
-    }
-    println!("}}\n");
+fn run() -> io::Result<bool> {
+    let mut input = Vec::new();
+    io::stdin().lock().read_to_end(&mut input)?;
+    let Ok(mut insns) = instructions(&input) else {
+        return Ok(false);
+    };
+    let mut output = io::BufWriter::new(io::stdout().lock());
+    generate(&mut output, &mut insns)?;
+    output.flush()?;
+    Ok(true)
 }
 
 fn main() {
-    let mut desc = GenOpcode { insn: Vec::new(), nr: 0, group: Vec::new(), nr_groups: 0 };
-    read_instructions(&mut desc);
-    println!("#ifndef __S390_GENERATED_DIS_DEFS_H__");
-    println!("#define __S390_GENERATED_DIS_DEFS_H__");
-    println!("/*");
-    println!(" * DO NOT MODIFY.");
-    println!(" *");
-    println!(" * This file was generated by gen_opcode_table.c");
-    println!(" */\n");
-    print_formats(&mut desc);
-    print_long_insn(&mut desc);
-    print_opcode_table(&mut desc);
-    print_opcode_table_offsets(&desc);
-    println!("#endif");
-    std::process::exit(0);
+    match run() {
+        Ok(true) => {}
+        Ok(false) => std::process::exit(1),
+        Err(error) => {
+            let _ = writeln!(io::stderr().lock(), "gen_opcode_table: {error}");
+            std::process::exit(1);
+        }
+    }
 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

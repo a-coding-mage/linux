@@ -172,7 +172,7 @@ HOSTCFLAGS_parser.tab.o	:= -I $(src)
 
 # conf: Used for defconfig, oldconfig and related targets
 hostprogs	+= conf
-conf-objs	:= conf.o $(common-objs)
+conf-rust	:= y
 
 # nconf: Used for the nconfig target based on ncurses
 hostprogs	+= nconf

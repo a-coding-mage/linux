@@ -1,99 +1,547 @@
-/* Generate assembler source containing symbol information. */
+// SPDX-License-Identifier: GPL-2.0-only
+// Generate assembler source containing compressed kernel symbol information.
+// Copyright 2002 Kai Germaschewski
 
-use std::ffi::c_void;
-use std::mem;
-use std::ptr;
+//! Generate assembler tables containing compressed kernel symbol information.
+
+use std::cmp::Ordering;
+use std::env;
+use std::ffi::OsString;
+use std::fs::File;
+use std::io::{self, BufRead, BufReader, BufWriter, Write};
+use std::path::Path;
+use std::process::ExitCode;
 
 const KSYM_NAME_LEN: usize = 512;
+const USAGE: &str = "Usage: kallsyms [--all-symbols] in.map > out.S\n";
 
-#[repr(C)]
-struct SymEntry {
-    addr: u64,
-    len: u32,
-    seq: u32,
-    sym: [u8; 0],
+#[derive(Default)]
+struct Options {
+    all_symbols: bool,
+    pc_relative: bool,
+    input: OsString,
 }
 
-#[repr(C)]
-struct AddrRange {
-    start_sym: *const u8,
-    end_sym: *const u8,
+fn options() -> Result<Options, String> {
+    let mut args = env::args_os();
+    let program = args.next().unwrap_or_default();
+    let mut result = Options::default();
+    let mut input = None;
+    let mut scan_options = true;
+    let posix = env::var_os("POSIXLY_CORRECT").is_some();
+    for arg in args {
+        let bytes = arg.as_encoded_bytes();
+        if scan_options && bytes == b"--" {
+            scan_options = false;
+            continue;
+        }
+        if scan_options && bytes.starts_with(b"--") {
+            let option = &bytes[2..];
+            let end = option
+                .iter()
+                .position(|&c| c == b'=')
+                .unwrap_or(option.len());
+            let name = &option[..end];
+            if name.is_empty() {
+                return Err(format!(
+                    "{}: option '{}' is ambiguous; possibilities: '--all-symbols' '--pc-relative'\n{USAGE}",
+                    program.to_string_lossy(), arg.to_string_lossy()
+                ));
+            }
+            let full = [b"all-symbols".as_slice(), b"pc-relative".as_slice()]
+                .into_iter()
+                .find(|candidate| candidate.starts_with(name));
+            match full {
+                Some(full) if end == option.len() => {
+                    if full == b"all-symbols" {
+                        result.all_symbols = true;
+                    } else {
+                        result.pc_relative = true;
+                    }
+                }
+                Some(full) => {
+                    return Err(format!(
+                        "{}: option '--{}' doesn't allow an argument\n{USAGE}",
+                        program.to_string_lossy(),
+                        String::from_utf8_lossy(full)
+                    ));
+                }
+                None => {
+                    return Err(format!(
+                        "{}: unrecognized option '{}'\n{USAGE}",
+                        program.to_string_lossy(),
+                        arg.to_string_lossy()
+                    ));
+                }
+            }
+        } else if scan_options && bytes.starts_with(b"-") && bytes.len() > 1 {
+            return Err(format!(
+                "{}: invalid option -- '{}'\n{USAGE}",
+                program.to_string_lossy(),
+                char::from(bytes[1])
+            ));
+        } else {
+            if input.is_none() {
+                input = Some(arg);
+            }
+            if posix {
+                scan_options = false;
+            }
+        }
+    }
+    result.input = input.ok_or_else(|| USAGE.to_owned())?;
+    Ok(result)
+}
+
+struct Symbol {
+    addr: u64,
+    seq: usize,
+    // Keep the original bytes for assembly comments and the name-sorted index.
+    // Symbol names in an nm map need not be UTF-8.
+    name: Vec<u8>,
+    compressed: Vec<u8>,
+}
+
+impl Symbol {
+    fn name(&self) -> &[u8] {
+        &self.name[1..]
+    }
+    fn is_weak(&self) -> bool {
+        matches!(self.name[0], b'w' | b'W')
+    }
+
+    fn may_be_linker_provide(&self) -> bool {
+        let name = self.name();
+        name.len() >= 8
+            && name.starts_with(b"__")
+            && (name.starts_with(b"__start_")
+                || name.starts_with(b"__stop_")
+                || name.starts_with(b"__end_")
+                || name.ends_with(b"_start")
+                || name.ends_with(b"_end"))
+    }
+
+    fn prefix_underscores(&self) -> usize {
+        self.name().iter().take_while(|&&c| c == b'_').count()
+    }
+}
+
+fn compare_symbols(a: &Symbol, b: &Symbol) -> Ordering {
+    a.addr
+        .cmp(&b.addr)
+        .then_with(|| a.is_weak().cmp(&b.is_weak()))
+        .then_with(|| a.may_be_linker_provide().cmp(&b.may_be_linker_provide()))
+        .then_with(|| a.prefix_underscores().cmp(&b.prefix_underscores()))
+        .then_with(|| a.seq.cmp(&b.seq))
+}
+
+struct AddressRange {
+    start_name: &'static [u8],
+    end_name: &'static [u8],
     start: u64,
     end: u64,
 }
 
-extern "C" {
-    fn fprintf(stream: *mut c_void, fmt: *const u8, ...) -> i32;
-    fn printf(fmt: *const u8, ... ) -> i32;
-    fn exit(status: i32) -> !;
-    fn free(p: *mut c_void);
-    fn malloc(size: usize) -> *mut c_void;
-    fn realloc(p: *mut c_void, size: usize) -> *mut c_void;
-    fn fopen(path: *const u8, mode: *const u8) -> *mut c_void;
-    fn fclose(stream: *mut c_void) -> i32;
-    fn feof(stream: *mut c_void) -> i32;
-    fn getline(line: *mut *mut u8, cap: *mut usize, stream: *mut c_void) -> isize;
-    fn perror(s: *const u8);
-    fn strtoull(s: *const u8, end: *mut *mut u8, base: i32) -> u64;
-    fn strlen(s: *const u8) -> usize;
-    fn strcmp(a: *const u8, b: *const u8) -> i32;
-    fn strncmp(a: *const u8, b: *const u8, n: usize) -> i32;
-    fn memcmp(a: *const c_void, b: *const c_void, n: usize) -> i32;
-    fn memmove(dst: *mut c_void, src: *const c_void, n: usize) -> *mut c_void;
-    fn qsort(base: *mut c_void, n: usize, size: usize, cmp: unsafe extern "C" fn(*const c_void, *const c_void) -> i32);
-    fn getopt_long(argc: i32, argv: *mut *mut u8, shortopts: *const u8, longopts: *const c_void, index: *mut i32) -> i32;
-    static mut optind: i32;
+struct Map {
+    text: u64,
+    ranges: [AddressRange; 2],
+    symbols: Vec<Symbol>,
 }
 
-static mut TEXT: u64 = 0;
-static mut TEXT_RANGES: [AddrRange; 2] = [
-    AddrRange { start_sym: b"_stext\0".as_ptr(), end_sym: b"_etext\0".as_ptr(), start: 0, end: 0 },
-    AddrRange { start_sym: b"_sinittext\0".as_ptr(), end_sym: b"_einittext\0".as_ptr(), start: 0, end: 0 },
-];
-static mut TABLE: *mut *mut SymEntry = ptr::null_mut();
-static mut TABLE_SIZE: u32 = 0;
-static mut TABLE_CNT: u32 = 0;
-static mut ALL_SYMBOLS: i32 = 0;
-static mut PC_RELATIVE: i32 = 0;
-static mut TOKEN_PROFIT: [i32; 0x10000] = [0; 0x10000];
-static mut BEST_TABLE: [[u8; 2]; 256] = [[0; 2]; 256];
-static mut BEST_TABLE_LEN: [u8; 256] = [0; 256];
+fn ignored_symbol(name: &[u8], kind: u8) -> bool {
+    matches!(kind, b'u' | b'n')
+        || (kind.eq_ignore_ascii_case(&b'A')
+            && !matches!(
+                name,
+                b"__kernel_syscall_via_break"
+                    | b"__kernel_syscall_via_epc"
+                    | b"__kernel_sigtramp"
+                    | b"__gp"
+            ))
+}
 
-unsafe fn xmalloc(n: usize) -> *mut c_void { let p = malloc(n); if p.is_null() { exit(1) }; p }
-unsafe fn xrealloc(p: *mut c_void, n: usize) -> *mut c_void { let q = realloc(p, n); if q.is_null() { exit(1) }; q }
-unsafe fn sym_name(s: *const SymEntry) -> *mut u8 { (s as *mut u8).add(mem::size_of::<SymEntry>() + 1) }
-
-unsafe fn usage() -> ! { fprintf(ptr::null_mut(), b"Usage: kallsyms [--all-symbols] in.map > out.S\n\0".as_ptr()); exit(1) }
-unsafe fn is_ignored_symbol(name: *const u8, typ: u8) -> bool {
-    if typ == b'u' || typ == b'n' { return true; }
-    if (typ as char).to_ascii_uppercase() as u8 == b'A' {
-        return strcmp(name,b"__kernel_syscall_via_break\0".as_ptr()) != 0 && strcmp(name,b"__kernel_syscall_via_epc\0".as_ptr()) != 0 && strcmp(name,b"__kernel_sigtramp\0".as_ptr()) != 0 && strcmp(name,b"__gp\0".as_ptr()) != 0;
+fn hex_digit(byte: u8) -> Option<u64> {
+    match byte {
+        b'0'..=b'9' => Some(u64::from(byte - b'0')),
+        b'a'..=b'f' => Some(u64::from(byte - b'a' + 10)),
+        b'A'..=b'F' => Some(u64::from(byte - b'A' + 10)),
+        _ => None,
     }
-    false
-}
-unsafe fn check_symbol_range(sym:*const u8, addr:u64, ranges:*mut AddrRange, entries:usize) { for i in 0..entries { let r=ranges.add(i); if strcmp(sym,(*r).start_sym)==0 {(*r).start=addr;return} else if strcmp(sym,(*r).end_sym)==0 {(*r).end=addr;return} } }
-unsafe fn read_symbol(_in:*mut c_void, buf:*mut *mut u8, blen:*mut usize) -> *mut SymEntry {
-    let n=getline(buf,blen,_in); if n<0 { return ptr::null_mut() }; if *buf.add(0).add(0).add(n as usize-1)==b'\n' {*(*buf).add(n as usize-1)=0;}
-    let mut p=ptr::null_mut(); let addr=strtoull(*buf,&mut p,16); if p.is_null() || *p!=b' ' {exit(1)}; p=p.add(1); let typ=*p; p=p.add(1); if *p!=b' ' {exit(1)}; p=p.add(1);
-    let len=strlen(p); if len>=KSYM_NAME_LEN{return ptr::null_mut()}; if strcmp(p,b"_text\0".as_ptr())==0 {TEXT=addr}; if is_ignored_symbol(p,typ){return ptr::null_mut()}; check_symbol_range(p,addr,TEXT_RANGES.as_mut_ptr(),2);
-    let s=xmalloc(mem::size_of::<SymEntry>()+len+2) as *mut SymEntry; (*s).addr=addr;(*s).len=(len+1) as u32;(*s).sym.as_mut_ptr(); *((s as *mut u8).add(mem::size_of::<SymEntry>()))=typ; ptr::copy_nonoverlapping(p,sym_name(s),len+1); s
 }
 
-unsafe fn symbol_in_range(s:*const SymEntry)->bool { for r in &TEXT_RANGES {if (*s).addr>=r.start&&(*s).addr<=r.end{return true}} false }
-unsafe fn symbol_valid(s:*const SymEntry)->bool { let n=sym_name(s); if ALL_SYMBOLS==0 {if strncmp(n,b"__start_\0".as_ptr(),8)==0||strncmp(n,b"__stop_\0".as_ptr(),7)==0{return true}; if !symbol_in_range(s){return false}; if ((*s).addr==TEXT_RANGES[0].end&&strcmp(n,TEXT_RANGES[0].end_sym)!=0)||((*s).addr==TEXT_RANGES[1].end&&strcmp(n,TEXT_RANGES[1].end_sym)!=0){return false}} true }
-unsafe fn shrink_table(){let mut pos=0;for i in 0..TABLE_CNT{let s=*TABLE.add(i as usize);if symbol_valid(s){*TABLE.add(pos)=s;pos+=1}else{free(s as *mut c_void)}}TABLE_CNT=pos;}
-unsafe fn read_map(path:*const u8){let f=fopen(path,b"r\0".as_ptr());if f.is_null(){exit(1)};let mut b=ptr::null_mut();let mut n=0;while feof(f)==0{let s=read_symbol(f,&mut b,&mut n);if s.is_null(){continue}(*s).seq=TABLE_CNT;if TABLE_CNT>=TABLE_SIZE{TABLE_SIZE+=10000;TABLE=xrealloc(TABLE as *mut c_void,TABLE_SIZE as usize*mem::size_of::<*mut SymEntry>()) as *mut *mut SymEntry}*TABLE.add(TABLE_CNT as usize)=s;TABLE_CNT+=1}free(b as *mut c_void);fclose(f);}
+// Match strtoull(..., 16), including its accepted whitespace/sign/prefix and
+// saturation on overflow. The delimiters after the address are exactly spaces.
+fn parse_line(line: &[u8]) -> Result<(u64, u8, &[u8]), String> {
+    let mut pos = 0;
+    while line
+        .get(pos)
+        .is_some_and(|c| c.is_ascii_whitespace() || *c == 0x0b)
+    {
+        pos += 1;
+    }
+    let negative = line.get(pos) == Some(&b'-');
+    if negative || line.get(pos) == Some(&b'+') {
+        pos += 1;
+    }
+    if line.get(pos) == Some(&b'0')
+        && matches!(line.get(pos + 1), Some(b'x' | b'X'))
+        && line.get(pos + 2).and_then(|&c| hex_digit(c)).is_some()
+    {
+        pos += 2;
+    }
+    let start = pos;
+    let mut value = 0u64;
+    let mut overflow = false;
+    while let Some(digit) = line.get(pos).and_then(|&c| hex_digit(c)) {
+        if let Some(next) = value.checked_mul(16).and_then(|v| v.checked_add(digit)) {
+            value = next;
+        } else {
+            overflow = true;
+        }
+        pos += 1;
+    }
+    if pos == start
+        || line.get(pos) != Some(&b' ')
+        || !line.get(pos + 1).is_some_and(u8::is_ascii)
+        || line.get(pos + 2) != Some(&b' ')
+    {
+        return Err("line format error\n".to_owned());
+    }
+    value = if overflow {
+        u64::MAX
+    } else if negative {
+        value.wrapping_neg()
+    } else {
+        value
+    };
+    let name = &line[pos + 3..];
+    let end = name.iter().position(|&c| c == 0).unwrap_or(name.len());
+    Ok((value, line[pos + 1], &name[..end]))
+}
 
-unsafe fn learn(s:*const u8,n:i32,d:i32){for i in 0..n-1{TOKEN_PROFIT[*s.add(i as usize) as usize+((*s.add(i as usize+1) as usize)<<8)]+=d;}}
-unsafe fn find_token(s:*mut u8,n:i32,t:*const u8)->*mut u8{for i in 0..n-1{if *s.add(i as usize)==*t&&*s.add(i as usize+1)==*t.add(1){return s.add(i as usize)}}ptr::null_mut()}
-unsafe fn compress(str_:*const u8,idx:u8){for i in 0..TABLE_CNT{let s=*TABLE.add(i as usize);let mut len=(*s).len as i32;let mut p1=(s as *mut u8).add(mem::size_of::<SymEntry>());let mut p2=find_token(p1,len,str_);if p2.is_null(){continue}learn(p1,len,-1);let mut size=len;loop{*p2=idx;p2=p2.add(1);size-=p2.offset_from(p1) as i32;memmove(p2 as *mut c_void,p2.add(1),size as usize);p1=p2;len-=1;if size<2{break}p2=find_token(p1,size,str_);if p2.is_null(){break}}(*s).len=len as u32;learn(p1.offset(-(len as isize) as isize),len,1);}}
-unsafe fn optimize(){for i in (0..256).rev(){if BEST_TABLE_LEN[i]==0{let mut best=0;for j in 0..65536{if TOKEN_PROFIT[j]>TOKEN_PROFIT[best]{best=j}}if TOKEN_PROFIT[best]==0{break}BEST_TABLE_LEN[i]=2;BEST_TABLE[i]=[best as u8,(best>>8) as u8];compress(BEST_TABLE[i].as_ptr(),i as u8)}}}
-unsafe fn optimize_table(){for i in 0..TABLE_CNT{let s=*TABLE.add(i as usize);let p=(s as *mut u8).add(mem::size_of::<SymEntry>());learn(p,(*s).len as i32,1);for j in 0..(*s).len{let c=*p.add(j as usize);BEST_TABLE[c as usize]=[c,0];BEST_TABLE_LEN[c as usize]=1;}}optimize();}
+fn io_message(context: &str, error: io::Error) -> String {
+    let message = error.to_string();
+    let message = message.split(" (os error ").next().unwrap_or(&message);
+    format!("{context}: {message}\n")
+}
 
-unsafe fn expand(data:*const u8,len:i32,result:*mut u8)->i32{let mut total=0;for i in 0..len{let c=*data.add(i as usize) as usize;if BEST_TABLE[c][0]==c as u8&&BEST_TABLE_LEN[c]==1{*result.add(total as usize)=c as u8;total+=1}else{total+=expand(BEST_TABLE[c].as_ptr(),BEST_TABLE_LEN[c] as i32,result.add(total as usize));}}*result.add(total as usize)=0;total}
-unsafe fn output_label(label:*const u8){printf(b".globl %s\n\t.balign 4\n%s:\n\0".as_ptr(),label,label);}
-unsafe fn write_src(){let mut b=[0u8;KSYM_NAME_LEN];printf(b"\t.section .rodata, \"a\"\n\0".as_ptr());output_label(b"kallsyms_num_syms\0".as_ptr());printf(b"\t.long\t%u\n\n\0".as_ptr(),TABLE_CNT);output_label(b"kallsyms_names\0".as_ptr());for i in 0..TABLE_CNT{let s=*TABLE.add(i as usize);printf(b"\t.byte %u\n\0".as_ptr(),(*s).len);for j in 0..(*s).len{printf(b", 0x%02x\0".as_ptr(),*((s as *mut u8).add(mem::size_of::<SymEntry>()+j as usize) as *mut u8));}expand((s as *mut u8).add(mem::size_of::<SymEntry>()),(*s).len as i32,b.as_mut_ptr());printf(b"\t/* %s */\n\0".as_ptr(),b.as_ptr());}printf(b".size kallsyms_names, . - kallsyms_names\n\0".as_ptr());}
+impl Map {
+    fn read(path: &Path) -> Result<Self, String> {
+        let file = File::open(path).map_err(|e| io_message(&path.to_string_lossy(), e))?;
+        let mut input = BufReader::new(file);
+        let mut map = Self {
+            text: 0,
+            ranges: [
+                AddressRange {
+                    start_name: b"_stext",
+                    end_name: b"_etext",
+                    start: 0,
+                    end: 0,
+                },
+                AddressRange {
+                    start_name: b"_sinittext",
+                    end_name: b"_einittext",
+                    start: 0,
+                    end: 0,
+                },
+            ],
+            symbols: Vec::new(),
+        };
+        let mut line = Vec::new();
+        loop {
+            line.clear();
+            if input
+                .read_until(b'\n', &mut line)
+                .map_err(|e| io_message("read_symbol", e))?
+                == 0
+            {
+                break;
+            }
+            if line.last() == Some(&b'\n') {
+                line.pop();
+            }
+            let (addr, kind, name) = parse_line(&line)?;
+            if name.len() >= KSYM_NAME_LEN {
+                let mut error = io::stderr().lock();
+                error.write_all(b"Symbol ").and_then(|()| error.write_all(name))
+                    .and_then(|()| writeln!(error, " too long for kallsyms ({} >= {KSYM_NAME_LEN}).\nPlease increase KSYM_NAME_LEN both in kernel and kallsyms.c", name.len()))
+                    .map_err(|e| io_message("stderr", e))?;
+                continue;
+            }
+            if name == b"_text" {
+                map.text = addr;
+            }
+            if ignored_symbol(name, kind) {
+                continue;
+            }
+            for range in &mut map.ranges {
+                if name == range.start_name {
+                    range.start = addr;
+                }
+                if name == range.end_name {
+                    range.end = addr;
+                }
+            }
+            let mut typed_name = Vec::with_capacity(name.len() + 1);
+            typed_name.push(kind);
+            typed_name.extend_from_slice(name);
+            map.symbols.push(Symbol {
+                addr,
+                seq: map.symbols.len(),
+                compressed: typed_name.clone(),
+                name: typed_name,
+            });
+        }
+        Ok(map)
+    }
 
-#[no_mangle] pub unsafe extern "C" fn main(argc:i32,argv:*mut *mut u8)->i32{if argc<2{usage()}read_map(*argv.add(1));shrink_table();optimize_table();write_src();0}
+    fn filter_and_sort(&mut self, all_symbols: bool) {
+        if !all_symbols {
+            let ranges = &self.ranges;
+            self.symbols.retain(|symbol| {
+                let name = symbol.name();
+                name.starts_with(b"__start_")
+                    || name.starts_with(b"__stop_")
+                    || (ranges
+                        .iter()
+                        .any(|r| (r.start..=r.end).contains(&symbol.addr))
+                        && !ranges
+                            .iter()
+                            .any(|r| symbol.addr == r.end && name != r.end_name))
+            });
+        }
+        self.symbols.sort_unstable_by(compare_symbols);
+    }
+}
+
+#[derive(Clone, Copy)]
+enum Token {
+    Unused,
+    Literal(u8),
+    Pair([u8; 2]),
+}
+
+struct Compression {
+    tokens: [Token; 256],
+    profit: Vec<i64>,
+}
+
+impl Compression {
+    fn count(&mut self, symbol: &[u8], delta: i64) {
+        for pair in symbol.windows(2) {
+            self.profit[usize::from(pair[0]) | (usize::from(pair[1]) << 8)] += delta;
+        }
+    }
+
+    fn build(symbols: &mut [Symbol]) -> Self {
+        let mut result = Self {
+            tokens: [Token::Unused; 256],
+            profit: vec![0; 0x10000],
+        };
+        for symbol in symbols.iter() {
+            result.count(&symbol.compressed, 1);
+            for &byte in &symbol.compressed {
+                result.tokens[usize::from(byte)] = Token::Literal(byte);
+            }
+        }
+        // Descending free codes and ascending profit ties are part of the
+        // deterministic compression, including code zero used last.
+        for code in (0..256).rev() {
+            if !matches!(result.tokens[code], Token::Unused) {
+                continue;
+            }
+            let mut best = 0;
+            for index in 1..result.profit.len() {
+                if result.profit[index] > result.profit[best] {
+                    best = index;
+                }
+            }
+            if result.profit[best] == 0 {
+                break;
+            }
+            let pair = [best as u8, (best >> 8) as u8];
+            result.tokens[code] = Token::Pair(pair);
+            for symbol in symbols.iter_mut() {
+                let bytes = &mut symbol.compressed;
+                if !bytes.windows(2).any(|window| window == pair) {
+                    continue;
+                }
+                result.count(bytes, -1);
+                let mut read = 0;
+                let mut write = 0;
+                while read < bytes.len() {
+                    if bytes[read..].starts_with(&pair) {
+                        bytes[write] = code as u8;
+                        read += 2;
+                    } else {
+                        bytes[write] = bytes[read];
+                        read += 1;
+                    }
+                    write += 1;
+                }
+                bytes.truncate(write);
+                result.count(bytes, 1);
+            }
+        }
+        result
+    }
+
+    fn expand(&self, code: u8, bytes: &mut Vec<u8>) {
+        match self.tokens[usize::from(code)] {
+            Token::Unused => (),
+            Token::Literal(byte) => bytes.push(byte),
+            Token::Pair(pair) => {
+                self.expand(pair[0], bytes);
+                self.expand(pair[1], bytes);
+            }
+        }
+    }
+}
+
+fn output_label(output: &mut impl Write, label: &str) -> io::Result<()> {
+    writeln!(output, ".globl {label}\n\t.balign 4\n{label}:")
+}
+
+fn comment(output: &mut impl Write, name: &[u8]) -> io::Result<()> {
+    output.write_all(b"\t/* ")?;
+    output.write_all(name)?;
+    output.write_all(b" */\n")
+}
+
+fn write_src(
+    output: &mut impl Write,
+    map: &Map,
+    compression: &Compression,
+    pc_relative: bool,
+) -> io::Result<()> {
+    writeln!(output, "\t.section .rodata, \"a\"")?;
+    output_label(output, "kallsyms_num_syms")?;
+    writeln!(output, "\t.long\t{}\n", map.symbols.len())?;
+    output_label(output, "kallsyms_names")?;
+    let mut markers = Vec::new();
+    let mut offset = 0u32;
+    for (index, symbol) in map.symbols.iter().enumerate() {
+        if index & 0xff == 0 {
+            markers.push(offset);
+        }
+        let len = symbol.compressed.len();
+        if len == 0 || len > 0x3fff {
+            let adjective = if len == 0 { "zero" } else { "huge" };
+            return Err(io::Error::other(format!(
+                "kallsyms failure: unexpected {adjective} symbol length"
+            )));
+        }
+        if len <= 0x7f {
+            write!(output, "\t.byte 0x{len:02x}")?;
+            offset = offset.wrapping_add(len as u32 + 1);
+        } else {
+            write!(
+                output,
+                "\t.byte 0x{:02x}, 0x{:02x}",
+                (len & 0x7f) | 0x80,
+                (len >> 7) & 0x7f
+            )?;
+            offset = offset.wrapping_add(len as u32 + 2);
+        }
+        for byte in &symbol.compressed {
+            write!(output, ", 0x{byte:02x}")?;
+        }
+        comment(output, &symbol.name)?;
+    }
+    writeln!(output, ".size kallsyms_names, . - kallsyms_names\n")?;
+    output_label(output, "kallsyms_markers")?;
+    for marker in markers {
+        writeln!(output, "\t.long\t{marker}")?;
+    }
+    writeln!(output, ".size kallsyms_markers, . - kallsyms_markers\n")?;
+    output_label(output, "kallsyms_token_table")?;
+    let mut token_index = Vec::with_capacity(256);
+    offset = 0;
+    for code in 0..=255 {
+        let mut expansion = Vec::new();
+        compression.expand(code, &mut expansion);
+        token_index.push(offset);
+        output.write_all(b"\t.asciz\t\"")?;
+        output.write_all(&expansion)?;
+        output.write_all(b"\"\n")?;
+        offset += expansion.len() as u32 + 1;
+    }
+    writeln!(
+        output,
+        ".size kallsyms_token_table, . - kallsyms_token_table\n"
+    )?;
+    output_label(output, "kallsyms_token_index")?;
+    for index in token_index {
+        writeln!(output, "\t.short\t{index}")?;
+    }
+    writeln!(output)?;
+    output_label(output, "kallsyms_offsets")?;
+    for symbol in &map.symbols {
+        if pc_relative {
+            let relative = symbol.addr.wrapping_sub(map.text) as i64;
+            let relative = i32::try_from(relative).map_err(|_| {
+                let addr = if symbol.addr == 0 {
+                    "0".to_owned()
+                } else {
+                    format!("{:#x}", symbol.addr)
+                };
+                io::Error::other(format!(
+                    "kallsyms failure: relative symbol value {addr} out of range"
+                ))
+            })?;
+            write!(output, "\t.long\t_text - . + ({relative})")?;
+        } else {
+            let addr = symbol.addr as u32;
+            if addr == 0 {
+                write!(output, "\t.long\t0")?;
+            } else {
+                write!(output, "\t.long\t{addr:#x}")?;
+            }
+        }
+        comment(output, &symbol.name)?;
+    }
+    writeln!(output, ".size kallsyms_offsets, . - kallsyms_offsets\n")?;
+    let mut names: Vec<_> = map.symbols.iter().enumerate().collect();
+    names.sort_unstable_by(|(ia, a), (ib, b)| {
+        a.name()
+            .cmp(b.name())
+            .then_with(|| a.addr.cmp(&b.addr))
+            .then_with(|| ia.cmp(ib))
+    });
+    output_label(output, "kallsyms_seqs_of_names")?;
+    for (index, symbol) in names {
+        write!(
+            output,
+            "\t.byte 0x{:02x}, 0x{:02x}, 0x{:02x}",
+            (index >> 16) as u8,
+            (index >> 8) as u8,
+            index as u8
+        )?;
+        comment(output, &symbol.name)?;
+    }
+    writeln!(output)
+}
+
+fn run() -> Result<(), String> {
+    let options = options()?;
+    let mut map = Map::read(Path::new(&options.input))?;
+    map.filter_and_sort(options.all_symbols);
+    let compression = Compression::build(&mut map.symbols);
+    let mut output = BufWriter::new(io::stdout().lock());
+    let result = write_src(&mut output, &map, &compression, options.pc_relative);
+    // Preserve preceding output on an offset-range failure, just as stdio does.
+    output.flush().map_err(|e| io_message("stdout", e))?;
+    result.map_err(|e| format!("{e}\n"))
+}
+
+fn main() -> ExitCode {
+    match run() {
+        Ok(()) => ExitCode::SUCCESS,
+        Err(error) => {
+            let _ = io::stderr().write_all(error.as_bytes());
+            ExitCode::FAILURE
+        }
+    }
+}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

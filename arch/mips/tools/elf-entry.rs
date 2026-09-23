@@ -1,123 +1,54 @@
 // SPDX-License-Identifier: GPL-2.0
+//! Read a MIPS kernel ELF entry address, canonically extending ELF32 addresses.
 
-use std::env;
+#[path = "../boot/host_tool.rs"]
+mod host_tool;
+
 use std::fs::File;
-use std::io::{self, Read};
-use std::process;
+use std::io::{self, Read, Write};
 
-const ELFCLASS32: u8 = 1;
-const ELFCLASS64: u8 = 2;
-const ELFDATA2LSB: u8 = 1;
-const ELFDATA2MSB: u8 = 2;
-const EI_CLASS: usize = 4;
-const EI_DATA: usize = 5;
-const SELFMAG: usize = 4;
-const ELFMAG: [u8; SELFMAG] = [0x7f, b'E', b'L', b'F'];
-
-#[repr(C)]
-union Header {
-    ehdr32: Elf32Ehdr,
-    ehdr64: Elf64Ehdr,
-}
-
-#[repr(C)]
-#[derive(Copy, Clone)]
-struct Elf32Ehdr {
-    e_ident: [u8; 16],
-    e_type: u16,
-    e_machine: u16,
-    e_version: u32,
-    e_entry: u32,
-    e_phoff: u32,
-    e_shoff: u32,
-    e_flags: u32,
-    e_ehsize: u16,
-    e_phentsize: u16,
-    e_phnum: u16,
-    e_shentsize: u16,
-    e_shnum: u16,
-    e_shstrndx: u16,
-}
-
-#[repr(C)]
-#[derive(Copy, Clone)]
-struct Elf64Ehdr {
-    e_ident: [u8; 16],
-    e_type: u16,
-    e_machine: u16,
-    e_version: u32,
-    e_entry: u64,
-    e_phoff: u64,
-    e_shoff: u64,
-    e_flags: u32,
-    e_ehsize: u16,
-    e_phentsize: u16,
-    e_phnum: u16,
-    e_shentsize: u16,
-    e_shnum: u16,
-    e_shstrndx: u16,
-}
-
-fn die(msg: &str) -> ! {
-    eprint!("{msg}");
-    process::exit(1);
+fn run() -> Result<(), Vec<u8>> {
+    let arguments: Vec<_> = std::env::args_os().collect();
+    if arguments.len() != 2 {
+        return Err(b"Usage: elf-entry <elf-file>\n".to_vec());
+    }
+    let mut input = File::open(&arguments[1])
+        .map_err(|error| host_tool::perror("Unable to open input file", error))?;
+    // The original reads the ELF64-sized union even for an ELF32 input.
+    let mut header = [0u8; 64];
+    input.read_exact(&mut header).map_err(|error| {
+        if error.kind() == io::ErrorKind::UnexpectedEof {
+            b"Unable to read input file: Success\n".to_vec()
+        } else {
+            host_tool::perror("Unable to read input file", error)
+        }
+    })?;
+    if &header[..4] != b"\x7fELF" {
+        return Err(b"Input is not an ELF\n".to_vec());
+    }
+    let width = match header[4] {
+        1 => 4,
+        2 => 8,
+        _ => return Err(b"Invalid ELF class\n".to_vec()),
+    };
+    let mut entry = match header[5] {
+        1 => header[24..24 + width]
+            .iter()
+            .rev()
+            .fold(0u64, |value, &byte| value << 8 | u64::from(byte)),
+        2 => header[24..24 + width]
+            .iter()
+            .fold(0u64, |value, &byte| value << 8 | u64::from(byte)),
+        _ => return Err(b"Invalid ELF encoding\n".to_vec()),
+    };
+    if width == 4 {
+        entry = entry as i32 as i64 as u64;
+    }
+    writeln!(io::stdout().lock(), "0x{entry:016x}")
+        .map_err(|error| host_tool::perror("write", error))?;
+    Ok(())
 }
 
 fn main() {
-    let argv: Vec<String> = env::args().collect();
-    let argc = argv.len();
-    let mut entry: u64;
-    let mut hdr = [0u8; 64];
-
-    if argc != 2 {
-        die("Usage: elf-entry <elf-file>\n");
-    }
-
-    let mut file = match File::open(&argv[1]) {
-        Ok(file) => file,
-        Err(error) => {
-            eprintln!("Unable to open input file: {error}");
-            process::exit(1);
-        }
-    };
-
-    let nread = match file.read(&mut hdr) {
-        Ok(nread) => nread,
-        Err(error) => {
-            eprintln!("Unable to read input file: {error}");
-            process::exit(1);
-        }
-    };
-    if nread != hdr.len() {
-        eprintln!("Unable to read input file");
-        process::exit(1);
-    }
-
-    if hdr[..SELFMAG] != ELFMAG {
-        die("Input is not an ELF\n");
-    }
-
-    match hdr[EI_CLASS] {
-        ELFCLASS32 => {
-            entry = match hdr[EI_DATA] {
-                ELFDATA2LSB => u32::from_le_bytes(hdr[24..28].try_into().unwrap()) as u64,
-                ELFDATA2MSB => u32::from_be_bytes(hdr[24..28].try_into().unwrap()) as u64,
-                _ => die("Invalid ELF encoding\n"),
-            };
-            // Sign extend to form a canonical address
-            entry = (entry as u32 as i32 as i64) as u64;
-        }
-        ELFCLASS64 => {
-            entry = match hdr[EI_DATA] {
-                ELFDATA2LSB => u64::from_le_bytes(hdr[24..32].try_into().unwrap()),
-                ELFDATA2MSB => u64::from_be_bytes(hdr[24..32].try_into().unwrap()),
-                _ => die("Invalid ELF encoding\n"),
-            };
-        }
-        _ => die("Invalid ELF class\n"),
-    }
-
-    println!("0x{entry:016x}");
+    host_tool::finish(run());
 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

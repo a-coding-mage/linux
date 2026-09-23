@@ -1,108 +1,144 @@
-/*
- * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
- */
+// SPDX-License-Identifier: GPL-2.0-only
+// Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
+//! Checked big-endian ELF views and SPARC vDSO image generation.
 
-/*
- * This file is included up to twice from vdso2c.c.  It generates code for
- * 32-bit and 64-bit vDSOs.  We will eventually need both for 64-bit builds,
- * since 32-bit vDSOs will then be built for 32-bit userspace.
- *
- * The ELF types, constants, byte-order accessors, and C stdio helpers below
- * are supplied by the surrounding translation unit.
- */
+use std::io::{self, Write};
 
-extern "C" {
-    fn fail(message: *const u8) -> !;
-    fn fwrite(ptr: *const core::ffi::c_void, size: usize, count: usize,
-              stream: *mut FILE) -> usize;
-    fn fprintf(stream: *mut FILE, format: *const u8, ...) -> i32;
+struct Elf<'a> {
+    bytes: &'a [u8],
+    wide: bool,
 }
 
-#[repr(C)]
-pub struct FILE {
-    _private: [u8; 0],
+impl Elf<'_> {
+    fn integer(&self, offset: u64, size: usize) -> Result<u64, &'static str> {
+        let start = usize::try_from(offset).map_err(|_| "ELF offset out of range\n")?;
+        let end = start.checked_add(size).ok_or("ELF offset out of range\n")?;
+        let bytes = self.bytes.get(start..end).ok_or("truncated ELF input\n")?;
+        Ok(bytes
+            .iter()
+            .fold(0, |value, byte| (value << 8) | u64::from(*byte)))
+    }
+
+    fn word(&self, offset: u64) -> Result<u64, &'static str> {
+        self.integer(offset, if self.wide { 8 } else { 4 })
+    }
+
+    fn field(&self, base: u64, offset: u64) -> Result<u64, &'static str> {
+        self.word(
+            base.checked_add(offset)
+                .ok_or("ELF offset out of range\n")?,
+        )
+    }
 }
 
-/* BITSFUNC(go) in the C source. */
-pub unsafe fn BITSFUNC_go(
-    raw_addr: *mut u8,
-    raw_len: usize,
-    stripped_addr: *mut u8,
-    stripped_len: usize,
-    outfile: *mut FILE,
-    name: *const u8,
-) {
-    let mut found_load: i32 = 0;
-    let mut load_size: usize = usize::MAX; /* Work around bogus warning */
-    let mut mapping_size: usize;
-    let mut i: usize;
-    let mut j: usize;
-    let mut symtab_hdr: *mut ELF_Shdr = core::ptr::null_mut();
-    let hdr: *mut ELF_Ehdr = raw_addr as *mut ELF_Ehdr;
-    let mut dyn_: *mut ELF_Dyn = core::ptr::null_mut();
-    let mut dyn_end: *mut ELF_Dyn = core::ptr::null_mut();
-    let pt: *mut ELF_Phdr = raw_addr.add(get_be_e_phoff(hdr)) as *mut ELF_Phdr;
-
-    /* Walk the segment table. */
-    i = 0;
-    while i < get_be_e_phnum(hdr) {
-        let p = pt.add(i);
-        if get_be_p_type(p) == PT_LOAD {
-            if found_load != 0 {
-                fail(b"multiple PT_LOAD segs\0".as_ptr());
+pub(crate) fn validate(raw: &[u8], stripped_len: usize) -> Result<(), &'static str> {
+    let wide = match raw.get(4) {
+        Some(1) => false,
+        Some(2) => true,
+        _ => return Err("unknown ELF class\n"),
+    };
+    // Read all fields as big endian, independent of EI_DATA, like the C tool.
+    let elf = Elf { bytes: raw, wide };
+    let phoff = elf.word(if wide { 32 } else { 28 })?;
+    let phnum = elf.integer(if wide { 56 } else { 44 }, 2)?;
+    let mut load_size = None;
+    let mut dynamic = None;
+    for index in 0..phnum {
+        // C advances an Elf*_Phdr pointer; e_phentsize is deliberately unused.
+        let base = phoff
+            .checked_add(index * if wide { 56 } else { 32 })
+            .ok_or("ELF offset out of range\n")?;
+        match elf.integer(base, 4)? {
+            1 => {
+                if load_size.is_some() {
+                    return Err("multiple PT_LOAD segs\n");
+                }
+                if elf.field(base, if wide { 8 } else { 4 })? != 0
+                    || elf.field(base, if wide { 16 } else { 8 })? != 0
+                {
+                    return Err("PT_LOAD in wrong place\n");
+                }
+                let memsz = elf.field(base, if wide { 40 } else { 20 })?;
+                if memsz != elf.field(base, if wide { 32 } else { 16 })? {
+                    return Err("cannot handle memsz != filesz\n");
+                }
+                load_size = Some(memsz);
             }
-            if get_be_p_offset(p) != 0 || get_be_p_vaddr(p) != 0 {
-                fail(b"PT_LOAD in wrong place\0".as_ptr());
+            2 => {
+                let start = elf.field(base, if wide { 8 } else { 4 })?;
+                let size = elf.field(base, if wide { 40 } else { 20 })?;
+                dynamic = Some((
+                    start,
+                    start.checked_add(size).ok_or("ELF offset out of range\n")?,
+                ));
             }
-            if get_be_p_memsz(p) != get_be_p_filesz(p) {
-                fail(b"cannot handle memsz != filesz\0".as_ptr());
-            }
-            load_size = get_be_p_memsz(p);
-            found_load = 1;
-        } else if get_be_p_type(p) == PT_DYNAMIC {
-            dyn_ = raw_addr.add(get_be_p_offset(p)) as *mut ELF_Dyn;
-            dyn_end = raw_addr.add(get_be_p_offset(p) + get_be_p_memsz(p)) as *mut ELF_Dyn;
+            _ => {}
         }
-        i += 1;
     }
-    if found_load == 0 { fail(b"no PT_LOAD seg\0".as_ptr()); }
-    if stripped_len < load_size { fail(b"stripped input is too short\0".as_ptr()); }
-
-    /* Walk the dynamic table */
-    i = 0;
-    while dyn_.add(i) < dyn_end && get_be_d_tag(dyn_.add(i)) != DT_NULL {
-        let tag = get_be_d_tag(dyn_.add(i));
-        let val = get_be_d_val(dyn_.add(i));
-        if (tag == DT_RELSZ || tag == DT_RELASZ) && val != 0 {
-            fail(b"vdso image contains dynamic relocations\0".as_ptr());
+    if (stripped_len as u64) < load_size.ok_or("no PT_LOAD seg\n")? {
+        return Err("stripped input is too short\n");
+    }
+    if let Some((mut offset, end)) = dynamic {
+        while offset < end {
+            let tag = elf.word(offset)?;
+            if tag == 0 {
+                break;
+            }
+            let value = elf.field(offset, if wide { 8 } else { 4 })?;
+            if matches!(tag, 8 | 18) && value != 0 {
+                return Err("vdso image contains dynamic relocations\n");
+            }
+            offset = offset
+                .checked_add(if wide { 16 } else { 8 })
+                .ok_or("ELF offset out of range\n")?;
         }
-        i += 1;
     }
-
-    /* Walk the section table */
-    i = 0;
-    while i < get_be_e_shnum(hdr) {
-        let sh = raw_addr.add(get_be_e_shoff(hdr) + get_be_e_shentsize(hdr) * i) as *mut ELF_Shdr;
-        if get_be_sh_type(sh) == SHT_SYMTAB { symtab_hdr = sh; }
-        i += 1;
+    let shoff = elf.word(if wide { 40 } else { 32 })?;
+    let shnum = elf.integer(if wide { 60 } else { 48 }, 2)?;
+    let stride = elf.integer(if wide { 58 } else { 46 }, 2)?;
+    let mut symtab = false;
+    for index in 0..shnum {
+        let offset = shoff
+            .checked_add(index * stride)
+            .and_then(|base| base.checked_add(4))
+            .ok_or("ELF offset out of range\n")?;
+        symtab |= elf.integer(offset, 4)? == 2;
     }
-    if symtab_hdr.is_null() { fail(b"no symbol table\n\0".as_ptr()); }
-    if name.is_null() {
-        fwrite(stripped_addr as *const core::ffi::c_void, stripped_len, 1, outfile);
-        return;
+    if !symtab {
+        return Err("no symbol table\n");
     }
-    mapping_size = (stripped_len + 8191) / 8192 * 8192;
-    fprintf(outfile, b"/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n\0".as_ptr());
-    fprintf(outfile, b"#include <linux/cache.h>\n#include <asm/vdso.h>\n\n\0".as_ptr());
-    fprintf(outfile, b"static unsigned char raw_data[%lu] __ro_after_init __aligned(8192)= {\0".as_ptr(), mapping_size);
-    j = 0;
-    while j < stripped_len {
-        if j % 10 == 0 { fprintf(outfile, b"\n\t\0".as_ptr()); }
-        fprintf(outfile, b"0x%02X, \0".as_ptr(), *stripped_addr.add(j) as i32);
-        j += 1;
-    }
-    fprintf(outfile, b"\n};\n\n\0".as_ptr());
-    fprintf(outfile, b"const struct vdso_image %s_builtin = {\n\t.data = raw_data,\n\t.size = %lu,\n};\n\0".as_ptr(), name, mapping_size);
+    Ok(())
 }
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+pub(crate) fn emit(
+    output: &mut impl Write,
+    stripped: &[u8],
+    name: Option<&[u8]>,
+) -> io::Result<()> {
+    let Some(name) = name else {
+        return output.write_all(stripped);
+    };
+    let mapping_size = stripped
+        .len()
+        .checked_add(8191)
+        .ok_or_else(|| io::Error::other("vDSO image too large"))?
+        / 8192
+        * 8192;
+    output.write_all(b"/* AUTOMATICALLY GENERATED -- DO NOT EDIT */\n\n#include <linux/cache.h>\n#include <asm/vdso.h>\n\n")?;
+    write!(
+        output,
+        "static unsigned char raw_data[{mapping_size}] __ro_after_init __aligned(8192)= {{"
+    )?;
+    for (index, byte) in stripped.iter().enumerate() {
+        if index % 10 == 0 {
+            output.write_all(b"\n\t")?;
+        }
+        write!(output, "0x{byte:02X}, ")?;
+    }
+    output.write_all(b"\n};\n\nconst struct vdso_image ")?;
+    output.write_all(name)?;
+    write!(
+        output,
+        "_builtin = {{\n\t.data = raw_data,\n\t.size = {mapping_size},\n}};\n"
+    )
+}

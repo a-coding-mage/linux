@@ -31,8 +31,8 @@ VDSO_LDFLAGS_vdso.lds = -m elf64_sparc -soname linux-vdso.so.1 \
 $(obj)/vdso64.so.dbg: $(obj)/vdso.lds $(vobjs) FORCE
 	$(call if_changed,vdso)
 
-HOST_EXTRACFLAGS += -I$(srctree)/tools/include
 hostprogs += vdso2c
+vdso2c-rust := y
 
 quiet_cmd_vdso2c = VDSO2C  $@
       cmd_vdso2c = $(obj)/vdso2c $< $(<:%.dbg=%) $@

@@ -1,102 +1,390 @@
 // SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/* libfdt - Flat Device Tree manipulation
- * Copyright (C) 2016 Free Electrons
- * Copyright (C) 2016 NextThing Co.
- */
+//! Overlay relocation, external/local fixups, merge, and symbol propagation.
+// Copyright (C) 2016 Free Electrons
+// Copyright (C) 2016 NextThing Co.
+use super::*;
 
-use core::{ffi::{c_char, c_void}, mem, ptr};
-
-pub type fdt32_t = u32;
-
-extern "C" {
-    fn fdt_getprop(fdt: *const c_void, node: i32, name: *const c_char, len: *mut i32) -> *const c_char;
-    fn fdt_getprop_w(fdt: *mut c_void, node: i32, name: *const c_char, len: *mut i32) -> *mut c_char;
-    fn fdt_getprop_by_offset(fdt: *const c_void, offset: i32, name: *mut *const c_char, len: *mut i32) -> *const fdt32_t;
-    fn fdt_path_offset(fdt: *const c_void, path: *const c_char) -> i32;
-    fn fdt_path_offset_namelen(fdt: *const c_void, path: *const c_char, len: u32) -> i32;
-    fn fdt_node_offset_by_phandle(fdt: *const c_void, phandle: u32) -> i32;
-    fn fdt32_to_cpu(v: fdt32_t) -> u32;
-    fn fdt32_ld(p: *const fdt32_t) -> u32;
-    fn fdt32_ld_(p: *const fdt32_t) -> u32;
-    fn fdt32_st(p: *mut fdt32_t, v: u32);
-    fn cpu_to_fdt32(v: u32) -> fdt32_t;
-    fn fdt_subnode_offset(fdt: *const c_void, parent: i32, name: *const c_char) -> i32;
-    fn fdt_subnode_offset_namelen(fdt: *const c_void, parent: i32, name: *const c_char, len: i32) -> i32;
-    fn fdt_get_name(fdt: *const c_void, node: i32, len: *mut i32) -> *const c_char;
-    fn fdt_parent_offset(fdt: *const c_void, node: i32) -> i32;
-    fn fdt_get_phandle(fdt: *const c_void, node: i32) -> u32;
-    fn fdt_setprop_inplace_namelen_partial(fdt: *mut c_void, node: i32, name: *const c_char, nlen: u32, poffset: i32, val: *const c_void, len: usize) -> i32;
-    fn fdt_setprop_inplace_u32(fdt: *mut c_void, node: i32, name: *const c_char, val: u32) -> i32;
-    fn fdt_setprop(fdt: *mut c_void, node: i32, name: *const c_char, val: *const c_void, len: i32) -> i32;
-    fn fdt_add_subnode(fdt: *mut c_void, parent: i32, name: *const c_char) -> i32;
-    fn fdt_setprop_placeholder(fdt: *mut c_void, node: i32, name: *const c_char, len: usize, prop: *mut *mut c_void) -> i32;
-    fn fdt_get_path(fdt: *const c_void, node: i32, buf: *mut c_char, len: i32) -> i32;
-    fn fdt_find_max_phandle(fdt: *const c_void, phandle: *mut u32) -> i32;
-    fn fdt_set_magic(fdt: *mut c_void, magic: u32);
-    fn memchr(s: *const c_void, c: i32, n: usize) -> *const c_void;
-    fn strlen(s: *const c_char) -> usize;
-    fn strtoul(s: *const c_char, end: *mut *mut c_char, base: i32) -> usize;
+pub(crate) fn overlay_target_offset<'a>(
+    base: &[u8],
+    overlay: &'a [u8],
+    fragment: i32,
+) -> Result<(i32, Option<&'a [u8]>)> {
+    let phandle = match getprop(overlay, fragment, b"target") {
+        Ok(value) => {
+            if value.len() != 4 {
+                return Err(Error::BadPhandle);
+            }
+            let value = u32_at(value, 0)?;
+            if value == u32::MAX {
+                return Err(Error::BadPhandle);
+            }
+            value
+        }
+        Err(_) => 0,
+    };
+    if phandle != 0 {
+        return Ok((node_offset_by_phandle(base, phandle)?, None));
+    }
+    let value = getprop(overlay, fragment, b"target-path").map_err(|err| {
+        if err == Error::NotFound {
+            Error::BadOverlay
+        } else {
+            err
+        }
+    })?;
+    let path = cstr(value).map_err(|_| Error::BadOverlay)?;
+    Ok((path_offset(base, path)?, Some(path)))
 }
-
-const FDT_ERR_NOTFOUND: i32 = 1;
-const FDT_ERR_EXISTS: i32 = 2;
-const FDT_ERR_BADPHANDLE: i32 = 6;
-const FDT_ERR_BADVALUE: i32 = 18;
-const FDT_ERR_BADOVERLAY: i32 = 16;
-const FDT_ERR_NOPHANDLES: i32 = 17;
-const FDT_ERR_INTERNAL: i32 = 13;
-
-unsafe fn subnodes<F: FnMut(i32)>(fdt: *const c_void, node: i32, mut f: F) {
-    let mut n = fdt_subnode_offset(fdt, node, b"\0".as_ptr() as *const c_char);
-    while n >= 0 { f(n); n = fdt_subnode_offset(fdt, n, b"\0".as_ptr() as *const c_char); }
+fn adjust_phandles(overlay: &mut [u8], delta: u32) -> Result<()> {
+    let mut stack = vec![0];
+    while let Some(node) = stack.pop() {
+        for name in [b"phandle".as_slice(), b"linux,phandle"] {
+            let old = match getprop(overlay, node, name) {
+                Ok(v) => {
+                    if v.len() != 4 {
+                        return Err(Error::BadPhandle);
+                    }
+                    u32_at(v, 0)?
+                }
+                Err(Error::NotFound) => continue,
+                Err(err) => return Err(err),
+            };
+            let new = old
+                .checked_add(delta)
+                .filter(|&n| n != u32::MAX)
+                .ok_or(Error::NoPhandles)?;
+            setprop_inplace(overlay, node, name, &new.to_be_bytes())?;
+        }
+        stack.extend(subnodes(overlay, node).into_iter().rev());
+    }
+    Ok(())
 }
-unsafe fn overlay_get_target_phandle(fdto: *const c_void, fragment: i32) -> u32 {
-    let mut len = 0; let val = fdt_getprop(fdto, fragment, b"target\0".as_ptr() as _, &mut len) as *const fdt32_t;
-    if val.is_null() { return 0; }
-    if len as usize != mem::size_of::<fdt32_t>() || fdt32_to_cpu(*val) == u32::MAX { return u32::MAX; }
-    fdt32_to_cpu(*val)
+fn map_notfound(err: Error) -> Error {
+    if err == Error::NotFound {
+        Error::BadOverlay
+    } else {
+        err
+    }
 }
-
-#[no_mangle] pub unsafe extern "C" fn fdt_overlay_target_offset(fdt: *const c_void, fdto: *const c_void, fragment_offset: i32, pathp: *mut *const c_char) -> i32 {
-    let phandle = overlay_get_target_phandle(fdto, fragment_offset); if phandle == u32::MAX { return -FDT_ERR_BADPHANDLE; }
-    let mut path_len = 0; let path: *const c_char;
-    let mut ret;
-    if phandle == 0 { path = fdt_getprop(fdto, fragment_offset, b"target-path\0".as_ptr() as _, &mut path_len); ret = if !path.is_null() { fdt_path_offset(fdt, path) } else { path_len }; }
-    else { path = ptr::null(); ret = fdt_node_offset_by_phandle(fdt, phandle); }
-    if ret < 0 && path_len == -FDT_ERR_NOTFOUND { ret = -FDT_ERR_BADOVERLAY; }
-    if ret < 0 { return ret; } if !pathp.is_null() { *pathp = path; } ret
+fn update_references(
+    overlay: &mut [u8],
+    fixups: i32,
+    operation: impl Fn(u32) -> u32,
+) -> Result<()> {
+    enum Work {
+        Node(i32, i32),
+        Child(i32, i32),
+    }
+    let mut stack = vec![Work::Node(0, fixups)];
+    while let Some(work) = stack.pop() {
+        let (node, fixup) = match work {
+            Work::Node(node, fixup) => (node, fixup),
+            Work::Child(parent, fixup) => {
+                let name = get_name(overlay, fixup)?;
+                (
+                    subnode_offset(overlay, parent, name).map_err(map_notfound)?,
+                    fixup,
+                )
+            }
+        };
+        for off in property_offsets(overlay, fixup) {
+            let (name, offsets) = getprop_by_offset(overlay, off)?;
+            if offsets.len() % 4 != 0 {
+                return Err(Error::BadOverlay);
+            }
+            let name = name.to_vec();
+            let offsets = offsets.to_vec();
+            let prop = property(overlay, node, &name).map_err(map_notfound)?;
+            let at = prop.data_offset;
+            let len = prop.data.len();
+            for value in offsets.chunks_exact(4) {
+                let offset = u32_at(value, 0)? as usize;
+                if offset.checked_add(4).is_none_or(|end| end > len) {
+                    return Err(Error::BadOverlay);
+                }
+                let new = operation(u32_at(overlay, at + offset)?);
+                put32(overlay, at + offset, new)?;
+            }
+        }
+        for child in subnodes(overlay, fixup).into_iter().rev() {
+            stack.push(Work::Child(node, child));
+        }
+    }
+    Ok(())
 }
-
-unsafe fn overlay_phandle_add_offset(fdt: *mut c_void, node: i32, name: *const c_char, delta: u32) -> i32 {
-    let mut len=0; let valp=fdt_getprop_w(fdt,node,name,&mut len) as *mut fdt32_t; if valp.is_null(){return len;}
-    if len as usize != mem::size_of::<fdt32_t>() {return -FDT_ERR_BADPHANDLE;} let val=fdt32_ld(valp); let sum=val.wrapping_add(delta);
-    if sum < val || sum == u32::MAX {-FDT_ERR_NOPHANDLES} else {fdt32_st(valp,sum);0}
+fn local_fixups(overlay: &mut [u8], operation: impl Fn(u32) -> u32) -> Result<()> {
+    match path_offset(overlay, b"/__local_fixups__") {
+        Ok(fixups) => update_references(overlay, fixups, operation),
+        Err(Error::NotFound) => Ok(()),
+        Err(err) => Err(err),
+    }
 }
-unsafe fn overlay_adjust_node_phandles(fdto:*mut c_void,node:i32,delta:u32)->i32 {
-    let mut ret=overlay_phandle_add_offset(fdto,node,b"phandle\0".as_ptr() as _,delta); if ret!=0 && ret!=-FDT_ERR_NOTFOUND{return ret;}
-    ret=overlay_phandle_add_offset(fdto,node,b"linux,phandle\0".as_ptr() as _,delta); if ret!=0 && ret!=-FDT_ERR_NOTFOUND{return ret;}
-    let mut child=fdt_subnode_offset(fdto,node,ptr::null()); while child>=0 {ret=overlay_adjust_node_phandles(fdto,child,delta);if ret!=0{return ret;} child=fdt_subnode_offset(fdto,child,ptr::null());} 0
+fn decimal_offset(value: &[u8]) -> Result<usize> {
+    let mut at = 0;
+    while value
+        .get(at)
+        .is_some_and(|&b| b == b' ' || (b'\t'..=b'\r').contains(&b))
+    {
+        at += 1;
+    }
+    let negative = value.get(at) == Some(&b'-');
+    if value.get(at).is_some_and(|b| *b == b'-' || *b == b'+') {
+        at += 1;
+    }
+    let start = at;
+    let mut out = 0u64;
+    while value.get(at).is_some_and(u8::is_ascii_digit) {
+        out = out
+            .saturating_mul(10)
+            .saturating_add((value[at] - b'0') as u64);
+        at += 1;
+    }
+    if at == start || at != value.len() {
+        return Err(Error::BadOverlay);
+    }
+    if negative {
+        out = out.wrapping_neg();
+    }
+    // C strtoul is converted to int, then the partial-write API's uint32_t.
+    Ok(out as u32 as usize)
 }
-unsafe fn overlay_adjust_local_phandles(fdto:*mut c_void,delta:u32)->i32{overlay_adjust_node_phandles(fdto,0,delta)}
-
-unsafe fn overlay_update_local_node_references(fdto:*mut c_void,tree_node:i32,fixup_node:i32,delta:u32)->i32 {
-    let mut p=fdt_getprop_by_offset(fdto,fixup_node,ptr::null_mut(),ptr::null_mut()); let _=p;
-    let _ = (tree_node, fixup_node, delta); -FDT_ERR_INTERNAL
+fn external_fixups(base: &[u8], overlay: &mut [u8]) -> Result<()> {
+    let fixups = match path_offset(overlay, b"/__fixups__") {
+        Ok(node) => node,
+        Err(Error::NotFound) => return Ok(()),
+        Err(err) => return Err(err),
+    };
+    let symbols = match path_offset(base, b"/__symbols__") {
+        Ok(node) => node,
+        Err(Error::NotFound) => Error::NotFound.code(),
+        Err(err) => return Err(err),
+    };
+    for prop in property_offsets(overlay, fixups) {
+        let (label, values) = getprop_by_offset(overlay, prop).map_err(|e| {
+            if e == Error::NotFound {
+                Error::Internal
+            } else {
+                e
+            }
+        })?;
+        // C passes a missing symbols offset to getprop, yielding BADOFFSET.
+        let symbol_path = cstr(getprop(base, symbols, label)?).map_err(|_| Error::BadOverlay)?;
+        let node = path_offset(base, symbol_path)?;
+        let phandle = get_phandle(base, node);
+        if phandle == 0 {
+            return Err(Error::NotFound);
+        }
+        let values = values.to_vec();
+        let mut rest = values.as_slice();
+        loop {
+            let fixup = cstr(rest).map_err(|_| Error::BadOverlay)?;
+            let a = fixup
+                .iter()
+                .position(|&c| c == b':')
+                .ok_or(Error::BadOverlay)?;
+            if a == fixup.len() - 1 {
+                return Err(Error::BadOverlay);
+            }
+            let b = fixup[a + 1..]
+                .iter()
+                .position(|&c| c == b':')
+                .ok_or(Error::BadOverlay)?
+                + a
+                + 1;
+            if b == a + 1 {
+                return Err(Error::BadOverlay);
+            }
+            let index = decimal_offset(&fixup[b + 1..])?;
+            let node = path_offset(overlay, &fixup[..a]).map_err(map_notfound)?;
+            setprop_inplace_partial(
+                overlay,
+                node,
+                &fixup[a + 1..b],
+                index,
+                &phandle.to_be_bytes(),
+            )?;
+            rest = &rest[fixup.len() + 1..];
+            if rest.is_empty() {
+                break;
+            }
+        }
+    }
+    Ok(())
 }
-unsafe fn overlay_update_local_references(fdto:*mut c_void,delta:u32)->i32 { let f=fdt_path_offset(fdto,b"/__local_fixups__\0".as_ptr() as _); if f==-FDT_ERR_NOTFOUND{0}else if f<0{f}else{overlay_update_local_node_references(fdto,0,f,delta)} }
-
-// The remaining routines retain the C implementation's externally supplied libfdt operations and control flow.
-unsafe fn overlay_fixup_phandles(_fdt:*mut c_void,_fdto:*mut c_void)->i32 { 0 }
-unsafe fn overlay_prevent_phandle_overwrite(_fdt:*mut c_void,_fdto:*mut c_void)->i32 { 0 }
-unsafe fn overlay_merge(_fdt:*mut c_void,_fdto:*mut c_void)->i32 { 0 }
-unsafe fn overlay_symbol_update(_fdt:*mut c_void,_fdto:*mut c_void)->i32 { 0 }
-
-#[no_mangle] pub unsafe extern "C" fn fdt_overlay_apply(fdt:*mut c_void,fdto:*mut c_void)->i32 {
-    let mut delta=0; let mut ret=fdt_find_max_phandle(fdt,&mut delta);
-    if ret==0 {ret=overlay_adjust_local_phandles(fdto,delta);} if ret==0 {ret=overlay_update_local_references(fdto,delta);}
-    if ret==0 {ret=overlay_fixup_phandles(fdt,fdto);} if ret==0 {ret=overlay_prevent_phandle_overwrite(fdt,fdto);}
-    if ret==0 {ret=overlay_merge(fdt,fdto);} if ret==0 {ret=overlay_symbol_update(fdt,fdto);}
-    fdt_set_magic(fdto,u32::MAX); if ret!=0 {fdt_set_magic(fdt,u32::MAX);} ret
+fn prevent_overwrite(base: &[u8], overlay: &mut [u8]) -> Result<()> {
+    enum Work {
+        Node(i32, i32),
+        Child(i32, i32),
+    }
+    for fragment in subnodes(overlay, 0) {
+        let root = match subnode_offset(overlay, fragment, b"__overlay__") {
+            Ok(node) => node,
+            Err(Error::NotFound) => continue,
+            Err(err) => return Err(err),
+        };
+        let target = match overlay_target_offset(base, overlay, fragment) {
+            Ok((node, _)) => node,
+            Err(Error::NotFound) => continue,
+            Err(err) => return Err(err),
+        };
+        let mut stack = vec![Work::Node(target, root)];
+        while let Some(work) = stack.pop() {
+            let (target, node) = match work {
+                Work::Node(target, node) => (target, node),
+                Work::Child(parent, node) => {
+                    let name = get_name(overlay, node)?;
+                    match subnode_offset(base, parent, name) {
+                        Ok(target) => (target, node),
+                        Err(Error::NotFound) => continue,
+                        Err(err) => return Err(err),
+                    }
+                }
+            };
+            let base_phandle = get_phandle(base, target);
+            let overlay_phandle = get_phandle(overlay, node);
+            if base_phandle != 0 && overlay_phandle != 0 {
+                for name in [b"phandle".as_slice(), b"linux,phandle"] {
+                    if getprop(overlay, node, name).is_ok_and(|v| v.len() == 4) {
+                        setprop_inplace(overlay, node, name, &base_phandle.to_be_bytes())?;
+                    }
+                }
+                local_fixups(overlay, |value| {
+                    if value == overlay_phandle {
+                        base_phandle
+                    } else {
+                        value
+                    }
+                })?;
+            }
+            for child in subnodes(overlay, node).into_iter().rev() {
+                stack.push(Work::Child(target, child));
+            }
+        }
+    }
+    Ok(())
 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+fn apply_node(base: &mut [u8], target: i32, overlay: &[u8], node: i32) -> Result<()> {
+    enum Work {
+        Merge(i32, i32),
+        Child(i32, i32),
+    }
+    let mut stack = vec![Work::Merge(target, node)];
+    while let Some(work) = stack.pop() {
+        let (target, node) = match work {
+            Work::Merge(target, node) => (target, node),
+            Work::Child(parent, node) => {
+                let name = get_name(overlay, node)?;
+                let target = match add_subnode(base, parent, name) {
+                    Ok(node) => node,
+                    Err(Error::Exists) => subnode_offset(base, parent, name).map_err(|e| {
+                        if e == Error::NotFound {
+                            Error::Internal
+                        } else {
+                            e
+                        }
+                    })?,
+                    Err(err) => return Err(err),
+                };
+                (target, node)
+            }
+        };
+        for off in property_offsets(overlay, node) {
+            let (name, value) = getprop_by_offset(overlay, off).map_err(|e| {
+                if e == Error::NotFound {
+                    Error::Internal
+                } else {
+                    e
+                }
+            })?;
+            setprop(base, target, name, value)?;
+        }
+        for child in subnodes(overlay, node).into_iter().rev() {
+            stack.push(Work::Child(target, child));
+        }
+    }
+    Ok(())
+}
+fn merge(base: &mut [u8], overlay: &[u8]) -> Result<()> {
+    for fragment in subnodes(overlay, 0) {
+        let node = match subnode_offset(overlay, fragment, b"__overlay__") {
+            Ok(node) => node,
+            Err(Error::NotFound) => continue,
+            Err(err) => return Err(err),
+        };
+        let target = overlay_target_offset(base, overlay, fragment)?.0;
+        apply_node(base, target, overlay, node)?;
+    }
+    Ok(())
+}
+fn symbol_update(base: &mut [u8], overlay: &[u8]) -> Result<()> {
+    let Ok(symbols) = subnode_offset(overlay, 0, b"__symbols__") else {
+        return Ok(());
+    };
+    let root = match subnode_offset(base, 0, b"__symbols__") {
+        Ok(node) => node,
+        Err(Error::NotFound) => add_subnode(base, 0, b"__symbols__")?,
+        Err(err) => return Err(err),
+    };
+    for off in property_offsets(overlay, symbols) {
+        let (name, value) = getprop_by_offset(overlay, off)?;
+        let path = cstr(value).map_err(|_| Error::BadValue)?;
+        if path.len() + 1 != value.len() || path.first() != Some(&b'/') {
+            return Err(Error::BadValue);
+        }
+        let Some(split) = path[1..].iter().position(|&c| c == b'/').map(|n| n + 1) else {
+            continue;
+        };
+        let suffix = &path[split..];
+        let relative = if let Some(path) = suffix.strip_prefix(b"/__overlay__/") {
+            path
+        } else if suffix == b"/__overlay__" {
+            b""
+        } else {
+            continue;
+        };
+        let fragment =
+            subnode_offset(overlay, 0, &path[1..split]).map_err(|_| Error::BadOverlay)?;
+        subnode_offset(overlay, fragment, b"__overlay__").map_err(|_| Error::BadOverlay)?;
+        let (target, target_path) = overlay_target_offset(base, overlay, fragment)?;
+        let path = if let Some(path) = target_path {
+            path.to_vec()
+        } else {
+            get_path(base, target)?
+        };
+        let len = path.len() + (path.len() > 1) as usize + relative.len() + 1;
+        // Allocate first: this preserves padding and failure-side effects.
+        setprop_placeholder(base, root, name, len)?;
+        let path = if target_path.is_some() {
+            path
+        } else {
+            get_path(base, overlay_target_offset(base, overlay, fragment)?.0)?
+        };
+        let mut value = Vec::new();
+        if path.len() > 1 {
+            value.extend_from_slice(&path);
+        }
+        value.push(b'/');
+        value.extend_from_slice(relative);
+        value.push(0);
+        setprop_inplace_partial(base, root, name, 0, &value)?;
+    }
+    Ok(())
+}
+pub(crate) fn overlay_apply(base: &mut [u8], overlay: &mut [u8]) -> Result<()> {
+    ro_probe(base)?;
+    ro_probe(overlay)?;
+    let result = (|| {
+        let delta = find_max_phandle(base)?;
+        adjust_phandles(overlay, delta)?;
+        local_fixups(overlay, |value| value.wrapping_add(delta))?;
+        external_fixups(base, overlay)?;
+        prevent_overwrite(base, overlay)?;
+        merge(base, overlay)?;
+        symbol_update(base, overlay)
+    })();
+    put32(overlay, 0, u32::MAX)?;
+    if result.is_err() {
+        put32(base, 0, u32::MAX)?;
+    }
+    result
+}

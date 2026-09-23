@@ -21,9 +21,8 @@ $(obj)/%.tab.c $(obj)/%.tab.h: $(src)/%.y FORCE
 # Binaries are used during the compilation of the kernel, for example
 # to preprocess a data file.
 #
-# Both C and C++ are supported, but preferred language is C for such utilities.
-# Rust is also supported, but it may only be used in scenarios where a Rust
-# toolchain is required to be available (e.g. when  `CONFIG_RUST` is enabled).
+# C, C++, and Rust are supported. Migrated host tools use Rust even when
+# CONFIG_RUST is disabled: the host Rust compiler is required for bootstrap.
 #
 # Sample syntax (see Documentation/kbuild/makefiles.rst for reference)
 # hostprogs := bin2hex

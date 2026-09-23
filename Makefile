@@ -298,7 +298,7 @@ no-dot-config-targets := $(clean-targets) \
 			 %asm-generic kernelversion %src-pkg dt_binding_check \
 			 dt_style_selftest \
 			 outputmakefile rustavailable rustfmt rustfmtcheck \
-			 run-command
+			 run-command rust-host-tools rust-host-tests
 no-sync-config-targets := $(no-dot-config-targets) %install modules_sign kernelrelease \
 			  image_name
 single-targets := %.a %.i %.ko %.lds %.ll %.lst %.mod %.o %.rsi %.s %/
@@ -516,7 +516,7 @@ KBUILD_HOSTCFLAGS   := $(KBUILD_USERHOSTCFLAGS) $(HOST_LFS_CFLAGS) \
 KBUILD_HOSTCXXFLAGS := -Wall -O2 $(HOST_LFS_CFLAGS) $(HOSTCXXFLAGS) \
 		       -I $(srctree)/scripts/include
 KBUILD_HOSTRUSTFLAGS := $(rust_common_flags) -O -Cstrip=debuginfo \
-			-Zallow-features=
+			-Zallow-features= $(HOSTRUSTFLAGS)
 KBUILD_HOSTLDFLAGS  := $(HOST_LFS_LDFLAGS) $(HOSTLDFLAGS)
 KBUILD_HOSTLDLIBS   := $(HOST_LFS_LIBS) $(HOSTLDLIBS)
 KBUILD_PROCMACROLDFLAGS := $(or $(PROCMACROLDFLAGS),$(KBUILD_HOSTLDFLAGS))
@@ -870,7 +870,7 @@ rust_common_flags_per_version := \
     $(if $(call rustc-min-version,108600),,-Aclippy::precedence)
 
 rust_common_flags += $(rust_common_flags_per_version)
-KBUILD_HOSTRUSTFLAGS += $(rust_common_flags_per_version) $(HOSTRUSTFLAGS)
+KBUILD_HOSTRUSTFLAGS += $(rust_common_flags_per_version)
 KBUILD_RUSTFLAGS += $(rust_common_flags_per_version)
 
 include $(srctree)/arch/$(SRCARCH)/Makefile
@@ -1529,6 +1529,53 @@ PHONY += scripts_gen_packed_field_checks
 scripts_gen_packed_field_checks: scripts_basic
 	$(Q)$(MAKE) $(build)=scripts scripts/gen_packed_field_checks
 
+# Build and check the migrated host utilities without requiring a kernel config.
+PHONY += rust-host-tools rust-host-tests
+rust-host-programs := kallsyms tracepoint-update gen_packed_field_checks \
+	asn1_compiler unifdef sorttable insert-sys-cert sign-file recordmcount
+rust-host-tools: outputmakefile scripts_basic
+	$(Q)$(MAKE) $(build)=scripts \
+		hostprogs='$(rust-host-programs)' $(addprefix scripts/,$(rust-host-programs))
+	$(Q)$(MAKE) $(build)=usr usr/gen_init_cpio
+	$(Q)$(MAKE) $(build)=scripts/mod MODPOST_NO_OFFSETS=y \
+		hostprogs='modpost mk_elfconfig' scripts/mod/modpost scripts/mod/mk_elfconfig
+	$(Q)$(MAKE) $(build)=scripts/selinux/mdp scripts/selinux/mdp/mdp
+	$(Q)$(MAKE) $(build)=scripts/ipe/polgen scripts/ipe/polgen/polgen
+	$(Q)$(MAKE) $(build)=scripts/kconfig scripts/kconfig/conf
+	$(Q)$(MAKE) $(build)=scripts/genksyms scripts/genksyms/genksyms
+	$(Q)$(MAKE) $(build)=scripts/dtc hostprogs='dtc fdtoverlay fdtget fdtput' \
+		scripts/dtc/dtc scripts/dtc/fdtoverlay scripts/dtc/fdtget scripts/dtc/fdtput
+	$(Q)$(MAKE) $(build)=certs certs/extract-cert
+	$(Q)$(MAKE) $(build)=arch/x86/tools hostprogs='vdso2c relocs' \
+		arch/x86/tools/vdso2c arch/x86/tools/relocs
+	$(Q)$(MAKE) $(build)=arch/powerpc/boot hostprogs='addnote hack-coff mktree' \
+		arch/powerpc/boot/addnote arch/powerpc/boot/hack-coff arch/powerpc/boot/mktree
+	$(Q)$(MAKE) $(build)=arch/arm/vdso arch/arm/vdso/vdsomunge
+	$(Q)$(MAKE) $(build)=arch/arm64/kernel/pi arch/arm64/kernel/pi/relacheck
+	$(Q)$(MAKE) $(build)=arch/arm64/kvm/hyp/nvhe arch/arm64/kvm/hyp/nvhe/gen-hyprel
+	$(Q)$(MAKE) $(build)=arch/alpha/boot \
+		arch/alpha/boot/tools/mkbb arch/alpha/boot/tools/objstrip
+	$(Q)$(MAKE) $(build)=arch/mips/tools hostprogs='elf-entry' arch/mips/tools/elf-entry
+	$(Q)$(MAKE) $(build)=arch/mips/boot arch/mips/boot/elf2ecoff
+	$(Q)$(MAKE) $(build)=arch/mips/boot/compressed hostprogs='calc_vmlinuz_load_addr' \
+		arch/mips/boot/compressed/calc_vmlinuz_load_addr
+	$(Q)$(MAKE) $(build)=arch/mips/vdso arch/mips/vdso/genvdso
+	$(Q)$(MAKE) $(build)=arch/s390/tools hostprogs='gen_facilities gen_opcode_table' \
+		arch/s390/tools/gen_facilities arch/s390/tools/gen_opcode_table
+	$(Q)$(MAKE) $(build)=arch/x86/boot/compressed arch/x86/boot/compressed/mkpiggy
+	$(Q)$(MAKE) $(build)=arch/x86/boot arch/x86/boot/mkcpustr
+
+rust-host-tests: rust-host-tools
+	$(Q)env -u MAKEFLAGS -u MFLAGS -u CARGO_MAKEFLAGS \
+		$(PYTHON3) -m unittest discover -s $(srctree)/scripts/tests -p 'test_*.py' -v
+
+QEMU ?= qemu-system-x86_64
+PHONY += rust-boot-test
+rust-boot-test: bzImage usr_gen_init_cpio
+	$(Q)$(PYTHON3) $(srctree)/scripts/tests/boot_kernel.py --build $(objtree) \
+		--qemu '$(call escsq,$(QEMU))' \
+		$(if $(QEMU_DATA),--qemu-data '$(call escsq,$(QEMU_DATA))')
+
 # ---------------------------------------------------------------------------
 # Install
 
@@ -1896,6 +1943,9 @@ help:
 	@echo  '		      kselftest to existing .config.'
 	@echo  ''
 	@echo  'Rust targets:'
+	@echo  '  rust-host-tools - Build migrated Rust host tools without a kernel config'
+	@echo  '  rust-host-tests - Build and test Rust host tools against the C originals'
+	@echo  '  rust-boot-test  - Build and boot-test an x86-64 image using QEMU'
 	@echo  '  rustavailable   - Checks whether the Rust toolchain is'
 	@echo  '		    available and, if not, explains why.'
 	@echo  '  rustfmt	  - Reformat all the Rust code in the kernel'

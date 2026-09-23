@@ -1,82 +1,771 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-/* Direct low-level translation of livetree.c.  Types, macros, and helpers are
- * supplied by the corresponding dtc/srcpos dependencies. */
+/* (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation. 2005. */
 
-use core::{ffi::{c_char, c_int, c_void}, ptr};
+use crate::dtc_header::*;
+use crate::srcpos::join_path;
 
-extern "C" {
-    fn xmalloc(n: usize) -> *mut c_void; fn xstrdup(s: *const c_char) -> *mut c_char;
-    fn xstrndup(s: *const c_char, n: usize) -> *mut c_char;
-    fn free(p: *mut c_void); fn memset(p: *mut c_void, v: c_int, n: usize) -> *mut c_void;
-    fn strlen(s: *const c_char) -> usize; fn strcmp(a: *const c_char,b: *const c_char)->c_int;
-    fn strchr(s:*const c_char,c:c_int)->*mut c_char; fn memchr(s:*const c_void,c:c_int,n:usize)->*mut c_void;
-    fn fprintf(f:*mut c_void, fmt:*const c_char, ...)->c_int;
-    fn qsort(p:*mut c_void,n:usize,z:usize,cmp:unsafe extern "C" fn(*const c_void,*const c_void)->c_int);
-    fn srcpos_copy(p:*mut srcpos)->*mut srcpos; fn srcpos_free(p:*mut srcpos);
-    fn srcpos_extend(a:*mut srcpos,b:*mut srcpos)->*mut srcpos;
-    fn data_add_marker(d:data,t:markertype,r:*const c_char)->data; fn data_append_data(d:data,p:*const c_void,n:usize)->data;
-    fn data_append_integer(d:data,v:u64,b:u32)->data; fn data_append_cell(d:data,v:u32)->data;
-    fn data_copy_escape_string(p:*const c_char,n:usize)->data; fn property_add_marker(p:*mut property,t:markertype,o:isize,r:*const c_char);
-    fn delete_property_by_name(n:*mut node,s:*mut c_char); fn add_property(n:*mut node,p:*mut property); fn delete_node_by_name(n:*mut node,s:*mut c_char);
-    fn get_property(n:*mut node,s:*const c_char)->*mut property; fn phandle_is_valid(v:u32)->bool;
-    fn fdt32_to_cpu(v:u32)->u32; fn cpu_to_fdt32(v:u32)->u32; fn dtb_ld32(p:*const u32)->u32;
-    fn die(fmt:*const c_char,...); fn xasprintf(p:*mut *mut c_char,fmt:*const c_char,...);
-    static mut quiet:c_int; static mut generate_fixups:bool; static mut phandle_format:c_int;
+pub(crate) fn add_label(labels: &mut Vec<Label>, name: Vec<u8>) {
+    if let Some(label) = labels.iter_mut().find(|label| label.name == name) {
+        label.deleted = false;
+    } else {
+        labels.insert(
+            0,
+            Label {
+                name,
+                deleted: false,
+            },
+        );
+    }
 }
 
-#[repr(C)] pub struct srcpos { _p:[u8;0] }
-#[repr(C)] pub struct marker { pub next:*mut marker, pub offset:usize, pub type_:markertype, pub ref_:*mut c_char }
-#[repr(C)] pub struct data { pub val:*mut c_char, pub len:usize, pub markers:*mut marker }
-#[repr(C)] pub struct label { pub next:*mut label, pub label:*mut c_char, pub deleted:c_int }
-#[repr(C)] pub struct property { pub next:*mut property,pub name:*mut c_char,pub val:data,pub srcpos:*mut srcpos,pub labels:*mut label,pub deleted:c_int }
-#[repr(C)] pub struct node { pub name:*mut c_char,pub basenamelen:usize,pub fullpath:*mut c_char,pub proplist:*mut property,pub children:*mut node,pub next_sibling:*mut node,pub parent:*mut node,pub labels:*mut label,pub srcpos:*mut srcpos,pub deleted:c_int,pub omit_if_unused:c_int,pub is_referenced:c_int,pub phandle:u32 }
-#[repr(C)] pub struct reserve_info { pub next:*mut reserve_info,pub address:u64,pub size:u64 }
-#[repr(C)] pub struct dt_info { pub dtsflags:u32,pub reservelist:*mut reserve_info,pub dt:*mut node,pub boot_cpuid_phys:u32 }
-pub type markertype=u32; pub const LABEL:markertype=1; pub const REF_PHANDLE:markertype=2; pub const TYPE_STRING:markertype=3; pub const TYPE_UINT32:markertype=4;
-pub const PHANDLE_LEGACY:c_int=1; pub const PHANDLE_EPAPR:c_int=2;
-extern "C" { static empty_data:data; }
+impl Property {
+    pub(crate) fn new(name: Vec<u8>, data: Data, srcpos: Vec<SourcePos>) -> Self {
+        Self {
+            name,
+            data,
+            srcpos,
+            ..Self::default()
+        }
+    }
 
-unsafe fn streq(a:*const c_char,b:*const c_char)->bool { strcmp(a,b)==0 }
-unsafe fn add_label(labels:*mut *mut label, l:*mut c_char) { let mut p=*labels; while !p.is_null(){if streq((*p).label,l){(*p).deleted=0;return} p=(*p).next;} let n=xmalloc(core::mem::size_of::<label>()) as *mut label; memset(n as *mut c_void,0,core::mem::size_of::<label>()); (*n).label=l;(*n).next=*labels;*labels=n; }
-unsafe fn delete_labels(mut p:*mut label){while !p.is_null(){(*p).deleted=1;p=(*p).next;}}
-pub unsafe fn build_property(name:*const c_char,val:data,sp:*mut srcpos)->*mut property{let p=xmalloc(core::mem::size_of::<property>())as*mut property;memset(p as*mut c_void,0,core::mem::size_of::<property>());(*p).name=xstrdup(name);(*p).val=val;(*p).srcpos=srcpos_copy(sp);p}
-pub unsafe fn build_property_delete(n:*const c_char)->*mut property{let p=build_property(n,empty_data,ptr::null_mut());(*p).deleted=1;p}
-pub unsafe fn chain_property(a:*mut property,l:*mut property)->*mut property{(*a).next=l;a}
-pub unsafe fn reverse_properties(mut p:*mut property)->*mut property{let mut h=ptr::null_mut();while !p.is_null(){let n=(*p).next;(*p).next=h;h=p;p=n;}h}
-pub unsafe fn build_node(pl:*mut property,ch:*mut node,sp:*mut srcpos)->*mut node{let n=xmalloc(core::mem::size_of::<node>())as*mut node;memset(n as*mut c_void,0,core::mem::size_of::<node>());(*n).proplist=reverse_properties(pl);(*n).children=ch;(*n).srcpos=srcpos_copy(sp);let mut c=ch;while !c.is_null(){(*c).parent=n;c=(*c).next_sibling;}n}
-pub unsafe fn build_node_delete(sp:*mut srcpos)->*mut node{let n=build_node(ptr::null_mut(),ptr::null_mut(),sp);(*n).deleted=1;n}
-pub unsafe fn name_node(n:*mut node,s:*const c_char)->*mut node{(*n).name=xstrdup(s);n}
-pub unsafe fn omit_node_if_unused(n:*mut node)->*mut node{(*n).omit_if_unused=1;n} pub unsafe fn reference_node(n:*mut node)->*mut node{(*n).is_referenced=1;n}
-pub unsafe fn chain_node(a:*mut node,l:*mut node)->*mut node{(*a).next_sibling=l;a}
-pub unsafe fn add_property(n:*mut node,p:*mut property){(*p).next=ptr::null_mut();let mut q=&mut (*n).proplist;while !(*q).is_null(){q=&mut (**q).next;}*q=p;}
-pub unsafe fn delete_property(p:*mut property){(*p).deleted=1;delete_labels(&mut (*p).labels)}
-pub unsafe fn add_child(n:*mut node,c:*mut node){(*c).next_sibling=ptr::null_mut();(*c).parent=n;let mut q=&mut (*n).children;while !(*q).is_null(){q=&mut (**q).next_sibling;}*q=c;}
-pub unsafe fn delete_node(n:*mut node){(*n).deleted=1;let mut c=(*n).children;while !c.is_null(){delete_node(c);c=(*c).next_sibling;}let mut p=(*n).proplist;while !p.is_null(){delete_property(p);p=(*p).next;}delete_labels(&mut (*n).labels)}
-pub unsafe fn append_to_property(n:*mut node,name:*mut c_char,d:*const c_void,len:c_int,t:markertype){let mut p=get_property(n,name);if p.is_null(){p=build_property(name,empty_data,ptr::null_mut());add_property(n,p);}(*p).val=data_add_marker((*p).val,t,name);(*p).val=data_append_data((*p).val,d,len as usize);}
-pub unsafe fn get_unitname(n:*mut node)->*const c_char{if *(*n).name.add((*n).basenamelen) as u8==0{b"\0".as_ptr()as*const c_char}else{(*n).name.add((*n).basenamelen+1)}}
-pub unsafe fn get_property_by_label(t:*mut node,l:*const c_char,out:*mut *mut node)->*mut property{*out=t;let mut p=(*t).proplist;while !p.is_null(){let mut x=(*p).labels;while !x.is_null(){if streq((*x).label,l){return p}x=(*x).next}p=(*p).next;}let mut c=(*t).children;while !c.is_null(){let r=get_property_by_label(c,l,out);if !r.is_null(){return r}c=(*c).next_sibling;}*out=ptr::null_mut();ptr::null_mut()}
-pub unsafe fn get_subnode(n:*mut node,s:*const c_char)->*mut node{let mut c=(*n).children;while !c.is_null(){if streq((*c).name,s)&&(*c).deleted==0{return c}c=(*c).next_sibling;}ptr::null_mut()}
-pub unsafe fn get_node_by_path(mut t:*mut node,mut path:*const c_char)->*mut node{if path.is_null()||*path==0{if (*t).deleted!=0{return ptr::null_mut()}return t}while *path as u8==b'/'{path=path.add(1)}let mut c=(*t).children;while !c.is_null(){if streq((*c).name,path){return c}c=(*c).next_sibling;}ptr::null_mut()}
-pub unsafe fn build_reserve_entry(a:u64,s:u64)->*mut reserve_info{let n=xmalloc(core::mem::size_of::<reserve_info>())as*mut reserve_info;memset(n as*mut c_void,0,core::mem::size_of::<reserve_info>());(*n).address=a;(*n).size=s;n}
-pub unsafe fn chain_reserve_entry(a:*mut reserve_info,l:*mut reserve_info)->*mut reserve_info{(*a).next=l;a}
-pub unsafe fn add_reserve_entry(mut l:*mut reserve_info,n:*mut reserve_info)->*mut reserve_info{(*n).next=ptr::null_mut();if l.is_null(){return n}let mut p=l;while !(*p).next.is_null(){p=(*p).next;}(*p).next=n;l}
-pub unsafe fn build_dt_info(f:u32,r:*mut reserve_info,t:*mut node,b:u32)->*mut dt_info{let n=xmalloc(core::mem::size_of::<dt_info>())as*mut dt_info;(*n).dtsflags=f;(*n).reservelist=r;(*n).dt=t;(*n).boot_cpuid_phys=b;n}
+    pub(crate) fn delete(&mut self) {
+        self.deleted = true;
+        for label in &mut self.labels {
+            label.deleted = true;
+        }
+    }
 
-pub unsafe fn merge_nodes(old:*mut node,new:*mut node)->*mut node{(*old).deleted=0;while !(*new).proplist.is_null(){let p=(*new).proplist;(*new).proplist=(*p).next;(*p).next=ptr::null_mut();if (*p).deleted!=0{delete_property_by_name(old,(*p).name);free(p as*mut c_void)}else{add_property(old,p)}}while !(*new).children.is_null(){let c=(*new).children;(*new).children=(*c).next_sibling;(*c).next_sibling=ptr::null_mut();if (*c).deleted!=0{delete_node_by_name(old,(*c).name);free(c as*mut c_void)}else{add_child(old,c)}}(*old).srcpos=srcpos_extend((*old).srcpos,(*new).srcpos);free(new as*mut c_void);old}
-pub unsafe fn add_orphan_node(dt:*mut node,new:*mut node,ref_:*mut c_char)->*mut node{static mut FRAG:u32=0;let p=build_property(b"target\0".as_ptr()as*const c_char,empty_data,ptr::null_mut());name_node(new,b"__overlay__\0".as_ptr()as*const c_char);let n=build_node(p,new,ptr::null_mut());let mut name: *mut c_char=ptr::null_mut();xasprintf(&mut name,b"fragment@%u\0".as_ptr()as*const c_char,FRAG);FRAG+=1;name_node(n,name);free(name as*mut c_void);add_child(dt,n);let _=ref_;dt}
-pub unsafe fn delete_property_by_name_local(n:*mut node,s:*mut c_char){let mut p=(*n).proplist;while !p.is_null(){if streq((*p).name,s){delete_property(p);return}p=(*p).next}}
-pub unsafe fn propval_cell(p:*mut property)->u32{assert!((*p).val.len==4);fdt32_to_cpu(*( (*p).val.val as*mut u32))}
-pub unsafe fn propval_cell_n(p:*mut property,n:usize)->u32{assert!((*p).val.len/4>n);fdt32_to_cpu(*((*p).val.val as*mut u32).add(n))}
-pub unsafe fn get_node_by_label(t:*mut node,l:*const c_char)->*mut node{let mut x=(*t).labels;while !x.is_null(){if streq((*x).label,l){return t}x=(*x).next}let mut c=(*t).children;while !c.is_null(){let r=get_node_by_label(c,l);if !r.is_null(){return r}c=(*c).next_sibling;}ptr::null_mut()}
-pub unsafe fn get_node_by_phandle(t:*mut node,p:u32)->*mut node{if !phandle_is_valid(p){return ptr::null_mut()}if (*t).phandle==p&&(*t).deleted==0{return t}let mut c=(*t).children;while !c.is_null(){let r=get_node_by_phandle(c,p);if !r.is_null(){return r}c=(*c).next_sibling;}ptr::null_mut()}
-pub unsafe fn get_node_by_ref(t:*mut node,r:*const c_char)->*mut node{if streq(r,b"/\0".as_ptr()as*const c_char){return t}if *r as u8==b'/'{get_node_by_path(t,r)}else{get_node_by_label(t,r)}}
-pub unsafe fn guess_boot_cpuid(t:*mut node)->u32{let c=get_node_by_path(t,b"/cpus\0".as_ptr()as*const c_char);if c.is_null(){0}else{let r=(*c).children;if r.is_null(){0}else{let p=get_property(r,b"reg\0".as_ptr()as*const c_char);if p.is_null(){0}else{propval_cell(p)}}}}
-pub unsafe fn sort_tree(_d:*mut dt_info){}
-pub unsafe fn generate_labels_from_tree(_d:*mut dt_info,_n:*const c_char){}
-pub unsafe fn generate_label_tree(_d:*mut dt_info,_n:*const c_char,_a:bool){}
-pub unsafe fn generate_fixups_tree(_d:*mut dt_info,_n:*const c_char){}
-pub unsafe fn fixup_phandles(_d:*mut dt_info,_n:*const c_char){}
-pub unsafe fn generate_local_fixups_tree(_d:*mut dt_info,_n:*const c_char){}
-pub unsafe fn local_fixup_phandles(_d:*mut dt_info,_n:*const c_char){}
+    pub(crate) fn cell(&self, index: usize) -> u32 {
+        u32::from_be_bytes(
+            self.data.bytes[index * 4..index * 4 + 4]
+                .try_into()
+                .expect("cell"),
+        )
+    }
+}
 
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+impl Node {
+    #[allow(dead_code)] // Canonical node helper, also available to compiler clients.
+    pub(crate) fn unitname(&self) -> &[u8] {
+        if self.basenamelen < self.name.len() {
+            &self.name[self.basenamelen + 1..]
+        } else {
+            b""
+        }
+    }
+}
+
+impl DtInfo {
+    pub(crate) fn add_node(&mut self, node: Node) -> NodeId {
+        let id = self.nodes.len();
+        for &child in &node.children {
+            self.nodes[child].parent = Some(id);
+        }
+        self.nodes.push(node);
+        id
+    }
+
+    pub(crate) fn add_child(&mut self, parent: NodeId, child: NodeId) {
+        self.nodes[child].parent = Some(parent);
+        self.nodes[parent].children.push(child);
+    }
+
+    pub(crate) fn property(&self, node: NodeId, name: &[u8]) -> Option<PropId> {
+        self.nodes[node]
+            .properties
+            .iter()
+            .position(|p| !p.deleted && p.name == name)
+    }
+
+    pub(crate) fn subnode(&self, node: NodeId, name: &[u8]) -> Option<NodeId> {
+        self.nodes[node]
+            .children
+            .iter()
+            .copied()
+            .find(|&id| !self.nodes[id].deleted && self.nodes[id].name == name)
+    }
+
+    pub(crate) fn active_nodes(&self) -> Vec<NodeId> {
+        self.subtree(self.root)
+    }
+
+    pub(crate) fn subtree(&self, root: NodeId) -> Vec<NodeId> {
+        let mut result = Vec::new();
+        let mut stack = vec![root];
+        while let Some(node) = stack.pop() {
+            result.push(node);
+            stack.extend(
+                self.nodes[node]
+                    .children
+                    .iter()
+                    .rev()
+                    .copied()
+                    .filter(|&id| !self.nodes[id].deleted),
+            );
+        }
+        result
+    }
+
+    pub(crate) fn node_by_path_from(&self, mut node: NodeId, mut path: &[u8]) -> Option<NodeId> {
+        loop {
+            if path.is_empty() {
+                return (!self.nodes[node].deleted).then_some(node);
+            }
+            while path.starts_with(b"/") {
+                path = &path[1..];
+            }
+            match path.iter().position(|&x| x == b'/') {
+                Some(slash) => {
+                    node = self.subnode(node, &path[..slash])?;
+                    path = &path[slash + 1..];
+                }
+                None => return self.subnode(node, path),
+            }
+        }
+    }
+
+    pub(crate) fn node_by_path(&self, path: &[u8]) -> Option<NodeId> {
+        self.node_by_path_from(self.root, path)
+    }
+
+    pub(crate) fn node_by_label(&self, label: &[u8]) -> Option<NodeId> {
+        self.active_nodes().into_iter().find(|&id| {
+            self.nodes[id]
+                .labels
+                .iter()
+                .any(|l| !l.deleted && l.name == label)
+        })
+    }
+
+    pub(crate) fn node_by_phandle(&self, phandle: u32) -> Option<NodeId> {
+        if !phandle_is_valid(phandle) {
+            return None;
+        }
+        self.active_nodes()
+            .into_iter()
+            .find(|&id| !self.nodes[id].deleted && self.nodes[id].phandle == phandle)
+    }
+
+    pub(crate) fn node_by_ref(&self, reference: &[u8]) -> Option<NodeId> {
+        if reference == b"/" {
+            return Some(self.root);
+        }
+        if reference.starts_with(b"/") {
+            return self.node_by_path(reference);
+        }
+        if let Some(slash) = reference.iter().position(|&b| b == b'/') {
+            self.node_by_path_from(
+                self.node_by_label(&reference[..slash])?,
+                &reference[slash + 1..],
+            )
+        } else {
+            self.node_by_label(reference)
+        }
+    }
+
+    pub(crate) fn property_by_label(&self, label: &[u8]) -> Option<(NodeId, PropId)> {
+        for node in self.active_nodes() {
+            for (index, property) in self.nodes[node]
+                .properties
+                .iter()
+                .enumerate()
+                .filter(|(_, p)| !p.deleted)
+            {
+                if property
+                    .labels
+                    .iter()
+                    .any(|l| !l.deleted && l.name == label)
+                {
+                    return Some((node, index));
+                }
+            }
+        }
+        None
+    }
+
+    pub(crate) fn marker_label(&self, label: &[u8]) -> Option<(NodeId, PropId, usize)> {
+        for node in self.active_nodes() {
+            for (index, property) in self.nodes[node]
+                .properties
+                .iter()
+                .enumerate()
+                .filter(|(_, p)| !p.deleted)
+            {
+                if let Some(marker) = property.data.markers.iter().position(|m| {
+                    m.kind == MarkerKind::Label && m.reference.as_deref() == Some(label)
+                }) {
+                    return Some((node, index, marker));
+                }
+            }
+        }
+        None
+    }
+
+    pub(crate) fn node_phandle(&mut self, node: NodeId, format: u32) -> u32 {
+        if phandle_is_valid(self.nodes[node].phandle) {
+            return self.nodes[node].phandle;
+        }
+        while self.node_by_phandle(self.next_phandle).is_some() {
+            self.next_phandle = self.next_phandle.wrapping_add(1);
+        }
+        self.nodes[node].phandle = self.next_phandle;
+        for (name, flag) in [
+            (b"linux,phandle".as_slice(), PHANDLE_LEGACY),
+            (b"phandle".as_slice(), PHANDLE_EPAPR),
+        ] {
+            if format & flag == 0 || self.property(node, name).is_some() {
+                continue;
+            }
+            let mut data = Data::default();
+            data.marker(MarkerKind::Uint32, None);
+            data.append_integer(u64::from(self.next_phandle), 32);
+            self.nodes[node]
+                .properties
+                .push(Property::new(name.to_vec(), data, Vec::new()));
+        }
+        self.next_phandle
+    }
+
+    pub(crate) fn guess_boot_cpuid(&self) -> u32 {
+        let Some(cpus) = self.node_by_path(b"/cpus") else {
+            return 0;
+        };
+        let Some(&cpu) = self.nodes[cpus].children.first() else {
+            return 0;
+        };
+        let Some(reg) = self.property(cpu, b"reg") else {
+            return 0;
+        };
+        let property = &self.nodes[cpu].properties[reg];
+        if property.data.bytes.len() == 4 {
+            property.cell(0)
+        } else {
+            0
+        }
+    }
+
+    pub(crate) fn delete_node(&mut self, root: NodeId) {
+        for id in self.subtree(root) {
+            self.nodes[id].deleted = true;
+            for property in &mut self.nodes[id].properties {
+                if !property.deleted {
+                    property.delete();
+                }
+            }
+            for label in &mut self.nodes[id].labels {
+                label.deleted = true;
+            }
+        }
+    }
+
+    pub(crate) fn merge_nodes(&mut self, old: NodeId, new: NodeId) {
+        enum Work {
+            Merge(NodeId, NodeId),
+            Child(NodeId, NodeId),
+            Finish(NodeId, NodeId),
+        }
+        let mut pending = vec![Work::Merge(old, new)];
+        while let Some(work) = pending.pop() {
+            let (old, new) = match work {
+                Work::Finish(old, new) => {
+                    let positions = std::mem::take(&mut self.nodes[new].srcpos);
+                    self.nodes[old].srcpos.extend(positions);
+                    self.nodes[new].deleted = true;
+                    continue;
+                }
+                Work::Child(old, child) => {
+                    self.nodes[child].parent = None;
+                    let found = self.nodes[old]
+                        .children
+                        .iter()
+                        .copied()
+                        .find(|&id| self.nodes[id].name == self.nodes[child].name);
+                    if self.nodes[child].deleted {
+                        if let Some(target) = found {
+                            self.delete_node(target);
+                        }
+                    } else if let Some(target) = found {
+                        pending.push(Work::Merge(target, child));
+                    } else {
+                        self.add_child(old, child);
+                    }
+                    continue;
+                }
+                Work::Merge(old, new) => (old, new),
+            };
+            self.nodes[old].deleted = false;
+            let labels = std::mem::take(&mut self.nodes[new].labels);
+            for label in labels {
+                add_label(&mut self.nodes[old].labels, label.name);
+            }
+            let properties = std::mem::take(&mut self.nodes[new].properties);
+            for mut property in properties {
+                let found = self.nodes[old]
+                    .properties
+                    .iter()
+                    .position(|p| p.name == property.name);
+                if property.deleted {
+                    if let Some(index) = found {
+                        self.nodes[old].properties[index].delete();
+                    }
+                } else if let Some(index) = found {
+                    let target = &mut self.nodes[old].properties[index];
+                    for label in std::mem::take(&mut property.labels) {
+                        add_label(&mut target.labels, label.name);
+                    }
+                    target.data = property.data;
+                    target.srcpos = property.srcpos;
+                    target.deleted = false;
+                } else {
+                    self.nodes[old].properties.push(property);
+                }
+            }
+            let children = std::mem::take(&mut self.nodes[new].children);
+            pending.push(Work::Finish(old, new));
+            for child in children.into_iter().rev() {
+                pending.push(Work::Child(old, child));
+            }
+        }
+    }
+
+    pub(crate) fn orphan(&mut self, child: NodeId, reference: Vec<u8>) {
+        let mut data = Data::default();
+        let name = if reference.starts_with(b"/") {
+            data.marker(MarkerKind::String, Some(reference.clone()));
+            data.bytes = reference;
+            data.bytes.push(0);
+            b"target-path".as_slice()
+        } else {
+            data.marker(MarkerKind::RefPhandle, Some(reference));
+            data.append_integer(u64::from(u32::MAX), 32);
+            b"target".as_slice()
+        };
+        self.nodes[child].name = b"__overlay__".to_vec();
+        let node = self.add_node(Node {
+            name: format!("fragment@{}", self.next_orphan_fragment).into_bytes(),
+            properties: vec![Property::new(name.to_vec(), data, Vec::new())],
+            children: vec![child],
+            ..Node::default()
+        });
+        self.next_orphan_fragment += 1;
+        self.add_child(self.root, node);
+    }
+
+    pub(crate) fn fill_fullpaths(&mut self) {
+        for id in self.active_nodes() {
+            self.nodes[id].basenamelen = self.nodes[id]
+                .name
+                .iter()
+                .position(|&b| b == b'@')
+                .unwrap_or(self.nodes[id].name.len());
+            let prefix = self.nodes[id]
+                .parent
+                .map(|p| self.nodes[p].fullpath.as_slice())
+                .unwrap_or(b"");
+            self.nodes[id].fullpath = join_path(prefix, &self.nodes[id].name);
+        }
+    }
+
+    pub(crate) fn sort_tree(&mut self) {
+        self.reserves.sort_by_key(|r| (r.address, r.size));
+        for id in 0..self.nodes.len() {
+            self.nodes[id]
+                .properties
+                .sort_by(|a, b| a.name.cmp(&b.name));
+            let mut children = std::mem::take(&mut self.nodes[id].children);
+            children.sort_by(|&a, &b| self.nodes[a].name.cmp(&self.nodes[b].name));
+            self.nodes[id].children = children;
+        }
+    }
+
+    fn named_child(&mut self, parent: NodeId, name: &[u8]) -> NodeId {
+        if let Some(id) = self.subnode(parent, name) {
+            return id;
+        }
+        let child = self.add_node(Node {
+            name: name.to_vec(),
+            ..Node::default()
+        });
+        self.add_child(parent, child);
+        child
+    }
+
+    pub(crate) fn append_to_property(
+        &mut self,
+        node: NodeId,
+        name: &[u8],
+        bytes: &[u8],
+        kind: MarkerKind,
+    ) {
+        let index = self.property(node, name).unwrap_or_else(|| {
+            self.nodes[node].properties.push(Property::new(
+                name.to_vec(),
+                Data::default(),
+                Vec::new(),
+            ));
+            self.nodes[node].properties.len() - 1
+        });
+        let data = &mut self.nodes[node].properties[index].data;
+        data.marker(kind, Some(name.to_vec()));
+        data.bytes.extend_from_slice(bytes);
+    }
+
+    fn append_unique(&mut self, node: NodeId, name: &[u8], bytes: &[u8], strings: bool) -> bool {
+        if let Some(index) = self.property(node, name) {
+            let old = &self.nodes[node].properties[index].data.bytes;
+            if strings {
+                if !old.is_empty() && old.last() != Some(&0) {
+                    return false;
+                }
+                if old.split_inclusive(|&b| b == 0).any(|s| s == bytes) {
+                    return true;
+                }
+            } else {
+                if old.len() % 4 != 0 {
+                    return false;
+                }
+                if old.chunks_exact(4).any(|s| s == bytes) {
+                    return true;
+                }
+            }
+        }
+        self.append_to_property(
+            node,
+            name,
+            bytes,
+            if strings {
+                MarkerKind::String
+            } else {
+                MarkerKind::Uint32
+            },
+        );
+        true
+    }
+
+    pub(crate) fn generate_labels_from_tree(
+        &mut self,
+        name: &[u8],
+        options: &Options,
+        diagnostics: &mut Diagnostics,
+    ) {
+        let Some(id) = self.subnode(self.root, name) else {
+            return;
+        };
+        for property in self.nodes[id]
+            .properties
+            .clone()
+            .into_iter()
+            .filter(|p| !p.deleted)
+        {
+            let path = property.data.bytes.split(|&b| b == 0).next().unwrap_or(b"");
+            if let Some(target) = self.node_by_path(path) {
+                add_label(&mut self.nodes[target].labels, property.name);
+            } else if options.quiet < 1 {
+                diagnostics.raw(format!(
+                    "Warning: Path {} referenced in property {}/{} missing",
+                    display(path),
+                    display(name),
+                    display(&property.name)
+                ));
+            }
+        }
+    }
+
+    pub(crate) fn generate_label_tree(
+        &mut self,
+        name: &[u8],
+        allocate: bool,
+        options: &Options,
+        diagnostics: &mut Diagnostics,
+    ) -> Result<(), Vec<u8>> {
+        if !self
+            .active_nodes()
+            .iter()
+            .any(|&id| !self.nodes[id].labels.is_empty())
+        {
+            return Ok(());
+        }
+        let target = self.named_child(self.root, name);
+        for node in self.active_nodes() {
+            if self.nodes[node].labels.is_empty() {
+                continue;
+            }
+            for label in self.nodes[node]
+                .labels
+                .clone()
+                .into_iter()
+                .filter(|l| !l.deleted)
+            {
+                if self.property(target, &label.name).is_some() {
+                    diagnostics.raw(format!(
+                        "WARNING: label {} already exists in /{}",
+                        display(&label.name),
+                        display(name)
+                    ));
+                    continue;
+                }
+                let data = Data::escape_string(&self.nodes[node].fullpath)?;
+                self.nodes[target]
+                    .properties
+                    .push(Property::new(label.name, data, Vec::new()));
+            }
+            if allocate {
+                self.node_phandle(node, options.phandle_format);
+            }
+        }
+        Ok(())
+    }
+
+    fn references(&self, local: bool) -> Vec<(NodeId, PropId, Marker)> {
+        let mut result = Vec::new();
+        for id in self.active_nodes() {
+            for (index, property) in self.nodes[id]
+                .properties
+                .iter()
+                .enumerate()
+                .filter(|(_, p)| !p.deleted)
+            {
+                for marker in &property.data.markers {
+                    if marker.kind == MarkerKind::RefPhandle
+                        && self
+                            .node_by_ref(marker.reference.as_deref().unwrap_or(b""))
+                            .is_some()
+                            == local
+                    {
+                        result.push((id, index, marker.clone()));
+                    }
+                }
+            }
+        }
+        result
+    }
+
+    pub(crate) fn generate_fixups_tree(
+        &mut self,
+        name: &[u8],
+        diagnostics: &mut Diagnostics,
+    ) -> Result<(), Vec<u8>> {
+        let entries = self.references(false);
+        if entries.is_empty() {
+            return Ok(());
+        }
+        let target = self.named_child(self.root, name);
+        let mut valid = true;
+        for (node, property, marker) in entries {
+            let reference = marker.reference.as_deref().unwrap_or(b"");
+            if reference.contains(&b'/') {
+                return Err(format!(
+                    "Can't generate fixup for reference to path &{{{}}}\n",
+                    display(reference)
+                )
+                .into_bytes());
+            }
+            let property_name = &self.nodes[node].properties[property].name;
+            if property_name.contains(&b':') || self.nodes[node].fullpath.contains(&b':') {
+                return Err(b"arguments should not contain ':'\n".to_vec());
+            }
+            let mut entry = self.nodes[node].fullpath.clone();
+            entry.push(b':');
+            entry.extend_from_slice(property_name);
+            entry.extend_from_slice(format!(":{}\0", marker.offset).as_bytes());
+            valid &= self.append_unique(target, reference, &entry, true);
+        }
+        if !valid {
+            diagnostics.raw(format!(
+                "Warning: Preexisting data in {} malformed, some content could not be added.\n",
+                display(name)
+            ));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn generate_local_fixups_tree(
+        &mut self,
+        name: &[u8],
+        diagnostics: &mut Diagnostics,
+    ) {
+        let entries = self.references(true);
+        if entries.is_empty() {
+            return;
+        }
+        let root = self.named_child(self.root, name);
+        let mut valid = true;
+        for (node, property, marker) in entries {
+            let mut path = Vec::new();
+            let mut current = node;
+            while let Some(parent) = self.nodes[current].parent {
+                path.push(self.nodes[current].name.clone());
+                current = parent;
+            }
+            let mut target = root;
+            for component in path.iter().rev() {
+                target = self.named_child(target, component);
+            }
+            let property_name = self.nodes[node].properties[property].name.clone();
+            valid &= self.append_unique(
+                target,
+                &property_name,
+                &(marker.offset as u32).to_be_bytes(),
+                false,
+            );
+        }
+        if !valid {
+            diagnostics.raw(format!(
+                "Warning: Preexisting data in {} malformed, some content could not be added.\n",
+                display(name)
+            ));
+        }
+    }
+
+    pub(crate) fn fixup_phandles(
+        &mut self,
+        name: &[u8],
+        options: &Options,
+        diagnostics: &mut Diagnostics,
+    ) {
+        let Some(id) = self.subnode(self.root, name) else {
+            return;
+        };
+        for property in self.nodes[id]
+            .properties
+            .clone()
+            .into_iter()
+            .filter(|p| !p.deleted)
+        {
+            let malformed = format!(
+                "Warning: Malformed fixup entry for label {}\n",
+                display(&property.name)
+            );
+            for entry in property.data.bytes.split_inclusive(|&b| b == 0) {
+                if entry.last() != Some(&0) {
+                    if options.quiet < 1 {
+                        diagnostics.raw(&malformed);
+                    }
+                    break;
+                }
+                let entry = &entry[..entry.len() - 1];
+                let mut fields = entry.splitn(3, |&b| b == b':');
+                let path = fields.next().unwrap_or(b"");
+                let (Some(propname), Some(offset)) = (fields.next(), fields.next()) else {
+                    if options.quiet < 1 {
+                        diagnostics.raw(&malformed);
+                    }
+                    continue;
+                };
+                let Some(node) = self.node_by_path(path) else {
+                    if options.quiet < 1 {
+                        diagnostics.raw(format!(
+                            "Warning: Label {} references non-existing node {}\n",
+                            display(&property.name),
+                            display(path)
+                        ));
+                    }
+                    continue;
+                };
+                let Some(index) = self.property(node, propname) else {
+                    if options.quiet < 1 {
+                        diagnostics.raw(format!(
+                            "Warning: Label {} references non-existing property {} in node {}\n",
+                            display(&property.name),
+                            display(&self.nodes[node].fullpath),
+                            display(propname)
+                        ));
+                    }
+                    continue;
+                };
+                let offset = crate::util::strtol(offset) as i64;
+                if offset < 0
+                    || offset as usize
+                        > self.nodes[node].properties[index]
+                            .data
+                            .bytes
+                            .len()
+                            .saturating_sub(4)
+                    || self.nodes[node].properties[index].data.bytes.len() < 4
+                {
+                    if options.quiet < 1 {
+                        diagnostics.raw(format!("Warning: Label {} contains invalid offset for property {} in node {}\n", display(&property.name), display(propname), display(&self.nodes[node].fullpath)));
+                    }
+                    continue;
+                }
+                crate::treesource::property_add_marker(
+                    &mut self.nodes[node].properties[index],
+                    MarkerKind::RefPhandle,
+                    offset as usize,
+                    Some(property.name.clone()),
+                );
+            }
+        }
+    }
+
+    pub(crate) fn local_fixup_phandles(
+        &mut self,
+        name: &[u8],
+        options: &Options,
+        diagnostics: &mut Diagnostics,
+    ) {
+        let Some(root) = self.subnode(self.root, name) else {
+            return;
+        };
+        let mut stack = vec![(root, self.root, false)];
+        while let Some((fixup, mut node, child)) = stack.pop() {
+            if child {
+                if let Some(target) = self.subnode(node, &self.nodes[fixup].name) {
+                    node = target;
+                } else {
+                    if options.quiet < 1 {
+                        diagnostics.raw(format!(
+                            "Warning: node {}/{} referenced in __local_fixups__ missing\n",
+                            display(&self.nodes[fixup].name),
+                            display(&self.nodes[node].fullpath)
+                        ));
+                    }
+                    continue;
+                }
+            }
+            for property in self.nodes[fixup]
+                .properties
+                .clone()
+                .into_iter()
+                .filter(|p| !p.deleted)
+            {
+                let Some(index) = self.property(node, &property.name) else {
+                    if options.quiet < 1 {
+                        diagnostics.raw(format!(
+                            "Warning: Property {} in {} referenced in __local_fixups__ missing\n",
+                            display(&property.name),
+                            display(&self.nodes[node].fullpath)
+                        ));
+                    }
+                    continue;
+                };
+                if property.data.bytes.len() % 4 != 0 {
+                    if options.quiet < 1 {
+                        diagnostics.raw(format!(
+                            "Warning: property {} in /__local_fixups__{} malformed\n",
+                            display(&property.name),
+                            display(&self.nodes[node].fullpath)
+                        ));
+                    }
+                    continue;
+                }
+                for bytes in property.data.bytes.chunks_exact(4) {
+                    crate::treesource::add_phandle_marker(
+                        self,
+                        node,
+                        index,
+                        u32::from_be_bytes(bytes.try_into().unwrap()) as usize,
+                        options,
+                        diagnostics,
+                    );
+                }
+            }
+            for &child in self.nodes[fixup].children.iter().rev() {
+                if self.nodes[child].deleted {
+                    continue;
+                }
+                stack.push((child, node, true));
+            }
+        }
+    }
+}

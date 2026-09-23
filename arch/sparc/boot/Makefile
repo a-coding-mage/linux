@@ -8,6 +8,7 @@ ROOT_IMG	:= /usr/src/root.img
 ELFTOAOUT	:= elftoaout
 
 hostprogs	:= piggyback
+piggyback-rust := y
 targets		:= tftpboot.img image zImage vmlinux.aout
 clean-files	:= System.map
 

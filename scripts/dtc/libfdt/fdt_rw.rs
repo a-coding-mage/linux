@@ -1,152 +1,307 @@
 // SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- */
+//! In-place, layout-preserving device-tree mutation.
+// Copyright (C) 2006 David Gibson, IBM Corporation.
+use super::*;
 
-unsafe fn fdt_blocks_misordered_(fdt: *const core::ffi::c_void, mem_rsv_size: i32, struct_size: i32) -> i32 {
-    ((fdt_off_mem_rsvmap(fdt) < FDT_ALIGN(core::mem::size_of::<fdt_header>() as i32, 8))
-        || (fdt_off_dt_struct(fdt) < fdt_off_mem_rsvmap(fdt) + mem_rsv_size)
-        || (fdt_off_dt_strings(fdt) < fdt_off_dt_struct(fdt) + struct_size)
-        || (fdt_totalsize(fdt) < fdt_off_dt_strings(fdt) + fdt_size_dt_strings(fdt))) as i32
+fn blocks_misordered(h: Header, reserve: usize, structure: usize) -> bool {
+    h.off_mem_rsvmap < 40
+        || h.off_mem_rsvmap
+            .checked_add(reserve)
+            .is_none_or(|end| h.off_dt_struct < end)
+        || h.off_dt_struct
+            .checked_add(structure)
+            .is_none_or(|end| h.off_dt_strings < end)
+        || h.off_dt_strings
+            .checked_add(h.size_dt_strings)
+            .is_none_or(|end| h.totalsize < end)
 }
-
-unsafe fn fdt_downgrade_version(fdt: *mut core::ffi::c_void) {
-    if !can_assume(LATEST) && fdt_version(fdt) > FDT_LAST_SUPPORTED_VERSION {
-        fdt_set_version(fdt, FDT_LAST_SUPPORTED_VERSION);
+fn rw_probe(data: &mut [u8]) -> Result<Header> {
+    let mut h = ro_probe(data)?;
+    if h.version < 17 {
+        return Err(Error::BadVersion);
+    }
+    if blocks_misordered(h, 16, h.size_dt_struct) {
+        return Err(Error::BadLayout);
+    }
+    if h.version > 17 {
+        put32(data, 20, 17)?;
+        h.version = 17;
+    }
+    Ok(h)
+}
+fn splice(data: &mut [u8], at: usize, old: usize, new: usize) -> Result<()> {
+    let h = Header::read(data)?;
+    let size = h
+        .off_dt_strings
+        .checked_add(h.size_dt_strings)
+        .ok_or(Error::BadOffset)?;
+    let end = at.checked_add(old).ok_or(Error::BadOffset)?;
+    if end > size {
+        return Err(Error::BadOffset);
+    }
+    let newsize = size
+        .checked_sub(old)
+        .and_then(|v| v.checked_add(new))
+        .ok_or(Error::BadOffset)?;
+    if newsize > h.totalsize {
+        return Err(Error::NoSpace);
+    }
+    bytes(data, 0, size.max(newsize))?;
+    data.copy_within(end..size, at + new);
+    Ok(())
+}
+fn splice_struct(data: &mut [u8], at: usize, old: usize, new: usize) -> Result<()> {
+    let h = Header::read(data)?;
+    splice(data, at, old, new)?;
+    put32(data, 36, (h.size_dt_struct - old + new) as u32)?;
+    put32(data, 12, (h.off_dt_strings - old + new) as u32)
+}
+fn splice_reserve(data: &mut [u8], at: usize, old: usize, new: usize) -> Result<()> {
+    let h = Header::read(data)?;
+    splice(data, at, old, new)?;
+    put32(data, 8, (h.off_dt_struct - old + new) as u32)?;
+    put32(data, 12, (h.off_dt_strings - old + new) as u32)
+}
+fn add_string(data: &mut [u8], name: &[u8]) -> Result<(usize, bool)> {
+    let h = Header::read(data)?;
+    let table = bytes(data, h.off_dt_strings, h.size_dt_strings)?;
+    if let Some(index) = find_string(table, name) {
+        return Ok((index, false));
+    }
+    let at = h.off_dt_strings + h.size_dt_strings;
+    splice(data, at, 0, name.len() + 1)?;
+    put32(data, 32, (h.size_dt_strings + name.len() + 1) as u32)?;
+    put(data, at, name)?;
+    data[at + name.len()] = 0;
+    Ok((h.size_dt_strings, true))
+}
+fn add_property(data: &mut [u8], node: i32, name: &[u8], len: usize) -> Result<usize> {
+    let next = check_node_offset(data, node)?;
+    let (nameoff, allocated) = add_string(data, name)?;
+    let at = struct_abs(data, next, 0)?;
+    let size = 12usize.checked_add(align(len, 4)?).ok_or(Error::NoSpace)?;
+    if let Err(err) = splice_struct(data, at, 0, size) {
+        if allocated {
+            let h = Header::read(data)?;
+            put32(data, 32, (h.size_dt_strings - name.len() - 1) as u32)?;
+        }
+        return Err(err);
+    }
+    put32(data, at, FDT_PROP)?;
+    put32(data, at + 4, len as u32)?;
+    put32(data, at + 8, nameoff as u32)?;
+    Ok(at + 12)
+}
+pub(crate) fn add_mem_rsv(data: &mut [u8], address: u64, size: u64) -> Result<()> {
+    let h = rw_probe(data)?;
+    let at = h.off_mem_rsvmap + num_mem_rsv(data)? as usize * 16;
+    splice_reserve(data, at, 0, 16)?;
+    put64(data, at, address)?;
+    put64(data, at + 8, size)
+}
+pub(crate) fn del_mem_rsv(data: &mut [u8], index: i32) -> Result<()> {
+    let h = rw_probe(data)?;
+    if index < 0 || index >= num_mem_rsv(data)? {
+        return Err(Error::NotFound);
+    }
+    splice_reserve(data, h.off_mem_rsvmap + index as usize * 16, 16, 0)
+}
+pub(crate) fn set_name(data: &mut [u8], node: i32, name: &[u8]) -> Result<()> {
+    rw_probe(data)?;
+    let old = get_name(data, node)?.len();
+    let at = struct_abs(data, node + 4, old + 1)?;
+    splice_struct(data, at, align(old + 1, 4)?, align(name.len() + 1, 4)?)?;
+    put(data, at, name)?;
+    data[at + name.len()] = 0;
+    Ok(())
+}
+pub(crate) fn setprop_placeholder<'a>(
+    data: &'a mut [u8],
+    node: i32,
+    name: &[u8],
+    len: usize,
+) -> Result<&'a mut [u8]> {
+    rw_probe(data)?;
+    if len > i32::MAX as usize {
+        return Err(Error::NoSpace);
+    }
+    let at = match get_property(data, node, name) {
+        Ok(prop) => {
+            let at = prop.data_offset;
+            let old = prop.data.len();
+            splice_struct(data, at, align(old, 4)?, align(len, 4)?)?;
+            put32(data, at - 8, len as u32)?;
+            at
+        }
+        Err(Error::NotFound) => add_property(data, node, name, len)?,
+        Err(err) => return Err(err),
+    };
+    Ok(&mut data[at..at + len])
+}
+pub(crate) fn setprop(data: &mut [u8], node: i32, name: &[u8], value: &[u8]) -> Result<()> {
+    setprop_placeholder(data, node, name, value.len())?.copy_from_slice(value);
+    Ok(())
+}
+pub(crate) fn appendprop(data: &mut [u8], node: i32, name: &[u8], value: &[u8]) -> Result<()> {
+    rw_probe(data)?;
+    match get_property(data, node, name) {
+        Ok(prop) => {
+            let at = prop.data_offset;
+            let old = prop.data.len();
+            let len = old.checked_add(value.len()).ok_or(Error::NoSpace)?;
+            splice_struct(data, at, align(old, 4)?, align(len, 4)?)?;
+            put32(data, at - 8, len as u32)?;
+            put(data, at + old, value)
+        }
+        Err(_) => {
+            let at = add_property(data, node, name, value.len())?;
+            put(data, at, value)
+        }
     }
 }
-
-unsafe fn fdt_rw_probe_(fdt: *mut core::ffi::c_void) -> i32 {
-    if can_assume(VALID_DTB) { return 0; }
-    FDT_RO_PROBE!(fdt);
-    if !can_assume(LATEST) && fdt_version(fdt) < 17 { return -FDT_ERR_BADVERSION; }
-    if fdt_blocks_misordered_(fdt, core::mem::size_of::<fdt_reserve_entry>() as i32,
-                              fdt_size_dt_struct(fdt)) != 0 { return -FDT_ERR_BADLAYOUT; }
-    fdt_downgrade_version(fdt);
-    0
+pub(crate) fn delprop(data: &mut [u8], node: i32, name: &[u8]) -> Result<()> {
+    rw_probe(data)?;
+    let prop = get_property(data, node, name)?;
+    let at = prop.data_offset - 12;
+    let len = 12 + align(prop.data.len(), 4)?;
+    splice_struct(data, at, len, 0)
 }
-
-#[inline]
-unsafe fn fdt_data_size_(fdt: *mut core::ffi::c_void) -> u32 {
-    (fdt_off_dt_strings(fdt) + fdt_size_dt_strings(fdt)) as u32
+pub(crate) fn add_subnode(data: &mut [u8], parent: i32, name: &[u8]) -> Result<i32> {
+    rw_probe(data)?;
+    match subnode_offset(data, parent, name) {
+        Ok(_) => return Err(Error::Exists),
+        Err(Error::NotFound) => {}
+        Err(err) => return Err(err),
+    }
+    let mut next = check_node_offset(data, parent)?;
+    let offset = loop {
+        let at = next;
+        let (tag, result) = next_tag(data, at);
+        if tag != FDT_PROP && tag != FDT_NOP {
+            break at;
+        }
+        next = result?;
+    };
+    let at = struct_abs(data, offset, 0)?;
+    let namelen = align(name.len() + 1, 4)?;
+    let len = 8 + namelen;
+    splice_struct(data, at, 0, len)?;
+    put32(data, at, FDT_BEGIN_NODE)?;
+    data[at + 4..at + 4 + namelen].fill(0);
+    put(data, at + 4, name)?;
+    put32(data, at + 4 + namelen, FDT_END_NODE)?;
+    Ok(offset)
 }
-
-unsafe fn fdt_splice_(fdt: *mut core::ffi::c_void, splicepoint: *mut core::ffi::c_void,
-                      oldlen: i32, newlen: i32) -> i32 {
-    let p = splicepoint as *mut u8;
-    let dsize = fdt_data_size_(fdt) as usize;
-    let soff = p.offset_from(fdt as *mut u8) as usize;
-    if oldlen < 0 || soff + oldlen as usize < soff || soff + oldlen as usize > dsize { return -FDT_ERR_BADOFFSET; }
-    if (p as usize) < (fdt as usize) || dsize + newlen as usize < oldlen as usize { return -FDT_ERR_BADOFFSET; }
-    if dsize - oldlen as usize + newlen as usize > fdt_totalsize(fdt) as usize { return -FDT_ERR_NOSPACE; }
-    memmove(p.add(newlen as usize), p.add(oldlen as usize), dsize - soff - oldlen as usize);
-    0
+pub(crate) fn del_node(data: &mut [u8], node: i32) -> Result<()> {
+    rw_probe(data)?;
+    let end = node_end_offset(data, node)?;
+    splice_struct(data, struct_abs(data, node, 0)?, (end - node) as usize, 0)
 }
-
-unsafe fn fdt_splice_mem_rsv_(fdt: *mut core::ffi::c_void, p: *mut fdt_reserve_entry, oldn: i32, newn: i32) -> i32 {
-    let delta = (newn - oldn) * core::mem::size_of::<fdt_reserve_entry>() as i32;
-    let err = fdt_splice_(fdt, p as *mut _, oldn * core::mem::size_of::<fdt_reserve_entry>() as i32,
-                          newn * core::mem::size_of::<fdt_reserve_entry>() as i32);
-    if err != 0 { return err; }
-    fdt_set_off_dt_struct(fdt, fdt_off_dt_struct(fdt) + delta);
-    fdt_set_off_dt_strings(fdt, fdt_off_dt_strings(fdt) + delta);
-    0
+fn packblocks(data: &[u8], dest: &mut [u8], reserve: usize, structure: usize) -> Result<()> {
+    let h = Header::read(data)?;
+    let structoff = 40 + reserve;
+    let stringoff = structoff + structure;
+    put(dest, 40, bytes(data, h.off_mem_rsvmap, reserve)?)?;
+    put32(dest, 16, 40)?;
+    put(dest, structoff, bytes(data, h.off_dt_struct, structure)?)?;
+    put32(dest, 8, structoff as u32)?;
+    put32(dest, 36, structure as u32)?;
+    put(
+        dest,
+        stringoff,
+        bytes(data, h.off_dt_strings, h.size_dt_strings)?,
+    )?;
+    put32(dest, 12, stringoff as u32)?;
+    put32(dest, 32, h.size_dt_strings as u32)
 }
-
-unsafe fn fdt_splice_struct_(fdt: *mut core::ffi::c_void, p: *mut core::ffi::c_void, oldlen: i32, newlen: i32) -> i32 {
-    let delta = newlen - oldlen;
-    let err = fdt_splice_(fdt, p, oldlen, newlen);
-    if err != 0 { return err; }
-    fdt_set_size_dt_struct(fdt, fdt_size_dt_struct(fdt) + delta);
-    fdt_set_off_dt_strings(fdt, fdt_off_dt_strings(fdt) + delta);
-    0
+pub(crate) fn open_into(data: &[u8], dest: &mut [u8]) -> Result<()> {
+    let h = ro_probe(data)?;
+    if dest.len() > i32::MAX as usize {
+        return Err(Error::NoSpace);
+    }
+    let reserve = (num_mem_rsv(data)? as usize + 1) * 16;
+    let structure = if h.version >= 17 {
+        h.size_dt_struct
+    } else if h.version == 16 {
+        let mut at = 0;
+        loop {
+            let (tag, next) = next_tag(data, at);
+            at = next?;
+            if tag == FDT_END {
+                break at as usize;
+            }
+        }
+    } else {
+        return Err(Error::BadVersion);
+    };
+    if !blocks_misordered(h, reserve, structure) {
+        move_into(data, dest)?;
+        put32(dest, 20, 17)?;
+        put32(dest, 36, structure as u32)?;
+        return put32(dest, 4, dest.len() as u32);
+    }
+    let size = 40usize
+        .checked_add(reserve)
+        .and_then(|n| n.checked_add(structure))
+        .and_then(|n| n.checked_add(h.size_dt_strings))
+        .ok_or(Error::NoSpace)?;
+    if dest.len() < size {
+        return Err(Error::NoSpace);
+    }
+    packblocks(data, dest, reserve, structure)?;
+    put32(dest, 0, FDT_MAGIC)?;
+    put32(dest, 4, dest.len() as u32)?;
+    put32(dest, 20, 17)?;
+    put32(dest, 24, 16)?;
+    put32(dest, 28, h.boot_cpuid_phys)
 }
-
-unsafe fn fdt_del_last_string_(fdt: *mut core::ffi::c_void, s: *const i8) {
-    fdt_set_size_dt_strings(fdt, fdt_size_dt_strings(fdt) - (strlen(s) as i32 + 1));
+pub(crate) fn open_inplace(data: &mut [u8]) -> Result<()> {
+    let h = ro_probe(data)?;
+    let reserve = (num_mem_rsv(data)? as usize + 1) * 16;
+    let structure = if h.version >= 17 {
+        h.size_dt_struct
+    } else if h.version == 16 {
+        let mut at = 0;
+        loop {
+            let (tag, next) = next_tag(data, at);
+            at = next?;
+            if tag == FDT_END {
+                break at as usize;
+            }
+        }
+    } else {
+        return Err(Error::BadVersion);
+    };
+    let old = data.to_vec();
+    if !blocks_misordered(h, reserve, structure) {
+        return open_into(&old, data);
+    }
+    let size = 40usize
+        .checked_add(reserve)
+        .and_then(|v| v.checked_add(structure))
+        .and_then(|v| v.checked_add(h.size_dt_strings))
+        .ok_or(Error::NoSpace)?;
+    let end = h.totalsize.checked_add(size).ok_or(Error::NoSpace)?;
+    if end > data.len() {
+        return Err(Error::NoSpace);
+    }
+    // The C in-place API stages reordered blocks after the old blob. Keep
+    // its documented scratch-space requirement and byte-level side effects.
+    packblocks(&old, &mut data[h.totalsize..], reserve, structure)?;
+    data.copy_within(h.totalsize..end, 0);
+    put32(data, 0, FDT_MAGIC)?;
+    put32(data, 4, data.len() as u32)?;
+    put32(data, 20, 17)?;
+    put32(data, 24, 16)
 }
-
-unsafe fn fdt_splice_string_(fdt: *mut core::ffi::c_void, newlen: i32) -> i32 {
-    let p = (fdt as *mut u8).add((fdt_off_dt_strings(fdt) + fdt_size_dt_strings(fdt)) as usize) as *mut _;
-    let err = fdt_splice_(fdt, p, 0, newlen);
-    if err != 0 { return err; }
-    fdt_set_size_dt_strings(fdt, fdt_size_dt_strings(fdt) + newlen);
-    0
+pub(crate) fn pack(data: &mut [u8]) -> Result<()> {
+    let h = rw_probe(data)?;
+    let reserve = (num_mem_rsv(data)? as usize + 1) * 16;
+    let old = data.to_vec();
+    packblocks(&old, data, reserve, h.size_dt_struct)?;
+    put32(
+        data,
+        4,
+        (40 + reserve + h.size_dt_struct + h.size_dt_strings) as u32,
+    )
 }
-
-unsafe fn fdt_find_add_string_(fdt: *mut core::ffi::c_void, s: *const i8, slen: i32, allocated: *mut i32) -> i32 {
-    let strtab = (fdt as *mut u8).add(fdt_off_dt_strings(fdt) as usize) as *mut i8;
-    if !can_assume(NO_ROLLBACK) { *allocated = 0; }
-    let p = fdt_find_string_len_(strtab, fdt_size_dt_strings(fdt), s, slen);
-    if !p.is_null() { return p.offset_from(strtab) as i32; }
-    let new = strtab.add(fdt_size_dt_strings(fdt) as usize);
-    let err = fdt_splice_string_(fdt, slen + 1);
-    if err != 0 { return err; }
-    if !can_assume(NO_ROLLBACK) { *allocated = 1; }
-    memcpy(new as *mut _, s as *const _, slen as usize);
-    *new.add(slen as usize) = 0;
-    new.offset_from(strtab) as i32
-}
-
-pub unsafe fn fdt_add_mem_rsv(fdt: *mut core::ffi::c_void, address: u64, size: u64) -> i32 {
-    FDT_RW_PROBE!(fdt);
-    let re = fdt_mem_rsv_w_(fdt, fdt_num_mem_rsv(fdt));
-    let err = fdt_splice_mem_rsv_(fdt, re, 0, 1);
-    if err != 0 { return err; }
-    (*re).address = cpu_to_fdt64(address); (*re).size = cpu_to_fdt64(size); 0
-}
-
-pub unsafe fn fdt_del_mem_rsv(fdt: *mut core::ffi::c_void, n: i32) -> i32 {
-    let re = fdt_mem_rsv_w_(fdt, n);
-    FDT_RW_PROBE!(fdt);
-    if n >= fdt_num_mem_rsv(fdt) { return -FDT_ERR_NOTFOUND; }
-    fdt_splice_mem_rsv_(fdt, re, 1, 0)
-}
-
-unsafe fn fdt_resize_property_(fdt: *mut core::ffi::c_void, nodeoffset: i32, name: *const i8, namelen: i32, len: i32, prop: *mut *mut fdt_property) -> i32 {
-    let mut oldlen = 0; *prop = fdt_get_property_namelen_w(fdt, nodeoffset, name, namelen, &mut oldlen);
-    if (*prop).is_null() { return oldlen; }
-    let err = fdt_splice_struct_(fdt, (*prop).as_ref().unwrap().data.as_ptr() as *mut _, FDT_TAGALIGN(oldlen), FDT_TAGALIGN(len));
-    if err != 0 { return err; } (**prop).len = cpu_to_fdt32(len as u32); 0
-}
-
-unsafe fn fdt_add_property_(fdt: *mut core::ffi::c_void, nodeoffset: i32, name: *const i8, namelen: i32, len: i32, prop: *mut *mut fdt_property) -> i32 {
-    let nextoffset = fdt_check_node_offset_(fdt, nodeoffset); if nextoffset < 0 { return nextoffset; }
-    let mut allocated = 0; let namestroff = fdt_find_add_string_(fdt, name, namelen, &mut allocated); if namestroff < 0 { return namestroff; }
-    *prop = fdt_offset_ptr_w_(fdt, nextoffset); let proplen = core::mem::size_of::<fdt_property>() as i32 + FDT_TAGALIGN(len);
-    let err = fdt_splice_struct_(fdt, *prop as *mut _, 0, proplen);
-    if err != 0 { if !can_assume(NO_ROLLBACK) && allocated != 0 { fdt_del_last_string_(fdt, name); } return err; }
-    (**prop).tag = cpu_to_fdt32(FDT_PROP); (**prop).nameoff = cpu_to_fdt32(namestroff as u32); (**prop).len = cpu_to_fdt32(len as u32); 0
-}
-
-pub unsafe fn fdt_set_name(fdt: *mut core::ffi::c_void, nodeoffset: i32, name: *const i8) -> i32 {
-    FDT_RW_PROBE!(fdt); let mut oldlen = 0; let namep = fdt_get_name(fdt, nodeoffset, &mut oldlen) as *mut i8; if namep.is_null() { return oldlen; }
-    let newlen = strlen(name) as i32; let err = fdt_splice_struct_(fdt, namep as *mut _, FDT_TAGALIGN(oldlen + 1), FDT_TAGALIGN(newlen + 1)); if err != 0 { return err; }
-    memcpy(namep as *mut _, name as *const _, (newlen + 1) as usize); 0
-}
-
-pub unsafe fn fdt_setprop_placeholder_namelen(fdt: *mut core::ffi::c_void, nodeoffset: i32, name: *const i8, namelen: i32, len: i32, prop_data: *mut *mut core::ffi::c_void) -> i32 {
-    FDT_RW_PROBE!(fdt); let mut prop = core::ptr::null_mut(); let mut err = fdt_resize_property_(fdt,nodeoffset,name,namelen,len,&mut prop);
-    if err == -FDT_ERR_NOTFOUND { err = fdt_add_property_(fdt,nodeoffset,name,namelen,len,&mut prop); } if err != 0 { return err; } *prop_data = (*prop).data.as_mut_ptr() as *mut _; 0
-}
-
-pub unsafe fn fdt_setprop_namelen(fdt:*mut core::ffi::c_void,nodeoffset:i32,name:*const i8,namelen:i32,val:*const core::ffi::c_void,len:i32)->i32 { let mut p=core::ptr::null_mut(); let err=fdt_setprop_placeholder_namelen(fdt,nodeoffset,name,namelen,len,&mut p); if err!=0{return err;} if len!=0{memcpy(p,val,len as usize);} 0 }
-
-pub unsafe fn fdt_appendprop(fdt:*mut core::ffi::c_void,nodeoffset:i32,name:*const i8,val:*const core::ffi::c_void,len:i32)->i32 { FDT_RW_PROBE!(fdt); let mut oldlen=0; let mut prop=fdt_get_property_w(fdt,nodeoffset,name,&mut oldlen); if !prop.is_null(){let newlen=len+oldlen;let err=fdt_splice_struct_(fdt,(*prop).data.as_mut_ptr() as *mut _,FDT_TAGALIGN(oldlen),FDT_TAGALIGN(newlen));if err!=0{return err;}(*prop).len=cpu_to_fdt32(newlen as u32);memcpy((*prop).data.as_mut_ptr().add(oldlen as usize) as *mut _,val,len as usize);}else{let err=fdt_add_property_(fdt,nodeoffset,name,strlen(name) as i32,len,&mut prop);if err!=0{return err;}memcpy((*prop).data.as_mut_ptr() as *mut _,val,len as usize);}0 }
-
-pub unsafe fn fdt_delprop(fdt:*mut core::ffi::c_void,nodeoffset:i32,name:*const i8)->i32 { FDT_RW_PROBE!(fdt); let mut len=0; let prop=fdt_get_property_w(fdt,nodeoffset,name,&mut len);if prop.is_null(){return len;} fdt_splice_struct_(fdt,prop as *mut _,core::mem::size_of::<fdt_property>() as i32+FDT_TAGALIGN(len),0) }
-
-pub unsafe fn fdt_add_subnode_namelen(fdt:*mut core::ffi::c_void,parentoffset:i32,name:*const i8,namelen:i32)->i32 { FDT_RW_PROBE!(fdt); let mut offset=fdt_subnode_offset_namelen(fdt,parentoffset,name,namelen);if offset>=0{return -FDT_ERR_EXISTS;}if offset!=-FDT_ERR_NOTFOUND{return offset;}let mut nextoffset=0;let mut tag=fdt_next_tag(fdt,parentoffset,&mut nextoffset);if !can_assume(LIBFDT_FLAWLESS)&&tag!=FDT_BEGIN_NODE{return -FDT_ERR_INTERNAL;}loop{offset=nextoffset;tag=fdt_next_tag(fdt,offset,&mut nextoffset);if tag!=FDT_PROP&&tag!=FDT_NOP{break;}}let nh=fdt_offset_ptr_w_(fdt,offset);let nodelen=core::mem::size_of::<fdt_node_header>() as i32+FDT_TAGALIGN(namelen+1)+FDT_TAGSIZE;let err=fdt_splice_struct_(fdt,nh as *mut _,0,nodelen);if err!=0{return err;}(*nh).tag=cpu_to_fdt32(FDT_BEGIN_NODE);memset((*nh).name.as_mut_ptr() as *mut _,0,FDT_TAGALIGN(namelen+1) as usize);memcpy((*nh).name.as_mut_ptr() as *mut _,name,namelen as usize);let endtag=(nh as *mut u8).add((nodelen-FDT_TAGSIZE) as usize) as *mut u32;*endtag=cpu_to_fdt32(FDT_END_NODE);offset }
-
-pub unsafe fn fdt_add_subnode(fdt:*mut core::ffi::c_void,parentoffset:i32,name:*const i8)->i32 { fdt_add_subnode_namelen(fdt,parentoffset,name,strlen(name) as i32) }
-
-pub unsafe fn fdt_del_node(fdt:*mut core::ffi::c_void,nodeoffset:i32)->i32 { FDT_RW_PROBE!(fdt);let endoffset=fdt_node_end_offset_(fdt,nodeoffset);if endoffset<0{return endoffset;}fdt_splice_struct_(fdt,fdt_offset_ptr_w_(fdt,nodeoffset) as *mut _,endoffset-nodeoffset,0) }
-
-unsafe fn fdt_packblocks_(old:*const i8,new:*mut i8,mem_rsv_size:i32,struct_size:i32,strings_size:i32) { let mem_rsv_off=FDT_ALIGN(core::mem::size_of::<fdt_header>() as i32,8);let struct_off=mem_rsv_off+mem_rsv_size;let strings_off=struct_off+struct_size;memmove(new.add(mem_rsv_off as usize) as *mut _,(old as *mut i8).add(fdt_off_mem_rsvmap(old) as usize) as *const _,mem_rsv_size as usize);fdt_set_off_mem_rsvmap(new as *mut _,mem_rsv_off);memmove(new.add(struct_off as usize) as *mut _,(old as *mut i8).add(fdt_off_dt_struct(old) as usize) as *const _,struct_size as usize);fdt_set_off_dt_struct(new as *mut _,struct_off);fdt_set_size_dt_struct(new as *mut _,struct_size);memmove(new.add(strings_off as usize) as *mut _,(old as *mut i8).add(fdt_off_dt_strings(old) as usize) as *const _,strings_size as usize);fdt_set_off_dt_strings(new as *mut _,strings_off);fdt_set_size_dt_strings(new as *mut _,fdt_size_dt_strings(old)); }
-
-pub unsafe fn fdt_open_into(fdt:*const core::ffi::c_void,buf:*mut core::ffi::c_void,bufsize:i32)->i32 { FDT_RO_PROBE!(fdt);let mem_rsv_size=(fdt_num_mem_rsv(fdt)+1)*core::mem::size_of::<fdt_reserve_entry>() as i32;let struct_size;if can_assume(LATEST)||fdt_version(fdt)>=17{struct_size=fdt_size_dt_struct(fdt);}else if fdt_version(fdt)==16{let mut s=0;while fdt_next_tag(fdt,s,&mut s)!=FDT_END{}if s<0{return s;}struct_size=s;}else{return -FDT_ERR_BADVERSION;}if can_assume(LIBFDT_ORDER)||fdt_blocks_misordered_(fdt,mem_rsv_size,struct_size)==0{let err=fdt_move(fdt,buf,bufsize);if err!=0{return err;}fdt_set_version(buf,17);fdt_set_size_dt_struct(buf,struct_size);fdt_set_totalsize(buf,bufsize);return 0;}let newsize=FDT_ALIGN(core::mem::size_of::<fdt_header>() as i32,8)+mem_rsv_size+struct_size+fdt_size_dt_strings(fdt);if bufsize<newsize{return -FDT_ERR_NOSPACE;}let fdtstart=fdt as *const i8;let fdtend=fdtstart.add(fdt_totalsize(fdt) as usize);let mut tmp=buf as *mut i8;if tmp.add(newsize as usize)>fdtstart as *mut i8&&tmp<fdtend as *mut i8{tmp=fdtend as *mut i8;if tmp.add(newsize as usize)> (buf as *mut i8).add(bufsize as usize){return -FDT_ERR_NOSPACE;}}fdt_packblocks_(fdt,tmp,mem_rsv_size,struct_size,fdt_size_dt_strings(fdt));memmove(buf,tmp as *const _,newsize as usize);fdt_set_magic(buf,FDT_MAGIC);fdt_set_totalsize(buf,bufsize);fdt_set_version(buf,17);fdt_set_last_comp_version(buf,16);fdt_set_boot_cpuid_phys(buf,fdt_boot_cpuid_phys(fdt));0 }
-
-pub unsafe fn fdt_pack(fdt:*mut core::ffi::c_void)->i32 { FDT_RW_PROBE!(fdt);let mem_rsv_size=(fdt_num_mem_rsv(fdt)+1)*core::mem::size_of::<fdt_reserve_entry>() as i32;fdt_packblocks_(fdt as *const _,fdt as *mut _,mem_rsv_size,fdt_size_dt_struct(fdt),fdt_size_dt_strings(fdt));fdt_set_totalsize(fdt,fdt_data_size_(fdt) as i32);0 }
-
-// SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

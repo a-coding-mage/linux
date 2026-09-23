@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+# Shared library discovery for the Rust signing and certificate host tools.
+# Only headers are probed by the C compiler; no C shim or algorithm is built.
+openssl-host-cflags = $(shell $(HOSTPKG_CONFIG) --cflags libcrypto 2> /dev/null)
+openssl-host-ldlibs = $(shell $(HOSTPKG_CONFIG) --libs libcrypto 2> /dev/null || echo -lcrypto)
+openssl-host-rustflags = $(shell $(PYTHON3) $(srctree)/scripts/openssl_config.py \
+	--cc='$(call escsq,$(HOSTCC))' \
+	--cflags='$(call escsq,$(openssl-host-cflags))') \
+	-Clink-args='$(call escsq,$(openssl-host-ldlibs))'

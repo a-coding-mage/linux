@@ -30,13 +30,13 @@ pub enum module_signature_type {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct module_signature {
-    pub algo: u8,          /* Public-key crypto algorithm [0] */
-    pub hash: u8,          /* Digest algorithm [0] */
-    pub id_type: u8,       /* Key identifier type [enum module_signature_type] */
-    pub signer_len: u8,    /* Length of signer's name [0] */
-    pub key_id_len: u8,    /* Length of key identifier [0] */
+    pub algo: u8,       /* Public-key crypto algorithm [0] */
+    pub hash: u8,       /* Digest algorithm [0] */
+    pub id_type: u8,    /* Key identifier type [enum module_signature_type] */
+    pub signer_len: u8, /* Length of signer's name [0] */
+    pub key_id_len: u8, /* Length of key identifier [0] */
     pub __pad: [u8; 3],
-    pub sig_len: u32,      /* Length of signature data, big-endian __be32 */
+    pub sig_len: u32, /* Length of signature data, big-endian __be32 */
 }
 
 // SOURCE-COMMIT: 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

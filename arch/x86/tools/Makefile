@@ -42,7 +42,9 @@ HOST_EXTRACFLAGS += -I$(srctree)/tools/include -I$(srctree)/include/uapi \
 		    -I$(srctree)/arch/$(SUBARCH)/include/uapi
 
 hostprogs	+= relocs vdso2c
-relocs-objs	:= relocs_32.o relocs_64.o relocs_common.o
+relocs-rust	:= y
+HOSTRUSTFLAGS_relocs += --check-cfg='cfg(CONFIG_FW_LOADER)'
+vdso2c-rust	:= y
 
 always-y	:= $(hostprogs)
 
