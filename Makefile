@@ -1556,6 +1556,7 @@ rust-host-tools: outputmakefile scripts_basic
 	$(Q)$(MAKE) $(build)=scripts/mod MODPOST_NO_OFFSETS=y \
 		hostprogs='modpost mk_elfconfig' scripts/mod/modpost scripts/mod/mk_elfconfig
 	$(Q)$(MAKE) $(build)=scripts/selinux/mdp scripts/selinux/mdp/mdp
+	$(Q)$(MAKE) $(build)=security/selinux security/selinux/genheaders
 	$(Q)$(MAKE) $(build)=scripts/ipe/polgen scripts/ipe/polgen/polgen
 	$(Q)$(MAKE) $(build)=scripts/kconfig scripts/kconfig/conf
 	$(Q)$(MAKE) $(build)=scripts/genksyms scripts/genksyms/genksyms
@@ -1588,6 +1589,7 @@ rust-host-tools: outputmakefile scripts_basic
 	$(Q)$(MAKE) $(build)=arch/x86/boot arch/x86/boot/mkcpustr
 	$(Q)$(MAKE) $(build)=lib/raid/raid6 lib/raid/raid6/mktables
 	$(Q)$(MAKE) $(build)=lib/crc lib/crc/gen_crc32table lib/crc/gen_crc64table
+	$(Q)$(MAKE) $(build)=fs/unicode fs/unicode/mkutf8data
 
 rust-host-tests: rust-host-tools
 	$(Q)env -u MAKEFLAGS -u MFLAGS -u CARGO_MAKEFLAGS \

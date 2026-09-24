@@ -11,6 +11,7 @@ uses a non-GPL module license to verify the original unrestricted export.
 
 import argparse
 import os
+from check_module_metadata import selected_metadata, verify_module_metadata
 from pathlib import Path
 import re
 import shlex
@@ -312,10 +313,10 @@ def verify_linked_implementation(build, selection):
             continue
         module = build / (stem + ".ko")
         verify_module(build, module, constituent, name, arch)
-        newer(module, [module.with_suffix(".mod.c")])
+        newer(module, [selected_metadata(build, module)])
         if name == "rational_kunit":
             verify_references(module, (SYMBOL, *KUNIT_IMPORTS))
-            verify_import_versions(build, module.with_suffix(".mod.c"), (SYMBOL, *KUNIT_IMPORTS), versions)
+            verify_import_versions(build, selected_metadata(build, module), (SYMBOL, *KUNIT_IMPORTS), versions)
         modules.append(module)
     newer(build / "Module.symvers", [owner, test_object])
     newer(build / "vmlinux.o", [archive])
@@ -420,7 +421,7 @@ def verify_consumer(build, work, caller):
     verify_build_command(work, obj, obj.with_suffix(".rs" if caller == "rust" else ".c"), required)
     reference = work / "rational_reference.o"
     verify_build_command(work, reference, reference.with_suffix(".c"), [ROOT / "lib/math/rational.c", ROOT / "include/linux/rational.h"])
-    generated = module.with_suffix(".mod.c")
+    generated = selected_metadata(build, module)
     newer(module, [generated, obj, reference])
     verify_import_versions(build, generated, (SYMBOL,))
     require_metadata_field(metadata_fields(module), b"license", b"GPL" if caller == "rust" else b"Proprietary")
@@ -445,7 +446,9 @@ def verify_private_c_fixture(build, work, arch):
     need deleting after link. All normal kernel compiler flags remain intact.
     """
     main = work / "rational_c_main.o"
-    objects = [main, work / "rational_reference.o", work / "rational_abi.mod.o"]
+    verify_module_metadata(build, work / "rational_abi.ko", work=work, require_c_suppression=True,
+                           c_flags=compilation_flags, c_exports=read_exports)
+    objects = [main, work / "rational_reference.o"]
     for obj in objects:
         flags = compilation_flags(obj)
         if "-D__DISABLE_EXPORTS" not in flags or "-U__DISABLE_EXPORTS" in flags:
@@ -454,7 +457,7 @@ def verify_private_c_fixture(build, work, arch):
     verify_common_metadata(build, work, flags=compilation_flags, exports=read_exports)
     module = work / "rational_abi.ko"
     if read_exports(module): raise ValueError("private rational module unexpectedly exports symbols")
-    newer(module, [*objects, work / ".module-common.o"])
+    newer(module, [*objects, work / "rational_abi.mod.o", work / ".module-common.o"])
     if configuration(build).get("CFI") != "y": return
     flags = compilation_flags(main)
     if "-fsanitize=kcfi" not in flags or any(flag.startswith("-fno-sanitize=") and

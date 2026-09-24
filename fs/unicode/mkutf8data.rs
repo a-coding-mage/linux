@@ -1,129 +1,212 @@
-/*
- * Copyright (c) 2014 SGI.
- * Generator for a compact trie for unicode normalization.
- *
- * This is a low-level Rust translation of mkutf8data.c.  The original
- * generator uses C allocation and callback based tree construction; raw
- * pointers are retained here to preserve that interface and layout.
- */
-
-use std::ffi::{CStr, CString};
-use std::os::raw::{c_char, c_int, c_uint, c_void};
-use std::ptr::{null, null_mut};
-
-pub type Utf8Trie = u8;
-pub type Utf8Leaf = u8;
-
-pub const AGE_NAME: &str = "DerivedAge.txt";
-pub const CCC_NAME: &str = "DerivedCombiningClass.txt";
-pub const PROP_NAME: &str = "DerivedCoreProperties.txt";
-pub const DATA_NAME: &str = "UnicodeData.txt";
-pub const FOLD_NAME: &str = "CaseFolding.txt";
-pub const NORM_NAME: &str = "NormalizationCorrections.txt";
-pub const TEST_NAME: &str = "NormalizationTest.txt";
-pub const UTF8_NAME: &str = "utf8data.c";
-pub const LINESIZE: usize = 1024;
-pub const BITNUM: u8 = 0x07;
-pub const NEXTBYTE: u8 = 0x08;
-pub const OFFLEN: u8 = 0x30;
-pub const OFFLEN_SHIFT: u8 = 4;
-pub const RIGHTPATH: u8 = 0x40;
-pub const TRIENODE: u8 = 0x80;
-pub const RIGHTNODE: u8 = 0x40;
-pub const LEFTNODE: u8 = 0x80;
-pub const NODE: c_int = 1;
-pub const LEAF: c_int = 0;
-pub const STOPPER: c_int = 0;
-pub const DECOMPOSE: u8 = 255;
-pub const HANGUL: u8 = 255;
-pub const UTF8HANGULLEAF: usize = 12;
-
-pub static mut age_name: *const c_char = AGE_NAME.as_ptr() as *const c_char;
-pub static mut ccc_name: *const c_char = CCC_NAME.as_ptr() as *const c_char;
-pub static mut prop_name: *const c_char = PROP_NAME.as_ptr() as *const c_char;
-pub static mut data_name: *const c_char = DATA_NAME.as_ptr() as *const c_char;
-pub static mut fold_name: *const c_char = FOLD_NAME.as_ptr() as *const c_char;
-pub static mut norm_name: *const c_char = NORM_NAME.as_ptr() as *const c_char;
-pub static mut test_name: *const c_char = TEST_NAME.as_ptr() as *const c_char;
-pub static mut utf8_name: *const c_char = UTF8_NAME.as_ptr() as *const c_char;
-pub static mut verbose: c_int = 0;
-pub static mut ages: *mut c_uint = null_mut();
-pub static mut ages_count: c_int = 0;
-pub static mut unicode_maxage: c_uint = 0;
-pub static mut utf8data: *mut u8 = null_mut();
-pub static mut utf8data_size: usize = 0;
-pub static mut nfdi: *mut u8 = null_mut();
-pub static mut nfdicf: *mut u8 = null_mut();
-
-#[repr(C)]
-pub struct Tree {
-    pub root: *mut c_void, pub childnode: c_int, pub kind: *const c_char,
-    pub maxage: c_uint, pub next: *mut Tree,
-    pub leaf_equal: Option<unsafe extern "C" fn(*mut c_void,*mut c_void)->c_int>,
-    pub leaf_print: Option<unsafe extern "C" fn(*mut c_void,c_int)>,
-    pub leaf_mark: Option<unsafe extern "C" fn(*mut c_void)->c_int>,
-    pub leaf_size: Option<unsafe extern "C" fn(*mut c_void)->c_int>,
-    pub leaf_index: Option<unsafe extern "C" fn(*mut Tree,*mut c_void)->*mut c_int>,
-    pub leaf_emit: Option<unsafe extern "C" fn(*mut c_void,*mut u8)->*mut u8>,
-    pub leafindex: [c_int; 0x110000], pub index: c_int,
-}
-#[repr(C)]
-pub struct Node {
-    pub index:c_int, pub offset:c_int, pub mark:c_int, pub size:c_int,
-    pub parent:*mut Node, pub left:*mut c_void, pub right:*mut c_void,
-    pub bitnum:u8, pub nextbyte:u8, pub leftnode:u8, pub rightnode:u8,
-    pub keybits:c_uint, pub keymask:c_uint,
-}
-#[repr(C)]
-pub struct UnicodeData {
-    pub code:c_uint, pub ccc:c_int, pub gen:c_int, pub correction:c_int,
-    pub utf32nfdi:*mut c_uint, pub utf32nfdicf:*mut c_uint,
-    pub utf8nfdi:*mut c_char, pub utf8nfdicf:*mut c_char,
-}
-#[repr(C)]
-pub struct Utf8Cursor {
-    pub tree:*mut Tree, pub s:*const c_char, pub p:*const c_char,
-    pub ss:*const c_char, pub sp:*const c_char, pub len:c_uint, pub slen:c_uint,
-    pub ccc:i16, pub nccc:i16, pub unichar:c_uint, pub hangul:[u8;UTF8HANGULLEAF],
-}
-
-#[inline] pub unsafe fn leaf_gen(p:*const u8)->u8{*p}
-#[inline] pub unsafe fn leaf_ccc(p:*const u8)->u8{*p.add(1)}
-#[inline] pub unsafe fn leaf_str(p:*const u8)->*const c_char{p.add(2) as *const c_char}
-pub unsafe fn age_valid(a:c_uint,b:c_uint,c:c_uint)->c_int{(a<=65535 && b<=255 && c<=255) as c_int}
-pub unsafe fn utf32valid(u:c_uint)->c_int{(u<0x110000) as c_int}
-pub unsafe fn utf8encode(s:*mut c_char, mut v:c_uint)->c_int {
-    if v<0x80 {*s=v as c_char;1} else if v<0x800 { *s.add(1)=((v&63)|128) as c_char; v>>=6; *s=(v|0xc0) as c_char;2 }
-    else if v<0x10000 { *s.add(2)=((v&63)|128) as c_char;v>>=6;*s.add(1)=((v&63)|128) as c_char;v>>=6;*s=(v|0xe0) as c_char;3 }
-    else if v<0x110000 { *s.add(3)=((v&63)|128) as c_char;v>>=6;*s.add(2)=((v&63)|128) as c_char;v>>=6;*s.add(1)=((v&63)|128) as c_char;v>>=6;*s=(v|0xf0) as c_char;4 } else {0}
-}
-pub unsafe fn utf8decode(s:*const c_char)->c_uint { let p=s as *const u8; if *p<0x80 {*p as c_uint} else if *p<0xe0 {(((*p&31) as c_uint)<<6)|(*p.add(1)&63) as c_uint} else if *p<0xf0 {(((*p&15) as c_uint)<<12)|(((*p.add(1)&63) as c_uint)<<6)|(*p.add(2)&63) as c_uint} else {(((*p&15) as c_uint)<<18)|(((*p.add(1)&63) as c_uint)<<12)|(((*p.add(2)&63) as c_uint)<<6)|(*p.add(3)&63) as c_uint} }
-pub unsafe fn utf8clen(s:*const c_char)->c_int { let c=*(s as *const u8); 1+(c>=0xc0) as c_int+(c>=0xe0) as c_int+(c>=0xf0) as c_int }
-pub unsafe fn hangul_syllable(u:c_uint)->bool{u>=0xac00&&u<=0xd7a3}
-
-/* External implementation hooks supplied by the generated UTF-8 runtime. */
-pub unsafe fn utf8nlookup(_: *mut Tree, _: *mut u8, _: *const c_char, _: usize)->*mut u8 { null_mut() }
-pub unsafe fn utf8lookup(t:*mut Tree,h:*mut u8,s:*const c_char)->*mut u8 { utf8nlookup(t,h,s,usize::MAX) }
-
-/* The remaining generator stages retain the C pipeline and externally visible
- * entry points.  File parsing, trie reduction, emission, verification, and
- * normalization are intentionally represented as low-level stubs pending the
- * project runtime's allocator and libc bindings. */
-pub unsafe fn age_init(){}
-pub unsafe fn ccc_init(){}
-pub unsafe fn nfdi_init(){}
-pub unsafe fn nfdicf_init(){}
-pub unsafe fn ignore_init(){}
-pub unsafe fn corrections_init(){}
-pub unsafe fn hangul_decompose(){}
-pub unsafe fn nfdi_decompose(){}
-pub unsafe fn nfdicf_decompose(){}
-pub unsafe fn utf8_init(){}
-pub unsafe fn trees_init(){}
-pub unsafe fn trees_populate(){}
-pub unsafe fn trees_reduce(){}
-pub unsafe fn trees_verify(){}
-pub unsafe fn normalization_test(){}
-pub unsafe fn write_file(){}
-
+// SPDX-License-Identifier: GPL-2.0
+// Copyright (c) 2014 SGI.
+// All rights reserved.
+//
+// This program is free software; you can redistribute it and/or modify it
+// under the terms of the GNU General Public License as published by the
+// Free Software Foundation.
+// This program is distributed in the hope that it would be useful, but
+// WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+// or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+// for more details.
+// You should have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation, Inc.,
+// 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783
+
+//! Generate and verify compact Unicode normalization tries from UCD text files.
+//!
+//! C startup preserves inherited signals and stdio. Host lexical adapters are
+//! narrow; all Unicode algorithms use owned Rust records, slices and indices.
+#![no_main]
+
+use std::ffi::{c_char, c_int, CStr};
+use std::fmt::Write as _;
+use std::os::unix::ffi::OsStrExt;
+#[path = "mkutf8data_data.rs"]
+mod data;
+#[path = "mkutf8data_io.rs"]
+mod io;
+#[path = "mkutf8data_model.rs"]
+mod model;
+#[path = "mkutf8data_trie.rs"]
+mod trie;
+#[path = "mkutf8data_verify.rs"]
+mod verify;
+use data::Inputs;
+use io::{output, Result};
+
+extern "C" {
+    fn getopt(argc: c_int, argv: *const *mut c_char, options: *const c_char) -> c_int;
+    static mut optarg: *mut c_char;
+}
+const HELP: &std::ffi::CStr = c"Usage: %s [options]\n\nThis program creates an a data trie used for parsing and\nnormalization of UTF-8 strings. The trie is derived from\na set of input files from the Unicode character database\nfound at: http://www.unicode.org/Public/UCD/latest/ucd/\n\nThe generated tree supports two normalization forms:\n\n\tnfdi:\n\t- Apply unicode normalization form NFD.\n\t- Remove any Default_Ignorable_Code_Point.\n\n\tnfdicf:\n\t- Apply unicode normalization form NFD.\n\t- Remove any Default_Ignorable_Code_Point.\n\t- Apply a full casefold (C + F).\n\nThese forms were chosen as being most useful when dealing\nwith file names: NFD catches most cases where characters\nshould be considered equivalent. The ignorables are mostly\ninvisible, making names hard to type.\n\nThe options to specify the files to be used are listed\nbelow with their default values, which are the names used\nby version 11.0.0 of the Unicode Character Database.\n\nThe input files:\n\t-a DerivedAge.txt\n\t-c DerivedCombiningClass.txt\n\t-p DerivedCoreProperties.txt\n\t-d UnicodeData.txt\n\t-f CaseFolding.txt\n\t-n NormalizationCorrections.txt\n\nAdditionally, the generated tables are tested using:\n\t-t NormalizationTest.txt\n\nFinally, the output file:\n\t-o utf8data.c\n\n";
+
+fn help(program: &CStr) {
+    let bytes = HELP.to_bytes();
+    let at = bytes
+        .windows(2)
+        .position(|w| w == b"%s")
+        .expect("help program placeholder");
+    output(&bytes[..at]);
+    output(program.to_bytes());
+    output(&bytes[at + 2..]);
+}
+
+fn hexadecimal(value: u32) -> String {
+    if value == 0 {
+        "0".into()
+    } else {
+        format!("{value:#x}")
+    }
+}
+
+fn write_file(inputs: &Inputs, db: &model::Database, forest: &trie::Forest) -> Result<()> {
+    if inputs.verbose > 0 {
+        output(b"Writing ");
+        output(inputs.output.to_bytes());
+        output(b"\n");
+    }
+    let mut file = io::File::open(&inputs.output, true)?;
+    let mut text = String::from("/* This file is generated code, do not edit. */\n\n#include <linux/module.h>\n#include <linux/kernel.h>\n#include \"utf8n.h\"\n\nstatic const unsigned int utf8agetab[] = {\n");
+    for &age in &db.ages {
+        writeln!(
+            text,
+            "\t{}{}",
+            hexadecimal(age),
+            if age == db.max_age { "" } else { "," }
+        )
+        .unwrap();
+    }
+    text.push_str("};\n\n");
+    for (name, start) in [("nfdicf", 0), ("nfdi", 1)] {
+        writeln!(text, "static const struct utf8data utf8{name}data[] = {{").unwrap();
+        let mut t = start;
+        for &age in &db.ages {
+            writeln!(
+                text,
+                "\t{{ {}, {} }}{}",
+                hexadecimal(age),
+                forest.trees[t].index,
+                if age == db.max_age { "" } else { "," }
+            )
+            .unwrap();
+            if forest.trees[t].max_age == age {
+                t += 2;
+            }
+        }
+        text.push_str("};\n\n");
+    }
+    writeln!(
+        text,
+        "static const unsigned char utf8data[{}] = {{",
+        forest.bytes.len()
+    )
+    .unwrap();
+    let mut t = 0;
+    for (line, bytes) in forest.bytes.chunks_exact(16).enumerate() {
+        let index = line * 16;
+        if index == forest.trees[t].index {
+            writeln!(
+                text,
+                "\t/* {}_{:x} */",
+                forest.trees[t].name(),
+                forest.trees[t].max_age
+            )
+            .unwrap();
+            if t < forest.trees.len() - 1 {
+                t += 1;
+            }
+        }
+        text.push('\t');
+        for (j, byte) in bytes.iter().enumerate() {
+            write!(
+                text,
+                "0x{byte:02x}{}",
+                if index + j < forest.bytes.len() - 1 {
+                    ","
+                } else {
+                    ""
+                }
+            )
+            .unwrap();
+        }
+        text.push('\n');
+    }
+    text.push_str("};\n\nconst struct utf8data_table utf8_data_table = {\n\t.utf8agetab = utf8agetab,\n\t.utf8agetab_size = ARRAY_SIZE(utf8agetab),\n\n\t.utf8nfdicfdata = utf8nfdicfdata,\n\t.utf8nfdicfdata_size = ARRAY_SIZE(utf8nfdicfdata),\n\n\t.utf8nfdidata = utf8nfdidata,\n\t.utf8nfdidata_size = ARRAY_SIZE(utf8nfdidata),\n\n\t.utf8data = utf8data,\n};\nEXPORT_SYMBOL_GPL(utf8_data_table);\nMODULE_DESCRIPTION(\"UTF8 data table\");\nMODULE_LICENSE(\"GPL v2\");\n");
+    file.write(text.as_bytes());
+    Ok(())
+}
+
+// SAFETY: called only by the platform C runtime with its valid argc/argv.
+unsafe fn run(argc: c_int, argv: *mut *mut c_char) -> Result<i32> {
+    // SAFETY: the entrypoint contract guarantees argv[0] is a live C string.
+    let program = unsafe { CStr::from_ptr(*argv) };
+    let mut inputs = Inputs::default();
+    loop {
+        // SAFETY: argc/argv satisfy getopt's runtime contract and options lives
+        // for the whole call. getopt may reorder the writable pointer array.
+        let option = unsafe { getopt(argc, argv, c"a:c:d:f:hn:o:p:t:v".as_ptr()) };
+        match option {
+            -1 => break,
+            118 => inputs.verbose += 1,
+            104 => {
+                help(program);
+                return Ok(0);
+            }
+            97 | 99 | 100 | 102 | 110 | 111 | 112 | 116 => {
+                // SAFETY: successful required-argument options set optarg to a
+                // live argv string. Own a copy before the next getopt call.
+                let value = unsafe { CStr::from_ptr(optarg) }.to_owned();
+                match option {
+                    97 => inputs.age = value,
+                    99 => inputs.ccc = value,
+                    100 => inputs.data = value,
+                    102 => inputs.fold = value,
+                    110 => inputs.norm = value,
+                    111 => inputs.output = value,
+                    112 => inputs.prop = value,
+                    116 => inputs.test = value,
+                    _ => unreachable!(),
+                }
+            }
+            _ => {
+                help(program);
+                return Ok(1);
+            }
+        }
+    }
+    if inputs.verbose > 1 {
+        help(program);
+    }
+    let db = data::load(&inputs)?;
+    let forest = trie::build(&db, inputs.verbose);
+    verify::trees_verify(&forest, &db, inputs.verbose);
+    if inputs.verbose > 2 {
+        forest.dump(&db);
+    }
+    let test_path = std::path::Path::new(std::ffi::OsStr::from_bytes(inputs.test.to_bytes()));
+    match verify::normalization_test(&forest, &db, test_path, inputs.verbose) {
+        Ok(()) => (),
+        Err(verify::TestError::File) => return Err(io::file_error(&inputs.test)),
+        Err(verify::TestError::Open(error)) => return Err(io::open_error(&inputs.test, error)),
+    }
+    write_file(&inputs, &db, &forest)?;
+    Ok(0)
+}
+
+/// C startup boundary, preserving the caller's signal and stdio dispositions.
+///
+/// # Safety
+/// The platform supplies its valid, NUL-terminated argument vector.
+#[no_mangle]
+pub unsafe extern "C" fn main(argc: c_int, argv: *mut *mut c_char) -> c_int {
+    // SAFETY: these are exactly the platform's argc/argv, passed on unchanged.
+    match unsafe { run(argc, argv) } {
+        Ok(status) => status,
+        Err(error) => {
+            output(&error);
+            1
+        }
+    }
+}

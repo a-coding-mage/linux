@@ -9,6 +9,7 @@ x86-64/ARM64. Only private fixture/boot files are written; no host module loads.
 
 import argparse
 import os
+from check_module_metadata import selected_metadata
 from pathlib import Path
 import re
 import shlex
@@ -314,10 +315,10 @@ def verify_linked_implementation(build, selection):
         else:
             module = obj.with_suffix(".ko")
             verify_module(build, module, obj, name + "_kunit", arch)
-            newer(module, [module.with_suffix(".mod.c")])
+            newer(module, [selected_metadata(build, module)])
             verify_references(module, (name, *KUNIT_IMPORTS))
             if config.get("MODVERSIONS") == "y":
-                generated = module.with_suffix(".mod.c").read_text()
+                generated = selected_metadata(build, module).read_text()
                 for symbol in (name, *KUNIT_IMPORTS):
                     if imported_crc(generated, symbol) != versions[symbol]:
                         raise ValueError("integer math KUnit imports stale symbol versions")
@@ -377,7 +378,7 @@ def verify_consumer(build, work, caller):
     required = ([build / "rust/libkernel.rmeta", build / "rust/libbindings.rmeta"] if caller == "rust" else
                 [ROOT / "include/linux/math.h", ROOT / "lib/math/int_pow.c", ROOT / "lib/math/int_sqrt.c"])
     verify_build_command(work, obj, obj.with_suffix(".rs" if caller == "rust" else ".c"), required)
-    inputs = [obj, module.with_suffix(".mod.c")]
+    inputs = [obj, selected_metadata(build, module)]
     if caller == "rust":
         reference = work / "int_math_reference.o"
         verify_build_command(work, reference, reference.with_suffix(".c"),
@@ -391,7 +392,7 @@ def verify_consumer(build, work, caller):
         if configuration(build).get("MODVERSIONS") == "y":
             versions = selected_versions(build)
             for symbol in ("int_pow", "int_sqrt"):
-                if imported_crc(module.with_suffix(".mod.c").read_text(), symbol) != versions[symbol]:
+                if imported_crc(selected_metadata(build, module).read_text(), symbol) != versions[symbol]:
                     raise ValueError("integer math consumer import CRC does not match provider")
     newer(module, inputs)
 

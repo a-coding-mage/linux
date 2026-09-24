@@ -16,6 +16,7 @@ Provider and suite must be modules so reload genuinely starts with a fresh cache
 
 import argparse
 import os
+from check_module_metadata import selected_metadata
 from pathlib import Path
 import re
 import shlex
@@ -657,7 +658,7 @@ def verify_probe(build, work, arch):
     if main.with_suffix(".c").read_text() != source() or reference.with_suffix(".c").read_text() != reference_source():
         raise ValueError("native stress fixture differs from audited template/original oracle")
     newer(reference, [ROOT / "lib/math/prime_numbers.c"])
-    newer(module, [main, obj, reference, module.with_suffix(".mod.c")])
+    newer(module, [main, obj, reference, selected_metadata(build, module)])
     require_metadata_field(metadata_fields(module), b"license", b"GPL")
     require_metadata_field(metadata_fields(module), b"description", b"Scoped native prime FAILSLAB and RCU reader test")
     if read_exports(module): raise ValueError("disposable stress module exports unexpected symbols")
@@ -670,7 +671,7 @@ def verify_probe(build, work, arch):
     if not {symbol.encode() for symbol in required} <= undefined: raise ValueError("stress module omits required actual native APIs")
     rows = [line.split() for line in (build / "Module.symvers").read_bytes().splitlines()]
     if configuration(build).get("MODVERSIONS") == "y":
-        generated = module.with_suffix(".mod.c").read_text()
+        generated = selected_metadata(build, module).read_text()
         for name in required:
             matches = [row for row in rows if len(row) >= 2 and row[1] == name.encode()]
             if len(matches) != 1 or imported_crc(generated, name) != matches[0][0].lower():

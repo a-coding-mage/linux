@@ -11,6 +11,7 @@ No module is ever loaded on the host.
 
 import argparse
 import os
+from check_module_metadata import selected_metadata, verify_module_metadata
 from pathlib import Path
 import re
 import shlex
@@ -473,12 +474,12 @@ def verify_linked_implementation(build, selection):
         if state != "m": continue
         module = build / (stem + ".ko")
         verify_module(build, module, obj, name, arch)
-        newer(module, [module.with_suffix(".mod.c")])
+        newer(module, [selected_metadata(build, module)])
         verify_metadata(module)
         verify_module_import_versions(build, module)
         if name == "prime_numbers_kunit":
             verify_references(module, (*PUBLIC, *PRIVATE, *KUNIT_IMPORTS))
-            verify_import_versions(build, module.with_suffix(".mod.c"), (*PUBLIC, *PRIVATE, *KUNIT_IMPORTS), versions)
+            verify_import_versions(build, selected_metadata(build, module), (*PUBLIC, *PRIVATE, *KUNIT_IMPORTS), versions)
         modules.append(module)
     newer(build / "Module.symvers", [owner, *([test] if suite != "n" else [])])
     newer(build / "vmlinux.o", [archive])
@@ -504,8 +505,8 @@ def verify_consumer(build, work, caller):
     verify_build_command(work, reference, reference.with_suffix(".c"), [ROOT / "include/linux/math.h"])
     if reference.with_suffix(".c").read_text() != reference_source(): raise ValueError("private prime oracle differs from original fallback")
     newer(reference, [ROOT / "lib/math/prime_numbers.c"])
-    newer(module, [obj, reference, module.with_suffix(".mod.c")])
-    verify_import_versions(build, module.with_suffix(".mod.c"), PUBLIC, selected_versions(build))
+    newer(module, [obj, reference, selected_metadata(build, module)])
+    verify_import_versions(build, selected_metadata(build, module), PUBLIC, selected_versions(build))
     verify_module_import_versions(build, module)
     require_metadata_field(metadata_fields(module), b"license", b"Proprietary")
     require_metadata_field(metadata_fields(module), b"description", b"Non-GPL prime-number public ABI check")
@@ -522,7 +523,9 @@ def verify_consumer(build, work, caller):
         for path in (obj, module): verify_rust_entrypoints(path, arch)
     # Every generated C translation unit must suppress only incidental module
     # header addressability records, including when the main caller is Rust.
-    for path in (reference, work / (name + ".mod.o"), *([obj] if caller == "c" else [])):
+    verify_module_metadata(build, module, work=work, require_c_suppression=True,
+                           c_flags=compilation_flags, c_exports=read_exports)
+    for path in (reference, *([obj] if caller == "c" else [])):
         flags = compilation_flags(path)
         if "-D__DISABLE_EXPORTS" not in flags or "-U__DISABLE_EXPORTS" in flags or read_exports(path):
             raise ValueError("private prime C fixture contains incidental export metadata")

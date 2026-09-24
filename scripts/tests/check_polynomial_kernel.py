@@ -9,6 +9,7 @@ C arithmetic is exercised; both test languages retain the original vectors.
 """
 
 import argparse
+from check_module_metadata import selected_metadata
 from functools import lru_cache
 import os
 from pathlib import Path
@@ -261,6 +262,7 @@ def verify_module(build, module, owner, name, arch):
     linked = module.with_suffix(".o")
     newer(linked, [owner])
     newer(module, [parts, linked, owner])
+    if configuration(build).get("RUST_MODULE_METADATA") == "y": selected_metadata(build, module)
 
 
 def verify_framework_module(build, members, arch):
@@ -288,7 +290,7 @@ def verify_framework_module(build, members, arch):
     for image in (linked, module):
         elf_target(image, arch)
     newer(linked, [parts, *objects, ROOT / "lib/kunit/Makefile"])
-    newer(module, [linked, parts, module.with_suffix(".mod.c")])
+    newer(module, [linked, parts, selected_metadata(build, module)])
     return module
 
 
@@ -359,7 +361,7 @@ def verify_linked_implementation(build, selection):
     if tests == "m":
         module = kunit.with_suffix(".ko")
         verify_module(build, module, kunit, "polynomial_kunit", arch)
-        if config.get("MODVERSIONS") == "y" and imported_crc(module.with_suffix(".mod.c").read_text(), SYMBOL) != crc:
+        if config.get("MODVERSIONS") == "y" and imported_crc(selected_metadata(build, module).read_text(), SYMBOL) != crc:
             raise ValueError("KUnit polynomial import has stale CRC")
         preloads.append(module)
     return preloads
@@ -443,7 +445,7 @@ def verify_consumer(build, work, caller):
                          [ROOT / "lib/math/polynomial.c", ROOT / "include/linux/polynomial.h", ROOT / "include/linux/math.h"])
     if caller == "c" and config.get("CFI") == "y":
         verify_cfi(obj, arch)
-    generated = work / (stem + ".mod.c")
+    generated = selected_metadata(build, module)
     newer(module, [generated, obj, work / "polynomial_reference.o"])
     if config.get("MODVERSIONS") == "y" and imported_crc(generated.read_text(), SYMBOL) != selected_version(build):
         raise ValueError("polynomial consumer import version does not match provider")

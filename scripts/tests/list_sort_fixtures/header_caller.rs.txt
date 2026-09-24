@@ -1,0 +1,17 @@
+//! Native Rust caller exercising the translated extern declaration.
+#[path = "../../include/linux/list_sort_header.rs"]
+pub mod declarations;
+
+/// Forwards through the translated declaration using the actual kernel types.
+///
+/// # Safety
+/// The list and callback must satisfy the list_sort C contract.
+#[no_mangle]
+pub unsafe extern "C" fn rust_header_call(
+    priv_: *mut core::ffi::c_void,
+    head: *mut declarations::list_head,
+    cmp: declarations::list_cmp_func_t,
+) {
+    // SAFETY: The caller supplies the same contract as the imported function.
+    unsafe { declarations::list_sort(priv_, head, cmp) }
+}

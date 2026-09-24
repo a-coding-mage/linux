@@ -45,6 +45,7 @@ arch/x86/tools/relocs_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 arch/x86/tools/vdso2c.rs d482bb509b7d065808de40ce78b5bca39f40b783
 arch/x86/tools/vdso2c_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 certs/extract-cert.rs d482bb509b7d065808de40ce78b5bca39f40b783
+fs/unicode/mkutf8data.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/asm-generic/div64_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/asn1_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/bcd_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
@@ -56,6 +57,7 @@ include/linux/export_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/gcd_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/int_log_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/lcm_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
+include/linux/list_sort_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/math64_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/polynomial_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/prime_numbers_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
@@ -68,6 +70,7 @@ lib/crc/gen_crc32table.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/crc/gen_crc64table.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/ctype.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/hexdump.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/list_sort.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/cordic.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/div64.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/gcd.rs d482bb509b7d065808de40ce78b5bca39f40b783
@@ -159,6 +162,7 @@ scripts/tracepoint-update.rs d482bb509b7d065808de40ce78b5bca39f40b783
 scripts/unifdef.rs d482bb509b7d065808de40ce78b5bca39f40b783
 security/selinux/include/classmap_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 security/selinux/include/initial_sid_to_string_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
+security/selinux/genheaders.rs d482bb509b7d065808de40ce78b5bca39f40b783
 security/selinux/include/policycap_names_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 tools/arch/x86/include/asm/inat_header.rs 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72
 tools/arch/x86/include/asm/inat_types_header.rs 08dbfad3f5040f5bdb6c529da20d6d4e81fefd72

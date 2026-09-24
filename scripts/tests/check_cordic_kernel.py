@@ -9,6 +9,7 @@ Supports x86-64/ARM64, built-in/modular providers, and dependency-aware reload.
 
 import argparse
 import os
+from check_module_metadata import selected_metadata
 from pathlib import Path
 import random
 import re
@@ -316,6 +317,7 @@ def verify_linked_implementation(build, selection):
     elf_target(module, arch)
     newer(original, [owner])
     newer(module, [original, owner, record_path])
+    if config.get("RUST_MODULE_METADATA") == "y": selected_metadata(build, module)
     metadata = tool("readelf", "-p", ".modinfo", module)
     for value in (b"license=Dual BSD/GPL", b"author=Broadcom Corporation", b"description=CORDIC algorithm"):
         if value not in metadata:
@@ -370,7 +372,7 @@ def verify_consumer(build, work, caller):
         relocations = tool("readelf", "-rW", image)
         if SYMBOL.encode() not in undefined or not re.search(rb"\bcordic_calc_iq\b", relocations):
             raise ValueError("consumer does not actually reference selected CORDIC export")
-    generated = work / (stem + ".mod.c")
+    generated = selected_metadata(build, module)
     newer(module, [generated, obj, work / "cordic_reference.o"])
     if configuration(build).get("MODVERSIONS") == "y" and imported_crc(generated.read_text(), SYMBOL) != selected_version(build):
         raise ValueError("consumer CORDIC import version does not match selected provider")

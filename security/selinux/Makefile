@@ -41,4 +41,9 @@ $(obj)/flask.h: $(obj)/genheaders FORCE
 	$(call if_changed,genhdrs)
 
 hostprogs := genheaders
+ifeq ($(HOST_TOOLS_LANG),rust)
+genheaders-rust := y
+$(obj)/genheaders: $(src)/include/classmap_header.rs \
+		   $(src)/include/initial_sid_to_string_header.rs
+endif
 HOST_EXTRACFLAGS += -I$(srctree)/security/selinux/include

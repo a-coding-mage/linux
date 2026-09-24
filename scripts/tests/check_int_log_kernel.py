@@ -12,6 +12,7 @@ selected test/provider languages, built-in/modular KUnit and ordered reload.
 
 import argparse
 import os
+from check_module_metadata import selected_metadata, verify_module_metadata
 from pathlib import Path
 import re
 import shlex
@@ -293,9 +294,9 @@ def verify_linked_implementation(build, selection):
     if state == "m":
         module = kunit.with_suffix(".ko")
         verify_module(build, module, kunit, "int_log_kunit", arch)
-        newer(module, [module.with_suffix(".mod.c")])
+        newer(module, [selected_metadata(build, module)])
         verify_references(module, (*SYMBOLS, *KUNIT_IMPORTS))
-        verify_import_versions(build, module.with_suffix(".mod.c"), (*SYMBOLS, *KUNIT_IMPORTS), versions)
+        verify_import_versions(build, selected_metadata(build, module), (*SYMBOLS, *KUNIT_IMPORTS), versions)
         modules.append(module)
     newer(build / "Module.symvers", [owner, kunit])
     newer(archive, [owner, *([kunit] if state == "y" else [])])
@@ -354,11 +355,13 @@ def verify_consumer(build, work, caller):
     verify_build_command(work, obj, obj.with_suffix(".rs" if caller == "rust" else ".c"), required)
     reference = work / "int_log_reference.o"
     verify_build_command(work, reference, reference.with_suffix(".c"), [ROOT / "lib/math/int_log.c", ROOT / "include/linux/int_log.h"])
-    newer(module, [obj, reference, module.with_suffix(".mod.c")])
-    verify_import_versions(build, module.with_suffix(".mod.c"), SYMBOLS)
+    newer(module, [obj, reference, selected_metadata(build, module)])
+    verify_import_versions(build, selected_metadata(build, module), SYMBOLS)
     require_metadata_field(metadata_fields(module), b"license", b"GPL" if caller == "rust" else b"Proprietary")
     if caller == "c":
-        private = (obj, reference, module.with_suffix(".mod.o"))
+        verify_module_metadata(build, module, work=work, require_c_suppression=True,
+                               c_flags=compilation_flags, c_exports=read_exports)
+        private = (obj, reference)
         for item in private:
             flags = compilation_flags(item)
             if "-D__DISABLE_EXPORTS" not in flags or "-U__DISABLE_EXPORTS" in flags or read_exports(item):

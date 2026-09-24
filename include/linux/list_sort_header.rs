@@ -1,14 +1,12 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 
-// Dependency equivalent of <linux/types.h>.
+//! C declarations for list sorting, using the kernel's actual list layout.
 use core::ffi::c_void;
 
-#[repr(C)]
-pub struct list_head {
-    _private: [u8; 0],
-}
+pub use kernel::bindings::list_head;
 
-// The C declaration carries __attribute__((nonnull(2,3))).
+/// Nonnull comparator required by the original C list_sort declaration.
+#[allow(non_camel_case_types)]
 pub type list_cmp_func_t = unsafe extern "C" fn(
     priv_: *mut c_void,
     a: *const list_head,
@@ -17,6 +15,7 @@ pub type list_cmp_func_t = unsafe extern "C" fn(
 
 // The C declaration carries __attribute__((nonnull(2,3))).
 unsafe extern "C" {
+    /// Sorts a valid exclusively accessed circular list with a nonnull comparator.
     pub fn list_sort(
         priv_: *mut c_void,
         head: *mut list_head,

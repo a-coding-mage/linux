@@ -88,6 +88,7 @@ The following normal Kbuild targets have Rust implementations:
 * ``usr/gen_init_cpio``
 * ``lib/raid/raid6/mktables``
 * ``lib/crc/gen_crc32table`` and ``lib/crc/gen_crc64table``
+* ``fs/unicode/mkutf8data``
 
 These tools use the Rust standard library without third-party Rust crates or
 unresolved declarations for functions that were C macros or inline helpers.
@@ -166,6 +167,25 @@ C/Rust/C and Rust/C/Rust builds, source/header dependencies, no-ops and a real
 parallel parent-make environment. The combined 51-tool build/dependency tests
 and all language/provenance invariants pass. Native CRC algorithms and the
 original C generators are unchanged.
+
+The Unicode generator now implements the complete UCD parsing, normalization,
+trie construction and verification pipeline in Rust; it does not substitute
+the shipped table. With the seven official UCD 12.1 inputs, its 331,286-byte
+output matches both original C and the shipped table, and all 18,820 original
+normalization cases pass. The existing source provenance and SGI license are
+retained. Original C remains selectable, including normal shipped-table builds
+and explicit regeneration. Narrow libc lexical/stdio calls preserve raw-byte
+input, signed-age diagnostics, nonseekable-input behavior and stream errors.
+
+Nine integrated groups pass without skips using minimum Rust 1.85 and actual
+strict host flags; independent final GCC and Clang runs also pass all nine.
+They cover exact output/diagnostics, malformed-input and normalization negative
+controls, original stream failures, cold parallel C/Rust/C and Rust/C/Rust
+builds, all imported dependencies and no-ops. ``UNICODE_UCD_DIR`` supplies the
+official corpus and its checked provenance; an explicitly invalid corpus is
+an error, not a skip. The expanded 52-tool aggregate build/dependency gate
+passes. This validates the host generator, not a Rust Unicode target driver
+or execution of the complete generator on a 32-bit host.
 
 Build the migrated tools without creating a kernel configuration::
 
@@ -1962,7 +1982,8 @@ integer-logarithm ABI caller, including 71,272 positive inputs and six zero
 probes per load, expected warnings and module unload/reload. The other six
 modular, debug, RT and normal compatibility builds also pass with the selector
 disabled. This does not establish native boot coverage for every Rust-enabled
-architecture or migrate the remaining per-module metadata objects.
+architecture. Per-module metadata was outside this checkpoint; its new
+independent selection is described below.
 
 After the parent-environment fixture correction, the expanded regression passes
 all 1,512 tests without skips in 773.920 seconds, using minimum Rust 1.85,
@@ -1971,6 +1992,69 @@ gates. Across both full-suite attempts and the eight no-op builds, all 44,453
 regular files in the eight native output trees retain their exact paths,
 sizes, nanosecond timestamps and SHA-256 hashes. This verifies the integrated
 components, not the remaining translated kernel sources.
+
+Per-module loader metadata
+--------------------------
+
+``CONFIG_RUST_MODULE_METADATA`` independently selects typed Rust ``*.mod.o``
+objects and defaults off. Original C remains selectable, independently of
+``HOST_TOOLS_LANG``, common metadata and final-vmlinux exports. The original
+target frontend validates generated ``*.mod.h`` declarations and preprocesses
+their fields; it emits no metadata object. Rust uses the actual generated
+``bindings::module`` and ``modversion_info`` layouts, preserving lifecycle
+relocations, export records, basic/extended symbol versions and module info.
+This does not introduce another module owner or recalculate owner CRCs.
+
+The 35 integrated fidelity/build/cleanup groups pass without skips using
+minimum Rust 1.85, genuine i686 and native x86-64/ARM64 inputs; object checks
+also cover big-endian PowerPC and little-endian PowerPC64. Six additional
+protocol groups cover required guards, malformed records and output failure.
+The data-only Rust statics have distinct mangled global symbols, unlike C's
+local statics; tests check exact permitted families and collision-free
+parallel linking, not whole-symbol-table identity. Natural layout/alignment
+is checked rather than optional C array over-alignment. Nonempty
+``MODULE_ARCH_INIT`` and unsupported execution encodings explicitly require
+the retained C selection.
+
+Strict native x86-64 and ARM64 modular builds pass with common and per-module
+metadata selected. Two further native builds pass with final-vmlinux and
+per-module metadata selected, leaving common metadata in C. The shared runtime
+checker validates the selected typed metadata rather than stale ``*.mod.c``
+artifacts. Nineteen integrated groups include real native artifacts and
+semantic negative controls. Lifecycle fields are compared independently to
+the actual implementation definitions, so consistently omitting cleanup from
+both generated Rust and linked ELF cannot satisfy the checker. Unchanged
+metadata may legitimately predate a rebuilt owner because modpost uses
+write-if-changed; timestamps alone do not establish semantic staleness.
+
+Both architectures pass proprietary C and Rust prime callers, ordered loading
+of provider/framework/suite modules, and unload/reload with selected Rust
+per-module/common metadata. Each caller load checks 65,536 primality inputs,
+65,537 next-prime inputs and 12 iterator cases; each run executes the selected
+KUnit suite twice. Both main kernels also pass Rust integer-log callers with
+final-vmlinux/per-module Rust metadata: 71,272 positive inputs, six zero probes
+and exact expected warning checks per load, plus unload/reload. These checks
+do not replace the separate allocation-failure/RCU stress configurations.
+
+Linked-list sorting
+-------------------
+
+``CONFIG_RUST_LIST_SORT`` selects the repaired existing ``lib/list_sort.rs``
+through a distinct native owner, using real ``bindings::list_head`` and the
+original explicitly nonnull C comparator contract. Both provenance markers
+remain unchanged. The default is C, and either selection retains the original
+archive position between ``scatterlist.o`` and ``uuid.o``. Native Rust DWARF
+changes the symbol-version CRC: dependent modules must be rebuilt when
+switching implementations.
+
+Eight integrated groups pass without skips, including genuine ELF32/ELF64
+execution, original-C callback/link traces, stable ties, KCFI positive and
+trapping negative controls, actual Makefile selection/dependencies/no-ops,
+and read-only audits of both selected native kernels. Native x86-64 and ARM64
+builds and boots pass with the original C KUnit suite calling the Rust
+provider. The complete boot logs contain 97 and 90 passing KUnit cases
+respectively, without failures or skips. This does not yet migrate the
+adjacent Rust KUnit suite or claim external list-sort caller lifecycle tests.
 
 Remaining integration
 ---------------------
@@ -1984,7 +2068,7 @@ Most of the migration is still outstanding. In particular:
 * Apart from the opt-in CORDIC, integer-math, integer-logarithm, generic wide-division
   library and its independently selected self-tests, GCD/LCM,
   rational-approximation, reciprocal-division, polynomial, prime-number,
-  BCD, ctype, hexadecimal-helper
+  BCD, ctype, hexadecimal-helper, linked-list sorting
   and x86-decoder integrations above,
   target-kernel C objects still take precedence over adjacent Rust files.
   Their Rust definitions, shared types, configuration handling, exported
@@ -1999,12 +2083,10 @@ Most of the migration is still outstanding. In particular:
   ``lib/math/tests/Makefile`` entries; tests elsewhere still need their own
   translation, binding and native lifecycle audits. The Rust division
   self-tests described above are a separate, already selectable integration.
-* Module finalization still compiles generated per-module ``*.mod.c``.
-  Common module metadata and final-vmlinux exports have separate selectable
-  Rust implementations as described above.
-  A per-module Rust selection requires complete module layouts, lifecycle
-  relocations, loader export/version tables and architecture metadata;
-  the existing adjacent Rust translations do not yet provide these paths.
+* Per-module loader metadata now has an independent Rust selection and native
+  module load/reload checks on x86-64 and ARM64. Unsupported
+  architecture initializers/encodings retain C; object-level cross-target
+  checks do not establish boot coverage on every Rust-enabled architecture.
 * A successful mixed C/Rust build validates the migrated components only.
   Full Rust kernel linking, booting, and the applicable kernel/selftest
   suites remain required before declaring the translation complete.

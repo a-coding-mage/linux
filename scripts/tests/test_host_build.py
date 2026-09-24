@@ -28,6 +28,7 @@ TOOLS = (
     "scripts/mod/mk_elfconfig",
     "scripts/mod/modpost",
     "scripts/selinux/mdp/mdp",
+    "security/selinux/genheaders",
     "scripts/ipe/polgen/polgen",
     "scripts/kconfig/conf",
     "scripts/genksyms/genksyms",
@@ -65,6 +66,7 @@ TOOLS = (
     "lib/raid/raid6/mktables",
     "lib/crc/gen_crc32table",
     "lib/crc/gen_crc64table",
+    "fs/unicode/mkutf8data",
 )
 
 
@@ -111,6 +113,16 @@ class RustHostBuildTest(unittest.TestCase):
             recordmcount = Path(tmp) / "scripts/.recordmcount.cmd"
             self.assertIn(str(ROOT / "scripts/elf-parse.rs"), recordmcount.read_text())
             self.assertIn(str(ROOT / "scripts/recordmcount_header.rs"), recordmcount.read_text())
+            genheaders = (Path(tmp) / "security/selinux/.genheaders.cmd").read_text()
+            selinux_headers = [ROOT / "security/selinux/include" / header
+                               for header in ("classmap_header.rs", "initial_sid_to_string_header.rs")]
+            for header in selinux_headers:
+                self.assertIn(str(header), genheaders)
+            unicode = (Path(tmp) / "fs/unicode/.mkutf8data.cmd").read_text()
+            unicode_modules = [ROOT / ("fs/unicode/mkutf8data_" + name + ".rs")
+                               for name in ("data", "io", "model", "trie", "verify")]
+            for dependency in unicode_modules:
+                self.assertIn(str(dependency), unicode)
             crc32_module = ROOT / "lib/crc/../../include/linux/crc32poly_header.rs"
             self.assertIn(str(crc32_module),
                           (Path(tmp) / "lib/crc/.gen_crc32table.cmd").read_text())
@@ -228,6 +240,14 @@ class RustHostBuildTest(unittest.TestCase):
             rebuild = make("-n", "MAKE=" + shlex.join(recursive))
             self.assertIn("--emit=link=lib/crc/gen_crc32table", rebuild)
             self.assertNotIn("--emit=link=lib/crc/gen_crc64table", rebuild)
+            for dependency in unicode_modules:
+                recursive = shlex.split(os.environ.get("MAKE", "make")) + ["-W", str(dependency)]
+                rebuild = make("-n", "MAKE=" + shlex.join(recursive))
+                self.assertIn("--emit=link=fs/unicode/mkutf8data", rebuild)
+            for header in selinux_headers:
+                recursive = shlex.split(os.environ.get("MAKE", "make")) + ["-W", str(header)]
+                rebuild = make("-n", "MAKE=" + shlex.join(recursive))
+                self.assertIn("--emit=link=security/selinux/genheaders", rebuild)
             # Pretend the imported module changed; do not edit the source tree.
             # GNU make does not propagate -W through MAKEFLAGS. Supply it to
             # each recursive make, which is where the source dependencies live.

@@ -9,6 +9,7 @@ guest; no module is loaded on the host and no production export is added.
 
 import argparse
 import os
+from check_module_metadata import selected_metadata
 from pathlib import Path
 import re
 import shlex
@@ -400,10 +401,10 @@ def verify_linked_implementation(build, selection):
     else:
         module = obj.with_suffix(".ko")
         verify_module(build, module, obj, "gcd_kunit", "x86_64")
-        newer(module, [module.with_suffix(".mod.c")])
+        newer(module, [selected_metadata(build, module)])
         verify_references(module, ("gcd", *KUNIT_IMPORTS))
         if config.get("MODVERSIONS") == "y":
-            generated = module.with_suffix(".mod.c").read_text()
+            generated = selected_metadata(build, module).read_text()
             for symbol in ("gcd", *KUNIT_IMPORTS):
                 if imported_crc(generated, symbol) != versions[symbol]:
                     raise ValueError("GCD KUnit imports stale symbol versions")
@@ -476,7 +477,7 @@ def verify_consumer(build, work, caller):
                 "include/linux/jump_label.h", "lib/math/gcd.c", "lib/math/lcm.c")]
     required = [build / "rust/libkernel.rmeta", build / "rust/libbindings.rmeta"] if caller == "rust" else original
     verify_build_command(work, obj, obj.with_suffix(".rs" if caller == "rust" else ".c"), required)
-    inputs = [obj, module.with_suffix(".mod.c")]
+    inputs = [obj, selected_metadata(build, module)]
     if caller == "rust":
         reference = work / "gcd_lcm_reference.o"
         verify_build_command(work, reference, reference.with_suffix(".c"), original)
@@ -490,7 +491,7 @@ def verify_consumer(build, work, caller):
     if configuration(build).get("MODVERSIONS") == "y":
         versions = selected_versions(build)
         for symbol in EXPORTS:
-            if imported_crc(module.with_suffix(".mod.c").read_text(), symbol) != versions[symbol]:
+            if imported_crc(selected_metadata(build, module).read_text(), symbol) != versions[symbol]:
                 raise ValueError("GCD/LCM consumer import CRC does not match provider")
     newer(module, inputs)
 

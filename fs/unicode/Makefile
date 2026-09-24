@@ -39,3 +39,7 @@ endif
 
 targets += utf8data.c
 hostprogs += mkutf8data
+
+ifneq ($(HOST_TOOLS_LANG),c)
+mkutf8data-rust := y
+endif

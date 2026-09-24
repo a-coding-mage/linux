@@ -110,6 +110,20 @@ config RUST_POLYNOMIAL
 
 	  If unsure, say N.
 
+config RUST_LIST_SORT
+	bool "Rust implementation of stable linked-list sorting"
+	depends on RUST
+	default n
+	help
+	  Use the translated stable list_sort() implementation and retain its
+	  original nonnull callback contract and unrestricted C export.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation.
+	  If unsure, say N.
+
 config RUST_PRIME_NUMBERS
 	bool "Rust implementation of the prime-number library"
 	depends on RUST

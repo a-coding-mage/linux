@@ -302,6 +302,19 @@ pub(crate) fn generate(input: &[u8]) -> Result<String, String> {
                     }
                     b"LUPOS_MODULE_EXT_NAMES" if !seen_names => {
                         let values = strings(value)?;
+                        // Each name carries its explicit terminator; C adds
+                        // one more NUL to the concatenated string initializer.
+                        // Counting NULs alone also accepts an unterminated
+                        // final name after an earlier embedded terminator.
+                        if values != [0] && !values.ends_with(&[0, 0]) {
+                            return Err("extended version names lack final explicit NUL".into());
+                        }
+                        if values[..values.len() - 1]
+                            .split_inclusive(|&b| b == 0)
+                            .any(|name| name == [0])
+                        {
+                            return Err("extended version name is empty".into());
+                        }
                         if seen_crcs
                             != Some(values.iter().filter(|&&b| b == 0).count().saturating_sub(1))
                         {

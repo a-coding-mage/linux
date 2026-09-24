@@ -1,0 +1,146 @@
+/* Private test fixture: all kernel types and declarations are real headers. */
+#include <linux/types.h>
+#include <linux/list_sort.h>
+#include <linux/stddef.h>
+
+extern int printf(const char *, ...);
+extern void abort(void);
+void c_list_sort(void *, struct list_head *, list_cmp_func_t);
+#define MAX 8193
+#define TRACES (MAX * 16)
+struct node { struct list_head link; int key, id; };
+struct trace { int a, b, an, ap, bn, bp; };
+struct context {
+    struct node nodes[MAX];
+    struct list_head head;
+    struct trace traces[TRACES];
+    unsigned int calls, self_calls, style;
+};
+static struct context original, candidate;
+static unsigned int cases;
+static int index_of(struct context *c, const struct list_head *p)
+{
+    if (!p) return -1;
+    if (p == &c->head) return -2;
+    return ((const struct node *)p)->id;
+}
+static int compare(void *opaque, const struct list_head *a, const struct list_head *b)
+{
+    struct context *c = opaque;
+    const struct node *na = (const struct node *)a, *nb = (const struct node *)b;
+    struct trace *t;
+    if (c->calls == TRACES) abort();
+    t = &c->traces[c->calls++];
+    *t = (struct trace){na->id, nb->id, index_of(c, a->next), index_of(c, a->prev),
+                       index_of(c, b->next), index_of(c, b->prev)};
+    c->self_calls += a == b;
+    if (c->style == 1) return na->key > nb->key;
+    if (c->style == 2) return (na->key < nb->key) - (na->key > nb->key);
+    return (na->key > nb->key) - (na->key < nb->key);
+}
+static void initialize(struct context *c, int n, int pattern, unsigned int style)
+{
+    unsigned int random = 0x194537abU + (unsigned int)n;
+    c->calls = c->self_calls = 0;
+    c->style = style;
+    c->head.next = n ? &c->nodes[0].link : &c->head;
+    c->head.prev = n ? &c->nodes[n-1].link : &c->head;
+    for (int i = 0; i < n; ++i) {
+        struct node *p = &c->nodes[i];
+        random = random * 1664525U + 1013904223U;
+        p->id = i;
+        switch (pattern) {
+        case 0: p->key = i; break;
+        case 1: p->key = n-i; break;
+        case 2: p->key = 0; break;
+        case 3: p->key = i%3; break;
+        case 4: p->key = (int)(random%17); break;
+        case 5: p->key = (int)(random & 0x7fffffffU); break;
+        case 6: p->key = i < n/2 ? i : n-i; break;
+        default: p->key = i%2 ? n-i : i; break;
+        }
+        p->link.prev = i ? &c->nodes[i-1].link : &c->head;
+        p->link.next = i+1 < n ? &c->nodes[i+1].link : &c->head;
+    }
+}
+static void check(int n)
+{
+    struct list_head *a = original.head.next, *b = candidate.head.next;
+    struct list_head *previous = &candidate.head;
+    if (original.calls != candidate.calls || original.self_calls != candidate.self_calls) abort();
+    for (unsigned int i = 0; i < original.calls; ++i) {
+        const struct trace *x = &original.traces[i], *y = &candidate.traces[i];
+        if (x->a != y->a || x->b != y->b || x->an != y->an || x->ap != y->ap ||
+            x->bn != y->bn || x->bp != y->bp) abort();
+    }
+    for (int i = 0; i < n; ++i) {
+        struct node *na = (struct node *)a, *nb = (struct node *)b;
+        if (a == &original.head || b == &candidate.head || na->id != nb->id ||
+            b->prev != previous || b->next->prev != b) abort();
+        if (i) {
+            struct node *p = (struct node *)previous;
+            if ((candidate.style == 2 ? p->key < nb->key : p->key > nb->key) ||
+                (p->key == nb->key && p->id > nb->id)) abort();
+        }
+        previous = b;
+        a = a->next;
+        b = b->next;
+    }
+    if (a != &original.head || b != &candidate.head || candidate.head.prev != previous) abort();
+    for (int i = 0; i < n; ++i) b = b->prev;
+    if (b != candidate.head.next) abort();
+}
+typedef void (*sort_fn)(void *, struct list_head *, list_cmp_func_t);
+static sort_fn volatile indirect = list_sort;
+#ifdef WITH_RUST_HEADER
+void rust_header_call(void *, struct list_head *, list_cmp_func_t);
+static sort_fn volatile through_header = rust_header_call;
+#endif
+static int compare_no_priv(void *opaque, const struct list_head *a, const struct list_head *b)
+{
+    if (opaque) abort();
+    return ((const struct node *)a)->key > ((const struct node *)b)->key;
+}
+static int wrong(void *p) { return p != 0; }
+static void wrong_owner(void *p) { (void)p; }
+int main(int argc, char **argv)
+{
+    if (argc > 1) {
+        initialize(&candidate, 2, 1, 0);
+        if (argv[1][0] == 'i') indirect(&candidate, &candidate.head, (list_cmp_func_t)wrong);
+        else {
+            sort_fn volatile bad = (sort_fn)wrong_owner;
+            bad(&candidate, &candidate.head, compare);
+        }
+        return 77;
+    }
+    for (int n = 0; n <= MAX; ++n) {
+        if (n > 260 && (n & (n-1)) && ((n-1) & (n-2)) && ((n+1) & n)) continue;
+        for (int pattern = 0; pattern < 8; ++pattern) {
+            for (unsigned int style = 0; style < 3; ++style) {
+                initialize(&original, n, pattern, style);
+                initialize(&candidate, n, pattern, style);
+                c_list_sort(&original, &original.head, compare);
+                indirect(&candidate, &candidate.head, compare);
+                check(n);
+                ++cases;
+#ifdef WITH_RUST_HEADER
+                initialize(&candidate, n, pattern, style);
+                through_header(&candidate, &candidate.head, compare);
+                check(n);
+                ++cases;
+#endif
+            }
+        }
+    }
+    for (int n = 0; n <= 2; ++n) {
+        initialize(&original, n, 1, 1);
+        initialize(&candidate, n, 1, 1);
+        c_list_sort((void *)0, &original.head, compare_no_priv);
+        indirect((void *)0, &candidate.head, compare_no_priv);
+        check(n);
+        ++cases;
+    }
+    printf("PASS %u cases; exact callback arguments/link snapshots, stability, forward/backward links\n", cases);
+    return 0;
+}
