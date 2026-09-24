@@ -2135,9 +2135,70 @@ replaced by an ordinary Rust C-ABI function; generic UML is a separate case.
 An ARM64 image and modules now build with the generic Rust owner selected;
 the linked archive has only ``hweight_rust.o`` and the image retains all four
 unrestricted exports with genuine Rust-derived versions. That kernel boots
-and passes the Rust list-sort consumer/KUnit load-reload smoke test. This
-does not replace a dedicated native caller of each Hamming-weight interface;
-that specific differential runtime gate remains outstanding.
+and passes the Rust list-sort consumer/KUnit load-reload smoke test.
+Fifteen dedicated runtime-checker groups pass without skips. Independent
+native C and Rust proprietary callers then each pass 593,408 input values
+and 2,373,632 protected export comparisons per load on ARM64, including
+unload/reload. The full C/Rust-provider by C/Rust-caller VM matrix passes and
+the Rust provider is restored afterward. Retained native x86 assembly also
+passes its separate artifact/defining-type/version audit; that audit is not
+misrepresented as a generic four-export x86 VM run.
+
+Base64 and UUID/GUID
+-------------------
+
+``CONFIG_RUST_BASE64`` and ``CONFIG_RUST_UUID`` independently select the
+repaired existing translations through sole native owners, retaining the
+original archive slots, C defaults, exported/static symbols and export
+licenses. Existing translated headers now distinguish actual native binding
+interfaces from safe Rust helpers. All original provenance markers remain.
+
+Base64 retains all three alphabets, padding/trailing-bit rules, overlapping
+raw-buffer behavior and partial writes. Defined negative-length paths match
+C instead of being replaced with undefined behavior. Its nominal enum uses
+the existing bindgen ``cfi_encoding`` mechanism: a plain integer alias has
+the same ordinary ABI but the wrong KCFI type. Sixteen integrated groups pass
+without skips, including genuine ELF32/ELF64, protected C/Rust consumers,
+actual-header/native flags, real Kbuild/dependencies and an original-C corpus
+of 964,152 records per full differential executable. Independent overlap
+review checks a further 18,568 cases per executable.
+
+UUID/GUID uses genuine binding structs, original early validation and
+overlapping parse order, and the actual kernel RNG with original mask order.
+Initializer macros preserve C integer promotions and repeated evaluation for
+narrow, signed and wide operands. Eleven integrated groups pass without
+skips, including genuine ELF32/ELF64, 9,216 position/byte mutations, 61 overlap
+offsets, 36 guard-page prefix cases, 1,024 deterministic RNG-fixture cases,
+native KCFI/export/DWARF and real Kbuild/dependency/no-op checks. These
+deterministic RNG fixtures do not replace native kernel RNG execution.
+
+Both components' native tests also work when the unselected original C
+object and saved command are absent. Explicit invalid inputs fail rather
+than skip. Strict native x86-64 and ARM64 images/modules build with both Rust
+providers and their original C KUnit suites selected as modules.
+
+Dedicated Base64 and UUID runtime checkers are integrated: respectively 21
+groups (5.433 seconds) and 16 groups (7.214 seconds) pass without skips. Both
+languages own their complete native consumer loops, with unchanged original C
+used only as the algorithm oracle (and Base64 case data). Compiled UUID
+constant-result and C-dispatch-delegation controls are rejected. Actual module
+metadata, defining/imported versions, protected call sites, licenses, exact
+KUnit results and unload/reload ordering are checked. The C-provider matrix
+passes for both callers on both architectures; final Rust-provider roundtrips
+are in progress. Earlier Rust-provider preflights passed both Base64 callers
+and the UUID C caller on both architectures, not the then-unfinished independent
+UUID Rust workload.
+
+The translated UUID suite is independently selectable with
+``CONFIG_RUST_UUID_KUNIT_TEST``, default off, preserving ``UUID_KUNIT_TEST`` y/m
+and the original ``uuid_kunit`` object/module identity. All eight cases, 82
+nonfatal expectations, 12 parse calls and 32 generation calls are retained,
+using actual KUnit assertions/formatters and nominal UUID/GUID bindings.
+Eight integrated groups pass without skips (10.289 seconds), including actual
+ELF32/ELF64 traces, fault injection, protected callbacks, native x86/ARM64
+compilation, module/builtin metadata and real Kbuild selection/dependencies.
+Native execution of the translated suite and the new full regression remain
+outstanding; private compilation is not counted as a native suite pass.
 
 Remaining integration
 ---------------------

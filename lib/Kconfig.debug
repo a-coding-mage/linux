@@ -3429,6 +3429,16 @@ config UUID_KUNIT_TEST
 
 	  If unsure, say N.
 
+config RUST_UUID_KUNIT_TEST
+	bool "Use Rust for the UUID KUnit test"
+	depends on RUST && UUID_KUNIT_TEST
+	default n
+	help
+	  Run the translated UUID/GUID suite against the selected C or Rust
+	  provider, retaining the original uuid_kunit module identity and all
+	  parsing and random-generation cases.
+	  If unsure, say N.
+
 config INT_POW_KUNIT_TEST
 	tristate "Integer exponentiation (int_pow) test" if !KUNIT_ALL_TESTS
 	depends on KUNIT

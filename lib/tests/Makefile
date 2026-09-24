@@ -68,5 +68,16 @@ obj-$(CONFIG_USERCOPY_KUNIT_TEST) += usercopy_kunit.o
 obj-$(CONFIG_UTIL_MACROS_KUNIT) += util_macros_kunit.o
 obj-$(CONFIG_RATELIMIT_KUNIT_TEST) += test_ratelimit.o
 obj-$(CONFIG_UUID_KUNIT_TEST) += uuid_kunit.o
+ifeq ($(CONFIG_RUST_UUID_KUNIT_TEST),y)
+# Keep the original suite tristate, module identity and independent provider.
+$(obj)/uuid_kunit.o: $(src)/uuid_kunit.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+
+$(obj)/uuid_kunit.s: $(src)/uuid_kunit.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+
+$(obj)/uuid_kunit.ll: $(src)/uuid_kunit.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 
 obj-$(CONFIG_TEST_RUNTIME_MODULE)		+= module/
