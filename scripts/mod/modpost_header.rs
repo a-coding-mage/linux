@@ -7,6 +7,7 @@ use crate::file2alias::Alias;
 #[derive(Default)]
 pub(crate) struct Options {
     pub(crate) module_enabled: bool,
+    pub(crate) rust_vmlinux_export: bool,
     pub(crate) modversions: bool,
     pub(crate) all_versions: bool,
     pub(crate) basic_versions: bool,

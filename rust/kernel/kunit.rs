@@ -249,6 +249,79 @@ macro_rules! kunit_expect_eq {
     }};
 }
 
+/// Records a fatal integer equality assertion with the original C printf message.
+///
+/// Operands are evaluated once, before diagnostic conversion, and the last
+/// location is recorded on success too. A failure uses `KUNIT_ASSERTION` and
+/// the binary formatter, then calls the native KUnit abort operation. Foreign
+/// calls stay at the invocation site so modular KUnit remains supported.
+///
+/// # Safety
+///
+/// `test` must be this task's live KUnit context. Its `last_seen` fields must be
+/// initialized and writable, with atomic access if shared. `format` must be a
+/// live NUL-terminated C string and its arguments must match C printf's types.
+/// As with the existing generated-test assertions, KUnit terminates the task
+/// without running Rust destructors. No stack-pinned state, live guards, or
+/// resources requiring destruction may span this call. This test-only facility
+/// has the same foreign-thread-exit limitations documented by `kunit_assert!`.
+#[macro_export]
+macro_rules! kunit_assert_eq_msg {
+    ($test:expr, $left:expr, $right:expr, $format:expr $(, $arg:expr)* $(,)?) => {{
+        let test: *mut $crate::bindings::kunit = $test;
+        let left = $left;
+        let right = $right;
+
+        #[repr(transparent)]
+        struct Location($crate::bindings::kunit_loc);
+        #[repr(transparent)]
+        struct Text($crate::bindings::kunit_binary_assert_text);
+        // SAFETY: These immutable statics only point to immutable C strings.
+        unsafe impl Sync for Location {}
+        // SAFETY: As for Location; the formatter does not modify these strings.
+        unsafe impl Sync for Text {}
+        static LOCATION: Location = Location($crate::bindings::kunit_loc {
+            file: $crate::str::as_char_ptr_in_const_context($crate::c_str!(file!())),
+            line: line!() as $crate::ffi::c_int,
+        });
+        static TEXT: Text = Text($crate::bindings::kunit_binary_assert_text {
+            operation: $crate::str::as_char_ptr_in_const_context($crate::c_str!("==")),
+            left_text: $crate::str::as_char_ptr_in_const_context($crate::c_str!(stringify!($left))),
+            right_text: $crate::str::as_char_ptr_in_const_context($crate::c_str!(stringify!($right))),
+        });
+
+        // The invocation must supply the unsafe context for its actual pointer.
+        $crate::sync::atomic::atomic_store(
+            ::core::ptr::addr_of_mut!((*test).last_seen.file),
+            LOCATION.0.file,
+            $crate::sync::atomic::Relaxed,
+        );
+        $crate::sync::atomic::atomic_store(
+            ::core::ptr::addr_of_mut!((*test).last_seen.line),
+            LOCATION.0.line,
+            $crate::sync::atomic::Relaxed,
+        );
+        if left != right {
+            let assertion = $crate::bindings::kunit_binary_assert {
+                assert: $crate::bindings::kunit_assert {},
+                text: ::core::ptr::addr_of!(TEXT.0),
+                left_value: left as $crate::ffi::c_longlong,
+                right_value: right as $crate::ffi::c_longlong,
+            };
+            $crate::bindings::__kunit_do_failed_assertion(
+                test,
+                ::core::ptr::addr_of!(LOCATION.0),
+                $crate::bindings::kunit_assert_type_KUNIT_ASSERTION,
+                ::core::ptr::addr_of!(assertion.assert),
+                Some($crate::bindings::kunit_binary_assert_format),
+                ($format).as_ptr().cast(),
+                $($arg,)*
+            );
+            $crate::bindings::__kunit_abort(test);
+        }
+    }};
+}
+
 trait TestResult {
     fn is_test_result_ok(&self) -> bool;
 }
@@ -418,7 +491,17 @@ macro_rules! kunit_unsafe_test_suite {
             $crate::bindings::kunit_speed_KUNIT_SPEED_UNSET
         );
     };
+    ($name:literal, $test_cases:ident, suite_exit = $suite_exit:path) => {
+        $crate::kunit_unsafe_test_suite!(
+            @register $name, $test_cases,
+            $crate::bindings::kunit_speed_KUNIT_SPEED_UNSET,
+            Some($suite_exit)
+        );
+    };
     (@register $name:expr, $test_cases:ident, $speed:expr) => {
+        $crate::kunit_unsafe_test_suite!(@register $name, $test_cases, $speed, None);
+    };
+    (@register $name:expr, $test_cases:ident, $speed:expr, $suite_exit:expr) => {
         const _: () = {
             const KUNIT_TEST_SUITE_NAME: [::kernel::ffi::c_char; 256] = {
                 let name_u8 = $name.as_bytes();
@@ -452,7 +535,7 @@ macro_rules! kunit_unsafe_test_suite {
                             .cast::<::kernel::bindings::kunit_case>()
                     },
                     suite_init: None,
-                    suite_exit: None,
+                    suite_exit: $suite_exit,
                     init: None,
                     exit: None,
                     attr: ::kernel::bindings::kunit_attributes {

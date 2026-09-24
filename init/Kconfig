@@ -2285,6 +2285,36 @@ config RUST_NATIVE_EXPORTS
 
 	  If unsure, say N to keep the original C export bridge.
 
+config RUST_VMLINUX_EXPORT
+	bool "Rust final vmlinux export metadata"
+	depends on RUST
+	default n
+	help
+	  Emit the final vmlinux symbol, namespace, license, version and built-in
+	  alias tables with Rust instead of generated C. The original defining
+	  objects still supply every export and symbol version.
+
+	  A dedicated Rust modpost executable supplies this output independently
+	  of HOST_TOOLS_LANG. Per-module metadata and external-module processing
+	  retain their existing C output. Generated strings currently require
+	  UTF-8 input and execution encodings.
+
+	  If unsure, say N to keep the original C final export metadata.
+
+config RUST_MODULE_COMMON
+	bool "Rust common module metadata"
+	depends on RUST && MODULES
+	help
+	  Build common module version magic, build notes and architecture
+	  metadata with the translated Rust implementation. Original target
+	  headers still supply configuration values; the C compiler checks
+	  their validity but emits no common metadata object in this mode.
+	  This currently requires UTF-8 execution strings; other execution
+	  encodings remain available through the original C implementation.
+
+	  This does not change per-module modpost output or module ownership.
+	  If unsure, say N to keep the original C metadata implementation.
+
 source "rust/kernel/Kconfig.test"
 
 config RUSTC_VERSION_TEXT

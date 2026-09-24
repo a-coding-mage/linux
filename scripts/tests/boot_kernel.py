@@ -16,6 +16,8 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 MARKER = b"LUPOS_RUST_BUILD_BOOT_OK"
+FAILSLAB_MARKER = b"LUPOS_FAILSLAB_SETUP_OK"
+FAILSLAB_CONFIG = ("FAULT_INJECTION", "FAILSLAB", "FAULT_INJECTION_DEBUG_FS", "DEBUG_FS", "SYSFS")
 
 
 def architecture(arch):
@@ -126,6 +128,20 @@ def verify_module_events(console, *, preloads=0, module=False, rejected=0, reloa
         raise ValueError("guest did not complete the requested module checks in order")
 
 
+def verify_failslab_setup(console, requested):
+    """Require one verified setup before any module action, only when requested."""
+    records = []
+    for line in console.splitlines():
+        line = re.sub(rb"^\[\s*\d+\.\d+\]\s*", b"", line.strip(), count=1)
+        if b"LUPOS_FAILSLAB_" in line or b"LUPOS_RUST_" in line:
+            records.append(line)
+    setups = [line for line in records if b"LUPOS_FAILSLAB_" in line]
+    if setups != ([FAILSLAB_MARKER] if requested else []):
+        raise ValueError("missing, duplicate, malformed or unrequested failslab setup")
+    if requested and (not records or records[0] != FAILSLAB_MARKER):
+        raise ValueError("failslab setup did not precede module actions")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--build", required=True, type=Path,
@@ -143,6 +159,8 @@ def main():
                         help="unload successful loads in reverse order, then reload in original order")
     parser.add_argument("--reject-module", type=Path, action="append", default=[],
                         help="module that signature enforcement must reject inside the VM (repeatable)")
+    parser.add_argument("--prepare-failslab", action="store_true",
+                        help="prepare scoped FAILSLAB controls inside the isolated VM before module loading")
     args = parser.parse_args()
     build = args.build.resolve()
     work = build / "rust-boot-test"
@@ -164,6 +182,8 @@ def main():
         required.append("CONFIG_MODULE_UNLOAD=y")
     if args.reject_module:
         required.append("CONFIG_MODULE_SIG_FORCE=y")
+    if args.prepare_failslab:
+        required.extend("CONFIG_" + name + "=y" for name in FAILSLAB_CONFIG)
     for setting in required:
         if setting not in configuration:
             parser.error(f"the requested boot checks require {setting}")
@@ -205,6 +225,11 @@ def main():
     if args.module:
         entries += f"file /test-module.ko {args.module.resolve()} 0600 0 0\n"
     guest_paths = []
+    if args.prepare_failslab:
+        setup = work / "failslab-setup"
+        stack_filter = int("CONFIG_FAULT_INJECTION_STACKTRACE_FILTER=y" in configuration)
+        setup.write_text(f"failslab-v1\nstacktrace-filter={stack_filter}\n")
+        entries += f"file /failslab-setup {setup} 0600 0 0\n"
     for index, module in enumerate(args.preload_module):
         guest_paths.append(f"/preload-module.{index}")
         entries += f"file {guest_paths[-1]} {module.resolve()} 0600 0 0\n"
@@ -262,9 +287,12 @@ def main():
         verify_module_events(log_path.read_bytes(), preloads=len(args.preload_module),
                              module=args.module is not None, rejected=len(args.reject_module),
                              reload=args.reload_modules)
+        verify_failslab_setup(log_path.read_bytes(), args.prepare_failslab)
     except ValueError as error:
         raise SystemExit(f"{error}; console output: {log_path}") from error
     print(f"Kernel boot and Rust-generated initramfs checks passed; console: {log_path}")
+    if args.prepare_failslab:
+        print("Scoped FAILSLAB controls verified inside the VM before module loading.")
     if args.module:
         print("Module load passed inside the VM.")
     if args.preload_module:

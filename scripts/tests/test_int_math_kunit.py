@@ -259,7 +259,7 @@ def integration_stanza(name, path=ROOT / "lib/Kconfig"):
 
 def require_integration():
     if integration_stanza("RUST_INT_MATH_KUNIT_TESTS") is None:
-        raise unittest.SkipTest("int-math KUnit selectors are not wired yet; behavior tests remain independent")
+        raise AssertionError("the integer math KUnit language selector is missing")
 
 
 class IntMathKunitSelectionTests(unittest.TestCase):

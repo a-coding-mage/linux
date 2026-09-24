@@ -117,6 +117,9 @@ pub mod pci;
 pub mod pid_namespace;
 pub mod platform;
 pub mod prelude;
+#[cfg(CONFIG_PRIME_NUMBERS)]
+#[path = "../../include/linux/prime_numbers_header.rs"]
+pub mod primes;
 pub mod print;
 pub mod processor;
 pub mod ptr;

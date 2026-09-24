@@ -39,6 +39,12 @@ mod bindings_raw {
     type __kernel_ssize_t = isize;
     type __kernel_ptrdiff_t = isize;
 
+    // with_primes unconditionally invokes this callback: NULL is outside its
+    // C contract. A bare function pointer also preserves the C KCFI type of
+    // with_primes itself; Option<fn> has a different nominal KCFI encoding.
+    #[cfg(CONFIG_PRIME_NUMBERS_KUNIT_TEST)]
+    pub type primes_fn = unsafe extern "C" fn(*mut ffi::c_void, *const primes);
+
     // `bindgen` doesn't automatically do this, see
     // <https://github.com/rust-lang/rust-bindgen/issues/3196>
     //

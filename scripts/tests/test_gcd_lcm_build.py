@@ -19,6 +19,7 @@ import unittest
 from unittest import mock
 
 import check_gcd_lcm_kernel as checker
+from test_gcd_lcm_runtime import BuildFixture, console as runtime_console
 from kconfig_test_support import cached_conf_tools
 from rust_exports_test_support import dwarf_tools, dwarf_versions, read_exports
 from test_ctype_translation import elf_symbol
@@ -58,51 +59,48 @@ class TemporaryTest(unittest.TestCase):
 
 
 class GcdLcmBuildTests(TemporaryTest):
-    def kernel(self, members):
+    def kernel(self, members, selection="Rust"):
         build = self.work / str(len(list(self.work.iterdir())))
-        build.mkdir()
-        for name in ORIGINAL | TRANSLATED | {KUNIT}:
-            path = build / name
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_bytes(b"private archive fixture\n")
-        subprocess.run([*shlex.split(os.environ.get("AR", "ar")), "crT", "vmlinux.a", *sorted(members)],
-                       cwd=build, check=True, capture_output=True)
-        (build / "vmlinux").write_bytes(b"image freshness fixture\n")
-        image = build / "arch/x86/boot/bzImage"
-        image.parent.mkdir(parents=True)
-        image.write_bytes(b"boot fixture\n")
-        os.utime(build / "vmlinux.a", ns=(1_700_000_000_000_000_000,) * 2)
-        os.utime(build / "vmlinux", ns=(1_700_000_001_000_000_000,) * 2)
-        os.utime(image, ns=(1_700_000_002_000_000_000,) * 2)
-        return build
+        fixture = BuildFixture(build, provider=selection, rust_tests=False)
+        # Retain the upgraded gate's genuine source/dependency/mtime protocol;
+        # only ELF readers are isolated by the fixture's scoped transports.
+        for name in (ORIGINAL | TRANSLATED) - set(fixture.owners):
+            fixture.write(name, b"unselected archive transport\n")
+        fixture.archive(sorted(members | {"rust/kernel.o", "lib/kunit/test.o", "lib/kunit/assert.o"}))
+        return fixture
 
     def test_archive_selects_complete_single_implementation_and_original_kunit(self):
         for selection, expected in (("C", ORIGINAL), ("Rust", TRANSLATED), ("C", ORIGINAL)):
-            checker.verify_linked_implementation(self.kernel(expected | {KUNIT}), selection)
+            self.assertEqual(self.kernel(expected | {KUNIT}, selection).verify(), [])
             for members in (set(), ORIGINAL | TRANSLATED, expected - {next(iter(expected))}):
                 with self.assertRaisesRegex(ValueError, "linked GCD/LCM"):
-                    checker.verify_linked_implementation(self.kernel(members | {KUNIT}), selection)
+                    self.kernel(members | {KUNIT}, selection).verify()
             with self.assertRaisesRegex(ValueError, "KUnit"):
-                checker.verify_linked_implementation(self.kernel(expected), selection)
+                self.kernel(expected, selection).verify()
 
     def test_stale_or_missing_kernel_image_is_rejected(self):
-        build = self.kernel(TRANSLATED | {KUNIT})
+        fixture = self.kernel(TRANSLATED | {KUNIT})
+        build = fixture.build
         image = build / "arch/x86/boot/bzImage"
         os.utime(image, ns=(1_699_999_999_000_000_000,) * 2)
         with self.assertRaisesRegex(ValueError, "older"):
-            checker.verify_linked_implementation(build, "Rust")
+            fixture.verify()
         image.rename(image.with_suffix(".saved"))
         with self.assertRaises(FileNotFoundError):
-            checker.verify_linked_implementation(build, "Rust")
+            fixture.verify()
 
     def test_archive_rejects_duplicate_members_and_unknown_selection(self):
         for selection, expected in (("C", ORIGINAL), ("Rust", TRANSLATED)):
-            build = self.kernel(expected | {KUNIT})
+            fixture = self.kernel(expected | {KUNIT}, selection)
+            build = fixture.build
+            original = subprocess.run([*shlex.split(os.environ.get("AR", "ar")), "t", build / "vmlinux.a"],
+                                      check=True, capture_output=True).stdout
             for duplicate in expected | {KUNIT}:
-                listing = b"".join(os.fsencode(name) + b"\n" for name in sorted(expected | {KUNIT}))
-                listing += os.fsencode(duplicate) + b"\n"
-                with mock.patch.object(checker.subprocess, "run", return_value=mock.Mock(stdout=listing)), \
-                     self.assertRaisesRegex(ValueError, "duplicate|exactly one"):
+                listing = original + os.fsencode(build / duplicate) + b"\n"
+                with fixture.transports(), \
+                     mock.patch.object(checker, "tool", side_effect=lambda *args:
+                                       listing if args[:2] == ("ar", "t") else fixture.tool(*args)), \
+                     self.assertRaisesRegex(ValueError, "duplicate|archive membership"):
                     checker.verify_linked_implementation(build, selection)
             for unknown in ("", "rust", "both"):
                 with self.assertRaisesRegex(ValueError, "unknown"):
@@ -382,16 +380,7 @@ class GcdLcmNativeBuildTests(TemporaryTest):
 
 class GcdLcmRuntimeTests(TemporaryTest):
     def console(self, caller="c"):
-        names = re.findall(rb'\{[^{}]*,\s*"([^"]+)"\s*\}',
-                           (ROOT / "lib/math/tests/gcd_kunit.c").read_bytes())
-        data = b"# Subtest: math-gcd\n1..1\n# Subtest: gcd_test\n"
-        data += b"".join(b"ok %d %s\n" % (index, name) for index, name in enumerate(names, 1))
-        data += b"# gcd_test: pass:11 fail:0 skip:0 total:11\nok 1 gcd_test\n"
-        data += b"# Totals: pass:11 fail:0 skip:0 total:11\nok 4 math-gcd\n"
-        for index, enabled in enumerate((1, 0, 1)):
-            data += b"LUPOS_GCD_LCM_KEY_ROUND %d enabled=%d pairs=70352\n" % (index, enabled)
-        marker = b"LUPOS_GCD_LCM_RUST_API_OK" if caller == "rust" else b"LUPOS_GCD_LCM_ABI_OK"
-        return data + marker + b" pairs=211056 key=1,0,1\n"
+        return runtime_console(caller)
 
     def config(self, *missing, native=True):
         names = {"X86_64", "RUST", "MODULES", "PRINTK", "MULTIUSER", "KUNIT", "GCD_KUNIT_TEST"}
@@ -496,11 +485,15 @@ class GcdLcmRuntimeTests(TemporaryTest):
                 if not native:
                     arguments.append("--allow-c-baseline")
                 with mock.patch.object(checker.sys, "argv", arguments), \
-                     mock.patch.object(checker, "verify_linked_implementation") as linked, \
+                     mock.patch.object(checker, "verify_linked_implementation", return_value=[]) as linked, \
+                     mock.patch.object(checker, "verify_rust_api") as api, \
+                     mock.patch.object(checker, "verify_consumer") as consumer, \
                      mock.patch.object(checker, "key_symbol", return_value=(0xffffffff81001000, 4)), \
                      mock.patch.object(checker.subprocess, "run") as run, contextlib.redirect_stdout(io.StringIO()):
                     checker.main()
                 linked.assert_called_once_with(self.work, "Rust" if native else "C")
+                consumer.assert_called_once_with(self.work, self.work / "rust-gcd-lcm-test", caller)
+                self.assertEqual(api.call_count, int(caller == "rust"))
                 self.assertEqual(run.call_count, 2)
                 make, boot = [call.args[0] for call in run.call_args_list]
                 self.assertIn("HOST_TOOLS_LANG=rust", make)

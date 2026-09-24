@@ -110,6 +110,36 @@ config RUST_POLYNOMIAL
 
 	  If unsure, say N.
 
+config RUST_PRIME_NUMBERS
+	bool "Rust implementation of the prime-number library"
+	depends on RUST
+	help
+	  Use the translated Rust prime-number cache when PRIME_NUMBERS is
+	  enabled. The original growing sieve, RCU readers, serialized writers,
+	  allocation-failure fallback and unrestricted C exports are retained.
+	  The library keeps its original built-in/module selection and name.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
+
+	  If unsure, say N.
+
+config RUST_PRIME_NUMBERS_KUNIT_TEST
+	bool "Rust implementation of the prime-number KUnit suite"
+	depends on RUST
+	help
+	  Use the translated Rust suite when PRIME_NUMBERS_KUNIT_TEST is
+	  enabled. The original exhaustive checks, fatal assertions, cache
+	  dump, suite identity and module metadata are retained.
+
+	  This choice is independent of RUST_PRIME_NUMBERS and HOST_TOOLS_LANG.
+	  Disable this option to retain the original C KUnit suite.
+
+	  If unsure, say N.
+
 config RUST_POLYNOMIAL_KUNIT_TEST
 	bool "Rust implementation of the polynomial KUnit suite"
 	depends on RUST
@@ -152,6 +182,20 @@ config RUST_INT_LOG
 
 	  Disable this option to retain the original C implementation. This
 	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
+
+	  If unsure, say N.
+
+config RUST_INT_LOG_KUNIT_TEST
+	bool "Rust implementation of the integer-logarithm KUnit suite"
+	depends on RUST
+	help
+	  Use the translated Rust suite when INT_LOG_KUNIT_TEST is enabled.
+	  The original vectors, parameter names, nonfatal expectations and
+	  int_log_kunit module identity are retained. The suite calls the
+	  selected native provider, including its zero-input warnings.
+
+	  This choice is independent of RUST_INT_LOG and HOST_TOOLS_LANG.
+	  Disable this option to retain the original C KUnit suite.
 
 	  If unsure, say N.
 
@@ -205,6 +249,20 @@ config RUST_GCD_LCM
 
 	  If unsure, say N.
 
+config RUST_GCD_KUNIT_TEST
+	bool "Rust implementation of the greatest-common-divisor KUnit suite"
+	depends on RUST
+	help
+	  Use the translated Rust suite when GCD_KUNIT_TEST is enabled. The
+	  original vectors, parameter names, nonfatal expectations and module
+	  identity are retained. The suite calls the selected native gcd()
+	  provider, preserving its runtime efficient-FFS algorithm selection.
+
+	  This choice is independent of RUST_GCD_LCM and HOST_TOOLS_LANG.
+	  Disable this option to retain the original C KUnit suite.
+
+	  If unsure, say N.
+
 config RUST_RECIPROCAL_DIV
 	bool "Rust implementation of reciprocal division helpers"
 	depends on RUST
@@ -237,6 +295,20 @@ config RUST_RATIONAL
 
 	  Disable this option to retain the original C implementation. This
 	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
+
+	  If unsure, say N.
+
+config RUST_RATIONAL_KUNIT_TEST
+	bool "Rust implementation of the rational-approximation KUnit suite"
+	depends on RUST
+	help
+	  Use the translated Rust suite when RATIONAL_KUNIT_TEST is enabled.
+	  The original vectors, parameter names, two nonfatal expectations per
+	  vector and rational_kunit module identity are retained. The suite
+	  exercises the selected native rational provider through its C ABI.
+
+	  This choice is independent of RUST_RATIONAL and HOST_TOOLS_LANG.
+	  Disable this option to retain the original C KUnit suite.
 
 	  If unsure, say N.
 

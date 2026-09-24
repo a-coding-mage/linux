@@ -5,6 +5,10 @@
 --blocklist-type __kernel_s?size_t
 --blocklist-type __kernel_ptrdiff_t
 
+# with_primes always calls its callback. Model that non-null C contract manually
+# so indirect calls retain the C function-pointer KCFI identity, not Option's.
+--blocklist-type primes_fn
+
 --opaque-type xregs_state
 --opaque-type desc_struct
 --opaque-type arch_lbr_state

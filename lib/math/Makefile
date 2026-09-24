@@ -41,6 +41,18 @@ polynomial-y := polynomial_rust.o
 RUST_ALLOWED_FEATURES_polynomial_rust.o := $(if $(CONFIG_PPC),asm_experimental_arch)
 endif
 obj-$(CONFIG_PRIME_NUMBERS)	+= prime_numbers.o
+ifeq ($(CONFIG_RUST_PRIME_NUMBERS),y)
+# Select the existing translation, retaining prime_numbers.ko and the C choice.
+RUST_ALLOWED_FEATURES_prime_numbers.o := $(if $(CONFIG_PPC),asm_experimental_arch)
+$(obj)/prime_numbers.o: $(src)/prime_numbers.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+
+$(obj)/prime_numbers.s: $(src)/prime_numbers.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+
+$(obj)/prime_numbers.ll: $(src)/prime_numbers.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 obj-$(CONFIG_RATIONAL)		+= rational.o
 ifeq ($(CONFIG_RUST_RATIONAL),y)
 # Preserve the original built-in/module selection and rational.ko name.

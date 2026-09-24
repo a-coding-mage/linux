@@ -859,7 +859,7 @@ with 3,456 allocations, alternating frees and
 replacement allocations, and full-byte checks of live objects. The checker
 requires the actual SLUB object to reference the selected constructor.
 Modules are loaded only inside QEMU; fixtures stay outside the source tree.
-On strict x86 builds, generated module metadata can leave four unused
+Before the final-metadata repair described below, strict x86 builds could leave four unused
 page/memory-helper names in the final symbol table after their addressable
 sections are discarded. The private proprietary fixture removes only these
 allowlisted undefined names after proving that no relocation or version record
@@ -879,8 +879,8 @@ between the provider choices. The Rust provider also passes both callers and
 reload with ``CONFIG_BUG=y``, verbose warning metadata and Rust debug assertions
 enabled. The standard test configuration is restored afterwards.
 The corrected native structure identities additionally pass both callers and
-reload on ARM64 with strict normalized KCFI. The equivalent strict x86-64
-runtime check is pending; the earlier x86-64 results above used ordinary builds.
+reload on ARM64 and x86-64 with strict normalized KCFI, as recorded in the
+strict-boundary checkpoint above.
 
 Focused regressions are in ``test_reciprocal*.py``. The pure translation is
 tested with Rust 1.85 at O0/O2/Os on genuine 32-bit and 64-bit targets, including
@@ -1427,7 +1427,8 @@ checks do not claim sensor measurements or hardware probing in the VM.
 All 42 polynomial build, runtime-checker and arithmetic tests pass with both
 GCC and Clang references, the native-build gate enabled and genuine 32-bit
 execution, without skips.
-Final strict-kernel DWARF audits match original C tooling for 455 compilation
+At the native-library milestone, strict-kernel DWARF audits match original C
+tooling for 455 compilation
 units/7,069 unit CRCs on x86-64 and 405 units/6,901 unit CRCs on ARM64. The
 linked-image export counts are 7,069 and 6,900 respectively; both unstripped
 and final images agree. Fresh C references also match all 3,204 x86-64 and
@@ -1482,24 +1483,422 @@ retains the original 16 parameter invocations.
 ``check_kunit_expectations.py BUILD --reload-modules`` adds a private Rust-only
 negative-control module. It requires two intentional expectation failures with
 the exact signed/unsigned diagnostics and source locations, continuation after
-each failure, and a passing following case. The modular-framework control
-passes on both architectures, including unload/reload. Unrelated failures and
+each failure, and a passing following case. Both built-in and modular framework
+controls pass on both architectures, including unload/reload. Unrelated failures and
 kernel faults are rejected. The original C failure formatter itself executes
 an internal assertion while registering its temporary resources, so it may
 overwrite ``last_seen``; the control checks that field after a successful
 expectation and checks the failure call sites through the actual diagnostics.
+
+Integer-power and integer-root KUnit suites
+------------------------------------------
+
+``CONFIG_RUST_INT_MATH_KUNIT_TESTS=y`` independently selects the repaired
+``int_pow_kunit.rs`` and ``int_sqrt_kunit.rs`` translations. Each original
+test tristate, module name and C fallback remain available. The option defaults
+off and does not select the native provider language or depend on
+``HOST_TOOLS_LANG``. Their explicit object, assembly and LLVM-IR rules retain
+the original basenames.
+
+Both suites now use the shared native-binding KUnit helpers above, with all
+nine power and 21 root vectors, parameter descriptions, suite/case names,
+module metadata and exact provenance markers preserved. Expectations remain
+nonfatal and retain the original expected/actual operand order. Power vectors
+retain full-width ``u64`` values; root vectors call the actual native-word
+``int_sqrt`` binding, not the separate ``int_sqrt64`` helper.
+
+``test_int_math_kunit.py`` runs original C and translated Rust callbacks and
+parameter generators with genuine 32/64-bit targets, including intentionally
+corrupted provider results. It checks metadata, provenance, independent
+selection and real C/Rust Kbuild object/assembly/IR switching and dependencies.
+``check_int_math_kernel.py`` now verifies the actual selected suite sources,
+registration, native imports, module versions and artifact freshness before
+booting. It accepts ``--reload-modules`` and detects x86-64 versus ARM64 from
+the native configuration.
+
+The initial built-in Rust suites pass on both architectures with strict KCFI
+and symbol versioning. All 30 original parameter cases run, while each C or
+Rust caller module load additionally checks 82,113 root and 4,400 power inputs;
+both callers also pass unload/reload. Both modular suites pass with built-in
+or modular KUnit; the two mixed built-in/module arrangements also pass.
+With modular KUnit, all four C/Rust provider/suite-language combinations pass
+on both architectures, including 60 parameter invocations across module
+load/reload. With built-in tests, all four language combinations likewise
+pass. Returning to the saved all-Rust built-in configurations reproduces their
+exact configuration and symbol-version tables, and both callers pass again
+for the integer-math and polynomial suites.
+
+With these three translated KUnit suites integrated, the complete minimum-
+Rust-1.85 regression run passes all 1,261 tests without skips, including genuine
+i686 execution and the configured native-build gates. The focused KUnit tests
+also pass with GCC and Clang references. The 38 monitored active configuration,
+version, implementation, test-object, binding/metadata, archive and image
+artifacts retain their exact contents and timestamps across the full suite and
+subsequent no-op strict-kernel builds.
+
+Fresh strict-kernel DWARF audits match original C tooling for 455 compilation
+units/7,070 unit CRCs on x86-64 and 404 units/6,902 unit CRCs on ARM64. Both
+intermediate and final linked images agree on 7,070 and 6,901 exported symbols,
+respectively. Original C export-bridge references match all 3,205 x86-64 and
+3,160 ARM64 records. The normal GCC x86 and LLVM ARM64 outputs retain their
+previous symbol-version tables; repeated builds preserve sizes and timestamps
+across all 6,611 and 4,205 regular output files, respectively.
+
+GCD and rational-approximation KUnit suites
+------------------------------------------
+
+``CONFIG_RUST_GCD_KUNIT_TEST=y`` and
+``CONFIG_RUST_RATIONAL_KUNIT_TEST=y`` independently select the repaired
+``gcd_kunit.rs`` and ``rational_kunit.rs`` translations. Both language options
+default off and preserve the original C suite, test tristate, module name and
+provider selection. Explicit object, assembly and LLVM-IR rules select Rust
+without changing the original object order.
+
+The suites use actual generated KUnit and arithmetic bindings, with the native
+declarations supplied by ``linux/gcd.h`` and ``linux/rational.h``. All 11 GCD
+and eight rational vectors, their ordered descriptions (including duplicate
+GCD descriptions), native unsigned-long widths, original module metadata and
+exact provenance markers are preserved. GCD calls the native provider rather
+than replacing its runtime static-key selection with a pure Rust calculation.
+Rational retains two independent, nonfatal numerator/denominator expectations.
+
+``test_gcd_rational_kunit.py`` compares the original C and actual translated
+callbacks/generators on genuine 32/64-bit targets, including corrupted provider
+outputs. All 11 behavior, metadata and build-selection groups pass with minimum
+Rust 1.85, GCC/Clang references and genuine i686 execution. The build checks
+cover independent C/Rust selections, original tristates/module order, cold
+parallel object/assembly/IR builds, no-op rebuilds and transitive dependencies.
+Both translated suites also build and pass their original
+19 parameter cases in x86-64 and ARM64 kernels with CFI and symbol versioning,
+using built-in Rust providers and a built-in KUnit framework. With modular
+KUnit and both suites as modules, framework-first load and reverse-order
+unload/reload pass on both architectures, repeating all 19 parameter cases.
+Both rational native callers additionally pass 12,296 tuples per load on each
+architecture; the checker validates native source selection, imports, versions
+and ordered suite/module completion. The proprietary C caller's private build
+uses ``__DISABLE_EXPORTS`` only to suppress unused header address-reference
+metadata. It exports nothing, retains its original non-GPL license and keeps
+KCFI enabled, verified in the saved compiler flags and indirect-call machine
+code. This does not change kernel compilation flags or remove real imports.
+
+Both GCD/LCM callers pass 422,112 pairs across load/reload on x86-64, including
+real static-key transitions ``1 -> 0 -> 1`` and 22 original KUnit parameter
+invocations. The Rust caller checks both the actual native exports and the
+pure Rust API. The address-bound static-key fixture remains explicitly
+x86-64-only; the ARM64 suite boot/reload checks do not claim to validate that
+fixture. All four native provider/suite-language combinations pass with modular
+KUnit on both architectures, including framework-first load and suite reload.
+The x86-64 GCD fixture checks the real static-key transitions in each combination.
+An additional x86-64 configuration genuinely selects ``RATIONAL=m``; all four
+provider/suite-language combinations pass with framework, provider and suite
+modules loaded in order and unloaded/reloaded. ARM64 selects ``COMMON_CLK``,
+which forces ``RATIONAL=y``; its tests do not claim modular-provider coverage.
+Restoring the saved all-Rust built-in configurations reproduces both original
+symbol-version tables; the only configuration addition is the disabled new
+integer-log suite selector. The restored native rational callers pass again on
+both architectures, as do the x86-64 GCD static-key fixture and both built-in
+GCD/rational suites. The separate modular-provider configuration likewise
+restores its symbol-version table and passes again.
+
+The normal GCC x86 and LLVM ARM64 outputs keep both new suite-language
+options disabled. After refreshing their generated bindings, repeated normal
+builds preserve sizes and timestamps across all 6,611 and 4,205 regular output
+files, respectively.
+
+At this GCD/rational integration checkpoint, the complete minimum-Rust-1.85
+regression run passes all 1,309 tests without skips. All 80 monitored active
+configuration, provider, suite, framework, binding, module-version and image
+artifacts across the strict modular-framework builds keep their exact contents
+and timestamps across the full suite and subsequent no-op builds. The normal
+outputs' 10,816 regular files also retain their sizes and timestamps.
+
+Fresh modular-framework DWARF audits match the original tooling for 455
+compilation units/7,002 unit CRCs on x86-64 and 403 units/6,832 unit CRCs on
+ARM64. Both intermediate and final linked images agree on 6,937 and 6,764
+exported symbols, respectively; original C export-bridge references match all
+3,137 x86-64 and 3,090 ARM64 records.
+
+Integer-logarithm KUnit suite
+----------------------------
+
+``CONFIG_RUST_INT_LOG_KUNIT_TEST=y`` independently selects the repaired
+``int_log_kunit.rs``. The default-off choice retains the original C suite,
+test tristate, module identity and object order, with explicit Rust object,
+assembly and LLVM-IR rules. All nine binary-log and eight decimal-log vectors,
+ordered descriptions, expected-first nonfatal assertions, module metadata and
+the exact provenance marker are preserved. The suite calls actual native
+bindings, including both zero inputs and their provider warnings, rather than
+substituting the pure Rust checked API's ``None`` result.
+
+All ten groups in ``test_int_log_kunit.py`` pass with minimum Rust 1.85,
+GCC/Clang references and genuine 32/64-bit execution. These cover original
+callbacks/generators, corrupted provider results, scoped zero-warning counts,
+metadata, independent Kconfig choices and real C/Rust Kbuild switching,
+parallel object/assembly/IR builds, no-op rebuilds and dependencies. Negative
+warning controls must compile successfully and fail at execution with the
+expected code. The combined translation, ABI, Kbuild, KUnit and runtime-checker
+regression passes all 67 tests without skips, including a read-only native
+artifact/version audit.
+
+The selected Rust suite builds and passes all 17 original parameters in both
+x86-64 and ARM64 kernels with CFI, module versioning, built-in KUnit and
+``BUG=y``. Both C and Rust caller modules additionally pass 71,272 positive
+inputs and six zero probes per load, including unload/reload. The checker
+requires the two original KUnit zero warnings and exactly one warning inside
+each caller's zero-invocation boundaries, from the selected native function.
+Unrelated warnings and kernel faults remain errors. On x86-64 with modular
+KUnit, all four provider/suite-language combinations pass framework-first
+load and reverse-order unload/reload with ``BUG=n``, including 34 original
+parameter invocations and no zero warnings. The all-Rust module configuration
+is restored afterward and passes again without changing its symbol-version
+table. All four built-in provider/suite-language combinations also pass on
+both architectures with ``BUG=y``, including exact warning provenance and
+counts for the selected C or Rust provider. Returning to the saved all-Rust
+built-in selections reproduces both exact configurations and symbol-version
+tables, and the native Rust callers pass again.
+
+ARM64 exposed legitimate ``nbcon`` console takeover: a partial record followed
+by the kernel's explicit replay marker and the complete record. The checker
+normalizes only this exact marker and an adjacent, nonempty, byte-matching
+prefix of the newline-terminated replay; it does not discard unmarked
+duplicates or guess mismatched/multiline replays. Tests retain raw-console
+fatal-diagnostic checks, exact warning counts and ordered suite/module events.
+
+The all-Rust modular-framework/suite configuration additionally passes with
+``BUG=y`` on both x86-64 and ARM64, for both proprietary C and Rust callers.
+Each run repeats the 17 suite parameters after unload/reload, checks 71,272
+positive inputs and six zero probes per caller load, and requires the exact
+16 combined suite/caller warnings.
+
+At this integer-log checkpoint, the complete minimum-Rust-1.85 regression
+passes all 1,339 tests without skips. All 76 monitored active strict-build
+configuration, provider, suite, binding, version and image artifacts retain
+their exact contents and timestamps through the suite and true no-op builds.
+Fresh DWARF audits cover 456 compilation units/7,074 unit CRCs on x86-64 and
+403 units/6,903 unit CRCs on ARM64. Intermediate and final linked images agree
+on all 7,074 and 6,902 exports, respectively. Independent original-C bridge
+references match all 3,207 x86-64 and 3,160 ARM64 records.
+
+The normal GCC x86 and LLVM ARM64 builds keep the new suite-language option
+disabled and retain their symbol-version tables. After the one-time Kconfig
+refresh, repeated builds preserve sizes and timestamps across all 6,611 and
+4,205 regular output files, respectively.
+
+Prime-number cache and KUnit integration
+---------------------------------------
+
+``CONFIG_RUST_PRIME_NUMBERS=y`` selects the repaired existing translation
+without changing ``PRIME_NUMBERS=n/y/m`` or the ``prime_numbers.ko`` identity.
+Explicit rules cover object, assembly and LLVM-IR targets; disabling the option
+retains the original C source. The implementation uses actual native bindings,
+flexible-array offsets, Kmalloc, a statically initialized native mutex, LKMM
+atomics and RCU read guards. It preserves allocation before locking, the writer
+recheck, immutable bitmap publication, deferred retirement, exit-only cleanup,
+unrestricted exports and the original descending trial-division fallback.
+The original ``slow_is_prime_number(1)`` quirk is preserved separately from the
+public predicate, which excludes one. Checked rounding/layout overflow falls
+back instead of reproducing the C wrap-to-zero allocation overrun.
+
+The repaired public header exposes ``kernel::primes`` with either provider
+language selected, including modular providers. Its inline facade does not
+duplicate the cache or introduce provider imports into the built-in kernel
+object. Inclusive iterators preserve the initial ``from`` value unchanged,
+including zero, one and composites. The otherwise nonterminating ULONG_MAX
+upper-bound case yields its sentinel once. All original source markers remain.
+
+``CONFIG_RUST_PRIME_NUMBERS_KUNIT_TEST`` independently selects the translated
+suite, consuming the repaired private header. It retains the complete original
+65,534-input sweep, 6,542 next-prime checks, fatal binary assertions and their
+printf arguments, RCU-protected suite-exit bitmap dump, module metadata and
+optional packed printk-index records. Records remain present with
+``PRINTK_INDEX=y, PRINTK=n`` as in the original macro.
+
+Both the original C suite and the translated Rust suite have built and passed
+with the Rust provider, modular KUnit and module unload/reload on x86-64 and
+ARM64, using minimum Rust 1.85, CFI and symbol versioning. A separate x86-64
+SMP/lockdep/debug-mutex configuration also passes the original suite. Six
+provider groups and thirteen suite groups pass with GCC/Clang references and
+genuine 32/64-bit execution. Their deterministic host allocation/RCU transport
+checks algorithmic and lifetime boundaries; it is not a native concurrency
+proof. Five real Kconfig/Kbuild provider groups also check source switching,
+archive/module membership, parallel inspection targets, no-op rebuilds and
+transitive dependencies.
+
+The boot runner's optional ``--prepare-failslab`` mounts debugfs only inside
+the isolated VM, writes and reads back scoped controls before any module load,
+and rejects a missing, malformed or misplaced setup marker. With two CPUs
+actually online, the debug x86-64 kernel passes two fresh-cache runs across
+unload/reload: four real NULL allocations, two successful retries, a cached
+nonallocating control and an old RCU reader held across publication and eight
+same-size allocator churn allocations in each run. The original C suite also
+passes after each stress run. This proves held-reader safety for that protocol,
+not complete batched deferred reclamation. A previous ACPI-disabled guest
+discovered only one CPU and was correctly rejected before creating workers.
+
+All four C/Rust provider/suite combinations pass proprietary C and Rust
+public-ABI callers on x86-64 and ARM64, both built-in and modular: 32 native
+caller configurations, including caller unload/reload and complete dependency
+reload for modular providers. Each caller load checks
+65,536 primality values, 65,537 next-prime calls and twelve iterator cases.
+Actual typed indirect calls retain native KCFI guards. The fixture preserves
+the original slow fallback's next(0)=1 quirk independently from the public
+cached next(0)=2 result; both complete caller bodies also execute against the
+unchanged original C cache in the host regression. Built-in prime matrix boots
+use the existing KUnit default suite filter. Separate final boots restore the
+unfiltered configuration on both architectures: the prime suite, all 30
+power/root parameters, 17 integer-logarithm parameters, 11 GCD parameters,
+eight rational parameters and 16 polynomial parameters pass. The Rust
+integer-logarithm ABI caller also passes unload/reload, with the exact expected
+zero-input warnings distinguished from unrelated kernel diagnostics.
+
+The original C suite also passes twice with the Rust provider under
+PREEMPT_RT, SMP, lockdep and module unload/reload. Its static mutex therefore
+uses the actual RT initializer and backend in native execution as well as the
+non-RT paths above.
+
+A native x86 load exposed four unversioned, relocation-free imports introduced
+by C module metadata after modpost, not by the Rust owner. Final metadata
+compilation now disables incidental header export/KCFI-addressability emission;
+real owner compilation and generated KSYMTAB/CRC records are unchanged.
+Private native-command comparisons on x86-64 and ARM64 preserve allocated
+payload sections and normalized relocations, excluding ``.note.gnu.build-id``:
+executable bytes, exports, CRCs, module information and owner KCFI symbols remain
+unchanged. Seven focused metadata/configuration groups pass with GCC and Clang
+and minimum Rust 1.85. Final ELF validation requires matching CRCs for every
+resolved import and ``module_layout``; unreferenced orphan symbols receive no
+exception. A fresh RT boot has no missing-version diagnostic.
+
+The expanded stress protocol passes with both the original C and Rust
+providers in the non-RT debug kernel and the Rust provider under PREEMPT_RT,
+using the original C suite, two online CPUs and two fresh-cache runs each.
+The non-RT configuration includes debug mutex checks; the RT configuration
+uses its available RT lockdep/spinlock checks, not ``DEBUG_MUTEXES``.
+The protocol also forces two
+writers to allocate before publication. Writer A publishes first; writer B
+resumes only after a guarded snapshot identifies A's allocation. Exactly one
+native free cancels B's distinct allocation, with no matching A free during
+the observation window; a final guarded snapshot still identifies A. Workers
+are joined and tracepoints unregistered before unload. Registration and
+unregistration stay outside the CPU-hotplug read lock, avoiding the lockdep
+inversion caught by the first native run. This observes cancellation and
+held-reader safety, not complete batched deferred reclamation.
+
+Both languages also pass both ABI callers with the prime suite disabled on
+both architectures, without conditional test exports. Disabling the provider
+removes its archive members, module-order entries and public/private exports
+and definitions from each native build. Both private modular configurations
+have been restored to Rust provider and suite, with fresh proprietary Rust
+ABI load/unload/reload checks passing.
+
+Fresh strict-build DWARF audits agree between original C, translated Rust and
+saved Kbuild output across 457 x86 compilation units with 7,079 CRC records,
+and 404 ARM64 units with 6,908 CRC records. Relocatable and final kernel images
+agree on all 7,079 x86 and 6,907 ARM64 exports. Fresh original-C bridge
+references also match all 3,208 x86 and 3,161 ARM64 Rust bridge records.
+
+The normal GCC x86 and LLVM ARM64 builds retain the default-off prime choices
+and pass after configuration refresh. Subsequent true no-op builds preserve
+every regular file's path, size, nanosecond timestamp and SHA-256 across
+6,611 x86 and 4,205 ARM64 files.
+
+Before the subsequent common-metadata integration, the expanded regression
+passes all 1,419 tests without skips in 609.515
+seconds with minimum Rust 1.85, ``-Dwarnings``, genuine i686 execution and
+every configured native-artifact gate enabled. The non-default bindgen path
+is passed as a make command-line assignment. An initial invocation supplied
+it only in the environment and failed because Kbuild selected an unavailable
+``bindgen``; the corrected complete run passes, with no source workaround.
+Across the full run and subsequent true no-op builds, all 33,611 regular
+files in the six strict, modular, debug and RT output trees retain their
+paths, sizes, nanosecond timestamps and SHA-256 hashes. This checkpoint proves
+the migrated components and their regression coverage, not the outstanding
+whole-kernel translation.
+
+A subsequent callback-ABI audit found that Rust 1.85 encodes the optional
+callback argument of the private ``with_primes`` export differently for
+KCFI. Its previous tests used direct calls; the protected public ``is`` and
+``next`` calls are unaffected. The provider and generated-binding interface
+now consistently use the original non-null callback contract. The actual
+x86 native object's type ID matches C's ``0x5bdf0b2f``. All 25 focused provider,
+suite and callback groups pass without skips, including real i686 execution,
+protected LP64 C/Rust indirect callers and a wrongly nullable caller that
+traps against both providers. A wrong inner callback likewise preserves the
+ordinary ABI but traps under KCFI with either provider. Rust 1.85 does not
+support i686 KCFI; its ELF32
+coverage is ordinary indirect ABI execution, not a simulated KCFI target.
+The full-suite checkpoint above predates this correction and the new groups.
+
+The native stress fixture now routes every private snapshot call through a
+typed volatile function pointer. Its compiled object and final module must
+contain the actual provider's KCFI type check, conditional trap and indirect
+call; legitimate split trap sections are individually validated. The updated
+debug and PREEMPT_RT VMs both pass two fresh-cache runs, their original C
+KUnit suite and unload/reload with this guard active, retaining every
+allocation, held-reader and competing-writer assertion above. All 85 focused
+prime provider, suite, build, runtime and stress groups pass without skips
+with genuine i686 execution where supported.
+
+Common module metadata
+----------------------
+
+``CONFIG_RUST_MODULE_COMMON`` selects the repaired existing
+``scripts/module-common.rs`` independently of the module owner language.
+The default remains the original C implementation. A Rust host generator
+decodes preprocessed authoritative target headers into inline data; the
+selected C frontend validates the original declarations with
+``-fsyntax-only`` but emits no common metadata object. Rust emits the real
+version magic, build-salt/LTO notes, optional retpoline record and ORC hash,
+without owner exports, runtime imports or a module initializer.
+
+The generator checks the target frontend's execution character set and
+rejects unsupported non-UTF-8 execution strings explicitly, preserving the C
+choice for those configurations. A non-UTF-8 input file converted by GCC to
+UTF-8 execution strings still matches the original C object.
+
+Ten differential groups pass with GCC and Clang references, minimum Rust
+1.85 and genuine i686, x86-64, ARM64 and big-endian PowerPC objects. Fresh
+x86-64 and ARM64 native modular builds select Rust metadata successfully;
+their actual common objects match privately compiled original C records,
+section flags and alignment, including the x86 GNU property note. Both native
+VMs pass the proprietary Rust public-ABI caller, two selected KUnit runs and
+dependency unload/reload. Eight new metadata-verifier groups and 113 combined
+runtime-checker tests pass without skips; Rust metadata gets its own strict
+source, dependency and ELF-data validation, not an exemption from the C
+fixture's checks. Nine actual Kbuild groups additionally pass C-to-Rust-to-C
+switching, independent C/Rust module ownership and host tools, separate
+external working directories, merged syntax-validation/preprocessor
+dependencies, source/core/configuration rebuilds, true no-op builds,
+preservation of a previous good object after an error, and cleanup after the
+selector is disabled. All 27 focused metadata groups pass without skips with
+both GCC and Clang references. Native original-C object comparisons and both
+VM unload/reload checks also pass after the execution-charset guard.
+Per-module ``*.mod.c`` and ``.vmlinux.export.c`` are still generated and compiled
+as C; this option does not yet migrate those paths.
+
+With the common metadata integration and private callback correction included,
+the complete regression passes all 1,456 tests without skips in 620.018
+seconds. This run uses minimum Rust 1.85, ``-Dwarnings``, genuine i686 execution,
+the explicit bindgen make argument and all configured native-artifact gates.
+The eight strict, modular, debug, RT and normal compatibility builds also pass;
+the current common-metadata VMs and guarded debug/RT stress runs are described
+above. Across the full suite and true no-op builds, all 44,441 regular files
+in these eight output trees retain their exact paths, sizes, nanosecond
+timestamps and SHA-256 hashes. This is a component integration checkpoint,
+not a completed Rust kernel.
 
 Remaining integration
 ---------------------
 
 Most of the migration is still outstanding. In particular:
 
-* The remaining Kconfig front ends, device-tree tools,
-  architecture tools, and other host utilities still need complete Rust
-  implementations and corresponding build changes.
+* The ``nconf``, ``mconf``, ``gconf`` and ``qconf`` Kconfig front ends still
+  select their original C/C++ objects. Remaining host translations need
+  per-file implementation and build-selection audits; the already selectable
+  command-line host tools do not prove all host code has been migrated.
 * Apart from the opt-in CORDIC, integer-math, integer-logarithm, generic wide-division
   library and its independently selected self-tests, GCD/LCM,
-  rational-approximation, reciprocal-division, polynomial, BCD, ctype, hexadecimal-helper
+  rational-approximation, reciprocal-division, polynomial, prime-number,
+  BCD, ctype, hexadecimal-helper
   and x86-decoder integrations above,
   target-kernel C objects still take precedence over adjacent Rust files.
   Their Rust definitions, shared types, configuration handling, exported
@@ -1509,13 +1908,17 @@ Most of the migration is still outstanding. In particular:
   and starting the kernel.
 * Architecture build files and translated selftests need integration and
   behavioral verification.
-  Apart from the polynomial suite above, the native math-library checks still
-  run the original C KUnit suites. Their adjacent translated KUnit files are
-  not yet selected:
-  actual binding types, parameter generation/registration, nonfatal
-  expectations, original suite/case names and module lifecycle need repair
-  before enabling them. The Rust division self-tests described above are a
-  separate, already selectable integration.
+  The polynomial, integer-power, integer-root, GCD, rational,
+  integer-logarithm and prime-number suites cover the current
+  ``lib/math/tests/Makefile`` entries; tests elsewhere still need their own
+  translation, binding and native lifecycle audits. The Rust division
+  self-tests described above are a separate, already selectable integration.
+* Module finalization still compiles generated ``*.mod.c`` and
+  ``.vmlinux.export.c``. Common module metadata has a selectable Rust
+  selection as described above.
+  Their Rust selection requires complete module layouts, lifecycle
+  relocations, loader export/version tables and architecture metadata;
+  the existing adjacent Rust translations do not yet provide these paths.
 * A successful mixed C/Rust build validates the migrated components only.
   Full Rust kernel linking, booting, and the applicable kernel/selftest
   suites remain required before declaring the translation complete.

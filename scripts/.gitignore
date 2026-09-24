@@ -4,6 +4,7 @@
 /generate_rust_target
 /insert-sys-cert
 /kallsyms
+/module-common-data
 /module.lds
 /recordmcount
 /rustdoc_test_builder

@@ -234,11 +234,71 @@ class BootArchitectureTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
             result = subprocess.run([binary], capture_output=True, timeout=30)
             self.assertEqual(result.returncode, 0, result.stdout.decode() + result.stderr.decode())
-            self.assertIn(b"5 passed; 0 failed", result.stdout)
+            self.assertIn(b"8 passed; 0 failed", result.stdout)
         source = (boot.ROOT / "scripts/tests/boot_init.rs").read_text().split("#[cfg(test)]", 1)[0]
         self.assertNotIn("println!", source)
         self.assertNotIn("io::stdout", source)
         self.assertIn('open("/dev/kmsg")', source)
+
+    def test_failslab_setup_marker_is_exact_unique_and_before_modules(self):
+        good = b"[ 1.000001] " + boot.FAILSLAB_MARKER + b"\nLUPOS_RUST_PRELOAD_OK 0\n" + boot.MARKER + b"\n"
+        boot.verify_failslab_setup(good, True)
+        boot.verify_failslab_setup(boot.MARKER + b"\n", False)
+        bad = [good.replace(boot.FAILSLAB_MARKER, b""), good + boot.FAILSLAB_MARKER + b"\n",
+               good.replace(boot.FAILSLAB_MARKER, boot.FAILSLAB_MARKER + b" extra"),
+               good.replace(boot.FAILSLAB_MARKER, b"prefix " + boot.FAILSLAB_MARKER),
+               b"LUPOS_RUST_PRELOAD_OK 0\n" + good,
+               good.replace(boot.FAILSLAB_MARKER, b"LUPOS_FAILSLAB_SETUP_FAILED")]
+        for console in bad:
+            with self.subTest(console=console), self.assertRaises(ValueError):
+                boot.verify_failslab_setup(console, True)
+        with self.assertRaises(ValueError):
+            boot.verify_failslab_setup(good, False)
+
+    def test_failslab_required_configs_fail_before_compilation_or_writes(self):
+        for missing in boot.FAILSLAB_CONFIG:
+            with self.subTest(missing=missing), tempfile.TemporaryDirectory(prefix="boot-failslab-config-") as tmp:
+                build = Path(tmp)
+                for name in ("arch/x86/boot/bzImage", "usr/gen_init_cpio"):
+                    path = build / name
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(b"must not execute")
+                (build / ".config").write_text("CONFIG_MULTIUSER=y\nCONFIG_PRINTK=y\nCONFIG_X86_64=y\n" +
+                    "".join("CONFIG_" + option + "=y\n" for option in boot.FAILSLAB_CONFIG if option != missing))
+                error = io.StringIO()
+                with mock.patch.object(sys, "argv", ["boot_kernel", "--build", tmp, "--prepare-failslab"]), \
+                     mock.patch.object(boot.subprocess, "run") as run, \
+                     mock.patch.object(boot.subprocess, "Popen") as popen, \
+                     redirect_stderr(error), self.assertRaises(SystemExit) as caught:
+                    boot.main()
+                self.assertEqual(caught.exception.code, 2)
+                self.assertIn("CONFIG_" + missing + "=y", error.getvalue())
+                run.assert_not_called()
+                popen.assert_not_called()
+                self.assertFalse((build / "rust-boot-test").exists())
+
+    def test_failslab_guest_manifest_is_only_added_when_requested(self):
+        for requested, stack_filter in ((False, False), (True, False), (True, True)):
+            with self.subTest(requested=requested), tempfile.TemporaryDirectory(prefix="boot-failslab-manifest-") as tmp:
+                build = Path(tmp)
+                for name in ("arch/x86/boot/bzImage", "usr/gen_init_cpio"):
+                    path = build / name
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(b"must not execute")
+                (build / ".config").write_text("CONFIG_MULTIUSER=y\nCONFIG_PRINTK=y\nCONFIG_X86_64=y\n" +
+                    "".join("CONFIG_" + option + "=y\n" for option in boot.FAILSLAB_CONFIG) +
+                    ("CONFIG_FAULT_INJECTION_STACKTRACE_FILTER=y\n" if stack_filter else ""))
+                argv = ["boot_kernel", "--build", tmp] + (["--prepare-failslab"] if requested else [])
+                with mock.patch.object(sys, "argv", argv), mock.patch.object(boot.subprocess, "run"), \
+                     mock.patch.object(boot.subprocess, "Popen", side_effect=RuntimeError("stop before QEMU")), \
+                     self.assertRaisesRegex(RuntimeError, "stop before QEMU"):
+                    boot.main()
+                manifest = (build / "rust-boot-test/manifest").read_text()
+                self.assertEqual("file /failslab-setup " in manifest, requested)
+                setup = build / "rust-boot-test/failslab-setup"
+                self.assertEqual(setup.exists(), requested)
+                if requested:
+                    self.assertEqual(setup.read_text(), f"failslab-v1\nstacktrace-filter={int(stack_filter)}\n")
 
     def test_actual_root_target_selects_image_guest_and_emulator(self):
         source = (boot.ROOT / "Makefile").read_text()

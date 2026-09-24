@@ -76,6 +76,98 @@ fn write_record(writer: &mut impl Write, message: &str) -> io::Result<()> {
     }
 }
 
+fn configure_failslab_controls(
+    stack_filter: bool,
+    mut read: impl FnMut(&str) -> io::Result<String>,
+    mut write: impl FnMut(&str, &[u8]) -> io::Result<()>,
+) -> io::Result<()> {
+    // Probability zero keeps unrelated tasks unaffected. The kernel fixture
+    // alone arms current->fail_nth immediately around each tested allocation.
+    for (name, value) in [
+        ("probability", "0"),
+        ("ignore-gfp-wait", "N"),
+        ("cache-filter", "N"),
+    ] {
+        write(name, format!("{value}\n").as_bytes())?;
+        if read(name)?.trim() != value {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "failslab control readback differs",
+            ));
+        }
+    }
+    // When compiled in, the stack filter also applies to per-task fail_nth.
+    // Check the original unrestricted bounds rather than assuming they hold.
+    for (name, expected) in [
+        ("require-start", 0),
+        ("require-end", usize::MAX),
+        ("reject-start", 0),
+        ("reject-end", 0),
+    ] {
+        match read(name) {
+            Err(error) if !stack_filter && error.kind() == io::ErrorKind::NotFound => (),
+            Err(error) => return Err(error),
+            Ok(_) if !stack_filter => {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "unexpected failslab stack filter control",
+                ))
+            }
+            Ok(text) => {
+                let value = usize::from_str_radix(text.trim().trim_start_matches("0x"), 16)
+                    .map_err(|_| {
+                        io::Error::new(io::ErrorKind::InvalidData, "invalid failslab stack bound")
+                    })?;
+                if value != expected {
+                    return Err(io::Error::new(
+                        io::ErrorKind::InvalidData,
+                        "failslab stack filter is restrictive",
+                    ));
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn prepare_failslab(stack_filter: bool) -> io::Result<()> {
+    unsafe extern "C" {
+        fn mount(
+            source: *const std::ffi::c_char,
+            target: *const std::ffi::c_char,
+            filesystem: *const std::ffi::c_char,
+            flags: std::ffi::c_ulong,
+            data: *const std::ffi::c_void,
+        ) -> std::ffi::c_int;
+    }
+    fs::create_dir_all("/sys/kernel/debug")?;
+    // SAFETY: These static strings and NULL data satisfy mount's C interface.
+    // This helper is called only by the isolated VM's PID 1, never on the host.
+    if unsafe {
+        mount(
+            c"debugfs".as_ptr(),
+            c"/sys/kernel/debug".as_ptr(),
+            c"debugfs".as_ptr(),
+            0,
+            std::ptr::null(),
+        )
+    } != 0
+    {
+        return Err(io::Error::last_os_error());
+    }
+    let root = std::path::Path::new("/sys/kernel/debug/failslab");
+    configure_failslab_controls(
+        stack_filter,
+        |name| fs::read_to_string(root.join(name)),
+        |name, value| {
+            fs::OpenOptions::new()
+                .write(true)
+                .open(root.join(name))?
+                .write_all(value)
+        },
+    )
+}
+
 fn main() {
     assert_eq!(std::process::id(), 1);
     // Console TTY writes can interleave with a module's printk output even
@@ -99,6 +191,15 @@ fn main() {
     assert_eq!(file.uid(), 123);
     assert_eq!(file.gid(), 456);
     assert_eq!(file.mode() & 0o777, 0o640);
+    if fs::exists("/failslab-setup").unwrap() {
+        let stack_filter = match fs::read("/failslab-setup").unwrap().as_slice() {
+            b"failslab-v1\nstacktrace-filter=0\n" => false,
+            b"failslab-v1\nstacktrace-filter=1\n" => true,
+            _ => panic!("invalid failslab setup plan"),
+        };
+        prepare_failslab(stack_filter).unwrap();
+        write_record(&mut log, "LUPOS_FAILSLAB_SETUP_OK").unwrap();
+    }
     // These optional fixtures only exist in the isolated test VM. Check
     // rejected signatures before the valid load, so EEXIST cannot mask them.
     for index in 0.. {
@@ -161,6 +262,153 @@ fn main() {
 mod tests {
     use super::*;
     use std::collections::VecDeque;
+
+    #[test]
+    fn failslab_controls_are_written_and_verified_before_loading() {
+        use std::cell::RefCell;
+        use std::collections::BTreeMap;
+        for stack in [false, true] {
+            let mut initial = BTreeMap::new();
+            for (name, value) in [
+                ("probability", "100"),
+                ("ignore-gfp-wait", "Y"),
+                ("cache-filter", "Y"),
+            ] {
+                initial.insert(name.to_owned(), value.to_owned());
+            }
+            if stack {
+                for (name, value) in [
+                    ("require-start", 0),
+                    ("require-end", usize::MAX),
+                    ("reject-start", 0),
+                    ("reject-end", 0),
+                ] {
+                    initial.insert(name.to_owned(), format!("0x{value:x}\n"));
+                }
+            }
+            let values = RefCell::new(initial);
+            let writes = RefCell::new(Vec::new());
+            configure_failslab_controls(
+                stack,
+                |name| {
+                    values
+                        .borrow()
+                        .get(name)
+                        .cloned()
+                        .ok_or(io::ErrorKind::NotFound.into())
+                },
+                |name, value| {
+                    writes.borrow_mut().push(name.to_owned());
+                    values
+                        .borrow_mut()
+                        .insert(name.to_owned(), String::from_utf8(value.to_vec()).unwrap());
+                    Ok(())
+                },
+            )
+            .unwrap();
+            assert_eq!(
+                *writes.borrow(),
+                ["probability", "ignore-gfp-wait", "cache-filter"]
+            );
+            assert_eq!(values.borrow()["probability"], "0\n");
+        }
+    }
+
+    #[test]
+    fn failslab_readback_errors_missing_controls_and_filters_are_fatal() {
+        for mode in 0..7 {
+            let result = configure_failslab_controls(
+                true,
+                |name| {
+                    if mode == 0 {
+                        return Err(io::ErrorKind::NotFound.into());
+                    }
+                    let value = match name {
+                        "probability" => {
+                            if mode == 1 {
+                                "1"
+                            } else {
+                                "0"
+                            }
+                        }
+                        "ignore-gfp-wait" | "cache-filter" => "N",
+                        "require-start" => {
+                            if mode == 2 {
+                                "0x1"
+                            } else {
+                                "0x0"
+                            }
+                        }
+                        "require-end" => {
+                            if mode == 3 {
+                                return Err(io::ErrorKind::NotFound.into());
+                            }
+                            return Ok(if mode == 4 {
+                                "invalid".to_owned()
+                            } else {
+                                format!("{:#x}", usize::MAX)
+                            });
+                        }
+                        "reject-start" => {
+                            if mode == 5 {
+                                "0x1"
+                            } else {
+                                "0x0"
+                            }
+                        }
+                        "reject-end" => "0x0",
+                        _ => unreachable!(),
+                    };
+                    Ok(value.to_owned())
+                },
+                |_, _| {
+                    if mode == 6 {
+                        Err(io::ErrorKind::PermissionDenied.into())
+                    } else {
+                        Ok(())
+                    }
+                },
+            );
+            assert!(
+                result.is_err(),
+                "failure mode {mode} must not proceed to module loading"
+            );
+        }
+    }
+
+    #[test]
+    fn partial_stack_filter_controls_never_count_as_disabled() {
+        let names = ["require-start", "require-end", "reject-start", "reject-end"];
+        for enabled in [false, true] {
+            for present in 0..16 {
+                let result = configure_failslab_controls(
+                    enabled,
+                    |name| {
+                        if name == "probability" {
+                            return Ok("0".to_owned());
+                        }
+                        if name == "ignore-gfp-wait" || name == "cache-filter" {
+                            return Ok("N".to_owned());
+                        }
+                        let index = names.iter().position(|value| *value == name).unwrap();
+                        if present & (1 << index) == 0 {
+                            return Err(io::ErrorKind::NotFound.into());
+                        }
+                        Ok(format!(
+                            "0x{:x}",
+                            if name == "require-end" { usize::MAX } else { 0 }
+                        ))
+                    },
+                    |_, _| Ok(()),
+                );
+                assert_eq!(
+                    result.is_ok(),
+                    if enabled { present == 15 } else { present == 0 },
+                    "enabled={enabled}, present={present}"
+                );
+            }
+        }
+    }
 
     #[derive(Default)]
     struct Writer {

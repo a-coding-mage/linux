@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 C_MARKER = b"LUPOS_INT_MATH_ABI_OK sqrt=82113 pow=4400"
 RUST_MARKER = b"LUPOS_INT_MATH_RUST_API_OK sqrt=82113 pow=4400"
 REQUIRED = {"RUST", "RUST_INT_MATH", "MODULES", "PRINTK", "MULTIUSER",
-            "KUNIT", "INT_POW_KUNIT_TEST", "INT_SQRT_KUNIT_TEST"}
+            "KUNIT", "INT_POW_KUNIT_TEST", "INT_SQRT_KUNIT_TEST", "X86_64", "64BIT"}
 
 POWER_NAMES = (
     "Power of zero", "Power of one", "Base zero", "Base one", "Two squared",
@@ -82,6 +82,26 @@ def console_fixture(*, parameter_plan=False, summaries=True, timestamps=False):
     lines += ["Freeing unused kernel memory", "LUPOS_RUST_BUILD_BOOT_OK"]
     if timestamps:
         lines = ["[    1.123456] " + line for line in lines]
+    return ("\n".join(lines) + "\n").encode()
+
+
+def runtime_console(caller="c", *, modular=(False, False), framework=False, reload=False):
+    lines = []
+    cases = (("int_pow", POWER_NAMES), ("int_sqrt", SQRT_NAMES))
+    for index, ((name, names), module) in enumerate(zip(cases, modular), 1):
+        if not module:
+            lines += suite_lines(name, names, index)
+    preloads = ([None] if framework else []) + [case for case, module in zip(cases, modular) if module]
+    marker = (RUST_MARKER if caller == "rust" else C_MARKER).decode()
+    for iteration in range(2 if reload else 1):
+        if iteration:
+            lines += [f"LUPOS_RUST_MODULE_UNLOAD_OK {index}" for index in reversed(range(len(preloads) + 1))]
+        for index, case in enumerate(preloads):
+            if case is not None:
+                lines += suite_lines(*case, 1)
+            lines.append(f"LUPOS_RUST_MODULE_RELOAD_OK {index}" if iteration else f"LUPOS_RUST_PRELOAD_OK {index}")
+        lines += [marker, f"LUPOS_RUST_MODULE_RELOAD_OK {len(preloads)}" if iteration else "LUPOS_RUST_MODULE_LOAD_OK"]
+    lines.append("LUPOS_RUST_BUILD_BOOT_OK")
     return ("\n".join(lines) + "\n").encode()
 
 
@@ -196,6 +216,49 @@ class IntMathKtapTests(unittest.TestCase):
             checker.verify_kunit_console(unrelated + good.replace(stolen, b""))
 
 
+class IntMathModuleProtocolTests(unittest.TestCase):
+    def test_independent_builtin_modular_suites_framework_and_reload(self):
+        for framework in (False, True):
+            for modular in ((False, False), (False, True), (True, False), (True, True)):
+                if framework and not all(modular):
+                    continue
+                for caller in ("c", "rust"):
+                    for reload in (False, True):
+                        with self.subTest(framework=framework, modular=modular, caller=caller, reload=reload):
+                            data = runtime_console(caller, modular=modular, framework=framework, reload=reload)
+                            self.assertEqual(checker.verify_console(data, caller, modular_suites=modular,
+                                framework_module=framework, reload=reload),
+                                30 + (sum(count for (_, count), module in zip(checker.FUNCTIONS, modular) if module) if reload else 0))
+
+    def test_missing_duplicate_reordered_module_events_and_suites_are_rejected(self):
+        data = runtime_console("rust", modular=(True, True), framework=True, reload=True)
+        lines = data.splitlines(keepends=True)
+        events = [index for index, line in enumerate(lines) if b"LUPOS_" in line or b"ok 1 math-" in line]
+        for position, index in enumerate(events):
+            line = lines[index]
+            mutations = [lines[:index] + lines[index + 1:], lines[:index] + [line] + lines[index:]]
+            if position + 1 < len(events):
+                next_index = events[position + 1]
+                swapped = list(lines)
+                swapped[index], swapped[next_index] = swapped[next_index], swapped[index]
+                mutations.append(swapped)
+            for changed in mutations:
+                with self.subTest(line=line), self.assertRaises(ValueError):
+                    checker.verify_console(b"".join(changed), "rust", modular_suites=(True, True), framework_module=True, reload=True)
+
+    def test_unrelated_faults_failures_and_partial_run_counts_cannot_pass(self):
+        data = runtime_console()
+        for fault in (b"WARNING: unrelated", b"BUG: unrelated", b"CFI failure", b"Oops:", b"Kernel panic", b"UBSAN:",
+                      b"KASAN:", b"not ok 1 unrelated", b"EXPECTATION FAILED", b"ASSERTION FAILED"):
+            with self.subTest(fault=fault), self.assertRaises(ValueError):
+                checker.verify_console(fault + b"\n" + data, "c")
+        for counts in ((), (1,), (1, 1, 1), (0, 1), (1, 3)):
+            with self.subTest(counts=counts), self.assertRaises(ValueError):
+                checker.verify_kunit_console(data, counts)
+        with self.assertRaises(ValueError):
+            checker.verify_console(data, "c", framework_module=True)
+
+
 class IntMathRuntimeCliTests(unittest.TestCase):
     def setUp(self):
         temporary = tempfile.TemporaryDirectory(prefix="int_math-runtime-cli-")
@@ -203,20 +266,22 @@ class IntMathRuntimeCliTests(unittest.TestCase):
         self.work = Path(temporary.name)
         self.sequence = 0
 
-    def build(self, options=REQUIRED):
+    def build(self, options=REQUIRED, states=None):
         self.sequence += 1
         build = self.work / ("build " + str(self.sequence))
         build.mkdir()
-        (build / ".config").write_text("".join("CONFIG_" + name + "=y\n" for name in sorted(options)))
+        values = dict.fromkeys(options, "y")
+        values.update(states or {})
+        (build / ".config").write_text("".join("CONFIG_" + name + "=" + value + "\n" for name, value in sorted(values.items())))
         return build
 
     def invoke(self, build, *, caller=None, arguments=(), console=None,
-               verify_error=None, failure_stage=None, extra_environment=None):
+               verify_error=None, failure_stage=None, extra_environment=None, preloads=(), consumer_error=None):
         argv = ["check_int_math_kernel.py", str(build), *arguments]
         if caller is not None:
             argv += ["--caller", caller]
         if console is None:
-            console = console_fixture() + (RUST_MARKER if caller == "rust" else C_MARKER) + b"\n"
+            console = runtime_console(caller)
         calls = []
 
         def run(command, **kwargs):
@@ -234,7 +299,9 @@ class IntMathRuntimeCliTests(unittest.TestCase):
         # No make, archive reader or QEMU executable can escape these mocks.
         with mock.patch.object(sys, "argv", argv), \
              mock.patch.dict(os.environ, {"MAKE": "make", **(extra_environment or {})}), \
-             mock.patch.object(checker, "verify_linked_implementation", side_effect=verify_error) as verify, \
+             mock.patch.object(checker, "verify_linked_implementation", side_effect=verify_error, return_value=list(preloads)) as verify, \
+             mock.patch.object(checker, "verify_rust_api"), \
+             mock.patch.object(checker, "verify_consumer", side_effect=consumer_error), \
              mock.patch.object(checker.subprocess, "run", side_effect=run), \
              redirect_stdout(stdout), redirect_stderr(stderr):
             try:
@@ -409,6 +476,38 @@ class IntMathRuntimeCliTests(unittest.TestCase):
                     self.assertIsInstance(result.error, ValueError)
                     self.assertEqual(len(result.calls), 2)
                     self.assertEqual(result.stdout, "")
+
+    def test_modular_framework_and_suites_preload_in_order_on_both_architectures(self):
+        for arch, qemu_arch in (("X86_64", "x86_64"), ("ARM64", "aarch64")):
+            build = self.build((REQUIRED - {"X86_64"}) | {arch, "MODULE_UNLOAD", "RUST_INT_MATH_KUNIT_TESTS"},
+                               {"KUNIT": "m", "INT_POW_KUNIT_TEST": "m", "INT_SQRT_KUNIT_TEST": "m"})
+            preloads = [build / name for name in ("lib/kunit/kunit.ko", "lib/math/tests/int_pow_kunit.ko", "lib/math/tests/int_sqrt_kunit.ko")]
+            result = self.invoke(build, caller="rust", arguments=("--reload-modules",), preloads=preloads,
+                                 console=runtime_console("rust", modular=(True, True), framework=True, reload=True))
+            self.assert_one_module(result, build, "int_math_rust_abi.ko")
+            boot = result.calls[1][0]
+            self.assertEqual(boot[boot.index("--arch") + 1], qemu_arch)
+            self.assertEqual(boot[boot.index("--qemu") + 1], "qemu-system-" + qemu_arch)
+            self.assertEqual([boot[index + 1] for index, value in enumerate(boot) if value == "--preload-module"], list(map(str, preloads)))
+            self.assertIn("--reload-modules", boot)
+            self.assertIn("60 original KUnit parameter cases", result.stdout)
+
+    def test_invalid_module_configs_and_bad_consumer_are_rejected(self):
+        for states, arguments, diagnostic in (({"KUNIT": "m"}, (), "both integer math suites=m"),
+                                              ({}, ("--reload-modules",), "MODULE_UNLOAD=y"),
+                                              ({"RUST": "n", "RUST_INT_MATH": "n", "RUST_INT_MATH_KUNIT_TESTS": "y"},
+                                               ("--allow-c-baseline",), "RUST=y")):
+            build = self.build(states=states)
+            result = self.invoke(build, arguments=arguments)
+            self.assertIsInstance(result.error, SystemExit)
+            self.assertIn(diagnostic, result.stderr)
+            self.assertEqual(result.calls, [])
+            self.assertFalse((build / "rust-int-math-test").exists())
+        build = self.build()
+        result = self.invoke(build, consumer_error=ValueError("stale consumer"))
+        self.assertIsInstance(result.error, ValueError)
+        self.assertEqual(len(result.calls), 1)
+        self.assertEqual(result.stdout, "")
 
 
 if __name__ == "__main__":

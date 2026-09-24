@@ -21,12 +21,50 @@ modname = $(notdir $(@:.mod.o=))
 part-of-module = y
 GCOV_PROFILE := n
 ccflags-remove-y := $(CC_FLAGS_CFI)
+# These two metadata-only translation units run after modpost. Header-only
+# KCFI references must not introduce new imports without symbol versions here.
+# Generated KSYMTAB/SYMBOL_CRC records do not use EXPORT_SYMBOL and are retained.
+ccflags-y += -D__DISABLE_EXPORTS
 
 %.mod.o: %.mod.c FORCE
 	$(call if_changed_rule,cc_o_c)
 
+ifeq ($(CONFIG_RUST_MODULE_COMMON),y)
+# Only data is emitted here. Do not run owner versioning, link C helper
+# bitcode, or add a Rust module initializer to this shared metadata object.
+rustflags-remove-y += $(RUSTC_FLAGS_CFI)
+
+quiet_cmd_module_common_data = MODDATA $@
+      cmd_module_common_data = \
+	$(CC) $(c_flags) -fsyntax-only $(srctree)/scripts/module-common.c; \
+	mv $(depfile) $(depfile).validate; \
+	$(CC) $(c_flags) -E -P -x c $< > $@.input; \
+	cat $(depfile).validate >> $(depfile); \
+	$(objtree)/scripts/module-common-data < $@.input > $@.tmp; \
+	mv $@.tmp $@; \
+	rm -f $@.input $(depfile).validate
+
+.module-common-data.rs: $(srctree)/scripts/module-common-data.h \
+		$(srctree)/scripts/module-common.c $(objtree)/scripts/module-common-data FORCE
+	$(call if_changed_dep,module_common_data)
+
+quiet_cmd_module_common_rust = $(RUSTC_OR_CLIPPY_QUIET) [M] $@
+      cmd_module_common_rust = \
+	MODULE_COMMON_DATA=$(abspath .module-common-data.rs) \
+	$(RUSTC_OR_CLIPPY) $(rust_flags) -Zallow-features= \
+		--crate-name=module_common --crate-type=rlib --sysroot=/dev/null \
+		-L $(objtree)/rust --out-dir $(dir $@) \
+		--emit=dep-info=$(depfile) --emit=obj=$@ $<
+
+.module-common.o: $(srctree)/scripts/module-common.rs .module-common-data.rs \
+		$(objtree)/include/generated/rustc_cfg $(objtree)/rust/libcore.rmeta FORCE
+	+$(call if_changed_dep,module_common_rust)
+
+targets += .module-common-data.rs
+else
 .module-common.o: $(srctree)/scripts/module-common.c FORCE
 	$(call if_changed_rule,cc_o_c)
+endif
 
 ifneq ($(WARN_ON_UNUSED_TRACEPOINTS),)
 cmd_check_tracepoint = $(objtree)/scripts/tracepoint-update --module $<;

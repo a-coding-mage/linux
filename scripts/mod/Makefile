@@ -12,6 +12,16 @@ endif
 
 devicetable-offsets-file := devicetable-offsets.h
 
+# This explicit source-to-target rule shares the existing Rust implementation;
+# it is not a hostprogs entry, which would require a separate crate-root file.
+# Native metadata selection must not silently replace HOST_TOOLS_LANG=c.
+always-$(CONFIG_RUST_VMLINUX_EXPORT) += modpost-rust
+targets += modpost-rust
+HOSTRUSTFLAGS_modpost-rust += --cfg modpost_target_offsets
+$(obj)/modpost-rust: private export MODPOST_DEVICETABLE_OFFSETS := $(abspath $(obj)/$(devicetable-offsets-file))
+$(obj)/modpost-rust: $(src)/modpost.rs $(obj)/$(devicetable-offsets-file) FORCE
+	+$(call if_changed_dep,host-rust)
+
 # Normal builds embed the target compiler's layout metadata. The standalone
 # no-config host-tools target may instead supply this header at runtime.
 ifneq ($(HOST_TOOLS_LANG),c)

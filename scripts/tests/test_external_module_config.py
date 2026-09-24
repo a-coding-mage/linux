@@ -10,6 +10,7 @@ headers; stage-one C/Rust rules and module-final compilation/link rules are real
 import os
 from pathlib import Path
 import shlex
+import struct
 import subprocess
 import tempfile
 import unittest
@@ -31,6 +32,56 @@ def run(command, **kwargs):
         raise AssertionError(shlex.join(map(str, command)) + "\n" +
                              result.stdout.decode(errors="replace") + result.stderr.decode(errors="replace"))
     return result
+
+
+def elf_metadata(path):
+    """Normalize allocated bytes and relocations; symbol indexes are not ABI."""
+    data = path.read_bytes()
+    assert data[:6] == b"\x7fELF\x02\x01", "this fixture builds real ELF64 little-endian objects"
+    offset = struct.unpack_from("<Q", data, 40)[0]
+    stride, count, strings = struct.unpack_from("<HHH", data, 58)
+    sections = [struct.unpack_from("<IIQQQQIIQQ", data, offset + index * stride) for index in range(count)]
+
+    def contents(section):
+        return data[section[4]:section[4] + section[5]]
+
+    def string(table, index):
+        return table[index:table.index(0, index)].decode()
+
+    names = contents(sections[strings])
+    names = [string(names, section[0]) for section in sections]
+    symbols = {}
+    for index, section in enumerate(sections):
+        if section[1] != 2:
+            continue
+        strings = contents(sections[section[6]])
+        table = []
+        for at in range(section[4], section[4] + section[5], section[9]):
+            name, info, other, target, value, size = struct.unpack_from("<IBBHQQ", data, at)
+            table.append((string(strings, name), info, other, target, value, size))
+        symbols[index] = table
+    table = next(iter(symbols.values()))
+    undefined = {symbol[0] for symbol in table if symbol[3] == 0 and symbol[0]}
+    kcfi = {symbol[0]: symbol[4] for symbol in table if symbol[0].startswith("__kcfi_typeid_")}
+    allocated = {}
+    for index, section in enumerate(sections):
+        name = names[index]
+        if not section[2] & 2 or name == ".note.gnu.build-id":
+            continue
+        relocations = []
+        for relocation in sections:
+            if relocation[1] != 4 or relocation[7] != index:
+                continue
+            for at in range(relocation[4], relocation[4] + relocation[5], relocation[9]):
+                address, info, addend = struct.unpack_from("<QQq", data, at)
+                symbol = symbols[relocation[6]][info >> 32]
+                target = symbol[0] or (names[symbol[3]] if symbol[3] < count else str(symbol[3]))
+                relocations.append((address, info & 0xffffffff, target, addend))
+        allocated[name] = (section[1], section[2], section[5], section[8],
+                           contents(section) if section[1] != 8 else b"", tuple(relocations))
+    defined = {symbol[0]: (names[symbol[3]], symbol[4]) for symbol in table
+               if symbol[0] and 0 < symbol[3] < count}
+    return undefined, kcfi, allocated, defined
 
 
 class ExternalModuleConfigTests(unittest.TestCase):
@@ -104,7 +155,7 @@ static const unsigned char generated_selection[] __attribute__((used)) = "MOD_CO
 ''')
         compiler = (shlex.join(self.cc) + " -O2 -fno-pie -fno-stack-protector -include " +
                     str(kernel / "include/generated/autoconf.h") + " -I" + str(source / "headers") +
-                    " -I" + str(ROOT / "include") + " -MMD -MF $(depfile) -c $< -o $@")
+                    " -I" + str(ROOT / "include") + " $(_c_flags) -MMD -MF $(depfile) -c $< -o $@")
         common = [*shlex.split(os.environ.get("MAKE", "make")), "--no-print-directory", "-rR", "-j4",
                   "srctree=" + str(ROOT), "srcroot=" + str(source), "objtree=" + str(kernel),
                   "VPATH=" + str(source),
@@ -256,6 +307,170 @@ lib-y := library_part.o
                               ("component_a.o", "component_b.o", "composite.o", "modules.order", "built-in.a", "lib.a")}
                     run(command, cwd=output, env=environment())
                     self.assertEqual({name: (output / name).stat().st_mtime_ns for name in before}, before)
+
+    def metadata_fixture(self, language):
+        """Use real compiler/export macros and both real modposts after stage one.
+
+        Only unrelated C module/primitive types are supplied by the transport.
+        KCFI_REFERENCE and its configuration guards come from compiler.h intact;
+        EXPORT_SYMBOL, KSYMTAB, SYMBOL_CRC and generated version arrays are real.
+        No native objtree is used or changed.
+        """
+        from modpost_test_support import modpost_tools
+
+        case = self.fixture(language, split=True)
+        source, output, kernel = case["source"], case["output"], case["kernel"]
+        headers = source / "headers"
+        (headers / "linux/compiler_types.h").write_text('''
+#ifndef FIXTURE_COMPILER_TYPES_H
+#define FIXTURE_COMPILER_TYPES_H
+#include <linux/compiler_attributes.h>
+#define ___PASTE(a, b) a##b
+#define __PASTE(a, b) ___PASTE(a, b)
+typedef unsigned long uintptr_t;
+struct ftrace_likely_data;
+#endif
+''')
+        (headers / "asm/rwonce.h").write_text("/* No inline READ_ONCE user in metadata. */\n")
+        (headers / "linux/linkage.h").write_text("#define ASM_NL ;\n")
+        (headers / "linux/types.h").write_text("typedef unsigned int u32;\n")
+        (headers / "linux/module.h").write_text('''
+#ifndef FIXTURE_MODULE_H
+#define FIXTURE_MODULE_H
+#include <linux/compiler.h>
+#include <linux/export.h>
+extern unsigned kcfi_header_reference(unsigned);
+KCFI_REFERENCE(kcfi_header_reference);
+#define MODULE_INFO(tag, text) \\
+    static const char module_##tag[] __used __section(".modinfo") = #tag "=" text
+struct module { char name[64]; unsigned arch; };
+struct modversion_info { unsigned long crc; char name[64]; };
+#define MODULE_ARCH_INIT 0
+#define __visible __attribute__((externally_visible))
+#endif
+''')
+        (source / "c_part.c").write_text('''
+#include <linux/module.h>
+extern unsigned genuine_import(unsigned);
+unsigned c_export(unsigned value) { return genuine_import(value); }
+EXPORT_SYMBOL(c_export);
+MODULE_INFO(license, "GPL");
+''')
+        (source / "rust_part.rs").write_text('''//! Real no-std module owner with explicit exports.
+#![no_std]
+#[path = "''' + str(ROOT / "rust/ffi_export.rs") + '''"]
+mod ffi_export;
+extern "C" { fn genuine_import(value: u32) -> u32; }
+/// A genuine C-ABI exported function with a real owner import.
+#[no_mangle]
+pub extern "C" fn rust_export(value: u32) -> u32 { unsafe { genuine_import(value) } }
+ffi_export::export_symbol!(rust_export, rust_export, "", "");
+#[used]
+#[link_section = ".modinfo"]
+static INFO: [u8; 12] = *b"license=GPL\\0";
+''')
+        (kernel / "scripts/module.lds").write_text(
+            'SECTIONS { /DISCARD/ : { *(.discard.*) *(.export_symbol) } }\n')
+        clang = shlex.join(shlex.split(os.environ.get("CLANG", "clang")))
+        common = ["KBUILD_CPPFLAGS=-D__KERNEL__ -DCONFIG_64BIT -DCONFIG_CFI",
+                  "KBUILD_CFLAGS=-fsanitize=kcfi", "CC_FLAGS_CFI=-fsanitize=kcfi",
+                  "LD=" + os.environ.get("LD_LLD", "ld.lld")]
+        for kind in ("build", "final"):
+            case[kind] = [argument.replace("cmd_cc_o_c=" + shlex.join(self.cc), "cmd_cc_o_c=" + clang)
+                          if argument.startswith("cmd_cc_o_c=") else argument for argument in case[kind]]
+            case[kind] += common
+            for index, argument in enumerate(case[kind]):
+                if argument.startswith("cmd_cc_o_c="):
+                    case[kind][index] = argument.replace(" -MMD", " $(modname_flags) -Wno-unknown-attributes -MMD")
+                if argument.startswith("rust_common_cmd="):
+                    case[kind][index] = argument.replace("rust_common_cmd=", "rust_common_cmd=RUSTC_BOOTSTRAP=1 ") + \
+                        " -Zsanitizer=kcfi"
+        self.configure(kernel, False)
+        run([*case["build"], "c_part.o", "rust_part.o", "modules.order"], cwd=output, env=environment())
+        for name, crc in (("c_part", "0x11111111"), ("rust_part", "0x22222222")):
+            command = output / ("." + name + ".o.cmd")
+            command.write_text(command.read_text() + "\n#SYMVER " + name.replace("_part", "_export") + " " + crc + "\n")
+            (output / (name + ".mod")).write_text(name + ".o\n")
+        (output / "input.symvers").write_text(
+            "0x12345678\tgenuine_import\tvmlinux\tEXPORT_SYMBOL\t\n"
+            "0x23456789\tkcfi_header_reference\tvmlinux\tEXPORT_SYMBOL\t\n"
+            "0x34567890\tmodule_layout\tvmlinux\tEXPORT_SYMBOL\t\n")
+        expected = None
+        for modpost in modpost_tools()[64][:2]:
+            run([modpost, "-M", "-m", "-b", "-x", "-i", "input.symvers", "-o", "Module.symvers",
+                 "c_part.o", "rust_part.o"], cwd=output, env=environment())
+            actual = {name: (output / name).read_bytes() for name in
+                      ("c_part.mod.c", "rust_part.mod.c", "Module.symvers")}
+            if expected is not None:
+                self.assertEqual(actual, expected, "original and Rust modpost disagree")
+            expected = actual
+        return case
+
+    def assert_metadata(self, case, *, orphans=False):
+        output = case["output"]
+        for name, crc in (("c_part", 0x11111111), ("rust_part", 0x22222222)):
+            owner = elf_metadata(output / (name + ".o"))
+            module = elf_metadata(output / (name + ".ko"))
+            expected = {"genuine_import"} | ({"kcfi_header_reference"} if name == "c_part" or orphans else set())
+            self.assertEqual(module[0], expected)
+            self.assertEqual(owner[0], {"genuine_import"} | ({"kcfi_header_reference"} if name == "c_part" else set()))
+            self.assertEqual(module[1], owner[1], "metadata changed genuine owner CFI identities")
+            sections = module[2]
+            exported = name.replace("_part", "_export")
+            self.assertEqual(sections["___kcrctab+" + exported][4], struct.pack("<I", crc))
+            # SHF_MERGE allows the linker to reorder/deduplicate these strings.
+            for label, expected in (("__kstrtab_", exported.encode()), ("__kstrtabns_", b"")):
+                section, offset = module[3][label + exported]
+                value = sections[section][4]
+                self.assertEqual(value[offset:value.index(0, offset)], expected)
+            self.assertEqual(sections["___ksymtab+" + exported][5][0][2], exported)
+            names = sections["__version_ext_names"][4].rstrip(b"\0").split(b"\0")
+            crcs = sections["__version_ext_crcs"][4]
+            versions = dict(zip(names, struct.unpack("<" + "I" * (len(crcs) // 4), crcs)))
+            self.assertEqual(versions, {b"genuine_import": 0x12345678, b"module_layout": 0x34567890,
+                                       **({b"kcfi_header_reference": 0x23456789} if name == "c_part" else {})})
+            self.assertIn(b"vermagic=test-kernel fixture \0", sections[".modinfo"][4])
+            self.assertNotIn(".discard.addressable", sections)
+        return {name: elf_metadata(output / (name + ".ko"))[2] for name in ("c_part", "rust_part")}
+
+    def test_metadata_does_not_add_unversioned_imports_after_either_modpost(self):
+        for language in self.fixdeps:
+            with self.subTest(fixdep=language):
+                case = self.metadata_fixture(language)
+                run([*case["final"], "__modfinal"], cwd=case["output"], env=environment())
+                self.assert_metadata(case)
+                for name in ("c_part.mod.o", "rust_part.mod.o", ".module-common.o"):
+                    self.assertNotIn("kcfi_header_reference", elf_metadata(case["output"] / name)[0])
+                    command = (case["output"] / ("." + name + ".cmd")).read_text().splitlines()[0]
+                    self.assertIn("-D__DISABLE_EXPORTS", command)
+                    self.assertNotIn("-fsanitize=kcfi", command)
+                for name in ("c_part", "rust_part"):
+                    command = (case["output"] / ("." + name + ".o.cmd")).read_text().splitlines()[0]
+                    self.assertNotIn("-D__DISABLE_EXPORTS", command)
+                self.assertIn("-fsanitize=kcfi", (case["output"] / ".c_part.o.cmd").read_text().splitlines()[0])
+                self.assertIn("-Zsanitizer=kcfi", (case["output"] / ".rust_part.o.cmd").read_text().splitlines()[0])
+
+    def test_disabling_only_metadata_repair_reproduces_orphan_without_changing_payload(self):
+        for language in self.fixdeps:
+            with self.subTest(fixdep=language):
+                case = self.metadata_fixture(language)
+                output = case["output"]
+                owners = {name: ((output / name).read_bytes(), (output / name).stat().st_mtime_ns)
+                          for name in ("c_part.o", "rust_part.o")}
+                run([*case["final"], "__modfinal"], cwd=output, env=environment())
+                expected = self.assert_metadata(case)
+                run([*case["final"], "ccflags-y=", "__modfinal"], cwd=output, env=environment())
+                self.assertEqual(self.assert_metadata(case, orphans=True), expected)
+                for name in ("c_part.mod.o", "rust_part.mod.o", ".module-common.o"):
+                    self.assertIn("kcfi_header_reference", elf_metadata(output / name)[0])
+                run([*case["final"], "__modfinal"], cwd=output, env=environment())
+                self.assertEqual(self.assert_metadata(case), expected)
+                self.assertEqual(owners, {name: ((output / name).read_bytes(), (output / name).stat().st_mtime_ns)
+                                          for name in owners})
+                stamps = {path.name: path.stat().st_mtime_ns for path in output.iterdir() if path.suffix in (".o", ".ko")}
+                run([*case["final"], "__modfinal"], cwd=output, env=environment())
+                self.assertEqual(stamps, {path.name: path.stat().st_mtime_ns for path in output.iterdir()
+                                          if path.suffix in (".o", ".ko")})
 
 
 if __name__ == "__main__":

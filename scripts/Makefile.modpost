@@ -40,7 +40,17 @@ include $(srctree)/scripts/Kbuild.include
 
 MODPOST = $(objtree)/scripts/mod/modpost
 
+# The dedicated Rust emitter does not alter the selected ordinary host tool.
+# External modules still use ordinary modpost and generate their original .mod.c.
+ifeq ($(KBUILD_EXTMOD),)
+ifeq ($(CONFIG_RUST_VMLINUX_EXPORT),y)
+MODPOST = $(objtree)/scripts/mod/modpost-rust
+rust-vmlinux-export-arg := --rust-vmlinux-export
+endif
+endif
+
 modpost-args =										\
+	$(rust-vmlinux-export-arg)							\
 	$(if $(CONFIG_MODULES),-M)							\
 	$(if $(CONFIG_MODVERSIONS),-m)							\
 	$(if $(CONFIG_BASIC_MODVERSIONS),-b)						\
@@ -108,6 +118,7 @@ else
 modpost-args += vmlinux.o
 modpost-deps += vmlinux.o
 output-symdump := $(if $(KBUILD_MODULES), Module.symvers, vmlinux.symvers)
+vmlinux-export-source := .vmlinux.export.$(if $(CONFIG_RUST_VMLINUX_EXPORT),h,c)
 endif
 
 else
@@ -142,9 +153,13 @@ quiet_cmd_modpost = MODPOST $@
 		echo >&2 "         if you want to proceed at your own risk.";) \
 	$(MODPOST) $(modpost-args)
 
+# Export input is a side effect of modpost. Recreate it even if the symbol dump
+# and its saved command are current (for example after removing only the input).
+missing-vmlinux-export := $(if $(vmlinux-export-source),$(if $(wildcard $(vmlinux-export-source)),,y))
+
 targets += $(output-symdump)
 $(output-symdump): $(modpost-deps) FORCE
-	$(call if_changed,modpost)
+	$(if $(missing-vmlinux-export),$(call cmd_and_savecmd,modpost),$(call if_changed,modpost))
 
 __modpost: $(output-symdump)
 PHONY += FORCE

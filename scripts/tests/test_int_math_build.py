@@ -14,6 +14,7 @@ import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 import check_int_math_kernel as checker
 from kconfig_test_support import cached_conf_tools
@@ -100,15 +101,26 @@ class TemporaryTest(unittest.TestCase):
 
 
 class IntMathBuildTests(TemporaryTest):
-    def kernel(self, members, relative=True):
+    def kernel(self, members, relative=True, selection="Rust"):
         build = self.work / str(len(list(self.work.iterdir())))
         build.mkdir()
-        for member in ORIGINAL | TRANSLATED | OBSOLETE | KUNIT:
+        framework = {"lib/kunit/test.o", "lib/kunit/assert.o"}
+        for member in ORIGINAL | TRANSLATED | OBSOLETE | KUNIT | framework:
             path = build / member
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(b"integer math archive fixture\n")
+            os.utime(path, ns=(1_700_000_000_000_000_000,) * 2)
+        (build / ".config").write_text("CONFIG_X86_64=y\nCONFIG_64BIT=y\nCONFIG_RUST=y\nCONFIG_KUNIT=y\n"
+            "CONFIG_INT_POW_KUNIT_TEST=y\nCONFIG_INT_SQRT_KUNIT_TEST=y\nCONFIG_RUST_INT_MATH=" +
+            ("y" if selection == "Rust" else "n") + "\n")
+        (build / "Module.symvers").write_text("".join("0x12345678\t" + name + "\tvmlinux\t" + license + "\n" for name, license in
+            (("int_pow", "EXPORT_SYMBOL_GPL"), ("int_sqrt", "EXPORT_SYMBOL"),
+             *((name, "EXPORT_SYMBOL_GPL") for name in checker.KUNIT_IMPORTS))))
+        for name in ("vmlinux.o", "vmlinux"):
+            (build / name).write_bytes(b"linked fixture\n")
+            os.utime(build / name, ns=(1_700_000_000_000_000_000,) * 2)
         subprocess.run([*shlex.split(os.environ.get("AR", "ar")), "crT", "vmlinux.a",
-                        *[name if relative else str(build / name) for name in sorted(members)]],
+                        *[name if relative else str(build / name) for name in sorted(members | framework)]],
                        cwd=build, check=True, capture_output=True)
         image = build / "arch/x86/boot/bzImage"
         image.parent.mkdir(parents=True)
@@ -117,10 +129,48 @@ class IntMathBuildTests(TemporaryTest):
         os.utime(image, ns=(1_700_000_001_000_000_000,) * 2)
         return build
 
+    def inspect_archive(self, build, selection):
+        """Isolate real archive routing/freshness from unrelated ELF transports.
+
+        These objects intentionally are not executable. Real ELF/export/version
+        behavior is exercised by the compilation tests and optional native gate;
+        those tests never use these patches.
+        """
+        original_tool = checker.tool
+
+        def tool(*args):
+            if args[:2] == ("ar", "t"):
+                return original_tool(*args)
+            obj = Path(args[-1])
+            names = ("int_pow", "int_sqrt") if obj.stem == "int_math_rust" else (obj.stem,)
+            if args[:2] == ("nm", "--defined-only"):
+                return b"".join(b"00000000 T " + name.encode() + b"\n" for name in names)
+            if args[:2] == ("nm", "-u"):
+                return b"".join(b"U " + name.encode() + b"\n" for name in ("int_pow", "int_sqrt", *checker.KUNIT_IMPORTS))
+            if args[:2] == ("readelf", "-rW"):
+                return "\n".join(("int_pow", "int_sqrt", *checker.KUNIT_IMPORTS)).encode()
+            if args[:2] == ("readelf", "-SW"):
+                return b"[ 1] .kunit_test_suites PROGBITS 00 00 000008\n"
+            if args[:3] == ("readelf", "-p", ".modinfo"):
+                return (obj.stem + ".license=GPL\n" + obj.stem + ".description=math." + obj.stem.removesuffix("_kunit") + " KUnit test suite\n").encode()
+            raise AssertionError(args)
+
+        def exports(obj):
+            names = ("int_pow", "int_sqrt") if obj.stem == "int_math_rust" else (obj.stem,)
+            return [dict(name=name, license="GPL" if name == "int_pow" else "", namespace="",
+                         relocation_target=name, relocation_addend=0, pointer_width=8, relocation_kind=1,
+                         label_binding=0, label_kind=0, section_flags=2, section_alignment=8) for name in names]
+
+        with mock.patch.object(checker, "tool", side_effect=tool), \
+             mock.patch.object(checker, "elf_target"), \
+             mock.patch.object(checker, "verify_build_command"), \
+             mock.patch.object(checker, "read_exports", side_effect=exports):
+            return checker.verify_linked_implementation(build, selection)
+
     def test_archive_c_rust_c_selection_ignores_orphan_objects(self):
         for relative in (False, True):
             for selection, members in (("C", ORIGINAL), ("Rust", TRANSLATED), ("C", ORIGINAL)):
-                checker.verify_linked_implementation(self.kernel(members | KUNIT, relative), selection)
+                self.inspect_archive(self.kernel(members | KUNIT, relative, selection), selection)
 
     def test_archive_rejects_missing_partial_mixed_and_opposite_objects(self):
         for selection, expected, opposite in (("C", ORIGINAL, TRANSLATED), ("Rust", TRANSLATED, ORIGINAL)):
@@ -128,20 +178,20 @@ class IntMathBuildTests(TemporaryTest):
             for members in (set(), opposite, expected | opposite, OBSOLETE, expected | OBSOLETE, *partial):
                 with self.subTest(selection=selection, members=members):
                     with self.assertRaisesRegex(ValueError, "linked integer math"):
-                        checker.verify_linked_implementation(self.kernel(members | KUNIT), selection)
+                        self.inspect_archive(self.kernel(members | KUNIT, selection=selection), selection)
 
     def test_unchanged_kunit_objects_and_fresh_image_are_required(self):
         for missing in KUNIT:
-            with self.assertRaisesRegex(ValueError, "missing unchanged built-in KUnit"):
-                checker.verify_linked_implementation(self.kernel(TRANSLATED | (KUNIT - {missing})), "Rust")
+            with self.assertRaisesRegex(ValueError, "KUnit archive membership"):
+                self.inspect_archive(self.kernel(TRANSLATED | (KUNIT - {missing})), "Rust")
         build = self.kernel(TRANSLATED | KUNIT)
         image = build / "arch/x86/boot/bzImage"
         os.utime(image, ns=(1_699_999_999_000_000_000,) * 2)
-        with self.assertRaisesRegex(ValueError, "bzImage is older"):
-            checker.verify_linked_implementation(build, "Rust")
+        with self.assertRaisesRegex(ValueError, "stale .*bzImage"):
+            self.inspect_archive(build, "Rust")
         image.rename(image.with_suffix(".saved"))
         with self.assertRaises(FileNotFoundError):
-            checker.verify_linked_implementation(build, "Rust")
+            self.inspect_archive(build, "Rust")
 
     def test_actual_makefile_selector_preserves_order_and_original_kunit_c(self):
         harness = self.work / "Makefile"

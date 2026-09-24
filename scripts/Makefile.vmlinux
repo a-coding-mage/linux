@@ -15,6 +15,48 @@ targets :=
 %.o: %.S FORCE
 	$(call if_changed_rule,as_o_S)
 
+ifeq ($(CONFIG_RUST_VMLINUX_EXPORT),y)
+# Pure final-link metadata: no owner versioning, C helper bitcode, Rust module
+# marker, or invented declarations for the symbols referenced by the tables.
+rustflags-remove-y += $(RUSTC_FLAGS_CFI)
+vmlinux-export-asm-feature := $(if $(CONFIG_PPC),asm_experimental_arch)
+
+# The generated input retains the original macros for no-output C validation.
+# Record mode normalizes their fields with the actual frontend; Rust constructs
+# the final tables. That same invocation supplies the input/execution charset
+# guards, including options from CC wrappers and response files.
+quiet_cmd_vmlinux_export_data = EXPORTDATA $@
+      cmd_vmlinux_export_data = \
+	$(CC) $(c_flags) -fsyntax-only -x c $<; \
+	mv $(depfile) $(depfile).validate; \
+	$(CC) $(c_flags) -fmacro-prefix-map=.vmlinux.export.h=.vmlinux.export.c \
+		-DLUPOS_RUST_VMLINUX_RECORDS -E -P -x c $< > $@.input; \
+	cat $(depfile).validate >> $(depfile); \
+	$(objtree)/scripts/mod/modpost-rust --rust-vmlinux-records < $@.input > $@.tmp; \
+	mv $@.tmp $@; \
+	rm -f $@.input $(depfile).validate
+
+.vmlinux.export.rs: .vmlinux.export.h $(objtree)/scripts/mod/modpost-rust FORCE
+	$(call if_changed_dep,vmlinux_export_data)
+
+quiet_cmd_vmlinux_export_rust = $(RUSTC_OR_CLIPPY_QUIET) $@
+      cmd_vmlinux_export_rust = \
+	VMLINUX_EXPORT_DATA=$(abspath .vmlinux.export.rs) \
+	$(RUSTC_OR_CLIPPY) $(rust_flags) \
+		-Zallow-features=$(vmlinux-export-asm-feature) \
+		$(if $(vmlinux-export-asm-feature),-Zcrate-attr='feature($(vmlinux-export-asm-feature))') \
+		--crate-name=vmlinux_export --crate-type=rlib --sysroot=/dev/null \
+		-L $(objtree)/rust --out-dir $(dir $@) \
+		--emit=dep-info=$(depfile) --emit=obj=$@ $<
+
+.vmlinux.export.o: $(srctree)/scripts/vmlinux-export.rs .vmlinux.export.rs \
+		$(srctree)/include/linux/export-internal_header.rs \
+		$(objtree)/include/generated/rustc_cfg $(objtree)/rust/libcore.rmeta FORCE
+	+$(call if_changed_dep,vmlinux_export_rust)
+
+targets += .vmlinux.export.rs
+endif
+
 # Built-in dtb
 # ---------------------------------------------------------------------------
 

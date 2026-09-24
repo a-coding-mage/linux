@@ -12,6 +12,7 @@ mod file2alias;
 mod modpost_header;
 mod sumversion;
 mod symsearch;
+mod vmlinux_export_data;
 
 use elf::{ElfFile, Section, Symbol};
 use modpost_header::{Export, Module, Options, Unresolved};
@@ -113,6 +114,10 @@ fn parse_options() -> Result<Options, String> {
         }
         if arg == "--" {
             stopped = true;
+            continue;
+        }
+        if arg == "--rust-vmlinux-export" {
+            options.rust_vmlinux_export = true;
             continue;
         }
         let mut chars = arg[1..].char_indices().peekable();
@@ -1327,6 +1332,17 @@ impl Modpost {
                 )
                 .unwrap();
             }
+            if self.options.rust_vmlinux_export {
+                let exports = self.modules[module]
+                    .exports
+                    .iter()
+                    .filter(|&&id| !self.options.trim || self.exports[id].used)
+                    .count();
+                let count = exports * (2 + usize::from(self.options.modversions))
+                    + self.modules[module].aliases.len();
+                let header = vmlinux_export_data::header(&output, count);
+                return self.write_file(".vmlinux.export.h", &header, true);
+            }
             return self.write_file(".vmlinux.export.c", &output, true);
         }
         output.push_str("#include <linux/module.h>\n#include <linux/export-internal.h>\n#include <linux/compiler.h>\n\nMODULE_INFO(name, KBUILD_MODNAME);\n\n__visible struct module __this_module\n__section(\".gnu.linkonce.this_module\") = {\n\t.name = KBUILD_MODNAME,\n");
@@ -1500,6 +1516,25 @@ fn module_namespace(namespace: &str, module: &str) -> bool {
 
 fn main() {
     let result = (|| {
+        if env::args_os()
+            .nth(1)
+            .is_some_and(|arg| arg == "--rust-vmlinux-records")
+        {
+            if env::args_os().len() != 2 {
+                return Err("--rust-vmlinux-records accepts no arguments\n".into());
+            }
+            use std::io::{Read, Write};
+            let mut input = Vec::new();
+            io::stdin()
+                .read_to_end(&mut input)
+                .map_err(|error| io_error(&error))?;
+            let output = vmlinux_export_data::generate(&input)?;
+            io::stdout()
+                .lock()
+                .write_all(output.as_bytes())
+                .map_err(|error| io_error(&error))?;
+            return Ok(false);
+        }
         let options = parse_options()?;
         let runtime_offsets;
         let offsets = if let Some(offsets) = EMBEDDED_OFFSETS {

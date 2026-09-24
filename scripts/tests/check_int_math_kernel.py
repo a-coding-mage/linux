@@ -495,7 +495,10 @@ def verify_console(console, caller, *, modular_suites=(False, False), framework_
     for index, line in enumerate(console_lines(console)):
         for name, blocks in ranges.items():
             if any(index == end for _, end in blocks): actual.append(name.encode())
-        if b"LUPOS_" in line: actual.append(line)
+        if b"LUPOS_" in line:
+            if any(start < index < end for blocks in ranges.values() for start, end in blocks):
+                raise ValueError("integer math module event inside an unfinished suite")
+            actual.append(line)
     if actual != expected or re.search(rb"CFI failure|BUG:|WARNING:|Oops:|Kernel panic|UBSAN:|KASAN:|(?:EXPECTATION|ASSERTION) FAILED|\bnot ok\s", console, re.I):
         raise ValueError("integer math results/counts/module event order did not match")
     verify_module_events(console, module=True, preloads=len(preload_names), reload=reload)

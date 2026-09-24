@@ -64,6 +64,7 @@
 #include <linux/firmware.h>
 #include <linux/fwctl.h>
 #include <linux/fs.h>
+#include <linux/gcd.h>
 #include <linux/i2c.h>
 #include <linux/int_log.h>
 #include <linux/interrupt.h>
@@ -84,9 +85,11 @@
 #include <linux/pm_opp.h>
 #include <linux/poll.h>
 #include <linux/polynomial.h>
+#include <linux/prime_numbers.h>
 #include <linux/property.h>
 #include <linux/pwm.h>
 #include <linux/random.h>
+#include <linux/rational.h>
 #include <linux/reciprocal_div.h>
 #include <linux/refcount.h>
 #include <linux/regulator/consumer.h>
@@ -114,6 +117,9 @@
  * structures.
  */
 #include <../../drivers/base/base.h>
+
+/* The prime-cache KUnit callback must use the original flexible-array ABI. */
+#include <../../lib/math/prime_numbers_private.h>
 
 #if defined(CONFIG_DRM_PANIC_SCREEN_QR_CODE)
 // Used by `#[export]` in `drivers/gpu/drm/drm_panic_qr.rs`.

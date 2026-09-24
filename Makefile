@@ -1844,7 +1844,11 @@ CLEAN_FILES += vmlinux.symvers modules-only.symvers \
 	       modules.builtin.ranges vmlinux.o.map vmlinux.unstripped \
 	       vmlinux.thinlto-index builtin.order \
 	       compile_commands.json rust/test \
-	       rust-project.json .vmlinux.objs .vmlinux.export.c \
+	       rust-project.json .vmlinux.objs .vmlinux.export.c .vmlinux.export.h \
+	       .vmlinux.export.rs .vmlinux.export.rs.input .vmlinux.export.rs.tmp \
+	       ..vmlinux.export.rs.d.validate \
+	       .module-common-data.rs .module-common-data.rs.input \
+	       .module-common-data.rs.tmp ..module-common-data.rs.d.validate \
 	       .builtin-dtbs-list .builtin-dtbs.S sbom-*.spdx.json
 
 # Directories & files removed with 'make mrproper'
@@ -2161,7 +2165,11 @@ KBUILD_MODULES := y
 build-dir := .
 
 clean-dirs := .
-clean: private rm-files := Module.symvers modules.nsdeps compile_commands.json
+clean: private rm-files := Module.symvers modules.nsdeps compile_commands.json \
+	.vmlinux.export.c .vmlinux.export.h .vmlinux.export.rs \
+	.vmlinux.export.rs.input .vmlinux.export.rs.tmp ..vmlinux.export.rs.d.validate \
+	.module-common-data.rs .module-common-data.rs.input \
+	.module-common-data.rs.tmp ..module-common-data.rs.d.validate
 
 PHONY += prepare
 # now expand this into a simple variable to reduce the cost of shell evaluations
