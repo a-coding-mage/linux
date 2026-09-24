@@ -18,6 +18,12 @@ revision in ``scripts/tests/translated_sources.txt``. An intentional revision
 update must update that manifest as well; removing or replacing a marker
 accidentally fails the test.
 
+Current conservative inventory (2026-09-24): 55/64 canonical C-origin host tools
+(85.94%, nine remain) and 38/526 translated lib units (7.22%, 488 remain).
+Three lib host generators overlap the two inventories. These are integrated,
+tested units within the documented configuration coverage, not a whole-kernel
+completion percentage or proof of every exceptional path.
+
 Host tools
 ----------
 
@@ -2206,8 +2212,10 @@ covering both C/Rust providers and C/Rust callers on x86-64 and ARM64, with
 all eight cases run twice per VM through module unload/reload. Together with
 the original-suite matrix, UUID covers all provider/suite/caller language
 combinations on both architectures. Rust provider and suite are restored.
-Builtin execution of the translated suite and the new full regression remain
-outstanding. Adding this natively executed test unit makes the conservative
+Builtin execution of the translated suite subsequently passed on both
+architectures with C and Rust consumers, including consumer unload/reload.
+The new full regression remains outstanding. Adding this natively executed
+test unit makes the conservative
 lib inventory 29 native units plus three host generators (32/526); the
 separate host-tool inventory overlaps these counts.
 
@@ -2220,10 +2228,31 @@ assertions preserve the original three allocation attempts and abort behavior.
 Exact original-C traces, real nominal bindings, protected callback dispatch,
 printk-index records, ELF32/ELF64 execution and actual Kbuild switching are
 covered by eleven integrated groups. Both GCC and Clang reference runs pass
-without skips (72.737 and 76.549 seconds). Native x86-64 and ARM64 builds also
-pass with the original C provider and translated modular suite. The dedicated
-suite-language runtime matrix and built-in execution are still pending; this
-new test unit is not yet included in the completed-unit count above.
+without skips (72.737 and 76.549 seconds). The translated modular suite then
+passed the C/Rust-provider by C/Rust-consumer matrix on x86-64 and ARM64:
+four native builds and eight VM runs, with suite unload/reload. A further
+builtin checkpoint covering Base64, UUID and list_sort passed two native
+builds and twelve VM runs with Rust providers/suites and both caller languages.
+These are retained pre-reboot results, not new executions after restoring logs.
+
+The strengthened Base64 checker subsequently passed 33 groups without skips
+(13.726 seconds). Its callback KCFI identity comes from the selected original
+KUnit framework object and header prototype; a common nonzero identity alone
+is insufficient. Actual C/Rust builtin/module objects, wrong nominal callback
+types, disabled CFI, metadata/common dependencies and private compiler-output
+isolation are covered. The strengthened builtin selected-artifact audit passed
+on both architectures. The earlier modular VM matrix predates the strengthened
+metadata/common guard, so that guard must be rerun on rebuilt modular outputs.
+That rerun now passes after the reboot: rebuilt strict Rust 1.85 x86-64/ARM64
+outputs pass all eight C/Rust-provider by C/Rust-caller VMs, with the translated
+four-case suite loaded twice per VM under modular KUnit. The same fresh matrix
+passes for UUID's translated eight-case suite. Two shared metadata-checker
+defects were corrected: response paths resolve from the compiler's working
+directory, and freshness follows fixdep's actual configuration dependencies
+instead of unrelated changes to global auto.conf. Fourteen focused metadata
+groups retain wrong-path and genuinely stale-input rejection. Both builds are
+restored to Rust and their selected-artifact audits pass. The Base64 suite adds
+one validated unit (33/526); the new complete regression is still outstanding.
 
 Parser, command-line, memory-weight, min/max and glob candidates
 --------------------------------------------------------------
@@ -2261,8 +2290,63 @@ C cmdline and glob KUnit modules pass in two preflight VMs, each loaded twice:
 eight cmdline cases and 64 glob parameters per load, with exact successful
 case/order/summary and unload/reload checks. Dedicated independent C/Rust
 consumer matrices and the refreshed complete regression remain outstanding.
-These five candidates are not yet included in the conservative completed-unit
-count above.
+The parser's dedicated checker has since been integrated: nineteen focused
+groups pass, including actual native compiler controls and both selected Rust
+artifact audits. Its full C/Rust-provider by C/Rust-caller matrix now passes on
+x86-64 and ARM64, eight fresh VMs with consumer unload/reload. Each load executes
+1,495 groups across all nine public APIs, with independent caller loops, original
+C as oracle, real kernel allocation, selected symbol versions and protected
+indirect calls. Rust providers are restored and final audits pass. Adding this
+provider makes the conservative lib inventory 31 native units plus three host
+generators: 34/526 (6.46%), leaving 492 units. The separate host inventory remains
+55/64 (85.94%), leaving nine; its three lib generators overlap these counts.
+There is no validated whole-kernel percentage. At that parser milestone the
+remaining four providers' dedicated native matrices were still pending, along
+with the refreshed complete regression.
+
+The integrated memweight runtime checker subsequently passed fourteen groups,
+and its noncrashing provider/caller matrix passed eight fresh x86-64/ARM64 VMs.
+Each independent caller performs 12,651 protected original-C comparisons per
+load, including real 128 MiB allocation and input-integrity checks; unload/reload
+runs the workload twice. Both outputs are restored to Rust and audited. Its
+older differential/build suite also passes seven groups without skips with
+isolated compiler scratch space and official Rust 1.85 i686 libraries, including
+ELF32 O0/O2/Os execution. A focused combined regression passes 243 tests without
+skips. Independent boundary review found no implementation discrepancy: the
+original alignment scan, threshold comparison and real BUG-helper binding are
+preserved. Host tests cover sixteen original-C cases immediately below the
+threshold and reject early-guard, off-by-one and signed-narrowing mutations.
+Actual exceptional BUG dispatch in a target VM remains untested; this is
+additional assurance, not a discovered functional defect or an original
+self-test requirement. With the ordinary native matrix and restored-provider
+audit complete, memweight adds one validated unit: 35/526 (6.65%), 491 remain.
+This count does not claim exhaustive path/configuration coverage.
+
+Windowed min/max and glob now also pass their complete C/Rust-provider by
+C/Rust-caller matrices on both architectures: eight fresh VMs per component,
+each unloading/reloading the consumer. The min/max caller executes 136,840
+checks per load, including wrapping timestamps and valid partially initialized
+states. The glob caller executes 95,537 comparisons per load; its unchanged C
+KUnit module runs all 64 original parameters twice per VM. Glob additionally
+passes a real proprietary-consumer modpost check. Both Rust providers are
+restored and their final selected-artifact audits pass. Integrated checker
+groups pass 17/17 for min/max and 21/21 for glob, without skips, with genuine
+ABI/CFI controls and concurrent compiler-output isolation checks. These two
+providers bring the conservative lib inventory to 34 native units plus three
+host generators: 37/526. The new complete migration regression remains pending.
+
+Command-line now also passes all eight C/Rust-provider by C/Rust-caller VMs on
+x86-64 and ARM64, with 33,411 original-C comparisons per consumer load and
+unload/reload. Its unchanged eight-case KUnit module runs twice per VM. Both
+outputs are restored to Rust and the final linkage/bindings audits pass.
+Nineteen integrated checker groups pass without skips, including independent
+coverage of the non-exported fifth helper, actual framework-derived callback
+types, strict compiler controls and compiler-output isolation. External-module
+saved paths are checked relative to their actual M= compiler working directory;
+in-tree binding dependencies remain relative to O=. This adds one validated
+unit: 35 native units plus three host generators, or 38/526 (7.22%), with 488
+remaining. The resumed runtime cycle totals 56 successful VMs across seven
+components, not proof of every architecture/configuration or full regression.
 
 Remaining integration
 ---------------------
@@ -2273,11 +2357,7 @@ Most of the migration is still outstanding. In particular:
   select their original C/C++ objects. Remaining host translations need
   per-file implementation and build-selection audits; the already selectable
   command-line host tools do not prove all host code has been migrated.
-* Apart from the opt-in CORDIC, integer-math, integer-logarithm, generic wide-division
-  library and its independently selected self-tests, GCD/LCM,
-  rational-approximation, reciprocal-division, polynomial, prime-number,
-  BCD, ctype, hexadecimal-helper, linked-list sorting
-  and x86-decoder integrations above,
+* Outside the opt-in integrations described above,
   target-kernel C objects still take precedence over adjacent Rust files.
   Their Rust definitions, shared types, configuration handling, exported
   symbols, and module boundaries must be repaired before selecting them.

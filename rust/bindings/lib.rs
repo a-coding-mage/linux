@@ -73,7 +73,10 @@ mod bindings_helper {
     ));
 }
 
+mod rbtree;
+
 pub use bindings_raw::*;
+pub use rbtree::*;
 
 pub const compat_ptr_ioctl: Option<
     unsafe extern "C" fn(*mut file, ffi::c_uint, ffi::c_ulong) -> ffi::c_long,

@@ -453,7 +453,95 @@ def verify_suite_metadata(obj, builtin):
         require_metadata_field(fields,prefix+name,value)
 
 
-def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi):
+def suite_kcfi_flags(flags, rust):
+    """Respect Rust's accumulated sets and C's ordered sanitizer toggles."""
+    if rust:
+        selections = [set(flag.split("=", 1)[1].split(",")) for flag in flags
+                      if flag.startswith("-Zsanitizer=")]
+        return (any("kcfi" in selection for selection in selections) and
+                not any(selection & {"", "none"} for selection in selections))
+    enabled = False
+    for flag in flags:
+        if flag.startswith("-fsanitize=") and "kcfi" in flag.split("=", 1)[1].split(","):
+            enabled = True
+        elif flag.startswith("-fno-sanitize=") and {"all", "kcfi"} & set(flag.split("=", 1)[1].split(",")):
+            enabled = False
+    return enabled
+
+
+def kunit_callback_type(build, arch):
+    """Use the selected original void (struct kunit *) definition as oracle."""
+    obj = build / "lib/kunit/test.o"
+    header = ROOT / "include/kunit/test.h"
+    source = ROOT / "lib/kunit/test.c"
+    if (not re.search(r"^void kunit_cleanup\(struct kunit \*test\);$", header.read_text(), re.M) or
+            not re.search(r"^void kunit_cleanup\(struct kunit \*test\)\s*\{", source.read_text(), re.M)):
+        raise ValueError("original KUnit callback type reference changed")
+    verify_build_command(build, obj, source, [header])
+    elf_target(obj, arch)
+    if configuration(build).get("CFI") != "y" or not suite_kcfi_flags(compilation_flags(obj), False):
+        raise ValueError("actual KUnit callback reference lost KCFI compilation")
+    value = provider_type_ids(obj, names=("kunit_cleanup",))["kunit_cleanup"]
+    if not value: raise ValueError("actual KUnit callback reference has zero KCFI identity")
+    return value
+
+
+def verify_suite_graph(sections, target, addend, callbacks, absolute):
+    """Follow the original header's native 64-bit suite -> cases -> names graph."""
+    header = re.sub(r"/\*.*?\*/", "", (ROOT / "include/kunit/test.h").read_text(), flags=re.S)
+    compact = re.sub(r"\s+", "", header)
+    # Both supported ELF64 ABIs have 8-byte pointers, 4-byte enum/int and
+    # natural alignment. Refuse header layout changes before using offsets.
+    if ("structkunit_suite{constcharname[256];int(*suite_init)(structkunit_suite*suite);"
+            "void(*suite_exit)(structkunit_suite*suite);int(*init)(structkunit*test);"
+            "void(*exit)(structkunit*test);structkunit_case*test_cases;" not in compact or
+            "structkunit_attributes{enumkunit_speedspeed;};" not in compact or
+            "structkunit_case{void(*run_case)(structkunit*test);constchar*name;"
+            "constvoid*(*generate_params)(structkunit*test,constvoid*prev,char*desc);"
+            "structkunit_attributesattr;int(*param_init)(structkunit*test);"
+            "void(*param_exit)(structkunit*test);enumkunit_statusstatus;char*module_name;"
+            "structstring_stream*log;};" not in compact):
+        raise ValueError("original KUnit registration layout changed")
+
+    def data(symbol, extra, size):
+        index = symbol[3]
+        if not 0 < index < len(sections): raise ValueError("UUID registration has undefined data")
+        section = sections[index]
+        offset = symbol[4] + extra - section[3]
+        if (not section[2] & 2 or section[2] & 4 or offset < 0 or
+                offset + size > section[4] or len(section[-1][offset:offset + size]) != size):
+            raise ValueError("UUID registration points outside allocated data")
+        return index, offset, section[-1][offset:offset + size]
+
+    def pointer(index, offset):
+        records = [r for s in sections if s[1] == 4 and s[6] == index for r in s[-1] if r[0] == offset]
+        if len(records) != 1 or records[0][1] != absolute:
+            raise ValueError("UUID registration graph needs one native pointer")
+        return records[0][2:]
+
+    suite_index, suite_offset, name = data(target, addend, 256)
+    if name != b"uuid" + bytes(252): raise ValueError("UUID registration lost original suite name")
+    case_symbol, case_addend = pointer(suite_index, suite_offset + 288)
+    case_index, case_offset, payload = data(case_symbol, case_addend, 72 * (len(CASES) + 1))
+    expected_offsets = set()
+    for i, (case, callback) in enumerate(zip(CASES, callbacks)):
+        offset = case_offset + i * 72
+        symbol, extra = pointer(case_index, offset)
+        if (symbol[3], symbol[4] + extra) != (callback[3], callback[4]):
+            raise ValueError("UUID suite points to wrong/reordered case callback")
+        for field, text in ((8, case), (56, b"uuid_kunit")):
+            symbol, extra = pointer(case_index, offset + field)
+            if data(symbol, extra, len(text) + 1)[2] != text + b"\0":
+                raise ValueError("UUID registered case/module name differs from original")
+        expected_offsets.update((offset, offset + 8, offset + 56))
+    actual_offsets = [r[0] for s in sections if s[1] == 4 and s[6] == case_index
+                      for r in s[-1] if case_offset <= r[0] < case_offset + len(payload)]
+    if set(actual_offsets) != expected_offsets or len(actual_offsets) != len(expected_offsets):
+        raise ValueError("UUID case array has extra/missing registration pointers")
+    if payload[-72:] != bytes(72): raise ValueError("UUID case array lacks original zero terminator")
+
+
+def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi, expected_type=None):
     """Check real registration/callback relocations, not merely section names."""
     _,sections,symbols,_,_=module_elf(obj)
     registration=[(i,s) for i,s in enumerate(sections) if s[0]==b".kunit_test_suites"]
@@ -466,6 +554,7 @@ def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi):
     if len(relocations)!=1 or relocations[0][0]!=0 or relocations[0][1]!=absolute:
         raise ValueError("UUID suite needs one actual registration relocation")
     _,_,target,addend=relocations[0]
+    suite_target,suite_addend=target,addend
     if (not 0<target[3]<len(sections) or not sections[target[3]][2]&2 or
             sections[target[3]][2]&4 or not 0<=target[4]+addend-sections[target[3]][3]<sections[target[3]][4]):
         raise ValueError("UUID registration points outside allocated suite data")
@@ -493,10 +582,11 @@ def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi):
                     references.append((section[6],offset,i))
     if [r[2] for r in sorted(references)]!=list(range(len(CASES))):
         raise ValueError("UUID callback registration missing, duplicated or reordered")
+    verify_suite_graph(sections,suite_target,suite_addend,callbacks,absolute)
     if cfi:
         types=provider_type_ids(obj,names=tuple(s[0].decode() for s in callbacks))
-        if len(set(types.values()))!=1 or not next(iter(types.values())):
-            raise ValueError("UUID callbacks lost their common native KUnit KCFI type")
+        if not expected_type or set(types.values())!={expected_type}:
+            raise ValueError("UUID callbacks lost the original native KUnit KCFI type")
     return callbacks
 
 
@@ -513,11 +603,10 @@ def verify_suite_object(build, test, arch, *, builtin, rust_suite, members):
     cfi=configuration(build).get("CFI")=="y"
     if cfi:
         flags=compilation_flags(test)
-        required="-Zsanitizer=kcfi" if rust_suite else "-fsanitize=kcfi"
-        if required not in flags or any(flag.startswith("-fno-sanitize=") and
-                {"all","kcfi"}&set(flag.split("=",1)[1].split(",")) for flag in flags):
+        if not suite_kcfi_flags(flags,rust_suite):
             raise ValueError("UUID KUnit suite lost actual KCFI compilation")
-    verify_suite_registration(test,arch,rust_suite=rust_suite,builtin=builtin,cfi=cfi)
+    verify_suite_registration(test,arch,rust_suite=rust_suite,builtin=builtin,cfi=cfi,
+                              expected_type=kunit_callback_type(build,arch) if cfi else None)
     verify_suite_metadata(test,builtin)
     if rust_suite:
         kernel=build/"rust/kernel.o"
@@ -525,7 +614,24 @@ def verify_suite_object(build, test, arch, *, builtin, rust_suite, members):
         verify_build_command(build,kernel,ROOT/"rust/kernel/lib.rs",[ROOT/"rust/kernel/kunit.rs"])
         newer(build/"rust/libkernel.rmeta",[ROOT/"rust/kernel/kunit.rs"])
         newer(build/"rust/libbindings.rmeta",[ROOT/"include/kunit/test.h",ROOT/"include/kunit/assert.h",
-                                             ROOT/"include/linux/uuid.h"])
+                                             ROOT/"include/linux/uuid.h",ROOT/"rust/bindings/bindings_helper.h",
+                                             ROOT/"rust/bindgen_parameters"])
+
+
+def verify_suite_module(build,test,arch,*,rust_suite):
+    module=test.with_suffix(".ko")
+    verify_module(build,module,test,"uuid_kunit",arch)
+    newer(module,[selected_metadata(build,module)])
+    verify_module_metadata(build,module,require_c_suppression=True)
+    verify_common_metadata(build,build,flags=compilation_flags,exports=read_exports)
+    verify_references(module,("guid_parse","uuid_parse","guid_gen","uuid_gen",
+                              "generate_random_uuid","generate_random_guid"))
+    verify_module_import_versions(build,module)
+    verify_suite_metadata(module,False)
+    cfi=configuration(build).get("CFI")=="y"
+    verify_suite_registration(module,arch,rust_suite=rust_suite,builtin=False,cfi=cfi,
+                              expected_type=kunit_callback_type(build,arch) if cfi else None)
+    return module
 
 
 def verify_linked_implementation(build, selection):
@@ -584,14 +690,7 @@ def verify_linked_implementation(build, selection):
                         rust_suite=config.get("RUST_UUID_KUNIT_TEST")=="y",members=members)
     if suite=="y": newer(archive,[test])
     else:
-        module=test.with_suffix(".ko")
-        verify_module(build,module,test,"uuid_kunit",arch)
-        verify_module_metadata(build,module)
-        verify_module_import_versions(build,module)
-        verify_suite_metadata(module,False)
-        verify_suite_registration(module,arch,rust_suite=config.get("RUST_UUID_KUNIT_TEST")=="y",
-                                  builtin=False,cfi=config.get("CFI")=="y")
-        modules.append(module)
+        modules.append(verify_suite_module(build,test,arch,rust_suite=config.get("RUST_UUID_KUNIT_TEST")=="y"))
     newer(build/"Module.symvers",[owner,test])
     newer(build/"vmlinux.o",[archive])
     newer(build/"vmlinux",[build/"vmlinux.o"])

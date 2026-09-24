@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-2.0-only
 """UUID runtime protocol and actual-flag private caller proofs; never boot."""
-from contextlib import redirect_stderr
+from contextlib import ExitStack, redirect_stderr
+import ctypes
 import io
 import os
 from pathlib import Path
 import re
 import shlex
+import struct
 import subprocess
 import sys
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -209,7 +212,7 @@ class SuiteCommandTests(unittest.TestCase):
             path.parent.mkdir(parents=True,exist_ok=True)
             path.write_bytes(b"transport")
         (self.build/".config").write_text("CONFIG_CFI=y\n")
-        for name in ("elf_target","verify_references","verify_suite_registration","verify_suite_metadata"):
+        for name in ("elf_target","verify_references","verify_suite_registration","verify_suite_metadata","kunit_callback_type"):
             patch=mock.patch.object(check,name)
             patch.start();self.addCleanup(patch.stop)
         self.command(self.kernel,ROOT/"rust/kernel/lib.rs",[ROOT/"rust/kernel/kunit.rs"],True)
@@ -265,21 +268,286 @@ class SuiteCommandTests(unittest.TestCase):
             with self.assertRaises(ValueError): self.verify()
             os.utime(metadata,ns=(stamp,stamp))
 
+    def test_binding_headers_and_nominal_parameters_are_freshness_inputs(self):
+        self.prepare(True)
+        with mock.patch.object(check,"newer",wraps=check.newer) as gate:
+            self.verify()
+        dependencies=next(call.args[1] for call in gate.call_args_list if call.args[0]==self.metadata[1])
+        for name in ("include/kunit/test.h","include/kunit/assert.h","include/linux/uuid.h",
+                     "rust/bindings/bindings_helper.h","rust/bindgen_parameters"):
+            self.assertIn(ROOT/name,dependencies)
+        with mock.patch.object(check,"newer",side_effect=ValueError("stale binding parameters")):
+            with self.assertRaisesRegex(ValueError,"stale binding parameters"): self.verify()
+
     def test_selected_compile_flags_must_retain_kcfi(self):
         for rust in (False,True):
             path=self.prepare(rust)
             original=path.read_text()
             flag="-Zsanitizer=kcfi" if rust else "-fsanitize=kcfi"
-            for replacement in ("",flag+" -fno-sanitize=all",flag+" -fno-sanitize=kcfi"):
+            negatives=(["",flag+" -Zsanitizer=none",flag+" -Zsanitizer=","-Zsanitizer=kernel-address"] if rust else
+                       ["",flag+" -fno-sanitize=all",flag+" -fno-sanitize=kcfi"])
+            for replacement in negatives:
                 path.write_text(original.replace(flag,replacement))
                 with self.assertRaises(ValueError): self.verify(rust)
+            positives=([flag,"-Zsanitizer=kernel-address,kcfi",flag+" -Zsanitizer=kernel-address",
+                        "-Zsanitizer=kernel-address "+flag] if rust else
+                       [flag,"-fsanitize=kernel-address,kcfi",flag+" -fno-sanitize=all "+flag])
+            for replacement in positives:
+                path.write_text(original.replace(flag,replacement))
+                self.verify(rust)
+
+    def test_reference_requires_selected_framework_source_flags_type_and_freshness(self):
+        with ExitStack() as stack:
+            # setUp replaces this helper only for suite command policy tests.
+            function=stack.enter_context(mock.patch.object(check,"kunit_callback_type",ORIGINAL_CALLBACK_TYPE))
+            source=stack.enter_context(mock.patch.object(check,"verify_build_command"))
+            flags=stack.enter_context(mock.patch.object(check,"compilation_flags",return_value=["-fsanitize=kcfi"]))
+            types=stack.enter_context(mock.patch.object(check,"provider_type_ids",return_value={"kunit_cleanup":123}))
+            self.assertEqual(function(self.build,"x86_64"),123)
+            source.assert_called_once_with(self.build,self.build/"lib/kunit/test.o",ROOT/"lib/kunit/test.c",
+                                           [ROOT/"include/kunit/test.h"])
+            types.assert_called_once_with(self.build/"lib/kunit/test.o",names=("kunit_cleanup",))
+            for options in ([],["-fsanitize=kcfi","-fno-sanitize=all"],["-fsanitize=kcfi","-fno-sanitize=kcfi"]):
+                flags.return_value=options
+                with self.assertRaises(ValueError): function(self.build,"x86_64")
+            flags.return_value=["-fsanitize=kcfi"]
+            types.return_value={"kunit_cleanup":0}
+            with self.assertRaises(ValueError): function(self.build,"x86_64")
+            types.return_value={"kunit_cleanup":123}
+            for gate in (source,check.elf_target):
+                gate.side_effect=ValueError("wrong/stale framework")
+                with self.assertRaises(ValueError): function(self.build,"x86_64")
+                gate.side_effect=None
+            (self.build/".config").write_text("# CONFIG_CFI is not set\n")
+            with self.assertRaises(ValueError): function(self.build,"x86_64")
+
+    def test_module_requires_selected_metadata_common_imports_and_registration(self):
+        module=self.obj.with_suffix(".ko")
+        gates=("verify_module","newer","verify_module_metadata","verify_common_metadata","verify_references",
+               "verify_module_import_versions","verify_suite_metadata","verify_suite_registration","kunit_callback_type")
+        for rust in (False,True):
+            for broken in (None,*gates):
+                with self.subTest(rust=rust,broken=broken),ExitStack() as stack:
+                    calls={name:stack.enter_context(mock.patch.object(check,name,
+                           side_effect=ValueError(name) if broken==name else None)) for name in gates}
+                    stack.enter_context(mock.patch.object(check,"selected_metadata",return_value=module.with_suffix(".mod.c")))
+                    if broken:
+                        with self.assertRaisesRegex(ValueError,broken):
+                            check.verify_suite_module(self.build,self.obj,"x86_64",rust_suite=rust)
+                    else:
+                        self.assertEqual(check.verify_suite_module(self.build,self.obj,"x86_64",rust_suite=rust),module)
+                        calls["verify_module_metadata"].assert_called_once_with(self.build,module,require_c_suppression=True)
+                        calls["verify_common_metadata"].assert_called_once_with(self.build,self.build,
+                            flags=check.compilation_flags,exports=check.read_exports)
+                        self.assertEqual(calls["verify_suite_registration"].call_args.kwargs["rust_suite"],rust)
+
+
+ORIGINAL_CALLBACK_TYPE=check.kunit_callback_type
+
+
+def private_native_flags(arguments,build,out):
+    """Replay genuine input flags with private compiler cwd, outputs and temp."""
+    def absolute(path): return str(Path(path) if Path(path).is_absolute() else build/path)
+    def search(path):
+        kind,separator,value=path.partition("=")
+        return kind+separator+absolute(value) if separator else absolute(path)
+    flags=[]
+    iterator=iter(arguments)
+    def value():
+        try: return next(iterator)
+        except StopIteration as error: raise ValueError("incomplete saved compiler flag") from error
+    def codegen(option):
+        if option.startswith("incremental="):
+            raise ValueError("native incremental cache cannot be reused by a private proof")
+        return option
+    for flag in iterator:
+        if flag in ("-I","-isystem","-iquote","-include","-imacros","--sysroot"):
+            flags += [flag,absolute(value())]
+        elif flag in ("--out-dir","-o"): value()
+        elif flag.startswith(("--out-dir=","--emit=")): continue
+        elif flag=="--emit": value()
+        elif flag.startswith("-I") and len(flag)>2: flags.append("-I"+absolute(flag[2:]))
+        elif flag=="-L": flags += [flag,search(value())]
+        elif flag.startswith("-L") and len(flag)>2: flags.append("-L"+search(flag[2:]))
+        elif flag.startswith("--sysroot="): flags.append("--sysroot="+absolute(flag.split("=",1)[1]))
+        elif flag=="--target":
+            target=value()
+            flags += [flag,absolute(target) if target.endswith(".json") else target]
+        elif flag.startswith("--target=") and flag.endswith(".json"):
+            flags.append("--target="+absolute(flag.split("=",1)[1]))
+        elif flag=="--extern" or flag.startswith("--extern="):
+            name,separator,path=(value() if flag=="--extern" else flag.split("=",1)[1]).partition("=")
+            dependency=name+separator+absolute(path) if separator else name
+            flags += [flag,dependency] if flag=="--extern" else ["--extern="+dependency]
+        elif flag.startswith("@"):
+            path=Path(absolute(flag[1:]))
+            # Kbuild's rustc_cfg response contains configuration flags only.
+            # Arbitrary response-file outputs must not escape this audit.
+            if not all(line.startswith("--cfg=") for line in path.read_text().splitlines() if line):
+                raise ValueError("private native replay requires a configuration-only response")
+            flags.append("@"+str(path))
+        elif flag=="-C": flags += [flag,codegen(value())]
+        elif flag.startswith("-C"): flags.append("-C"+codegen(flag[2:]))
+        elif flag.startswith(("-Wp,-M", "-MF", "-MJ", "-fprofile", "-fcoverage", "-ftime-trace=")):
+            raise ValueError("unaudited saved compiler output option")
+        else: flags.append(flag)
+    return flags
+
+
+def private_command_outputs(arguments,out):
+    """Reject escaped explicit output paths before invoking any compiler/tool."""
+    iterator=iter(map(str,arguments))
+    def private(path):
+        target=Path(path)
+        if not target.is_absolute(): target=out/target
+        if not target.resolve().is_relative_to(out.resolve()):
+            raise ValueError("compiler output escapes private fixture")
+    for flag in iterator:
+        if flag in ("-o","--out-dir"):
+            try: private(next(iterator))
+            except StopIteration as error: raise ValueError("incomplete compiler output flag") from error
+        elif flag.startswith("--out-dir="): private(flag.split("=",1)[1])
+        elif flag.startswith("--emit="):
+            for output in flag.split("=",1)[1].split(","):
+                if "=" in output: private(output.split("=",1)[1])
+        elif flag.startswith("-Cincremental="):
+            raise ValueError("native incremental cache cannot be reused by a private proof")
+
+
+def isolate_native_fixture(fixture):
+    n=fixture.n
+    original_flags,original_command=n.flags,n.command
+    def flags(build,rust):
+        result=private_native_flags(original_flags(build,rust),build,fixture.out)
+        return result+(["--out-dir="+str(fixture.out)] if rust else [])
+    def command(args,name,cwd=None,input_text=None,expected=0):
+        # Every command, including C/link/modpost helpers, starts privately.
+        # Keep the helper's logs and expected exit handling unchanged.
+        private_command_outputs(args,fixture.out)
+        return original_command(args,name,fixture.out,input_text,expected)
+    n.flags,n.command=flags,command
+    n.env.update(TMPDIR=str(fixture.out),TMP=str(fixture.out),TEMP=str(fixture.out))
+
+
+class NativeWriteWatch:
+    """Observe transient writes as well as surviving files in read-only inputs."""
+    def __init__(self,paths):
+        libc=ctypes.CDLL(None,use_errno=True)
+        self.fd=libc.inotify_init1(os.O_NONBLOCK|os.O_CLOEXEC)
+        if self.fd<0: raise OSError(ctypes.get_errno(),"inotify_init1")
+        self.paths={}
+        try:
+            for root in paths:
+                for directory,_,_ in os.walk(root,followlinks=False):
+                    # modify, attribute, move, create, delete, self-delete/move
+                    watch=libc.inotify_add_watch(self.fd,os.fsencode(directory),0xFC6)
+                    if watch<0: raise OSError(ctypes.get_errno(),"inotify_add_watch",directory)
+                    self.paths[watch]=Path(directory)
+        except BaseException:
+            self.close();raise
+
+    def events(self):
+        events=[]
+        while True:
+            try: data=os.read(self.fd,65536)
+            except BlockingIOError: break
+            offset=0
+            while offset<len(data):
+                watch,mask,cookie,size=struct.unpack_from("iIII",data,offset)
+                name=os.fsdecode(data[offset+16:offset+16+size].split(b"\0",1)[0])
+                events.append((str(self.paths.get(watch,"<overflow>")),name,mask))
+                offset+=16+size
+        return events
+
+    def close(self):
+        if self.fd>=0: os.close(self.fd);self.fd=-1
+
+
+class ReplayPolicyTests(unittest.TestCase):
+    def setUp(self):
+        temporary=tempfile.TemporaryDirectory(prefix="uuid-replay-policy-")
+        self.addCleanup(temporary.cleanup)
+        self.work=Path(temporary.name)
+
+    def test_saved_input_paths_and_strict_flags_survive_private_replay(self):
+        build=self.work/"donor";build.mkdir()
+        (build/"cfg").write_text('--cfg=CONFIG_KUNIT\n--cfg=CONFIG_RUST\n')
+        flags=["-I./include","-I","generated","-include","config.h","-isystem","system",
+               "-iquote","quoted","-imacros","macros.h","@./cfg","--target=target.json",
+               "-L","rust","-Ldependency=rust","--extern","kernel=rust/kernel.rmeta",
+               "--extern=bindings=rust/bindings.rmeta","--extern","pin_init","-C","opt-level=2",
+               "-Dwarnings","-Dunsafe_op_in_unsafe_fn","-Zsanitizer=kcfi","--out-dir","old",
+               "--out-dir=other","--emit=obj=old.o"]
+        output=private_native_flags(flags,build,self.work)
+        for name in ("include","generated","config.h","system","quoted","macros.h","cfg","target.json"):
+            self.assertTrue(any(str(build/name) in item for item in output),name)
+        self.assertIn("-Ldependency="+str(build/"rust"),output)
+        self.assertIn("kernel="+str(build/"rust/kernel.rmeta"),output)
+        self.assertIn("--extern=bindings="+str(build/"rust/bindings.rmeta"),output)
+        self.assertEqual(output[-5:],["-C","opt-level=2","-Dwarnings","-Dunsafe_op_in_unsafe_fn","-Zsanitizer=kcfi"])
+        self.assertFalse(any("old" in item or "other" in item for item in output))
+        for bad in (["-Cincremental=cache"],["-C","incremental=cache"],["-I"],["-MFoutside"],["-Wp,-MMD,outside"]):
+            with self.assertRaises(ValueError): private_native_flags(bad,build,self.work)
+        (build/"cfg").write_text('--out-dir=outside\n')
+        with self.assertRaises(ValueError): private_native_flags(["@cfg"],build,self.work)
+
+    def test_commands_outputs_cwd_and_temporary_directories_are_private(self):
+        donor=self.work/"donor";donor.mkdir()
+        out=self.work/"private";out.mkdir()
+        command=mock.Mock(return_value="result")
+        n=SimpleNamespace(flags=lambda build,rust:["-Dwarnings"],command=command,env={})
+        fixture=SimpleNamespace(n=n,out=out)
+        isolate_native_fixture(fixture)
+        self.assertEqual(n.flags(donor,True),["-Dwarnings","--out-dir="+str(out)])
+        args=["rustc","--emit=obj="+str(out/"obj.o")+",llvm-ir="+str(out/"obj.ll")]
+        self.assertEqual(n.command(args,"probe",donor),"result")
+        command.assert_called_once_with(args,"probe",out,None,0)
+        self.assertEqual({n.env[name] for name in ("TMPDIR","TMP","TEMP")},{str(out)})
+        for args in (["cc","-o",str(donor/"escape.o")],["rustc","--out-dir="+str(donor)],
+                     ["rustc","--emit=obj="+str(donor/"escape.o")],["cc","-o"]):
+            with self.assertRaises(ValueError): n.command(args,"bad",donor)
+        self.assertEqual(command.call_count,1)
+        link=out/"escape";link.symlink_to(donor,target_is_directory=True)
+        with self.assertRaises(ValueError): n.command(["cc","-o",str(link/"object.o")],"symlink")
+
+    def test_absent_native_inputs_skip_and_explicit_unusable_inputs_fail(self):
+        env={key:value for key,value in os.environ.items() if not key.startswith("UUID_")}
+        with mock.patch.dict(os.environ,env,clear=True):
+            self.assertIsNone(native_fixture.directory("UUID_NATIVE_X86"))
+            fixture=native_fixture.UUIDTest("test_native_x86");fixture.builds={}
+            for arch in ("x86","arm64"):
+                with self.assertRaises(unittest.SkipTest): fixture.require(arch)
+        for name in ("UUID_NATIVE_X86","UUID_NATIVE_ARM64"):
+            for value in ("","  ",str(self.work/"missing"),str(self.work)):
+                with self.subTest(name=name,value=value),mock.patch.dict(os.environ,{**env,name:value},clear=True):
+                    fixture=native_fixture.UUIDTest("test_native_x86")
+                    try:
+                        with self.assertRaises(ValueError): fixture.setUp()
+                    finally: fixture.doCleanups()
+        for value in ("",str(self.work/"missing-rustc")):
+            with mock.patch.dict(os.environ,{**env,"UUID_RUSTC":value},clear=True):
+                fixture=native_fixture.UUIDTest("test_native_x86")
+                try:
+                    with self.assertRaises(ValueError): fixture.setUp()
+                finally: fixture.doCleanups()
+
+    def test_write_watch_detects_transient_create_modify_delete(self):
+        watch=NativeWriteWatch([self.work]);self.addCleanup(watch.close)
+        temporary=self.work/"transient.rcgu.o"
+        temporary.write_bytes(b"compiler intermediate")
+        temporary.unlink()
+        events=watch.events()
+        self.assertTrue(any(name==temporary.name and mask&0x100 for _,name,mask in events))
+        self.assertTrue(any(name==temporary.name and mask&2 for _,name,mask in events))
+        self.assertTrue(any(name==temporary.name and mask&0x200 for _,name,mask in events))
 
 
 class NativeCallerTests(unittest.TestCase):
     def setUp(self):
         self.fixture=native_fixture.UUIDTest("test_native_x86")
-        self.fixture.setUp()
         self.addCleanup(self.fixture.doCleanups)
+        self.fixture.setUp()
+        isolate_native_fixture(self.fixture)
 
     def compile(self,arch,execute=False):
         fixture=self.fixture
@@ -332,7 +600,7 @@ class NativeCallerTests(unittest.TestCase):
                 (directory/".uuid_license.o.cmd").write_text("")
                 result=subprocess.run([str(build/"scripts/mod/modpost"),"-e","-M","-m","-x",
                     "-i",str(build/"Module.symvers"),"-o",str(directory/"Module.symvers"),str(obj)],
-                    env=n.env,capture_output=True,timeout=60)
+                    cwd=fixture.out,env=n.env,capture_output=True,timeout=60)
                 (fixture.out/(arch+"-"+stem+"-modpost.log")).write_bytes(result.stdout+result.stderr)
                 forbidden={"license-public":None,"license-guid":"guid_gen","license-uuid":"uuid_gen"}[stem]
                 check.verify_license_result(result,forbidden)
@@ -340,6 +608,34 @@ class NativeCallerTests(unittest.TestCase):
 
     def test_actual_x86_protected_callers(self): self.compile("x86")
     def test_actual_arm64_protected_callers(self): self.compile("arm64")
+
+    def test_concurrent_callers_keep_donors_and_invocation_cwd_untouched(self):
+        arch=next(iter(self.fixture.builds),None)
+        if arch is None: self.skipTest("native inputs absent: concurrent compiler isolation not run")
+        shared=self.fixture.out/"invocation-cwd";shared.mkdir()
+        temporary=self.fixture.out/"temporary";temporary.mkdir()
+        watch=NativeWriteWatch([shared,*self.fixture.builds.values()]);self.addCleanup(watch.close)
+        script=('import sys\nfrom test_uuid_kernel_check import NativeCallerTests\n'
+                'case=NativeCallerTests();case.setUp()\n'
+                'try: case.compile(sys.argv[1])\n'
+                'finally: case.doCleanups()\n')
+        env={**os.environ,"PYTHONDONTWRITEBYTECODE":"1","TMPDIR":str(temporary),
+             "PYTHONPATH":os.pathsep.join((str(Path(__file__).parent),str(ROOT/"scripts/tests")))}
+        children=[]
+        try:
+            for i in range(2):
+                log=(self.fixture.out/f"concurrent-{i}.log").open("wb")
+                try:
+                    children.append(subprocess.Popen([sys.executable,"-B","-c",script,arch],
+                        cwd=shared,env=env,stdout=log,stderr=subprocess.STDOUT))
+                finally: log.close()
+            results=[child.wait(timeout=180) for child in children]
+            self.assertEqual(results,[0,0])
+            self.assertEqual(watch.events(),[],"native input or invocation directory was written transiently")
+            self.assertEqual(list(shared.iterdir()),[])
+        finally:
+            for child in children:
+                if child.poll() is None: child.kill();child.wait()
 
     def test_actual_c_rust_suite_registration_lifecycles_and_kcfi(self):
         fixture=self.fixture
@@ -349,6 +645,8 @@ class NativeCallerTests(unittest.TestCase):
             build=fixture.builds[arch]
             n.BUILDS={arch:build}
             rf,cf=n.flags(build,True),n.flags(build,False)
+            target_arch="x86_64" if arch=="x86" else "aarch64"
+            self.expected_type=check.kunit_callback_type(build,target_arch)
             # The ARM donor may itself be modular. Exercise both UUID suite
             # lifecycles explicitly, retaining every other actual target flag.
             rf=[arg for i,arg in enumerate(rf) if arg!="--cfg=MODULE" and
@@ -363,6 +661,9 @@ class NativeCallerTests(unittest.TestCase):
             text=(ROOT/"lib/tests/uuid_kunit.rs").read_text()
             self.assertEqual(text.count('../../include/linux/uuid_header.rs'),1)
             rust_source.write_text(text.replace('../../include/linux/uuid_header.rs',str(ROOT/"include/linux/uuid_header.rs")))
+            accumulated=n.command([n.RUST,*rf,"-Zsanitizer=kernel-address","--print=cfg"],arch+"-sanitizer-composition")
+            self.assertIn('sanitize="kcfi"',accumulated)
+            self.assertIn('sanitize="address"',accumulated)
             for builtin in (False,True):
                 ids=[]
                 for language in ("c","rust"):
@@ -376,19 +677,31 @@ class NativeCallerTests(unittest.TestCase):
                             rust_source,"--emit=obj="+str(obj)],tag)
                     n.command(["nm",obj],tag+"-symbols")
                     callbacks=check.verify_suite_registration(obj,"x86_64" if arch=="x86" else "aarch64",
-                        rust_suite=language=="rust",builtin=builtin,cfi=True)
+                        rust_suite=language=="rust",builtin=builtin,cfi=True,expected_type=self.expected_type)
                     check.verify_references(obj,("guid_parse","uuid_parse","guid_gen","uuid_gen",
                         "generate_random_uuid","generate_random_guid","__kunit_do_failed_assertion",
                         "kunit_binary_assert_format","kunit_unary_assert_format"))
                     check.verify_suite_metadata(obj,builtin)
                     values=check.provider_type_ids(obj,names=tuple(s[0].decode() for s in callbacks))
+                    self.assertEqual(set(values.values()),{self.expected_type})
                     ids.append(list(values.values()))
                     self.registration_negatives(obj,arch,language=="rust",builtin)
                     linked=fixture.out/(tag+".linked.o")
                     n.command(["ld.lld","-r",obj,"-o",linked],tag+"-link")
                     check.verify_suite_registration(linked,"x86_64" if arch=="x86" else "aarch64",
-                        rust_suite=language=="rust",builtin=builtin,cfi=True)
+                        rust_suite=language=="rust",builtin=builtin,cfi=True,expected_type=self.expected_type)
                 self.assertEqual(ids[0],ids[1],"original C and actual-binding Rust callback KCFI")
+            for label,extra in (("wrong-nominal",["-Dkunit=wrong_kunit"]),("no-cfi",["-fno-sanitize=kcfi"])):
+                obj=fixture.out/(arch+"-"+label+".o")
+                n.command(["clang",*cf,"-O2",*extra,"-c",ROOT/"lib/tests/uuid_kunit.c","-o",obj],arch+"-"+label)
+                if label=="wrong-nominal":
+                    wrong=check.provider_type_ids(obj,names=[case.decode() for case in check.CASES])
+                    self.assertEqual(len(set(wrong.values())),1)
+                    self.assertNotEqual(set(wrong.values()),{self.expected_type})
+                check.verify_suite_registration(obj,target_arch,rust_suite=False,builtin=True,cfi=False)
+                with self.assertRaises(ValueError):
+                    check.verify_suite_registration(obj,target_arch,rust_suite=False,builtin=True,cfi=True,
+                                                    expected_type=self.expected_type)
 
     def registration_negatives(self,obj,arch,rust_suite,builtin):
         arch="x86_64" if arch=="x86" else "aarch64"
@@ -398,7 +711,7 @@ class NativeCallerTests(unittest.TestCase):
         relocation=next(i for i,s in enumerate(sections) if s[1]==4 and s[6]==registration)
         def reject(changed):
             with mock.patch.object(check,"module_elf",return_value=(parsed[0],changed,*parsed[2:])),self.assertRaises(ValueError):
-                check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+                check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True,expected_type=self.expected_type)
         for field,value in ((1,8),(2,2),(4,16),(7,4)):
             changed=list(sections);section=list(changed[registration]);section[field]=value;changed[registration]=tuple(section)
             reject(changed)
@@ -411,7 +724,7 @@ class NativeCallerTests(unittest.TestCase):
         changed=list(sections);section=list(changed[relocation]);r=list(section[-1][0]);symbol=list(r[2])
         symbol[3]=0;r[2]=tuple(symbol);section[-1]=(tuple(r),);changed[relocation]=tuple(section)
         reject(changed)
-        callbacks=check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+        callbacks=check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True,expected_type=self.expected_type)
         callback_addresses={(s[3],s[4]) for s in callbacks}
         for i,s in enumerate(sections):
             if s[1]!=4 or not 0<s[6]<len(sections) or not sections[s[6]][2]&2 or sections[s[6]][2]&4: continue
@@ -430,15 +743,63 @@ class NativeCallerTests(unittest.TestCase):
         for name in (b"init_module",b"cleanup_module"):
             symbols=[*parsed[2],(name,*callbacks[0][1:])]
             with mock.patch.object(check,"module_elf",return_value=(parsed[0],sections,symbols,*parsed[3:])),self.assertRaises(ValueError):
-                check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+                check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True,expected_type=self.expected_type)
         # The same real object must fail the opposite language/module marker gate.
         if not builtin:
             with self.assertRaises(ValueError):
-                check.verify_suite_registration(obj,arch,rust_suite=not rust_suite,builtin=builtin,cfi=True)
+                check.verify_suite_registration(obj,arch,rust_suite=not rust_suite,builtin=builtin,cfi=True,expected_type=self.expected_type)
         with mock.patch.object(check,"read_exports",return_value=[{"name":"unexpected"}]),self.assertRaises(ValueError):
-            check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+            check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True,expected_type=self.expected_type)
         with mock.patch.object(check,"provider_type_ids",return_value={str(i):i+1 for i in range(8)}),self.assertRaises(ValueError):
-            check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+            check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True,expected_type=self.expected_type)
+        for expected in (None,0,self.expected_type^1):
+            with self.assertRaises(ValueError):
+                check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True,expected_type=expected)
+        with mock.patch.object(check,"provider_type_ids",return_value={s[0].decode():self.expected_type^1 for s in callbacks}),self.assertRaises(ValueError):
+            check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True,expected_type=self.expected_type)
+        self.registration_byte_negatives(obj,arch,rust_suite,builtin,callbacks,parsed)
+
+    def registration_byte_negatives(self,obj,arch,rust_suite,builtin,callbacks,parsed):
+        """Mutate actual compiled bytes, preserving all unrelated ELF payload."""
+        data=obj.read_bytes();sections=parsed[1]
+        section_at=struct.unpack_from("<Q",data,40)[0]
+        raw=[struct.unpack_from("<IIQQQQIIQQ",data,section_at+i*64) for i in range(len(sections))]
+        def location(symbol,addend=0): return raw[symbol[3]][4]+symbol[4]+addend-sections[symbol[3]][3]
+        def relocation(owner,offset):
+            records=[(i,j,r) for i,s in enumerate(sections) if s[1]==4 and s[6]==owner
+                     for j,r in enumerate(s[-1]) if r[0]==offset]
+            self.assertEqual(len(records),1)
+            index,ordinal,record=records[0]
+            return raw[index][4]+24*ordinal,record
+        registration=next(i for i,s in enumerate(sections) if s[0]==b".kunit_test_suites")
+        registration_at,record=relocation(registration,0)
+        suite_symbol,suite_addend=record[2:]
+        suite_offset=suite_symbol[4]+suite_addend-sections[suite_symbol[3]][3]
+        cases_at,cases_record=relocation(suite_symbol[3],suite_offset+288)
+        cases_symbol,cases_addend=cases_record[2:]
+        cases_offset=cases_symbol[4]+cases_addend-sections[cases_symbol[3]][3]
+        changes=[("suite-name",location(suite_symbol,suite_addend),b"!"),
+                 ("registration-target",registration_at+16,struct.pack("<q",suite_addend+8)),
+                 ("detached-cases",cases_at,struct.pack("<Q",suite_offset+280)),
+                 ("case-array-target",cases_at+16,struct.pack("<q",cases_addend+72)),
+                 ("terminator",location(cases_symbol,cases_addend+len(check.CASES)*72),b"!")]
+        for i,callback in enumerate(callbacks):
+            changes.append((f"type-{i}",location(callback)-4,bytes(4)))
+            for field,label in ((8,"case-name"),(56,"module-name")):
+                _,record=relocation(cases_symbol[3],cases_offset+i*72+field)
+                changes.append((f"{label}-{i}",location(*record[2:]),b"!"))
+        for label,offset,replacement in changes:
+            mutant=bytearray(data);mutant[offset:offset+len(replacement)]=replacement
+            path=obj.with_name(obj.stem+"-bad-"+label+".o");path.write_bytes(mutant)
+            with self.subTest(label=label,arch=arch,rust=rust_suite,builtin=builtin),self.assertRaises(ValueError):
+                check.verify_suite_registration(path,arch,rust_suite=rust_suite,builtin=builtin,cfi=True,
+                                                expected_type=self.expected_type)
+        for field in (b"license=Dual BSD/GPL",b"author=Andy Shevchenko",b"description=Test cases"):
+            self.assertIn(field,data)
+            path=obj.with_name(obj.stem+"-bad-metadata-"+field.split(b"=")[0].decode()+".o")
+            path.write_bytes(data.replace(field,field[:-1]+b"!",1))
+            with self.assertRaises(ValueError): check.verify_suite_metadata(path,builtin)
+        with self.assertRaises(ValueError): check.verify_suite_metadata(obj,not builtin)
 
     def execute(self,build,rf,cf):
         fixture=self.fixture

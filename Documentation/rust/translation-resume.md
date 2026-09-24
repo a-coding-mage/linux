@@ -1,5 +1,329 @@
 # Reboot handoff — C-to-Rust migration
 
+## Active again — 2026-09-24 15:24 UTC / September 25 JST
+
+The user explicitly resumed: "we already restarted, just continue the work".
+The goal is ACTIVE; historical pause instructions below no longer apply.
+Private checkpoints and persistent toolchain survived; compatibility paths were
+verified. Root is rebuilding MAIN x86/ARM64 donors from saved configurations;
+workers are resuming list_sort isolation, UUID checker and parser runtime fixes.
+Fresh job records: `/tmp/lupos-base64-uuid-runtime.I51l5PDI/resume-1528-main-{x86,arm64}-status.json`.
+Both MAIN image/modules builds finished PASS/exit 0 at 15:32 UTC. Their fresh
+bindings include parser/minmax/glob. MAIN is now read-only for worker fixtures.
+Separate MODULAR builds are still running (`resume-1532-modular-*` job records).
+Fresh strict Rust1.85 migration invariants: 3 pass, no skips, 46.860 seconds.
+Fresh integer-math differential: 11 pass, no skips, 16.620 seconds, including
+actual ELF32 C/Rust owner and independent consumer at O0/O2/Os. Use the complete
+official i686 sysroot `/tmp/lupos-rust185.svY8Mh/toolchains/1.85.0-x86_64-unknown-linux-gnu`
+for every `*_I686_SYSROOT`; the attempted custom-core restoration remains
+incomplete and its two failed logs are retained. Recovery environment overrides
+are saved in `/home/fenhir/.cache/lupos-migration/reboot-20260924/recovery-state.json`.
+Both MODULAR builds subsequently passed. Integrated list_sort fixture isolation
+(29 focused groups; combined boot/int_log/rational regression 126 pass), UUID
+framework-derived callback/registration guards (30 pass), parser runtime checker
+(19 pass including both final Rust artifact audits), and shared common-metadata
+relative-cfg-path handling (11 focused groups). Fresh combined regression:
+219 tests, zero skips, 56.625 seconds; `resume-1545-integrated-regression.log`.
+This is a focused regression, not the complete host/kernel regression.
+
+Parser, Base64 and UUID Rust-provider/C-and-Rust-caller matrices now pass on both
+architectures: twelve fresh VMs, each with consumer unload/reload. Base64 and
+UUID also load/reload their translated KUnit modules under modular KUnit. Job
+prefixes: `resume-1543-parser-rust-*`, `resume-1545-base64-rust-modular-*`, and
+`resume-1546-uuid-rust-modular-*`. The original Base64 modular audit failure is
+retained under `resume-1536-*`; it exposed the fixed relative cfg path guard.
+Current root jobs `resume-1547-three-c-providers-*` switch parser/Base64/UUID to
+original C, rebuild, run both caller languages, then restore Rust and audit.
+Inspect terminal status before assuming this C/restore phase completed.
+
+Update 15:57 UTC: those first C jobs passed both parser callers, then failed
+Base64 preflight because common metadata was incorrectly required to be newer
+than global auto.conf after unrelated provider toggles. Root removed that false
+dependency while retaining actual fixdep CONFIG-stamp freshness and all source,
+generator/header, cfg/core and object checks; 14 focused tests pass, including
+new changed/newly-created recorded-stamp negatives. Retry jobs
+`resume-1553-c-matrix-retry-{x86,arm64}` both PASS, including Base64/UUID C-provider
+VMs, restoring all three Rust providers, rebuilding and final selected audits.
+This cycle has 24 fresh successful VMs across parser/Base64/UUID, each with both
+consumer loads; the translated Base64/UUID suites also load twice per VM.
+Parser and the strengthened Base64 suite now count as validated: 34/526 lib
+units (6.46%, 492 remain); host tools stay 55/64 (85.94%, nine remain), with
+three generators overlapping. This is not full-migration completion.
+
+The reviewed memweight checker/test pair is integrated; root discovery passes
+14/14 with both fresh MAIN donors (6.748 seconds). Private cumulative patch:
+`memweight_runtime_revision2.3IKloDyz/integration.patch`, SHA256
+`7bf7c7d6d5eb91b0f7747eacc8cdbaefcf9248df39b083cb5392e79ef5dc9168`.
+Root's `resume-1557-memweight-rust-*` now runs both callers on both MODULAR Rust
+providers. No memweight VM success is claimed until those job records finish.
+The worker formerly on memweight now owns private cmdline revision directory
+`cmdline_runtime_revision2.8URmYHjh`; its three original checker/test/fixture files
+are in scope. MAIN remains read-only and MODULAR remains root-owned.
+
+Update 16:07 UTC: `resume-1557-memweight-rust-*` and
+`resume-1600-memweight-c-*` both finish PASS on both targets: eight noncrashing
+VMs, 12,651 protected comparisons per consumer load, real 128 MiB allocation,
+two loads per VM, Rust restored and audited. The separate deliberately crashing
+BUG-threshold VM gate remains unrun; memweight is not yet added to the count.
+Root additionally corrected `test_memweight.py` to accept genuine official
+hashed i686 core filenames, isolate all compiler cwd/temp/response inputs,
+watch read-only inputs and preserve private Kbuild's expanded flags in an
+actual rustc response file (otherwise Make exceeds the shell argument limit).
+Seven groups now pass without skips in 6.027 seconds, including real ELF32
+O0/O2/Os execution and private C/Rust/C Kbuild/dependency/no-op tests on fresh
+donors. Earlier cwd-guard and shell-size failures remain retained. Root also
+corrected memweight strict-lint parsing: Rust 1.85 does NOT accept comma lists
+as several lints; real unknown-lint probes are now negative controls.
+Focused combined regression `resume-1604-integrated-regression-tests.log`:
+243 pass, zero skips, 76.884 seconds, exact environment/argv in its JSON spec.
+This still does not claim the complete migration regression.
+
+Update 16:14 UTC: independent read-only boundary audit
+`memweight_boundary_audit.SLvYRaIR/RESULT.md` confirmed no C/Rust discrepancy;
+the dedicated crashing matrix was an extra assurance proposed in the review,
+not an original self-test requirement or an identified defect. Preserve the
+unrun native BUG-dispatch limitation explicitly; do not relabel core None or
+host aborts as kernel BUG evidence. With the eight native ordinary-path VMs,
+real ELF32/build tests, boundary mutants and restored audit complete, memweight
+is now included: 35/526 lib units (6.65%; 491 remain). No extra crash runner was
+implemented or executed. The audit's eight-console check confirms 202,416 native
+comparisons across sixteen workload loads.
+
+Reviewed win_minmax and glob checker packages are integrated. Root tests pass
+17/17 (16.848 s) and 21/21 (67.048 s), respectively. Frozen patch hashes:
+win_minmax `b41677a9e559191b556d008aef14c3ace10491f9018c6a241c4730455e616483`;
+glob `0f51d7c1a96cf28fd6d5b6e7445e4e1bfa4adc4aa5b9ebb2184b995601c013b8`.
+`resume-1610-win-minmax-rust-*` and `resume-1612-glob-rust-*` each PASS both
+architectures and both callers with reload (four VMs per component). Glob's
+original 64-parameter KUnit module also loads twice; its unique copied-build
+console is inside the retained `glob-runtime-*` evidence directory, not the
+original MODULAR rust-boot-test directory. Current root jobs
+`resume-1613-minmax-glob-c-*` run C baselines then restore/audit Rust; inspect
+their terminal status before claiming completion or counting these units.
+Workers: cmdline revision still private; rbtree read-only review at
+`review_rbtree_resume.CSwfPFsu` found missing recoverable checkpoint files and
+unsafe old replay cwd, not yet a production defect conclusion. Third worker is
+now diagnosing missing full-regression environment inputs, without rebuilding.
+
+Update 16:17 UTC: `resume-1613-minmax-glob-c-*` both finished PASS, including
+all C-provider VMs, Rust restoration/rebuild and both final audits. Min/max and
+glob each now have eight successful provider/caller/architecture VMs with
+reload. This resumed cycle totals 48 successful VMs across parser, Base64,
+UUID, memweight, min/max and glob (eight per component). Lib inventory now
+37/526 (7.03%, 489 remain), host55/64 unchanged; native panic-path limitations
+above remain explicit. Expanded focused regression
+`resume-1617-integrated-regression` is running, expected281 tests; inspect its
+status instead of assuming success. Both MODULAR trees are currently restored
+to all five Rust providers. No root build/VM is running at this update.
+
+Cmdline's latest private review found two additional harness issues: comma-lint
+parsing and binding text wrongly required newer than global .config/rustc_cfg.
+Actual restored x86 bindings text is15:29 UTC while config/cfg are16:15 and
+libbindings.rmeta16:15:41; Kbuild correctly reuses unchanged C bindings. Worker
+is separating recorded bindgen dependencies from Rust metadata cfg dependencies,
+with actual changed-header/stamp controls; do not alter timestamps.
+
+Update 16:22 UTC: expanded focused regression finished PASS: 281 tests, zero
+skips,170.935 seconds (`resume-1617-integrated-regression-tests.log`). Root also
+fixed `test_hweight.py`'s literal `libcore.rlib` assumption to accept the official
+hashed core, retaining missing/ambiguous-input rejection. Its genuine ELF32
+matrix and two focused validation groups PASS3/3,3.305 seconds with Rust1.85
+(`resume-1621-hweight-official-i686.log`). No hweight native replay was run;
+its broader donor-isolation audit remains separate. This recovery fix adds no
+migration unit. Cmdline's final18-test serial/concurrent private run is pending.
+
+Full-regression recovery audit found the exact Unicode12.1 corpus retained at
+`/tmp/lupos-parallel-work.TDJdWxsY/unicode_tests/frozen-final-gcc/unicode-oarpx63x/src/fs/unicode`
+with all eight pinned hashes and PROVENANCE.json verified; no download required.
+Current MAIN is not a substitute for all legacy gates: GENKSYMS is disabled,
+x86 SYSTEM_EXTRA_CERTIFICATE is disabled, ARM lacks nVHE outputs, and x86
+vmlinux lacks retained relocation sections. MAIN realmode.elf does have six
+ELF32 relocation sections and may serve that separate input. Await the recovery
+worker's final per-variable table before remapping or rebuilding absent trees.
+
+Update 16:35 UTC: integrated cmdline checker/fixtures initially passed18 groups,
+but its first native run rejected valid relative external-module saved paths.
+Root corrected compiler-cwd resolution (M= for external consumers, O= for
+in-tree bindings); retained strict dependency/freshness and wrong-path controls.
+Discovery now passes19/19, zero skips,24.203 seconds. Rust-provider matrices
+`resume-1632-cmdline-rust-{x86,arm64}` both PASS: four VMs, both caller languages,
+original eight-case KUnit and consumer unload/reload. C baselines and Rust
+restoration/audits are RUNNING under `resume-1634-cmdline-c-*`; do not count this
+unit until their terminal records pass. Original failures `resume-1625-*` kept.
+
+Recovery audit is final at `regression_recovery_audit.vaKsiPLC/RESULT.md`:
+recovery-state.json remaps only verified Unicode corpus, x86 decoder and realmode
+inputs; configuration-specific missing builds remain explicit. Full Unicode
+regression is running as `resume-1635-unicode-corpus`; no result claimed yet.
+Workers now own private rbtree revision3 (four concrete corrections from
+`review_rbtree_resume.CSwfPFsu/RESULT.md`) and one-file hweight/glob test-transport
+repairs. They may not write to MAIN/MODULAR or the repository. No production
+Rust, SOURCE-COMMIT or Makefile edits were made during this runtime repair.
+
+Update 16:40 UTC: cmdline's C-baseline jobs originally omitted the explicit
+`--allow-c-baseline` opt-in and stopped before generating fixtures/booting;
+that orchestration error remains logged at `resume-1634-*`. Corrected jobs
+`resume-1636-cmdline-c-retry-{x86,arm64}` both PASS, including four C-provider
+VMs, restoration/rebuild and final Rust binding/linkage audits. Together with
+the four Rust-provider VMs this completes cmdline's dedicated matrix:33,411
+comparisons per load, eight unchanged KUnit cases per suite load, all loaded
+twice per VM. Inventory is now38/526 (7.22%,488 remain); host55/64 unchanged.
+This resumed cycle has56 successful VMs. Both MODULAR trees are restored to
+Rust and no root VM is running. Complete migration regression remains pending.
+
+LLVM19.1.1 and official Rust1.85 PPC32/PPC64LE libraries restored privately at
+`/home/fenhir/.cache/lupos-migration/reboot-20260924/cross-tools.VsTsQoQ7` (LLVM)
+and the existing persistent1.85 sysroot (libraries). No global installation or
+default-toolchain change. First targeted cross test run failed because root's
+environment omitted BINDGEN; retain `resume-1640-restored-cross-tools` evidence
+and rerun with the restored bindgen path. A fresh independent original-C x86
+GENKSYMS/MODVERSIONS+certificate-space+relocatable build is running at
+`/tmp/lupos-recovered-x86-genksyms.7TUlSeoX`; MAIN and MODULAR are untouched.
+
+Update 16:55 UTC: cross-tools retry PASS7/7, zero skips,57.069 seconds. Hweight
+one-file transport patch `7cd47decba81323030ede1b3cb63a703cc14e60aa77c349adf7447fdac2b8a76`
+is integrated; root14/14PASS,zero skips,70.565s (`resume-1651-hweight-integrated`).
+It preserves all original groups and adds normal-discovery concurrent C/Rust
+replay with actual deleted-rcgu and full930-directory donor-write observation.
+Glob one-file patch `abd2ce7a45d0fabf8aae762119f3298d2b66bbe0fff000a3958e923894e756ea`
+is integrated byte-identical; root7-group replay is RUNNING (`resume-1654`).
+Root additionally fixed native command/response path resolution and private
+compiler cwd/TMP in `test_recordmcount.py`; all20 groups PASS,zero skips,10.048s,
+including real MAIN compilation and an empty full-tree donor-write report.
+No production Rust/C/provenance/Makefile changed; inventory stays38/526,host55/64.
+
+Recovery builds: x86 GENKSYMS/certificate-space and ARM64 KVM/nVHE both PASS;
+MIPS32 vDSO PASS. x86_64 RELOCATABLE alone does not retain relocations in this
+tree: X86_NEED_RELOCS depends on RANDOMIZE_BASE (or32bit). The new isolated x86
+build is therefore rebuilding with RANDOMIZE_BASE enabled (`resume-1653`).
+MIPS64 hit Clang18 integrated-assembler errors on original genex.S forward
+label differences, not a Rust migration failure. Private GNU binutils2.42
+restoration succeeded; retry uses LLVM_IAS=0 and the actual GNU assembler.
+Both MIPS retries explicitly set target RUSTC/RUSTDOC probes to1.85 as well as
+HOSTRUSTC (initial MIPS had a1.98 config probe despite1.85 host compilations).
+See `resume-1655-recovered-mips{32,64}-retry` terminal records before remapping.
+Recovery paths are recorded individually in persistent recovery-state.json.
+
+Integrated300-test regression (`resume-1642`) and full Unicode generator
+regression (`resume-1635`) remain RUNNING. Unicode reached its last real-Kbuild
+regeneration group; earlier official-corpus comparisons pass, but no overall
+success is claimed yet. Workers now repair `test_cmdline.py`, finish private
+rbtree revision3 and prepare a new private bsearch production candidate.
+
+Update 17:04 UTC: combined focused regression PASS300/300, zero skips,
+1080.694 seconds (`resume-1642-integrated-regression-tests.log`). Full Unicode
+suite PASS9/9, zero skips,1440.121 seconds, including exact Unicode12.1 corpus
+and private real-Kbuild regeneration (`resume-1635-unicode-corpus-tests.log`).
+Integrated glob transport PASS7/7,zero skips,205.853 seconds (`resume-1654`).
+Recovered ARM64 nVHE generator PASS11/11,zero skips,33.268 seconds (`resume-1656`);
+MIPS32 vDSO generator PASS13/13,zero skips,26.078 seconds (`resume-1659`), after
+explicit Rust1.85 config probes and genuine ELF32/o32/MIPS32r2 verification.
+Only those verified input paths are remapped. The isolated x86 relocation and
+MIPS64 GNU-assembler kernel builds remain running. Full host/kernel discovery
+still awaits unsafe legacy fixture transport corrections; these PASS results
+are not a full-regression claim or new migration units. Inventory remains
+38/526 lib,55/64 host,56 successful fresh VMs in this resumed cycle.
+
+Historical pre-integration glob review (superseded by the PASS records above)
+is in private `review_runtime_batch.tea1792r/glob/RESULT.md`:
+compiler isolation, actual KUnit registration/type proof, effective strict flags
+and early MAKE validation require correction before its native tests/integration.
+Workers are now correcting `glob_runtime_revision2`, continuing
+`memweight_runtime_revision2.3IKloDyz`, and continuing
+`win_minmax_runtime_revision2.Dvhx7DXN`; all private, with MAIN read-only and no
+MODULAR access. Follow each STATUS rather than stale historical worker labels.
+
+## Latest checkpoint — second reboot request, 2026-09-24 13:33 UTC
+
+The user explicitly requested another stop for a computer reset. **Pause the goal;
+do not resume until the user asks.** This section supersedes conflicting state
+descriptions in the earlier checkpoint below; older test results are historical.
+
+Current observed repository HEAD: `1d46d1d72` (Add documentation and tests for
+Base64 KUnit integration). The worktree was clean at this stop request. No new
+production/checker changes were integrated during the short post-reboot recovery;
+only this handoff is being updated. No commits, staging or resets were performed.
+Preserve exact SOURCE-COMMIT markers and keep C selectable alongside Rust.
+
+### Recovery completed since the previous checkpoint
+
+- The first reboot really cleared `/tmp`, including all four native build trees.
+  The original 82 MiB durable archive was SHA256-verified and restored, without
+  overwriting existing paths. Final rbtree reports/patch were restored separately
+  from `final-rbtree/`. Restored logs are NOT fresh test executions.
+- Rust 1.85.0, rustdoc, cargo, rust-src, x86/i686/AArch64-musl standard libraries,
+  bindgen 0.71.1, matching elfutils headers, and QEMU 8.2.2 for x86/ARM64 are now
+  stored persistently under:
+  `/home/fenhir/.cache/lupos-migration/reboot-20260924/toolchain`.
+  Fresh tool checks passed (actual bindgen/Rust compilation, original C
+  gendwarfksyms oracle compilation, QEMU version/dependency checks). No kernel or
+  VM was built/run. User-default Rust and system packages were not changed.
+  Read `RESULT.md` and `REBOOT.md` there. After another `/tmp` clear, run
+  `bash /home/fenhir/.cache/lupos-migration/reboot-20260924/toolchain/recreate-compatibility.sh`
+  and source its `env.sh`. The script refuses conflicting paths.
+- All four native output paths listed below are **currently absent**, not merely
+  stale. Restore saved configurations and rebuild before native tests. Saved
+  MODULAR configurations are actually the last builtin-KUnit checkpoint.
+  The custom `/tmp/lupos-math-i686-core.67Nfmg` core also remains absent; installed
+  i686 standard libraries do not establish that custom-core proof.
+
+### Newly stopped private work — not integrated
+
+New durable delta directory:
+`/home/fenhir/lupos-migration-checkpoint-20260924.ieh2isUq/reboot2-20260924-1333.LIQeP2hd`.
+Read its `README.md` for archive hashes and final worker outcomes. Restore the
+original archive first, then this delta only where its paths are absent or after
+reviewing conflicts. Keep the original archive/configs/resume-state.json.
+
+- `list_sort_isolation_resume`: private candidate for
+  `scripts/tests/test_list_sort_kernel_check.py`; isolates compiler cwd/output/
+  temporary directories, resolves relative inputs and response files, adds
+  transient-write/concurrency controls. First normal-discovery run: 27 tests,
+  22 passed and 5 explicit native skips. No genuine donor compile occurred.
+  Review final STATUS/RESULT and integration.patch; native verification pending.
+- `uuid_checker_resume`: private checkpoint for the actual KUnit-framework-
+  derived callback type guard, registration/metadata checks and isolated
+  compiler transport. Two-file draft patch exists, SHA256
+  `6f17aee0c59245d8c3a6dbcbe0fe2a2a55ca055958c9a911ed5569d65cef965b`.
+  No syntax, unit, native or patch-apply checks ran; transport review and
+  negative/concurrent controls remain incomplete. No integration. Read RESULT.
+- `parser_runtime_revision2.RXNiI9XO/integration.patch`: reviewed private patch
+  still unapplied; `git apply --check` passed against current HEAD. Packaging has
+  no final RESULT. Historical serial/concurrent runs are not fresh validation.
+  A new review issue was found before stopping: `check_parser_kernel.py` passes
+  the entire explicit QEMU command to `shutil.which`, rejecting the required
+  x86 command containing BIOS arguments. Before integration, parse with
+  `shlex.split`, validate the executable token, and test quoted paths/arguments,
+  missing executables and malformed/empty commands before any side effects.
+
+### Resume order
+
+1. Obtain user resume; inspect current git state and this note. Read the private
+   `AGENT_PROTOCOL.md` fully before restarting workers. Old process/session IDs
+   are invalid. Do not automatically restart workers from a stale RUNNING label.
+2. Restore private delta and tool compatibility paths; inspect tool reports.
+   Native command arrays/environment remain in the original `resume-state.json`.
+3. Rebuild both MAIN donor trees from saved configs using actual Rust 1.85 and
+   strict flags. Only then release read-only donors to fixture workers.
+4. Review/finish list_sort isolation and UUID type-guard patches; execute fresh
+   native positives/negatives. Complete parser preflight repair and validation.
+5. Restore root-owned modular configurations, build image/modules, and rerun the
+   strengthened Base64 modular guard and outstanding provider/caller matrices.
+   Continue the remaining private candidates and full regression from below.
+6. Reconcile translation-progress.rst with verified evidence. Conservative
+   counts remain 55/64 host tools and 32/526 lib units, with five additional
+   integrated providers awaiting full validation. Do not count tool restoration,
+   skipped tests, or private patches as completed migration units.
+
+Final shutdown verification: all three managed workers stopped and reported no
+active subprocesses; process inspection found no native jobs, compiler, build or
+QEMU process. Both new private directories, including final reports and patches,
+were archived and the archive listed successfully. Delta SHA256:
+`2697b385958612d7bf80fe85b699ce9a15690a1f71018b1e353b38d941f86c98`.
+This updated handoff is also copied into the durable delta directory.
+
+## Earlier checkpoint — historical evidence and remaining scope
+
 Saved 2026-09-24, approximately 12:35 UTC (21:35 JST), at the user's explicit request to stop for a computer reset. The migration goal must remain **paused**, not complete. Resume only when the user asks.
 
 ## Goal and constraints

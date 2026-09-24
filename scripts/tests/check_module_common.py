@@ -154,15 +154,27 @@ def verify_common_metadata(build, work, *, flags, exports):
     cfg = build / "include/generated/rustc_cfg"
     core = build / "rust/libcore.rmeta"
     saved = command(obj)
-    if (f"MODULE_COMMON_DATA={data.resolve()}" not in saved or
+    cfgs = [token[1:] for token in saved if token.startswith("@")]
+    data_paths = [token.split("=", 1)[1] for token in saved if token.startswith("MODULE_COMMON_DATA=")]
+    # Make runs modfinal in the metadata output directory: the kernel build
+    # directory for in-tree modules, or `work` for external modules. rustc
+    # resolves @response files against that cwd, not against the source tree.
+    # MODULE_COMMON_DATA is different: include!(env!(...)) would resolve a
+    # relative value against module-common.rs, so retain its absolute contract.
+    if (len(data_paths) != 1 or not Path(data_paths[0]).is_absolute() or
+            Path(data_paths[0]).resolve() != data.resolve() or
             "--crate-name=module_common" not in saved or "--crate-type=rlib" not in saved or
-            "-Zallow-features=" not in saved or f"@{cfg}" not in saved or
+            "-Zallow-features=" not in saved or len(cfgs) != 1 or not cfgs[0] or
+            (work / cfgs[0]).resolve() != cfg.resolve() or
             "-Zsanitizer=kcfi" in saved or any("rust/helpers" in token for token in saved)):
         raise ValueError("wrong Rust common metadata compilation mode")
     verify_build_command(work, obj, SOURCE, [data, core])
     verify_build_command(work, data, INPUT, [ROOT / "include/linux/vermagic.h", build / "include/generated/utsrelease.h"])
+    # fixdep records the individual CONFIG_* stamps consumed by the target
+    # headers. An unrelated option can update auto.conf without invalidating
+    # this data; the recorded dependencies above remain authoritative.
     newer(data, [ROOT / "scripts/module-common.c", ROOT / "scripts/module-common-data.rs",
-                 build / "scripts/module-common-data", build / "include/config/auto.conf"])
+                 build / "scripts/module-common-data"])
     newer(obj, [cfg, data, core])
     # The in-tree generated values come from the same authoritative target
     # headers; an external fixture must not substitute its own vermagic/notes.

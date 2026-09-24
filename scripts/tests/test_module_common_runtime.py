@@ -24,11 +24,11 @@ from rust_exports_test_support import read_exports
 
 
 class CommonFixture:
-    def __init__(self, directory, *, rust=True, orc=True, retpoline=True, arm=False):
+    def __init__(self, directory, *, rust=True, orc=True, retpoline=True, arm=False, in_tree=False):
         self.build = directory / "kernel"
-        self.work = directory / "external"
+        self.work = self.build if in_tree else directory / "external"
         self.build.mkdir(parents=True)
-        self.work.mkdir()
+        if not in_tree: self.work.mkdir()
         self.config = {"RUST": "y", "MODULES": "y", "64BIT": "y",
                        "ARM64" if arm else "X86_64": "y", "LTO": "y"}
         if rust: self.config["RUST_MODULE_COMMON"] = "y"
@@ -52,16 +52,18 @@ class CommonFixture:
         (self.build / self.data.name).write_text(content)
         flags = [*shlex.split(os.environ.get("HOSTRUSTC", "rustc")), "--edition=2021", "-Dwarnings",
                  "-Wmissing-docs", "-Wunreachable-pub", "-Cpanic=abort", "--crate-name=module_common",
-                 "--crate-type=rlib", "--emit=obj", "-Copt-level=2", checker.SOURCE, "-o", self.obj]
+                 "--crate-type=rlib", "--emit=obj=" + str(self.obj), "-Copt-level=2",
+                 "--out-dir=" + str(self.work), checker.SOURCE]
         for name in ("UNWINDER_ORC", "MITIGATION_RETPOLINE"):
             if self.config.get(name) == "y": flags += ["--cfg", "CONFIG_" + name]
-        result = subprocess.run(list(map(str, flags)), capture_output=True, timeout=120,
-                                env={**os.environ, "MODULE_COMMON_DATA": str(self.data)})
+        result = subprocess.run(list(map(str, flags)), cwd=self.work, capture_output=True, timeout=120,
+                                env={**os.environ, "MODULE_COMMON_DATA": str(self.data),
+                                     "TMPDIR": str(self.work), "TMP": str(self.work), "TEMP": str(self.work)})
         if result.returncode: raise AssertionError(result.stderr.decode(errors="replace"))
         if arm:
             data = bytearray(self.obj.read_bytes()); struct.pack_into("<H", data, 18, 183)
             self.obj.write_bytes(data)
-        shutil.copy2(self.obj, self.build / self.obj.name)
+        if not in_tree: shutil.copy2(self.obj, self.build / self.obj.name)
         self.record(self.data, checker.INPUT, [checker.ROOT / "include/linux/vermagic.h",
                     self.build / "include/generated/utsrelease.h"], f"cc -E {checker.INPUT}")
         self.record(self.obj, checker.SOURCE, [self.data, self.build / "rust/libcore.rmeta"],
@@ -117,6 +119,61 @@ class ModuleCommonRuntimeTests(unittest.TestCase):
             with self.subTest(arguments=arguments, records=records), self.assertRaises(ValueError):
                 checker.verify_common_metadata(fixture.build, fixture.work, flags=lambda _: arguments, exports=lambda _: records)
 
+    def test_in_tree_and_external_cfg_paths_resolve_from_compiler_work_directory(self):
+        for in_tree in (False, True):
+            fixture = self.fixture(in_tree=in_tree)
+            cmd = fixture.obj.with_name("." + fixture.obj.name + ".cmd")
+            original = cmd.read_text()
+            cfg = fixture.build / "include/generated/rustc_cfg"
+            for spelling in (str(cfg), "./" + os.path.relpath(cfg, fixture.work)):
+                cmd.write_text(original.replace("@" + str(cfg), "@" + spelling))
+                with self.subTest(in_tree=in_tree, cfg=spelling): fixture.verify()
+            # Recorded source/dependency paths already use the same cwd rule.
+            # Verify relative identities through the real shared .cmd checker.
+            relative = original
+            for path in (checker.SOURCE, fixture.build / "rust/libcore.rmeta"):
+                relative = relative.replace(str(path), os.path.relpath(path, fixture.work))
+            cmd.write_text(relative.replace("@" + str(cfg), "@./" + os.path.relpath(cfg, fixture.work)))
+            fixture.verify()
+
+    def test_cfg_missing_wrong_empty_and_duplicate_paths_are_rejected(self):
+        for in_tree in (False, True):
+            fixture = self.fixture(in_tree=in_tree)
+            cmd = fixture.obj.with_name("." + fixture.obj.name + ".cmd")
+            original = cmd.read_text()
+            cfg = fixture.build / "include/generated/rustc_cfg"
+            absolute = "@" + str(cfg)
+            relative = "@./" + os.path.relpath(cfg, fixture.work)
+            (fixture.work / "wrong_cfg").write_bytes(cfg.read_bytes())
+            for replacement in ("", "@", "@wrong_cfg", "@" + str(fixture.work / "wrong_cfg"),
+                                absolute + " " + absolute, absolute + " " + relative,
+                                absolute + " @wrong_cfg", "@wrong_cfg " + absolute):
+                cmd.write_text(original.replace(absolute, replacement))
+                with self.subTest(in_tree=in_tree, replacement=replacement), self.assertRaises(ValueError):
+                    fixture.verify()
+            if not in_tree:
+                # This exists in build, but would point into the external tree
+                # when consumed by rustc; it must not be resolved from build.
+                cmd.write_text(original.replace(absolute, "@./include/generated/rustc_cfg"))
+                with self.assertRaises(ValueError): fixture.verify()
+
+    def test_data_path_retains_absolute_include_identity_and_rejects_duplicates(self):
+        for in_tree in (False, True):
+            fixture = self.fixture(in_tree=in_tree)
+            cmd = fixture.obj.with_name("." + fixture.obj.name + ".cmd")
+            original = cmd.read_text()
+            selected = "MODULE_COMMON_DATA=" + str(fixture.data)
+            equivalent = "MODULE_COMMON_DATA=" + str(fixture.work) + "/./" + fixture.data.name
+            cmd.write_text(original.replace(selected, equivalent))
+            fixture.verify()
+            for replacement in ("", "MODULE_COMMON_DATA=", "MODULE_COMMON_DATA=./" + fixture.data.name,
+                                "MODULE_COMMON_DATA=" + str(fixture.work / "wrong.rs"),
+                                selected + " " + selected, selected + " " + equivalent,
+                                selected + " MODULE_COMMON_DATA=" + str(fixture.work / "wrong.rs")):
+                cmd.write_text(original.replace(selected, replacement))
+                with self.subTest(in_tree=in_tree, replacement=replacement), self.assertRaises(ValueError):
+                    fixture.verify()
+
     def test_selected_source_commands_cfg_dependencies_and_no_owner_versions(self):
         fixture = self.fixture()
         cmd = fixture.obj.with_name("." + fixture.obj.name + ".cmd")
@@ -144,6 +201,47 @@ class ModuleCommonRuntimeTests(unittest.TestCase):
         fixture.data.write_text(original)
         os.utime(fixture.data, ns=(1, 1))
         with self.assertRaises(ValueError): fixture.verify()
+
+    def test_unrelated_config_update_does_not_invalidate_common_data(self):
+        for in_tree in (False, True):
+            fixture = self.fixture(in_tree=in_tree)
+            auto = fixture.build / "include/config/auto.conf"
+            auto.write_text("CONFIG_RUST_PARSER=n\n")
+            stamp = max(fixture.data.stat().st_mtime_ns, fixture.obj.stat().st_mtime_ns) + 1_000_000_000
+            os.utime(auto, ns=(stamp, stamp))
+            fixture.verify()
+
+    def test_changed_or_new_recorded_config_stamp_invalidates_common_data(self):
+        for in_tree in (False, True):
+            for previously_present in (False, True):
+                fixture = self.fixture(in_tree=in_tree)
+                config_stamp = fixture.build / "include/config/BUILD_SALT"
+                cmd = fixture.data.with_name("." + fixture.data.name + ".cmd")
+                relative = os.path.relpath(config_stamp, fixture.work)
+                text = cmd.read_text().rstrip("\n") + f" $(wildcard {relative})\n"
+                cmd.write_text(text)
+                if previously_present:
+                    config_stamp.touch()
+                    stamp = fixture.data.stat().st_mtime_ns - 1
+                    os.utime(config_stamp, ns=(stamp, stamp))
+                fixture.verify()
+                config_stamp.touch()
+                stamp = fixture.data.stat().st_mtime_ns + 1_000_000_000
+                os.utime(config_stamp, ns=(stamp, stamp))
+                with self.subTest(in_tree=in_tree, previously_present=previously_present):
+                    with self.assertRaisesRegex(ValueError, "older than a recorded dependency"):
+                        fixture.verify()
+
+    def test_actual_generated_headers_generator_and_rust_inputs_remain_freshness_gates(self):
+        for in_tree in (False, True):
+            for name in ("include/generated/utsrelease.h", "scripts/module-common-data",
+                         "include/generated/rustc_cfg", "rust/libcore.rmeta"):
+                fixture = self.fixture(in_tree=in_tree)
+                path = fixture.build / name
+                stamp = max(fixture.data.stat().st_mtime_ns, fixture.obj.stat().st_mtime_ns) + 1_000_000_000
+                os.utime(path, ns=(stamp, stamp))
+                with self.subTest(in_tree=in_tree, name=name), self.assertRaises(ValueError):
+                    fixture.verify()
 
     def test_modinfo_notes_and_orc_bytes_flags_alignment_rejected(self):
         fixture = self.fixture()

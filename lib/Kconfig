@@ -198,6 +198,20 @@ config RUST_UUID
 	  Disable this option to retain the original C implementation.
 	  If unsure, say N.
 
+config RUST_RBTREE
+	bool "Rust implementation of red-black trees"
+	depends on RUST
+	default n
+	help
+	  Use the full Rust rbtree provider with original C structure bindings,
+	  nullable rotation callbacks and export licenses. Structural publication
+	  uses the kernel's LKMM atomic operations.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+	  Disable this option to retain the original C implementation.
+	  If unsure, say N.
+
 config RUST_LIST_SORT
 	bool "Rust implementation of stable linked-list sorting"
 	depends on RUST

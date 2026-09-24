@@ -1,25 +1,9 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
 
-#[repr(C, align(8))]
-pub struct rb_node {
-    pub __rb_parent_color: ::core::ffi::c_ulong,
-    pub rb_right: *mut rb_node,
-    pub rb_left: *mut rb_node,
-}
+/// Native binding identity is required for both layout and KCFI type IDs.
+pub use kernel::bindings::{rb_node, rb_node_linked, rb_root, rb_root_cached, rb_root_linked};
+
 /* The alignment might seem pointless, but allegedly CRIS needs it. */
-
-#[repr(C)]
-pub struct rb_node_linked {
-    pub node: rb_node,
-    pub prev: *mut rb_node_linked,
-    pub next: *mut rb_node_linked,
-}
-
-#[repr(C)]
-pub struct rb_root {
-    pub rb_node: *mut rb_node,
-}
-
 /*
  * Leftmost-cached rbtrees.
  *
@@ -30,26 +14,32 @@ pub struct rb_root {
  * Furthermore, users that want to cache both pointers may
  * find it a bit asymmetric, but that's ok.
  */
-#[repr(C)]
-pub struct rb_root_cached {
-    pub rb_root: rb_root,
-    pub rb_leftmost: *mut rb_node,
-}
-
 /*
  * Leftmost tree with links. This would allow a trivial rb_rightmost update,
  * but that has been omitted due to the lack of users.
  */
-#[repr(C)]
-pub struct rb_root_linked {
-    pub rb_root: rb_root,
-    pub rb_leftmost: *mut rb_node_linked,
-}
 
+// Also compiled for genuine i686: never assume 64-bit alignment or field order.
+const _: () = {
+    let word = core::mem::size_of::<usize>();
+    assert!(core::mem::size_of::<rb_node>() == 3 * word);
+    assert!(core::mem::align_of::<rb_node>() == core::mem::align_of::<usize>());
+    assert!(core::mem::offset_of!(rb_node, rb_right) == word);
+    assert!(core::mem::offset_of!(rb_node, rb_left) == 2 * word);
+    assert!(core::mem::offset_of!(rb_node_linked, prev) == 3 * word);
+    assert!(core::mem::offset_of!(rb_node_linked, next) == 4 * word);
+    assert!(core::mem::size_of::<rb_node_linked>() == 5 * word);
+    assert!(core::mem::size_of::<rb_root>() == word);
+    assert!(core::mem::size_of::<rb_root_cached>() == 2 * word);
+    assert!(core::mem::size_of::<rb_root_linked>() == 2 * word);
+};
+
+/// RB_ROOT from the original Linux rbtree interface.
 pub const RB_ROOT: rb_root = rb_root {
     rb_node: ::core::ptr::null_mut(),
 };
 
+/// RB_ROOT_CACHED from the original Linux rbtree interface.
 pub const RB_ROOT_CACHED: rb_root_cached = rb_root_cached {
     rb_root: rb_root {
         rb_node: ::core::ptr::null_mut(),
@@ -57,6 +47,7 @@ pub const RB_ROOT_CACHED: rb_root_cached = rb_root_cached {
     rb_leftmost: ::core::ptr::null_mut(),
 };
 
+/// RB_ROOT_LINKED from the original Linux rbtree interface.
 pub const RB_ROOT_LINKED: rb_root_linked = rb_root_linked {
     rb_root: rb_root {
         rb_node: ::core::ptr::null_mut(),

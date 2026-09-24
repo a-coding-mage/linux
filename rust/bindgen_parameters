@@ -9,6 +9,11 @@
 # so indirect calls retain the C function-pointer KCFI identity, not Option's.
 --blocklist-type primes_fn
 
+# These functions permit NULL rotation callbacks on no-rotation paths. Their
+# manual binding uses a truthful nullable wrapper with signature-specific CFI.
+--blocklist-function __rb_insert_augmented
+--blocklist-function __rb_erase_color
+
 --opaque-type xregs_state
 --opaque-type desc_struct
 --opaque-type arch_lbr_state

@@ -19,6 +19,8 @@ import tempfile
 import sys
 import unittest
 
+from test_memweight_kernel_check import donor_inputs, WriteWatch
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -28,6 +30,15 @@ def extract_crc(output):
     if len(records) != 1:
         raise ValueError('invalid genuine memweight CRC extraction: '+output)
     return records[0]
+
+
+def validate_sysroot32(sysroot):
+    """Accept both rustc's official hashed core name and a local core build."""
+    library = sysroot / 'lib/rustlib/i686-unknown-linux-gnu/lib'
+    cores = {path.resolve() for pattern in ('libcore.rlib', 'libcore-*.rlib')
+             for path in library.glob(pattern) if path.is_file()}
+    if len(cores) != 1:
+        raise ValueError('invalid or ambiguous 32-bit sysroot input')
 
 
 def configuration(argv=None):
@@ -71,9 +82,8 @@ def configuration(argv=None):
         raise ValueError('rustc 1.85 or newer required: '+version)
     raw = value('sysroot32')
     args.sysroot32 = Path(raw).resolve() if raw is not None else None
-    if args.sysroot32 is not None and not (args.sysroot32 /
-            'lib/rustlib/i686-unknown-linux-gnu/lib/libcore.rlib').is_file():
-        raise ValueError('invalid 32-bit sysroot input')
+    if args.sysroot32 is not None:
+        validate_sysroot32(args.sysroot32)
     native = args.native
     if native is None:
         raw = os.environ.get('MEMWEIGHT_NATIVE')
@@ -141,10 +151,29 @@ def run_group(args, group):
     def run(cmd, cwd=None, env=None, input_text=None, expect_failure=False):
         nonlocal serial
         serial += 1
-        result = subprocess.run(cmd, cwd=cwd, env=env, text=True,
-                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, input=input_text)
+        scratch = Path(tempfile.mkdtemp(prefix=f'command-{serial:03}-', dir=args.logs))
+        cwd = scratch if cwd is None else Path(cwd).resolve()
+        protected = [ROOT, src, *args.native]
+        if any(cwd.is_relative_to(path.resolve()) for path in protected):
+            raise ValueError('command cwd inside read-only source/native input')
+        env = dict(os.environ if env is None else env,
+                   TMPDIR=str(scratch), TMP=str(scratch), TEMP=str(scratch))
+        watched = {path.resolve() for path in protected}
+        watched.update(path / name for path in args.native for name in ('lib', 'rust'))
+        watch = WriteWatch(watched)
+        try:
+            result = subprocess.run(cmd, cwd=cwd, env=env, text=True,
+                                    stdout=subprocess.PIPE, stderr=subprocess.STDOUT, input=input_text)
+        except OSError as error:
+            (args.logs / f'{serial:03}.log').write_text(
+                shlex.join(map(str, cmd)) + '\ncwd=' + str(cwd) + '\nlaunch-error=' + repr(error) + '\n')
+            raise
+        finally:
+            events = watch.finish()
+            (scratch / 'read-only-events.txt').write_text(repr(events) + '\n')
         (args.logs / f'{serial:03}.log').write_text(
-            shlex.join(map(str, cmd)) + '\n' + result.stdout + f'\nexit={result.returncode}\n')
+            shlex.join(map(str, cmd)) + '\ncwd=' + str(cwd) + '\n' + result.stdout + f'\nexit={result.returncode}\n')
+        assert not events, 'transient write to read-only source/native input: ' + repr(events)
         if expect_failure:
             assert result.returncode != 0, f'negative control unexpectedly passed: {serial:03}.log'
         else:
@@ -312,7 +341,7 @@ print('PASS all 16 real-readable-allocation alignment/threshold cases')
             print('PASS negative controls: off-by-one BUG threshold and signed narrowing rejected')
         if group == 'elf32':
             if args.sysroot32 is not None:
-                assert (args.sysroot32 / 'lib/rustlib/i686-unknown-linux-gnu/lib/libcore.rlib').is_file(), 'invalid 32-bit sysroot'
+                validate_sysroot32(args.sysroot32)
                 driver = tmp / 'driver.c'
                 driver.write_text('''
     #include <stddef.h>
@@ -363,6 +392,8 @@ print('PASS all 16 real-readable-allocation alignment/threshold cases')
                 while '=' in tokens[0] and not tokens[0].startswith('/'):
                     key, value = tokens.pop(0).split('=', 1)
                     env[key] = value
+                tokens = donor_inputs(tokens, native)
+                if '/' in tokens[0]: tokens[0] = str((native / tokens[0]).resolve())
                 env['RUST_MODFILE'] = 'lib/memweight_rust'
                 assert Path(tokens[0]).resolve() == Path(args.rustc).resolve(), 'native donor compiler differs from explicit --rustc'
                 (args.logs / (native.name+'-environment.txt')).write_text(
@@ -381,7 +412,7 @@ print('PASS all 16 real-readable-allocation alignment/threshold cases')
                     elif token.startswith('--emit=obj='): tokens[i] = '--emit=obj=' + str(overlay / 'memweight.o')
                     elif token.endswith('.rs'): tokens[i] = str(overlay / 'lib/memweight_rust.rs')
                 assert '-Dwarnings' in tokens
-                run(tokens, cwd=native, env=env)
+                run(tokens, env=env)
                 obj = overlay / 'memweight.o'
                 nm = run([args.nm, str(obj)])
                 assert re.search(r' T memweight$', nm, re.M)
@@ -399,6 +430,8 @@ print('PASS all 16 real-readable-allocation alignment/threshold cases')
                 # Commands after the compiler are kernel objtool/fixdep operations;
                 # the compiler itself is replayed without writing the native tree.
                 if ';' in ctokens: ctokens = ctokens[:ctokens.index(';')]
+                ctokens = donor_inputs(ctokens, native, rust=False)
+                if '/' in ctokens[0]: ctokens[0] = str((native / ctokens[0]).resolve())
                 cobj = overlay / 'original.o'
                 for i, token in enumerate(ctokens):
                     if token == '-o': ctokens[i+1] = str(cobj)
@@ -407,7 +440,7 @@ print('PASS all 16 real-readable-allocation alignment/threshold cases')
                     elif token.startswith('-DKBUILD_BASENAME='): ctokens[i] = '-DKBUILD_BASENAME="memweight"'
                     elif token.startswith('-DKBUILD_MODNAME='): ctokens[i] = '-DKBUILD_MODNAME="memweight"'
                     elif token.startswith('-D__KBUILD_MODNAME='): ctokens[i] = '-D__KBUILD_MODNAME=kmod_memweight'
-                run(ctokens, cwd=native)
+                run(ctokens)
                 cnm = run([args.nm, str(cobj)])
                 def kcfi(path, symbols):
                     match = re.search(r'^([0-9a-f]+) T memweight$', symbols, re.M)
@@ -433,7 +466,7 @@ print('PASS all 16 real-readable-allocation alignment/threshold cases')
                                    .replace('Some(result) => result,', 'Some(result) => result as u32,'))
                 badobj = overlay / 'wrong-signature.o'
                 badtokens = [('--emit=obj='+str(badobj)) if t.startswith('--emit=obj=') else t for t in tokens]
-                run(badtokens, cwd=native, env=env)
+                run(badtokens, env=env)
                 badnm = run([args.nm, str(badobj)])
                 assert kcfi(badobj, badnm) != kcfi(cobj, cnm), 'signature negative control passed incorrectly'
                 adapter.write_text(correct)
@@ -483,9 +516,15 @@ print('PASS all 16 real-readable-allocation alignment/threshold cases')
                         if value == '-o': skip = True; continue
                         if value.startswith('-Wp,-MMD,') or value.endswith('.c'): continue
                         cflags.append(value)
+                    # Expanded target CONFIG arguments can exceed the shell's
+                    # per-argument limit in Make's recipe. Keep the relocated
+                    # inputs private, using rustc's one-argument-per-line format.
+                    response = build / 'rust-flags.rsp'
+                    response.write_text('\n'.join(absolute_flags(rflags[1:])) + '\n')
+                    shutil.copyfile(response, args.logs / 'kbuild-rust-flags.rsp')
                     rules = build / 'rules.mk'
                     rules.write_text('include ' + str(src / 'scripts/Makefile.build') + '\n'
-                        'rust_common_cmd = ' + shlex.join(absolute_flags(rflags)) + ' --out-dir $(dir $@) --emit=dep-info=$(depfile)\n'
+                        'rust_common_cmd = ' + shlex.join([rflags[0], '@' + str(response)]) + ' --out-dir $(dir $@) --emit=dep-info=$(depfile)\n'
                         'cmd_cc_o_c = ' + shlex.join(absolute_flags(cflags)) + ' -Wp,-MMD,$(depfile) -o $@ $<\n'
                         '$(info MEMWEIGHT_ORDER=$(real-obj-y))\n'
                         '.PHONY: selected\nselected: $(filter lib/memweight.o lib/memweight_rust.o,$(real-obj-y))\n')
@@ -549,6 +588,25 @@ class MemweightTests(unittest.TestCase):
         if self.args.sysroot32 is None:
             self.skipTest('optional ELF32 differential: no sysroot32 supplied')
         run_group(self.args, 'elf32')
+
+    def test_official_and_local_core_names_and_invalid_sysroots(self):
+        with tempfile.TemporaryDirectory(dir=self.args.work, prefix='core-names-') as temporary:
+            root = Path(temporary)
+            library = root / 'lib/rustlib/i686-unknown-linux-gnu/lib'
+            with self.assertRaises(ValueError): validate_sysroot32(root)
+            library.mkdir(parents=True)
+            # These are only path-validation fixtures. test_real_elf32 compiles
+            # and executes against the supplied genuine target standard library.
+            official = library / 'libcore-example.rlib'
+            official.touch()
+            validate_sysroot32(root)
+            local = library / 'libcore.rlib'
+            official.rename(local)
+            validate_sysroot32(root)
+            official.symlink_to(local.name)
+            validate_sysroot32(root)
+            (library / 'libcore-another.rlib').touch()
+            with self.assertRaises(ValueError): validate_sysroot32(root)
 
     def test_native_abi_versions_and_kbuild(self):
         if not self.args.native:

@@ -15,6 +15,7 @@ endif
 # rbtree can be global and individual rotations don't correlate with inputs.
 KCOV_INSTRUMENT_string.o := n
 KCOV_INSTRUMENT_rbtree.o := n
+KCOV_INSTRUMENT_rbtree_rust.o := n
 KCOV_INSTRUMENT_list_debug.o := n
 KCOV_INSTRUMENT_debugobjects.o := n
 KCOV_INSTRUMENT_dynamic_debug.o := n
@@ -47,9 +48,17 @@ else
 cmdline-provider := cmdline.o
 endif
 
-# Keep the provider at cmdline's original position in lib.a.
+# Retain the original rbtree selection and ownership identity by default.
+ifeq ($(CONFIG_RUST_RBTREE),y)
+rbtree-provider := rbtree_rust.o
+$(obj)/rbtree_rust.o: modfile := lib/rbtree
+else
+rbtree-provider := rbtree.o
+endif
+
+# Keep the providers at their original positions in lib.a.
 lib-y += string.o vsprintf.o $(cmdline-provider) \
-	 rbtree.o radix-tree.o timerqueue.o xarray.o \
+	 $(rbtree-provider) radix-tree.o timerqueue.o xarray.o \
 	 maple_tree.o idr.o extable.o irq_regs.o argv_split.o \
 	 flex_proportions.o ratelimit.o \
 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \

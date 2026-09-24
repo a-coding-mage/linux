@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Ftrace table and instruction-rewrite parity against the original C tool."""
 
+import json
 import os
 from pathlib import Path
 import random
@@ -11,7 +12,43 @@ import subprocess
 import tempfile
 import unittest
 
-from modpost_test_support import Elf, ROOT, build
+from modpost_test_support import Elf, ROOT, build as build_command
+from test_cmdline_kernel_check import donor_inputs, WriteWatch
+
+
+def private_build(command, **kwargs):
+    """Keep compiler cwd and temporary files beside its private explicit output."""
+    command = list(map(str, command))
+    output = Path(command[command.index('-o') + 1])
+    protected = [ROOT.resolve()]
+    if os.environ.get('RECORDMCOUNT_KERNEL_BUILD'):
+        protected.append(Path(os.environ['RECORDMCOUNT_KERNEL_BUILD']).resolve())
+    if not output.is_absolute() or any(output.resolve().is_relative_to(p) for p in protected):
+        raise ValueError('compiler output must be outside source/native inputs')
+    scratch = Path(tempfile.mkdtemp(prefix='compiler-', dir=output.parent))
+    environment = dict(os.environ, TMPDIR=str(scratch), TMP=str(scratch), TEMP=str(scratch))
+    build_command(command, cwd=scratch, env=environment, **kwargs)
+
+
+def native_compile_command(saved, directory, work):
+    """Preserve genuine compiler inputs while discarding shell postprocessing."""
+    lexer = shlex.shlex(saved, posix=True, punctuation_chars=';&|')
+    lexer.whitespace_split = True
+    command = []
+    for token in lexer:
+        if token in (';', '&&', '||', '|'):
+            break
+        command.append(token)
+    command = donor_inputs(command, directory, rust=False)
+    if '-c' not in command or '-o' not in command or not command[-1].endswith('.c'):
+        raise ValueError('expected a saved C compilation command')
+    command[-1] = str((directory / command[-1]).resolve())
+    command[command.index('-o') + 1] = str(work / 'unit.o')
+    command = ['-Wp,-MMD,' + str(work / 'unit.d') if argument.startswith('-Wp,-MMD,')
+               else argument for argument in command]
+    command = [argument for argument in command if argument not in ('-mrecord-mcount', '-mnop-mcount')
+               and not argument.startswith('-fpatchable-function-entry=')]
+    return command + ['-pg', '-fno-omit-frame-pointer']
 
 
 def append_aligned(data, explicit=True):
@@ -37,8 +74,8 @@ class RecordmcountTests(unittest.TestCase):
         cls.c = cls.work / "recordmcount-c"
         cls.rust = cls.work / "recordmcount-rust"
         cls.cc = shlex.split(os.environ.get("HOSTCC", "cc"))
-        build(cls.cc + ["-O2", str(ROOT / "scripts/recordmcount.c"), "-o", str(cls.c)])
-        build(shlex.split(os.environ.get("HOSTRUSTC", "rustc")) + ["--edition=2021", "-O", "-Dwarnings",
+        private_build(cls.cc + ["-O2", str(ROOT / "scripts/recordmcount.c"), "-o", str(cls.c)])
+        private_build(shlex.split(os.environ.get("HOSTRUSTC", "rustc")) + ["--edition=2021", "-O", "-Dwarnings",
               "-Wmissing-docs", "-Wunreachable-pub", "-Wrust-2018-idioms",
               str(ROOT / "scripts/recordmcount.rs"), "-o", str(cls.rust)])
 
@@ -227,11 +264,11 @@ class RecordmcountTests(unittest.TestCase):
         source = b"int function(int x) { return x + 1; }\nint other(void) { return function(3); }\n"
         for bits in (32, 64):
             path = self.work / f"compiled-{bits}.o"
-            build(self.cc + [f"-m{bits}", "-fno-pic", "-fno-pie", "-pg", "-O2", "-ffunction-sections", "-c", "-x", "c", "-", "-o", str(path)], input=source)
+            private_build(self.cc + [f"-m{bits}", "-fno-pic", "-fno-pie", "-pg", "-O2", "-ffunction-sections", "-c", "-x", "c", "-", "-o", str(path)], input=source)
             result = self.compare({"fixture.o": append_aligned(path.read_bytes(), bits == 64)})
             path.write_bytes(result[3]["fixture.o"][0])
             linked = self.work / f"linked-{bits}.o"
-            build(self.cc + [f"-m{bits}", "-nostdlib", "-no-pie", "-Wl,-r", str(path), "-o", str(linked)])
+            private_build(self.cc + [f"-m{bits}", "-nostdlib", "-no-pie", "-Wl,-r", str(path), "-o", str(linked)])
             self.assertIn(b"__mcount_loc", linked.read_bytes())
 
     def test_randomized_relocations_and_section_bases(self):
@@ -327,34 +364,51 @@ class RecordmcountTests(unittest.TestCase):
 
     @unittest.skipUnless(os.environ.get("RECORDMCOUNT_KERNEL_BUILD"), "set RECORDMCOUNT_KERNEL_BUILD for a real kernel compilation unit")
     def test_existing_kernel_compilation_unit_with_instrumentation(self):
-        directory = Path(os.environ["RECORDMCOUNT_KERNEL_BUILD"])
+        directory = Path(os.environ["RECORDMCOUNT_KERNEL_BUILD"]).resolve()
         object_name = Path(os.environ.get("RECORDMCOUNT_KERNEL_OBJECT", "lib/test_hexdump.o"))
         command_file = directory / object_name.with_name("." + object_name.name + ".cmd")
         saved = command_file.read_text().splitlines()[0].split(":=", 1)[1]
-        # Only re-run the compiler, not objtool/genksyms shell postprocessing.
-        lexer = shlex.shlex(saved, posix=True, punctuation_chars=";&|")
-        lexer.whitespace_split = True
-        command = []
-        for token in lexer:
-            if token in (";", "&&", "||", "|"):
-                break
-            command.append(token)
-        self.assertIn("-c", command)
-        self.assertIn("-o", command)
         with tempfile.TemporaryDirectory(prefix="recordmcount-kernel-") as work:
             output = Path(work) / "unit.o"
-            command[command.index("-o") + 1] = str(output)
-            command = ["-Wp,-MMD," + str(Path(work) / "unit.d") if argument.startswith("-Wp,-MMD,")
-                       else argument for argument in command]
-            command = [argument for argument in command if argument not in ("-mrecord-mcount", "-mnop-mcount")
-                       and not argument.startswith("-fpatchable-function-entry=")]
-            command += ["-pg", "-fno-omit-frame-pointer"]
-            build(command, cwd=directory)
+            command = native_compile_command(saved, directory, Path(work))
+            watch = WriteWatch([directory, *(p for p in directory.rglob('*') if p.is_dir())])
+            try:
+                private_build(command)
+            finally:
+                events = watch.finish()
+                print('recordmcount native donor writes:', json.dumps(events), flush=True)
+            self.assertEqual(events, [], 'compiler wrote into read-only kernel input')
             data = output.read_bytes()
             self.assertNotIn(b"__mcount_loc\0", data)
             result = self.compare({"unit.o": append_aligned(data, data[4] == 2)})
             self.assertGreater(len(result[3]["unit.o"][0]), len(data))
             self.assertIn(b"__mcount_loc\0", result[3]["unit.o"][0])
+
+    def test_native_response_paths_and_private_compiler_transport(self):
+        from unittest import mock
+        with tempfile.TemporaryDirectory(prefix='recordmcount-transport-') as temporary:
+            work = Path(temporary); donor = work / 'donor'; donor.mkdir()
+            (donor / 'args').write_text('-I "include path" -include header.h -Wp,-MMD,lib/old.d '
+                                      '-mrecord-mcount -mnop-mcount -fpatchable-function-entry=2 '
+                                      '-c -o lib/old.o src/old.c')
+            saved = 'clang @args ; false'
+            command = native_compile_command(saved, donor, work)
+            self.assertIn(str(donor / 'include path'), command)
+            self.assertIn(str(donor / 'header.h'), command)
+            self.assertIn(str(donor / 'src/old.c'), command)
+            self.assertIn('-Wp,-MMD,' + str(work / 'unit.d'), command)
+            self.assertNotIn('false', command)
+            self.assertNotIn('-mrecord-mcount', command)
+            self.assertEqual(command[-2:], ['-pg', '-fno-omit-frame-pointer'])
+            with mock.patch(__name__ + '.build_command') as compile_command:
+                private_build(command)
+                options = compile_command.call_args.kwargs
+                self.assertTrue(options['cwd'].is_relative_to(work))
+                self.assertNotEqual(options['cwd'], donor)
+                self.assertEqual({options['env'][key] for key in ('TMPDIR', 'TMP', 'TEMP')},
+                                 {str(options['cwd'])})
+                with self.assertRaises(ValueError): private_build(['clang', '-o', str(ROOT / 'forbidden.o')])
+                self.assertEqual(compile_command.call_count, 1)
 
 
 if __name__ == "__main__":

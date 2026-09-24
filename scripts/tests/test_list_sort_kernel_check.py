@@ -2,12 +2,15 @@
 # SPDX-License-Identifier: GPL-2.0-only
 """Focused fail-closed list_sort runtime protocol and real-fixture checks."""
 
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import redirect_stderr
+import ctypes
 import io
 import os
 from pathlib import Path
 import re
 import shlex
+import struct
 import subprocess
 import sys
 import tempfile
@@ -228,14 +231,188 @@ class ArtifactTests(unittest.TestCase):
         self.assertIn("list_sort_reference(NULL", check.WORKLOAD)
 
 
+def private_path(path, build):
+    path = Path(path).resolve()
+    for donor in (build.resolve(), ROOT):
+        if path == donor or donor in path.parents:
+            raise ValueError("private compiler output must be outside the native donor and source tree")
+    return path
+
+
+def private_workspace(build, prefix):
+    # Do not let tempfile probe or create a directory inside an input tree,
+    # even when the test runner itself inherited TMPDIR pointing there.
+    parent = next((os.environ[key] for key in ("TMPDIR", "TEMP", "TMP") if os.environ.get(key)), None)
+    parent = private_path(parent or tempfile.tempdir or "/tmp", build)
+    return tempfile.TemporaryDirectory(prefix=prefix, dir=parent)
+
+
+def private_environment(build, out):
+    temporary = out / "tmp"
+    temporary.mkdir(parents=True, exist_ok=True)
+    return {**os.environ, "RUSTC_BOOTSTRAP": "1", "OBJTREE": str(build),
+            "RUST_MODFILE": "list_sort_abi", "LC_ALL": "C",
+            **{name: str(temporary) for name in ("TMPDIR", "TMP", "TEMP")}}
+
+
+def native_flags(arguments, build, language):
+    """Keep saved compiler policy, resolving inputs against its original cwd.
+
+    Expand response files before relocating paths: a response file can itself
+    contain donor-relative inputs or output options. Rust response files have
+    one argument per line, while C response files use shell-style quoting.
+    The fixture supplies its own source and output arguments afterwards.
+    """
+    build = build.resolve()
+    if language not in ("c", "rust"):
+        raise ValueError("unknown native compiler language: " + language)
+
+    def absolute(path):
+        if not path:
+            raise ValueError("empty native input path")
+        return str(Path(path) if Path(path).is_absolute() else build / path)
+
+    def include(path):
+        # GCC/Clang expand these against --sysroot, not the command cwd.
+        return path if path.startswith(("=", "$SYSROOT")) else absolute(path)
+
+    def response(args, active=()):
+        for flag in args:
+            if not flag.startswith("@"):
+                yield flag
+                continue
+            path = Path(absolute(flag[1:])).resolve()
+            if path in active:
+                raise ValueError("recursive native response file: " + str(path))
+            text = path.read_text()
+            nested = text.splitlines() if language == "rust" else shlex.split(text)
+            yield from response(nested, (*active, path))
+
+    def search(path):
+        kind, separator, value = path.partition("=")
+        if language == "rust" and separator:
+            return kind + separator + absolute(value)
+        return include(path) if language == "c" else absolute(path)
+
+    def external(dependency):
+        name, separator, value = dependency.partition("=")
+        return name + separator + absolute(value) if separator else name
+
+    def target(value):
+        return absolute(value) if value.endswith(".json") or "/" in value else value
+
+    inputs = {"-I": include, "-isystem": include, "-iquote": include,
+              "-include": absolute, "-imacros": absolute, "-idirafter": include,
+              "-include-pch": absolute, "-isysroot": absolute, "--sysroot": absolute,
+              "-L": search, "--extern": external, "--target": target}
+    joined_inputs = ("-include-pch", "-isysroot", "-isystem", "-iquote", "-idirafter", "-include", "-imacros", "-I", "-L")
+    output_options = ("incremental=", "profile-generate=", "profile-dir=", "dump-mir-dir=", "self-profile=")
+    flags, iterator = [], iter(response(arguments))
+
+    def argument(option):
+        try:
+            return next(iterator)
+        except StopIteration:
+            raise ValueError("missing native compiler argument for " + option) from None
+
+    for flag in iterator:
+        if flag in ("--out-dir", "--emit", "-o", "-MF", "-MT", "-MQ"):
+            argument(flag)
+        elif flag.startswith(("--out-dir=", "--emit=", "-Wp,-MMD,", "-Wp,-MD,", "-MF", "-MT", "-MQ")):
+            continue
+        elif flag.startswith("-o") and len(flag) > 2:
+            continue
+        elif flag in inputs:
+            flags += [flag, inputs[flag](argument(flag))]
+        elif flag.startswith(("--extern=", "--sysroot=", "--target=")):
+            key, value = flag.split("=", 1)
+            flags.append(key + "=" + inputs[key](value))
+        elif any(flag.startswith(key) and flag != key for key in joined_inputs):
+            key = next(key for key in joined_inputs if flag.startswith(key))
+            flags.append(key + inputs[key](flag[len(key):]))
+        elif flag in ("-C", "--codegen", "-Z"):
+            value = argument(flag)
+            if value.startswith(output_options):
+                raise ValueError("native compiler output option cannot be replayed: " + flag + value)
+            flags += [flag, value]
+        elif any(flag.startswith(prefix + option) for prefix in ("-C", "--codegen=", "-Z") for option in output_options):
+            raise ValueError("native compiler output option cannot be replayed: " + flag)
+        elif flag.startswith(("-fprofile-instr-generate=", "-fprofile-generate=", "-fprofile-dir=",
+                              "-fmodules-cache-path=", "-foptimization-record-file=", "-ftime-trace=",
+                              "-serialize-diagnostics", "--serialize-diagnostics", "-dependency-file", "-MJ")):
+            raise ValueError("native compiler output option cannot be replayed: " + flag)
+        elif language == "rust" and not flag.startswith("-") and flag.endswith(".rs"):
+            continue
+        else:
+            flags.append(flag)
+    return flags
+
+
+class NativeWriteWatch:
+    """Record donor writes, including files deleted before a compiler exits."""
+    # MODIFY, ATTRIB, CLOSE_WRITE, MOVED_FROM/TO, CREATE, DELETE, DELETE_SELF,
+    # MOVE_SELF. Access/open events are intentionally excluded.
+    MASK = 0x00000fce
+
+    def __init__(self, root):
+        self.root = root
+        self.events = []
+
+    def __enter__(self):
+        libc = ctypes.CDLL(None, use_errno=True)
+        libc.inotify_init1.argtypes = [ctypes.c_int]
+        libc.inotify_init1.restype = ctypes.c_int
+        libc.inotify_add_watch.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_uint32]
+        libc.inotify_add_watch.restype = ctypes.c_int
+        self.fd = libc.inotify_init1(os.O_NONBLOCK | os.O_CLOEXEC)
+        if self.fd < 0:
+            raise OSError(ctypes.get_errno(), "inotify_init1")
+        self.paths = {}
+        try:
+            def walk_error(error):
+                raise error
+            for directory, _, _ in os.walk(self.root, onerror=walk_error):
+                watch = libc.inotify_add_watch(self.fd, os.fsencode(directory), self.MASK)
+                if watch < 0:
+                    raise OSError(ctypes.get_errno(), "inotify_add_watch: " + directory)
+                self.paths[watch] = Path(directory)
+            if not self.paths:
+                raise ValueError("missing donor for write observation: " + str(self.root))
+        except BaseException:
+            os.close(self.fd)
+            raise
+        return self
+
+    def __exit__(self, *_):
+        try:
+            while True:
+                try:
+                    data = os.read(self.fd, 65536)
+                except BlockingIOError:
+                    break
+                offset = 0
+                while offset < len(data):
+                    watch, mask, _, size = struct.unpack_from("iIII", data, offset)
+                    offset += 16
+                    name = os.fsdecode(data[offset:offset + size].split(b"\0", 1)[0])
+                    offset += size
+                    # Queue overflow and invalidated watches also fail the
+                    # empty-event assertion; absence of evidence is not proof.
+                    self.events.append((str(self.paths.get(watch, self.root) / name), hex(mask)))
+        finally:
+            os.close(self.fd)
+
+
 def private_compile(build, out, caller):
     """Replay saved flags read-only, with every compiler output in out."""
+    build, out = build.resolve(), private_path(out, build)
     out.mkdir(parents=True, exist_ok=True)
-    env = {**os.environ, "RUSTC_BOOTSTRAP": "1", "OBJTREE": str(build), "RUST_MODFILE": "list_sort_abi", "LC_ALL": "C"}
+    env = private_environment(build, out)
     commands = []
     def run(args):
         commands.append(shlex.join(list(map(str, args))))
-        result = subprocess.run(args, cwd=build, env=env, capture_output=True, timeout=120)
+        (out / "commands.txt").write_text("\n".join(commands) + "\n")
+        result = subprocess.run(args, cwd=out, env=env, capture_output=True, timeout=120)
         if result.returncode:
             raise AssertionError("\n".join(commands) + "\n" + result.stdout.decode(errors="replace") + result.stderr.decode(errors="replace"))
         return result
@@ -243,7 +420,8 @@ def private_compile(build, out, caller):
     # never have built original list_sort.o. This neighboring, always-C unit
     # supplies actual target/lib flags without assuming either selection.
     raw = check.compilation_flags(build / "lib/scatterlist.o")
-    cflags = raw[1:raw.index("-c")]
+    if "/" in raw[0] and not Path(raw[0]).is_absolute(): raw[0] = str(build / raw[0])
+    cflags = native_flags(raw[1:raw.index("-c")], build, "c")
     cflags = [flag for flag in cflags if not flag.startswith(("-Wp,-MMD,", "-DKBUILD_MODFILE=", "-DKBUILD_MODNAME=", "-DKBUILD_BASENAME=", "-D__KBUILD_MODNAME="))]
     cflags += ["-DMODULE", "-D__DISABLE_EXPORTS", '-DKBUILD_MODNAME="list_sort_abi"', '-DKBUILD_BASENAME="list_sort_abi"',
                '-DKBUILD_MODFILE="list_sort_abi"', '-D__KBUILD_MODNAME=list_sort_abi', "-Werror"]
@@ -256,21 +434,164 @@ def private_compile(build, out, caller):
     if caller == "c": run([raw[0], *cflags, "-c", "-o", out / "caller.o", path])
     else:
         raw = check.compilation_flags(build / "lib/list_sort_rust.o")
-        while raw and not raw[0].endswith("rustc"): raw.pop(0)
+        while raw and "=" in raw[0]: raw.pop(0)
+        if not raw or Path(raw[0]).name != "rustc":
+            raise ValueError("native list_sort command must name rustc")
         compiler = os.environ.get("HOSTRUSTC", raw.pop(0))
-        flags = []
-        index = 0
-        while index < len(raw):
-            flag = raw[index]
-            if flag == "--out-dir": index += 2; continue
-            if flag.startswith("--emit=") or flag.endswith(".rs"): index += 1; continue
-            flags.append(flag); index += 1
-        run([compiler, *flags, "--cfg", "MODULE", "-Dwarnings", "--crate-name=list_sort_rust_abi",
+        if not compiler:
+            raise ValueError("HOSTRUSTC explicitly empty")
+        if "/" in compiler and not Path(compiler).is_absolute(): compiler = str(build / compiler)
+        flags = native_flags(raw, build, "rust")
+        run([compiler, *flags, "--out-dir=" + str(out), "--cfg", "MODULE", "-Dwarnings", "--crate-name=list_sort_rust_abi",
              "--emit=obj=" + str(out / "caller.o") + ",llvm-ir=" + str(out / "caller.ll"), path])
     linker = shlex.split(os.environ.get("LD_LLD", "ld.lld"))
+    if not linker:
+        raise ValueError("LD_LLD explicitly empty")
+    if "/" in linker[0] and not Path(linker[0]).is_absolute(): linker[0] = str(build / linker[0])
     run([*linker, "-r", "-o", out / "linked.o", out / "caller.o", out / "list_sort_reference.o", out / "list_sort_workload.o"])
     (out / "commands.txt").write_text("\n".join(commands) + "\n")
     return out / "caller.o", out / "linked.o"
+
+
+class ReplayIsolationTests(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(prefix="list-sort-replay-policy-")
+        self.addCleanup(temporary.cleanup)
+        self.work = Path(temporary.name)
+        self.build = self.work / "donor"
+        self.build.mkdir()
+
+    def test_original_relative_inputs_and_strict_flags_survive_relocation(self):
+        flags = ["-I./include", "-I", "arch/generated", "-include", "include/generated/autoconf.h",
+                 "-includeinclude/compiler.h", "-isystem", "system", "-iquotequoted", "-imacros", "macros.h",
+                 "--target", "scripts/target.json", "--target=aarch64-unknown-none", "--sysroot=rust/sysroot",
+                 "-L", "./rust", "-Ldependency=rust", "--extern", "kernel=rust/libkernel.rmeta",
+                 "--extern=bindings=rust/libbindings.rmeta", "--extern", "pin_init",
+                 "-Dwarnings", "-Dunsafe_op_in_unsafe_fn", "-Zsanitizer=kcfi", "-fsanitize=kcfi",
+                 "-C", "panic=abort", "-Zfunction-sections=n", "--cfg=CONFIG_RUST"]
+        result = native_flags(flags, self.build, "rust")
+        for value in ("include", "arch/generated", "include/generated/autoconf.h", "include/compiler.h",
+                      "system", "quoted", "macros.h", "scripts/target.json", "rust/sysroot", "rust/libkernel.rmeta",
+                      "rust/libbindings.rmeta"):
+            self.assertTrue(any(str(self.build / value) in arg for arg in result), value)
+        self.assertIn("--target=aarch64-unknown-none", result)
+        self.assertIn("-Ldependency=" + str(self.build / "rust"), result)
+        self.assertEqual(result[-10:], flags[-10:])
+
+    def test_response_file_paths_and_outputs_are_handled_before_replay(self):
+        (self.build / "rust-nested").write_text('--extern=kernel=rust/libkernel.rmeta\n-Ldependency=rust\n')
+        response = self.build / "rust-options"
+        response.write_text('--cfg=CONFIG_CC_VERSION_TEXT="compiler version 1"\n@rust-nested\n'
+                            '--target=scripts/target.json\n--out-dir\nlib\n--emit=metadata=lib/old.rmeta\n-Dwarnings\n')
+        original = response.read_bytes()
+        result = native_flags(["@rust-options", "lib/list_sort_rust.rs", "--out-dir=lib", "--emit", "obj=lib/old.o", "-o" + str(self.build / "old.o")], self.build, "rust")
+        self.assertEqual(result, ['--cfg=CONFIG_CC_VERSION_TEXT="compiler version 1"',
+            "--extern=kernel=" + str(self.build / "rust/libkernel.rmeta"),
+            "-Ldependency=" + str(self.build / "rust"), "--target=" + str(self.build / "scripts/target.json"), "-Dwarnings"])
+        self.assertEqual(response.read_bytes(), original)
+        (self.build / "c-options").write_text('-I "include with spaces" -include include/config.h -Werror -Wp,-MMD,lib/.old.d')
+        self.assertEqual(native_flags(["@c-options"], self.build, "c"),
+            ["-I", str(self.build / "include with spaces"), "-include", str(self.build / "include/config.h"), "-Werror"])
+
+    def test_sysroot_include_paths_keep_their_original_meaning(self):
+        flags = ["-I=/include", "-isystem", "$SYSROOT/system", "-L=lib", "-isysrootrelative-root", "-Ldir=literal"]
+        self.assertEqual(native_flags(flags, self.build, "c"),
+            [*flags[:4], "-isysroot" + str(self.build / "relative-root"), "-L" + str(self.build / "dir=literal")])
+
+    def test_unsupported_output_caches_and_recursive_responses_fail_closed(self):
+        for flags in (["-Cincremental=lib/cache"], ["-C", "incremental=lib/cache"],
+                      ["-Zdump-mir-dir=lib/mir"], ["-fprofile-instr-generate=lib/profile"],
+                      ["-fmodules-cache-path=lib/modules"], ["--codegen=incremental=lib/cache"],
+                      ["-Z", "self-profile=lib/timing"], ["-ftime-trace=lib/timing.json"],
+                      ["-foptimization-record-file=lib/optimization.yaml"], ["-serialize-diagnostics", "lib/diag"]):
+            with self.subTest(flags=flags), self.assertRaisesRegex(ValueError, "output option"):
+                native_flags(flags, self.build, "rust")
+        (self.build / "cycle").write_text("@cycle\n")
+        with self.assertRaisesRegex(ValueError, "recursive"):
+            native_flags(["@cycle"], self.build, "rust")
+        with self.assertRaisesRegex(ValueError, "outside the native donor"):
+            private_compile(self.build, self.build / "unsafe", "rust")
+        self.assertFalse((self.build / "unsafe").exists())
+        for flags in (["-I"], ["--extern"], ["-C"], ["--out-dir"]):
+            with self.subTest(flags=flags), self.assertRaisesRegex(ValueError, "missing native compiler argument"):
+                native_flags(flags, self.build, "rust")
+
+    def test_native_temp_root_in_donor_fails_before_any_write(self):
+        for parent in (self.build, self.build / "nested"):
+            with mock.patch.dict(os.environ, {"TMPDIR": str(parent)}), NativeWriteWatch(self.build) as writes:
+                with self.assertRaisesRegex(ValueError, "outside the native donor"):
+                    private_workspace(self.build, "unsafe-")
+            self.assertEqual(writes.events, [])
+        alias = self.work / "donor-alias"
+        alias.symlink_to(self.build, target_is_directory=True)
+        with self.assertRaisesRegex(ValueError, "outside the native donor"):
+            private_compile(self.build, alias / "unsafe", "rust")
+        with self.assertRaisesRegex(ValueError, "source tree"):
+            private_compile(self.build, ROOT / "unsafe-list-sort-test", "rust")
+
+    def test_write_observer_catches_deleted_transients_during_concurrent_jobs(self):
+        nested = self.build / "nested"
+        nested.mkdir()
+        def transient(index):
+            path = nested / (str(index) + ".rcgu.o")
+            path.write_bytes(b"write observer control, not an ABI object")
+            path.unlink()
+        with NativeWriteWatch(self.build) as writes:
+            with ThreadPoolExecutor(max_workers=2) as pool:
+                list(pool.map(transient, range(2)))
+        self.assertEqual(list(nested.iterdir()), [])
+        for index in range(2):
+            events = [int(mask, 16) for path, mask in writes.events if path == str(nested / (str(index) + ".rcgu.o"))]
+            self.assertTrue(any(mask & 0x100 for mask in events), writes.events)
+            self.assertTrue(any(mask & 0x200 for mask in events), writes.events)
+
+    def test_compiler_transport_cwd_outputs_and_temporary_environment_are_private(self):
+        cflags = ["tools/clang", "-Iinclude", "-include", "include/config.h", "-Werror", "-fsanitize=kcfi", "-c", "lib/scatterlist.c"]
+        rflags = ["OBJTREE=.", "tools/rustc", "--target=scripts/target.json", "-Lrust", "--extern", "kernel=rust/libkernel.rmeta",
+                  "-Dwarnings", "-Dunsafe_op_in_unsafe_fn", "-Zsanitizer=kcfi", "--out-dir=lib", "--emit=obj=lib/list_sort_rust.o", "lib/list_sort_rust.rs"]
+        invocations = []
+        def saved(obj): return list(rflags if obj.name == "list_sort_rust.o" else cflags)
+        def run(args, *, cwd, env, **kwargs):
+            args = list(map(str, args))
+            cwd = Path(cwd)
+            self.assertEqual(cwd.parent, self.work)
+            self.assertEqual(env["OBJTREE"], str(self.build))
+            for key in ("TMPDIR", "TMP", "TEMP"):
+                self.assertEqual(env[key], str(cwd / "tmp"))
+                self.assertTrue(Path(env[key]).is_dir())
+            if Path(args[0]).name == "rustc":
+                self.assertIn("--out-dir=" + str(cwd), args)
+                self.assertIn("--emit=obj=" + str(cwd / "caller.o") + ",llvm-ir=" + str(cwd / "caller.ll"), args)
+                for flag in ("-Dwarnings", "-Dunsafe_op_in_unsafe_fn", "-Zsanitizer=kcfi"):
+                    self.assertIn(flag, args)
+            transient = cwd / "temporary.rcgu.o"
+            transient.write_bytes(b"compiler transport control, not native proof")
+            transient.unlink()
+            invocations.append(args)
+            return subprocess.CompletedProcess(args, 0, b"", b"")
+        with mock.patch.object(check, "compilation_flags", side_effect=saved), \
+                mock.patch.object(subprocess, "run", side_effect=run), \
+                mock.patch.dict(os.environ, {"HOSTRUSTC": "tools/rustc", "LD_LLD": "ld.lld", "TMPDIR": str(self.build)}):
+            with NativeWriteWatch(self.build) as writes:
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    jobs = [pool.submit(private_compile, self.build, self.work / caller, caller) for caller in ("c", "rust")]
+                    for job in jobs: job.result()
+        self.assertEqual(writes.events, [])
+        self.assertEqual(len(invocations), 8)
+
+    def test_missing_native_settings_skip_but_empty_and_invalid_settings_fail(self):
+        for name in ("NATIVE_LIST_SORT_KERNEL_BUILD", "NATIVE_LIST_SORT_ARM64_KERNEL_BUILD"):
+            with mock.patch.dict(os.environ):
+                os.environ.pop(name, None)
+                with self.assertRaises(unittest.SkipTest): NativeCompileTests()._build(name)
+                for value in ("", str(self.work / "missing")):
+                    os.environ[name] = value
+                    with self.assertRaises(AssertionError): NativeCompileTests()._build(name)
+                os.environ[name] = str(self.build)
+                wrong_arch = "X86_64" if "ARM64" in name else "ARM64"
+                with mock.patch.object(check, "configuration", return_value={"64BIT": "y", wrong_arch: "y"}):
+                    with self.assertRaisesRegex(AssertionError, "target does not match"):
+                        NativeCompileTests()._build(name)
 
 
 class NativeCompileTests(unittest.TestCase):
@@ -280,6 +601,9 @@ class NativeCompileTests(unittest.TestCase):
         if not value: self.fail(variable + " explicitly empty")
         build = Path(value).resolve()
         self.assertTrue(build.is_dir())
+        expected = "aarch64" if variable == "NATIVE_LIST_SORT_ARM64_KERNEL_BUILD" else "x86_64"
+        self.assertEqual(check.architecture(check.configuration(build)), expected,
+                         variable + " target does not match its architecture")
         return build
 
     def _compile(self, variable):
@@ -287,11 +611,20 @@ class NativeCompileTests(unittest.TestCase):
         for name in ("lib/.scatterlist.o.cmd", "lib/.list_sort_rust.o.cmd", "rust/libkernel.rmeta"):
             self.assertTrue((build / name).is_file(), name)
         arch = check.architecture(check.configuration(build))
-        with tempfile.TemporaryDirectory(prefix="list-sort-runtime-compile-") as temporary:
+        with private_workspace(build, "list-sort-runtime-compile-") as temporary:
             out = Path(temporary)
             types = check.provider_type_ids(build / "lib/list_sort_rust.o", names=("list_sort",))
             for caller in ("c", "rust"):
-                obj, linked = private_compile(build, out / caller, caller)
+                private_environment(build, out / caller)
+            with NativeWriteWatch(build) as writes, NativeWriteWatch(out) as outputs:
+                with ThreadPoolExecutor(max_workers=2) as pool:
+                    jobs = {caller: pool.submit(private_compile, build, out / caller, caller) for caller in ("c", "rust")}
+                    artifacts = {caller: job.result() for caller, job in jobs.items()}
+            self.assertEqual(writes.events, [], "compiler wrote to read-only native donor")
+            written = {path for path, mask in outputs.events if int(mask, 16) & 0x08a}
+            for name in ("c/caller.o", "rust/caller.o", "rust/caller.ll"):
+                self.assertIn(str(out / name), written, "compiler outputs were not observed in the private workspace")
+            for caller, (obj, linked) in artifacts.items():
                 for path in (obj, linked):
                     check.elf_target(path, arch)
                     check.verify_guarded_calls(path, arch, types, wrappers=(("list_sort_call", "list_sort"),))
@@ -317,9 +650,10 @@ class NativeCompileTests(unittest.TestCase):
 
     def test_workload_executes_original_algorithm_and_detects_no_sort(self):
         build = self._build("NATIVE_LIST_SORT_KERNEL_BUILD")
-        with tempfile.TemporaryDirectory(prefix="list-sort-workload-run-") as temporary:
+        with private_workspace(build, "list-sort-workload-run-") as temporary, NativeWriteWatch(build) as writes:
             out = Path(temporary)
             private_compile(build, out, "c")
+            env = private_environment(build, out)
             raw = shlex.split((out / "commands.txt").read_text().splitlines()[0])
             flags = raw[1:raw.index("-c")]
             driver = out / "driver.c"
@@ -350,12 +684,13 @@ int main(int argc, char **argv) {
                         [raw[0], "-no-pie", "-o", out / "run", out / "driver.o", out / "selected.o",
                          out / "list_sort_workload.o", out / "list_sort_reference.o"]]
             for command in commands:
-                result = subprocess.run(command, cwd=build, capture_output=True, timeout=120)
+                result = subprocess.run(command, cwd=out, env=env, capture_output=True, timeout=120)
                 self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
             for arguments, code in (([], 0), (["wrong"], 1)):
-                result = subprocess.run([str(out / "run"), *arguments], capture_output=True, timeout=60)
+                result = subprocess.run([str(out / "run"), *arguments], cwd=out, env=env, capture_output=True, timeout=60)
                 self.assertEqual(result.returncode, code, result.stdout + result.stderr)
                 if arguments: self.assertIn(b"LUPOS_LIST_SORT_FAIL stage=1 length=2", result.stdout)
+        self.assertEqual(writes.events, [], "workload compiler wrote to read-only native donor")
 
     def _linked(self, variable):
         build = self._build(variable)
