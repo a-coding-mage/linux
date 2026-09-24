@@ -2,35 +2,24 @@
 /*
  * Copyright (C) 2020 BAIKAL ELECTRONICS, JSC
  */
+//! Safe bounded polynomial descriptors and the shared native-word algorithm.
+//!
+//! The Rust descriptor borrows a term slice; it does not pretend that a C
+//! inline flexible array is a pointer field. Native C callers require the
+//! original header's generated bindings and a separate ABI owner.
 
-/*
- * struct polynomial_term - one term descriptor of a polynomial
- * @deg: degree of the term.
- * @coef: multiplication factor of the term.
- * @divider: distributed divider per each degree.
- * @divider_leftover: divider leftover, which couldn't be redistributed.
- */
-#[repr(C)]
-pub struct polynomial_term {
-    pub deg: core::ffi::c_uint,
-    pub coef: core::ffi::c_long,
-    pub divider: core::ffi::c_long,
-    pub divider_leftover: core::ffi::c_long,
-}
+#[path = "../../lib/math/polynomial.rs"]
+mod implementation;
 
-/*
- * struct polynomial - a polynomial descriptor
- * @total_divider: total data divider.
- * @terms: polynomial terms, last term must have degree of 0
- */
-#[repr(C)]
-pub struct polynomial {
-    pub total_divider: core::ffi::c_long,
-    pub terms: [polynomial_term; 0],
-}
+pub use implementation::{
+    polynomial_calc, polynomial_finalize, polynomial_term_value, Polynomial, PolynomialTerm,
+};
 
-unsafe extern "C" {
-    pub fn polynomial_calc(poly: *const polynomial, data: core::ffi::c_long) -> core::ffi::c_long;
-}
+/// Compatibility name for the safe Rust slice descriptor, not a C ABI type.
+#[allow(non_camel_case_types)]
+pub type polynomial<'a> = Polynomial<'a>;
+/// Compatibility name for the unsigned-degree native-word term value.
+#[allow(non_camel_case_types)]
+pub type polynomial_term = PolynomialTerm;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

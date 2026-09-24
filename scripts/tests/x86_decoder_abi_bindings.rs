@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 //! Standalone subset of bindgen 0.71 native x86 decoder bindings.
 // Generated from rust/bindings/bindings_helper.h with asm/insn.h included.
-// Only the kernel-specific MaybeZeroable derive is omitted. The tests verify
-// every struct size, alignment and member offset against the original C header.
+// The kernel-specific MaybeZeroable derive and unstable cfi_encoding attribute
+// are omitted here. The tests verify every size, alignment and member offset
+// against C; the KCFI test regenerates actual attributed bindings from C.
 use core::ffi;
 
 pub type insn_attr_t = ffi::c_uint;
@@ -175,11 +176,15 @@ unsafe extern "C" {
 unsafe extern "C" {
     pub fn insn_get_length(insn: *mut insn) -> ffi::c_int;
 }
-pub const insn_mode_INSN_MODE_32: insn_mode = 0;
-pub const insn_mode_INSN_MODE_64: insn_mode = 1;
-pub const insn_mode_INSN_MODE_KERN: insn_mode = 2;
-pub const insn_mode_INSN_NUM_MODES: insn_mode = 3;
-pub type insn_mode = ffi::c_uint;
+impl insn_mode {
+    pub const INSN_MODE_32: Self = Self(0);
+    pub const INSN_MODE_64: Self = Self(1);
+    pub const INSN_MODE_KERN: Self = Self(2);
+    pub const INSN_NUM_MODES: Self = Self(3);
+}
+#[repr(transparent)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub struct insn_mode(pub ffi::c_uint);
 unsafe extern "C" {
     pub fn insn_decode(
         insn: *mut insn,

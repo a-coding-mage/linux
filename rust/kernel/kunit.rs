@@ -171,6 +171,84 @@ macro_rules! kunit_assert_eq {
     }};
 }
 
+/// Records a nonfatal integer equality expectation in an explicit KUnit context.
+///
+/// Each operand is evaluated once and compared before conversion to the signed
+/// 64-bit diagnostic fields used by C KUnit. Operands must have matching integer
+/// types. A failure uses the original binary formatter and `KUNIT_EXPECTATION`;
+/// it neither aborts the test nor unwinds Rust frames. The last location is
+/// recorded on success too, using the kernel's `WRITE_ONCE` equivalent.
+///
+/// Unlike the assertion macros for generated documentation tests, this macro
+/// must be invoked inside an `unsafe` block. Keeping the foreign calls at the
+/// invocation site also supports test modules with a modular KUnit framework:
+/// no built-in kernel function acquires a dependency on that module.
+///
+/// # Safety
+///
+/// `test` must be the live KUnit context for this invocation. Its `last_seen`
+/// fields must be initialized, writable and accessed atomically if shared with
+/// another execution context. The framework must accept a synchronous failed
+/// expectation using stack-resident assertion values, as for `KUNIT_EXPECT_EQ`.
+#[macro_export]
+macro_rules! kunit_expect_eq {
+    ($test:expr, $left:expr, $right:expr $(,)?) => {{
+        let test: *mut $crate::bindings::kunit = $test;
+        let left = $left;
+        let right = $right;
+
+        #[repr(transparent)]
+        struct Location($crate::bindings::kunit_loc);
+        #[repr(transparent)]
+        struct Text($crate::bindings::kunit_binary_assert_text);
+        // SAFETY: All pointers in these immutable statics refer to immutable
+        // static C strings; neither KUnit formatter modifies them.
+        unsafe impl Sync for Location {}
+        // SAFETY: As for Location, the fields only reference immutable strings.
+        unsafe impl Sync for Text {}
+        static LOCATION: Location = Location($crate::bindings::kunit_loc {
+            file: $crate::str::as_char_ptr_in_const_context($crate::c_str!(file!())),
+            line: line!() as $crate::ffi::c_int,
+        });
+        static TEXT: Text = Text($crate::bindings::kunit_binary_assert_text {
+            operation: $crate::str::as_char_ptr_in_const_context($crate::c_str!("==")),
+            left_text: $crate::str::as_char_ptr_in_const_context($crate::c_str!(stringify!($left))),
+            right_text: $crate::str::as_char_ptr_in_const_context($crate::c_str!(stringify!(
+                $right
+            ))),
+        });
+
+        // Deliberately require the caller's unsafe block: arbitrary raw test
+        // pointers must not become safe simply by passing them to a macro.
+        $crate::sync::atomic::atomic_store(
+            ::core::ptr::addr_of_mut!((*test).last_seen.file),
+            LOCATION.0.file,
+            $crate::sync::atomic::Relaxed,
+        );
+        $crate::sync::atomic::atomic_store(
+            ::core::ptr::addr_of_mut!((*test).last_seen.line),
+            LOCATION.0.line,
+            $crate::sync::atomic::Relaxed,
+        );
+        if left != right {
+            let assertion = $crate::bindings::kunit_binary_assert {
+                assert: $crate::bindings::kunit_assert {},
+                text: ::core::ptr::addr_of!(TEXT.0),
+                left_value: left as $crate::ffi::c_longlong,
+                right_value: right as $crate::ffi::c_longlong,
+            };
+            $crate::bindings::__kunit_do_failed_assertion(
+                test,
+                ::core::ptr::addr_of!(LOCATION.0),
+                $crate::bindings::kunit_assert_type_KUNIT_EXPECTATION,
+                ::core::ptr::addr_of!(assertion.assert),
+                Some($crate::bindings::kunit_binary_assert_format),
+                ::core::ptr::null(),
+            );
+        }
+    }};
+}
+
 trait TestResult {
     fn is_test_result_ok(&self) -> bool;
 }
@@ -217,6 +295,92 @@ pub const fn kunit_case(
     }
 }
 
+/// Creates an original-style parameterized case with its module attribute.
+///
+/// The zero/default speed is intentional: C's `KUNIT_CASE_PARAM` inherits the
+/// suite's speed rather than explicitly setting `KUNIT_SPEED_NORMAL`.
+pub const fn kunit_case_param(
+    name: &'static crate::str::CStr,
+    module_name: &'static crate::str::CStr,
+    run_case: unsafe extern "C" fn(*mut bindings::kunit),
+    generate_params: unsafe extern "C" fn(
+        *mut bindings::kunit,
+        *const crate::ffi::c_void,
+        *mut crate::ffi::c_char,
+    ) -> *const crate::ffi::c_void,
+) -> bindings::kunit_case {
+    let mut case = kunit_case(name, run_case);
+    case.generate_params = Some(generate_params);
+    // The C field is mutable for historical reasons; KUnit treats this
+    // original module-name string as immutable.
+    case.module_name = crate::str::as_char_ptr_in_const_context(module_name).cast_mut();
+    case.attr.speed = bindings::kunit_speed_KUNIT_SPEED_UNSET;
+    case
+}
+
+/// Generates described parameters from a static array, like `KUNIT_ARRAY_PARAM`.
+///
+/// The first call registers the actual array and element size in
+/// `test.params_array`, including a null `get_description`, matching the C
+/// macro. Descriptions are truncated and NUL-terminated using the actual
+/// `KUNIT_PARAM_DESC_SIZE`. Exhaustion does not modify the description buffer.
+/// Zero-sized element types cannot represent distinct C parameters and are
+/// rejected with a null return. Invalid previous pointers are rejected without
+/// dereferencing them or manufacturing an out-of-bounds pointer.
+///
+/// # Safety
+///
+/// `test` must be a live, writable KUnit context whose parameter registration
+/// is exclusively owned by this generator. `desc` must point to a writable,
+/// unaliased buffer of at least `KUNIT_PARAM_DESC_SIZE` bytes, disjoint from the
+/// immutable parameter array and descriptions. The framework may keep these
+/// static parameters only while their owning test module remains loaded.
+pub unsafe fn array_params<T: Sync>(
+    test: *mut bindings::kunit,
+    prev: *const crate::ffi::c_void,
+    desc: *mut crate::ffi::c_char,
+    params: &'static [T],
+    describe: fn(&T) -> &crate::str::CStr,
+) -> *const crate::ffi::c_void {
+    let size = core::mem::size_of::<T>();
+    if size == 0 {
+        return core::ptr::null();
+    }
+    let index = if prev.is_null() {
+        // SAFETY: The caller owns this live context's parameter registration.
+        // Do not create a reference spanning unrelated concurrently used fields.
+        unsafe {
+            core::ptr::addr_of_mut!((*test).params_array).write(bindings::kunit_params {
+                params: params.as_ptr().cast(),
+                num_params: params.len(),
+                elem_size: size,
+                get_description: None,
+            });
+        }
+        0
+    } else {
+        // Compare addresses only. Returned pointers always derive from the
+        // actual array, retaining its provenance even for invalid input values.
+        let offset = (prev as usize).wrapping_sub(params.as_ptr() as usize);
+        if offset % size != 0 || offset / size >= params.len() {
+            return core::ptr::null();
+        }
+        offset / size + 1
+    };
+    let Some(param) = params.get(index) else {
+        return core::ptr::null();
+    };
+    let text = describe(param).to_bytes();
+    let count = text.len().min(bindings::KUNIT_PARAM_DESC_SIZE as usize - 1);
+    // SAFETY: The caller supplies the disjoint writable description buffer;
+    // `count` leaves room for its terminating NUL, and the source is live.
+    unsafe {
+        core::ptr::copy_nonoverlapping(text.as_ptr().cast(), desc, count);
+        desc.add(count).write(0);
+    }
+    core::ptr::from_ref(param).cast()
+}
+
 /// Registers a KUnit test suite.
 ///
 /// # Safety
@@ -243,21 +407,32 @@ pub const fn kunit_case(
 #[macro_export]
 macro_rules! kunit_unsafe_test_suite {
     ($name:ident, $test_cases:ident) => {
+        $crate::kunit_unsafe_test_suite!(
+            @register ::core::stringify!($name), $test_cases,
+            $crate::bindings::kunit_speed_KUNIT_SPEED_NORMAL
+        );
+    };
+    ($name:literal, $test_cases:ident) => {
+        $crate::kunit_unsafe_test_suite!(
+            @register $name, $test_cases,
+            $crate::bindings::kunit_speed_KUNIT_SPEED_UNSET
+        );
+    };
+    (@register $name:expr, $test_cases:ident, $speed:expr) => {
         const _: () = {
             const KUNIT_TEST_SUITE_NAME: [::kernel::ffi::c_char; 256] = {
-                let name_u8 = ::core::stringify!($name).as_bytes();
+                let name_u8 = $name.as_bytes();
                 let mut ret = [0; 256];
 
                 if name_u8.len() > 255 {
-                    panic!(concat!(
-                        "The test suite name `",
-                        ::core::stringify!($name),
-                        "` exceeds the maximum length of 255 bytes."
-                    ));
+                    panic!("The test suite name exceeds the maximum length of 255 bytes.");
                 }
 
                 let mut i = 0;
                 while i < name_u8.len() {
+                    if name_u8[i] == 0 {
+                        panic!("The test suite name contains an interior NUL.");
+                    }
                     ret[i] = name_u8[i] as ::kernel::ffi::c_char;
                     i += 1;
                 }
@@ -281,7 +456,7 @@ macro_rules! kunit_unsafe_test_suite {
                     init: None,
                     exit: None,
                     attr: ::kernel::bindings::kunit_attributes {
-                        speed: ::kernel::bindings::kunit_speed_KUNIT_SPEED_NORMAL,
+                        speed: $speed,
                     },
                     status_comment: [0; 256usize],
                     debugfs: ::core::ptr::null_mut(),

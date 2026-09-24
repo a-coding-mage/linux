@@ -5,9 +5,13 @@
  * Copyright (C) 2006 Christoph Pfister (christophpfister@gmail.com)
  */
 
-// linux/bitops.h, linux/export.h, linux/int_log.h, linux/kernel.h,
-// linux/types.h, and asm/bug.h provide the external symbols used here.
+//! Allocation-free, constant-evaluable Q24 logarithm approximations.
+//!
+//! Results preserve the original lookup table and interpolation rounding,
+//! rather than rounding an exact real logarithm. Zero returns `None`; the
+//! separate native C owner retains the original warning and zero return.
 
+#[rustfmt::skip]
 static LOGTABLE: [u16; 256] = [
     0x0000, 0x0171, 0x02e0, 0x044e, 0x05ba, 0x0725, 0x088e, 0x09f7,
     0x0b5d, 0x0cc3, 0x0e27, 0x0f8a, 0x10eb, 0x124b, 0x13aa, 0x1508,
@@ -43,41 +47,43 @@ static LOGTABLE: [u16; 256] = [
     0xfa2f, 0xfaea, 0xfba5, 0xfc60, 0xfd1a, 0xfdd4, 0xfe8e, 0xff47,
 ];
 
-extern "C" {
-    fn fls(value: u32) -> u32;
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn intlog2(value: u32) -> u32 {
-    // returns: log2(value) * 2^24; wrong result if value == 0.
+/// Approximate `log2(value) * 2^24` with the original fixed-point rounding.
+///
+/// Returns `None` for zero, whose logarithm is undefined, without a warning.
+/// Powers of two produce an exact integer multiple of `2^24`.
+pub const fn intlog2(value: u32) -> Option<u32> {
     if value == 0 {
-        // WARN_ON(1) from the kernel is intentionally preserved as a dependency.
-        return 0;
+        return None;
     }
 
-    let msb = fls(value).wrapping_sub(1);
-    let significand = value << (31 - msb);
-    let logentry = ((significand >> 23) % LOGTABLE.len() as u32) as usize;
-    let next = LOGTABLE[(logentry + 1) % LOGTABLE.len()];
-    let current = LOGTABLE[logentry];
+    let shift = value.leading_zeros();
+    let msb = 31 - shift;
+    // Nonzero input guarantees shift < 32. The leading one ends at bit 31.
+    let significand = value << shift;
+    // Casting the high nine bits to a byte removes their invariant top one.
+    // Byte wrapping also provides the original final-bucket correction.
+    let entry = (significand >> 23) as u8;
+    let next = LOGTABLE[entry.wrapping_add(1) as usize];
+    let current = LOGTABLE[entry as usize];
     let difference = next.wrapping_sub(current) as u32;
     let interpolation = ((significand & 0x7fffff).wrapping_mul(difference)) >> 15;
 
-    (msb << 24)
-        .wrapping_add((LOGTABLE[logentry] as u32) << 8)
-        .wrapping_add(interpolation)
+    Some(
+        (msb << 24)
+            .wrapping_add((current as u32) << 8)
+            .wrapping_add(interpolation),
+    )
 }
 
-#[no_mangle]
-pub unsafe extern "C" fn intlog10(value: u32) -> u32 {
-    // returns: log10(value) * 2^24; wrong result if value == 0.
-    if value == 0 {
-        // WARN_ON(1) from the kernel is intentionally preserved as a dependency.
-        return 0;
+/// Approximate `log10(value) * 2^24` using the original base conversion.
+///
+/// Returns `None` for zero. Decimal powers need not produce exact multiples of
+/// `2^24`: for example, `intlog10(10)` is `Some(16777225)`.
+pub const fn intlog10(value: u32) -> Option<u32> {
+    match intlog2(value) {
+        Some(log) => Some(((log as u64).wrapping_mul(646456993) >> 31) as u32),
+        None => None,
     }
-
-    let log = intlog2(value) as u64;
-    (log.wrapping_mul(646456993) >> 31) as u32
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

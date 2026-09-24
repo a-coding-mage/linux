@@ -1,90 +1,137 @@
 // SPDX-License-Identifier: GPL-2.0-only
+//! Original integer-power KUnit vectors exercised through the native provider ABI.
 
-// Translated from the Linux KUnit test source.  The KUnit and math symbols
-// below are supplied by the surrounding kernel environment.
+use kernel::{bindings, ffi, str::CStr};
 
-use core::ffi::{c_char, c_void};
-
-#[repr(C)]
-pub struct test_case_params {
-    pub base: u64,
-    pub exponent: u32,
-    pub expected_result: u64,
-    pub name: *const c_char,
+struct TestParam {
+    base: u64,
+    exponent: u32,
+    expected: u64,
+    name: &'static CStr,
 }
 
-#[repr(C)]
-pub struct kunit {
-    pub param_value: *const c_void,
-}
-
-unsafe extern "C" {
-    fn int_pow(base: u64, exponent: u32) -> u64;
-    fn strscpy(dest: *mut c_char, src: *const c_char, count: usize) -> isize;
-    fn kunit_expect_eq(test: *mut kunit, left: u64, right: u64);
-}
-
-pub const KUNIT_PARAM_DESC_SIZE: usize = 256;
-
-#[allow(non_upper_case_globals)]
-pub static params: [test_case_params; 9] = [
-    test_case_params { base: 64, exponent: 0, expected_result: 1, name: c"Power of zero".as_ptr() },
-    test_case_params { base: 64, exponent: 1, expected_result: 64, name: c"Power of one".as_ptr() },
-    test_case_params { base: 0, exponent: 5, expected_result: 0, name: c"Base zero".as_ptr() },
-    test_case_params { base: 1, exponent: 64, expected_result: 1, name: c"Base one".as_ptr() },
-    test_case_params { base: 2, exponent: 2, expected_result: 4, name: c"Two squared".as_ptr() },
-    test_case_params { base: 2, exponent: 3, expected_result: 8, name: c"Two cubed".as_ptr() },
-    test_case_params { base: 5, exponent: 5, expected_result: 3125, name: c"Five raised to the fifth power".as_ptr() },
-    test_case_params { base: u64::MAX, exponent: 1, expected_result: u64::MAX, name: c"Max base".as_ptr() },
-    test_case_params { base: 2, exponent: 63, expected_result: 9223372036854775808u64, name: c"Large result".as_ptr() },
+static TEST_PARAMS: [TestParam; 9] = [
+    TestParam {
+        base: 64,
+        exponent: 0,
+        expected: 1,
+        name: c"Power of zero",
+    },
+    TestParam {
+        base: 64,
+        exponent: 1,
+        expected: 64,
+        name: c"Power of one",
+    },
+    TestParam {
+        base: 0,
+        exponent: 5,
+        expected: 0,
+        name: c"Base zero",
+    },
+    TestParam {
+        base: 1,
+        exponent: 64,
+        expected: 1,
+        name: c"Base one",
+    },
+    TestParam {
+        base: 2,
+        exponent: 2,
+        expected: 4,
+        name: c"Two squared",
+    },
+    TestParam {
+        base: 2,
+        exponent: 3,
+        expected: 8,
+        name: c"Two cubed",
+    },
+    TestParam {
+        base: 5,
+        exponent: 5,
+        expected: 3125,
+        name: c"Five raised to the fifth power",
+    },
+    TestParam {
+        base: u64::MAX,
+        exponent: 1,
+        expected: u64::MAX,
+        name: c"Max base",
+    },
+    TestParam {
+        base: 2,
+        exponent: 63,
+        expected: 9223372036854775808,
+        name: c"Large result",
+    },
 ];
 
-pub unsafe fn get_desc(tc: *const test_case_params, desc: *mut c_char) {
-    unsafe {
-        strscpy(desc, (*tc).name, KUNIT_PARAM_DESC_SIZE);
-    }
+fn get_desc(param: &TestParam) -> &CStr {
+    param.name
 }
 
-// KUNIT_ARRAY_PARAM(int_pow, params, get_desc);
-unsafe extern "C" {
-    fn int_pow_gen_params() -> *const c_void;
+unsafe extern "C" fn int_pow_gen_params(
+    test: *mut bindings::kunit,
+    prev: *const ffi::c_void,
+    desc: *mut ffi::c_char,
+) -> *const ffi::c_void {
+    // SAFETY: KUnit supplies its live context, a previous parameter from this
+    // array (or NULL initially), and a writable KUNIT_PARAM_DESC_SIZE buffer.
+    unsafe { kernel::kunit::array_params(test, prev, desc, &TEST_PARAMS, get_desc) }
 }
 
-pub unsafe fn int_pow_test(test: *mut kunit) {
-    let tc = unsafe { (*test).param_value as *const test_case_params };
-    unsafe {
-        kunit_expect_eq(test, (*tc).expected_result, int_pow((*tc).base, (*tc).exponent));
-    }
+unsafe extern "C" fn int_pow_test(test: *mut bindings::kunit) {
+    // SAFETY: KUnit invokes this callback with its live context and a parameter
+    // returned by int_pow_gen_params, hence a live immutable TestParam.
+    let param = unsafe { &*(*test).param_value.cast::<TestParam>() };
+    // SAFETY: The native integer-power function accepts every u64/u32 pair.
+    // Calling the actual binding exercises whichever C/Rust provider is linked.
+    let actual = unsafe { bindings::int_pow(param.base, param.exponent) };
+    // SAFETY: This is the live callback context. Preserve the original expected
+    // versus actual operand order and its nonfatal KUNIT_EXPECT_EQ semantics.
+    unsafe { kernel::kunit_expect_eq!(test, param.expected, actual) };
 }
 
-// KUNIT_CASE_PARAM(int_pow_test, int_pow_gen_params), followed by the empty
-// sentinel entry in the C array.
-#[repr(C)]
-pub struct kunit_case {
-    pub test: Option<unsafe fn(*mut kunit)>,
-    pub generate_params: Option<unsafe extern "C" fn() -> *const c_void>,
-}
-
-#[allow(non_upper_case_globals)]
-pub static mut math_int_pow_test_cases: [kunit_case; 2] = [
-    kunit_case { test: Some(int_pow_test), generate_params: Some(int_pow_gen_params) },
-    kunit_case { test: None, generate_params: None },
+static mut TEST_CASES: [bindings::kunit_case; 2] = [
+    kernel::kunit::kunit_case_param(
+        c"int_pow_test",
+        c"int_pow_kunit",
+        int_pow_test,
+        int_pow_gen_params,
+    ),
+    // SAFETY: All-zero is the original KUnit array's terminating empty case.
+    unsafe { core::mem::zeroed() },
 ];
 
-#[repr(C)]
-pub struct kunit_suite {
-    pub name: *const c_char,
-    pub test_cases: *mut kunit_case,
-}
+// SAFETY: TEST_CASES is a static, NULL-terminated array of valid cases.
+kernel::kunit_unsafe_test_suite!("math-int_pow", TEST_CASES);
 
-#[allow(non_upper_case_globals)]
-pub static mut int_pow_test_suite: kunit_suite = kunit_suite {
-    name: c"math-int_pow".as_ptr(),
-    test_cases: core::ptr::addr_of_mut!(math_int_pow_test_cases) as *mut kunit_case,
+#[cfg(MODULE)]
+const MODINFO: &str = "description=math.int_pow KUnit test suite\0license=GPL\0";
+#[cfg(not(MODULE))]
+const MODINFO: &str = concat!(
+    "int_pow_kunit.description=math.int_pow KUnit test suite\0",
+    "int_pow_kunit.license=GPL\0",
+    "int_pow_kunit.file=",
+    env!("RUST_MODFILE"),
+    "\0",
+);
+
+#[used]
+#[link_section = ".modinfo"]
+static MODULE_INFO: [u8; MODINFO.len()] = {
+    let mut bytes = [0; MODINFO.len()];
+    let mut index = 0;
+    while index < bytes.len() {
+        bytes[index] = MODINFO.as_bytes()[index];
+        index += 1;
+    }
+    bytes
 };
 
-// kunit_test_suites(&int_pow_test_suite);
-// MODULE_DESCRIPTION("math.int_pow KUnit test suite");
-// MODULE_LICENSE("GPL");
+#[cfg(MODULE)]
+#[used]
+static __IS_RUST_MODULE: () = ();
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -58,6 +58,103 @@ config RUST_HEXDUMP
 
 	  If unsure, say N.
 
+config RUST_CORDIC
+	bool "Rust implementation of the CORDIC algorithm"
+	depends on RUST
+	help
+	  Build the translated Rust cordic_calc_iq() when CORDIC is enabled.
+	  Its original fixed-point arithmetic, two-field C structure return
+	  and unrestricted export are retained. The stateless library can be
+	  built into the kernel or as cordic.ko, with no allocation required.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
+
+	  If unsure, say N.
+
+config RUST_DIV64
+	bool "Rust implementation of generic wide division helpers"
+	depends on RUST
+	help
+	  Build the translated generic 64-bit division and multiply/add/divide
+	  library. The original architecture-specific export selection, weak
+	  division helper and C interfaces are retained. No allocation is needed.
+	  Architecture assembly and inline header implementations remain in use;
+	  on x86-64 this replaces only the out-of-line iterative division helper.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
+
+	  If unsure, say N.
+
+config RUST_POLYNOMIAL
+	bool "Rust implementation of integer polynomial calculations"
+	depends on RUST
+	help
+	  Build the translated Rust polynomial_calc() when POLYNOMIAL is
+	  enabled. The original signed native-word arithmetic, inline term
+	  array interface and GPL-only export are retained. The stateless
+	  library can be built into the kernel or as polynomial.ko.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
+
+	  If unsure, say N.
+
+config RUST_POLYNOMIAL_KUNIT_TEST
+	bool "Rust implementation of the polynomial KUnit suite"
+	depends on RUST
+	help
+	  Use the translated Rust test when POLYNOMIAL_KUNIT_TEST is enabled.
+	  The original suite and parameter names, nonfatal expectations and
+	  polynomial_kunit module identity are retained. The suite exercises
+	  the selected native polynomial provider through its real C ABI.
+
+	  This choice is independent of RUST_POLYNOMIAL and HOST_TOOLS_LANG.
+	  Disable this option to retain the original C KUnit suite.
+
+	  If unsure, say N.
+
+config RUST_DIV64_TESTS
+	bool "Rust implementations of the wide division self-tests"
+	depends on RUST
+	help
+	  Use the translated Rust modules when TEST_DIV64 or TEST_MULDIV64
+	  is enabled. The original test vectors, module names, diagnostics
+	  and built-in/module selection are retained. The tests exercise the
+	  safe Rust math APIs and both generic wide-division digit algorithms.
+
+	  This choice is independent of RUST_DIV64, which selects the native
+	  library exports. Disable this option to keep the original C tests.
+
+	  If unsure, say N.
+
+config RUST_INT_LOG
+	bool "Rust implementation of fixed-point integer logarithms"
+	depends on RUST
+	help
+	  Build the translated Rust intlog2() and intlog10() functions. Their
+	  original table-based approximations, fixed-point scale, C interfaces
+	  and unrestricted exports are retained. Zero input emits the original
+	  kernel warning and returns zero. No allocation is required.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
+
+	  If unsure, say N.
+
 config RUST_INT_MATH
 	bool "Rust implementation of integer powers and square roots"
 	depends on RUST
@@ -76,6 +173,20 @@ config RUST_INT_MATH
 
 	  If unsure, say N.
 
+config RUST_INT_MATH_KUNIT_TESTS
+	bool "Rust implementations of integer-power and integer-root KUnit suites"
+	depends on RUST
+	help
+	  Use the translated Rust suites when INT_POW_KUNIT_TEST or
+	  INT_SQRT_KUNIT_TEST is enabled. The original vectors, parameter
+	  names, nonfatal expectations and module identities are retained.
+	  Each suite calls the selected native math provider's real C ABI.
+
+	  This choice is independent of RUST_INT_MATH and HOST_TOOLS_LANG.
+	  Disable this option to retain the original C KUnit suites.
+
+	  If unsure, say N.
+
 config RUST_GCD_LCM
 	bool "Rust implementation of greatest common divisor and least common multiple"
 	depends on RUST
@@ -91,6 +202,41 @@ config RUST_GCD_LCM
 
 	  Disable this option to retain the original C implementations. This
 	  choice is independent of HOST_TOOLS_LANG and RUST_INT_MATH.
+
+	  If unsure, say N.
+
+config RUST_RECIPROCAL_DIV
+	bool "Rust implementation of reciprocal division helpers"
+	depends on RUST
+	help
+	  Build the translated Rust reciprocal_value() and
+	  reciprocal_value_adv() constructors, including their original C
+	  structure-return interfaces and unrestricted symbol exports. The
+	  implementation requires no allocation or compiler division runtime.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
+
+	  If unsure, say N.
+
+config RUST_RATIONAL
+	bool "Rust implementation of rational approximation"
+	depends on RUST
+	help
+	  Build the translated Rust rational_best_approximation() when the
+	  RATIONAL library is enabled. Its C interface, unrestricted symbol
+	  export and native unsigned-long wrapping arithmetic are retained.
+	  The library may be built into the kernel or as rational.ko, as with
+	  the original C implementation. No allocation is required.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation. This
+	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
 
 	  If unsure, say N.
 

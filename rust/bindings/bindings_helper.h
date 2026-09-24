@@ -46,6 +46,7 @@
 #include <linux/clk.h>
 #include <linux/completion.h>
 #include <linux/configfs.h>
+#include <linux/cordic.h>
 #include <linux/cpu.h>
 #include <linux/cpufreq.h>
 #include <linux/cpumask.h>
@@ -64,12 +65,14 @@
 #include <linux/fwctl.h>
 #include <linux/fs.h>
 #include <linux/i2c.h>
+#include <linux/int_log.h>
 #include <linux/interrupt.h>
 #include <linux/io-pgtable.h>
 #include <linux/ioport.h>
 #include <linux/iosys-map.h>
 #include <linux/jiffies.h>
 #include <linux/jump_label.h>
+#include <linux/math64.h>
 #include <linux/mdio.h>
 #include <linux/mm.h>
 #include <linux/miscdevice.h>
@@ -80,9 +83,11 @@
 #include <linux/platform_device.h>
 #include <linux/pm_opp.h>
 #include <linux/poll.h>
+#include <linux/polynomial.h>
 #include <linux/property.h>
 #include <linux/pwm.h>
 #include <linux/random.h>
+#include <linux/reciprocal_div.h>
 #include <linux/refcount.h>
 #include <linux/regulator/consumer.h>
 #include <linux/sched.h>

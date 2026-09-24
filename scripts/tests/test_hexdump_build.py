@@ -41,10 +41,16 @@ class HexdumpBuildTests(unittest.TestCase):
         self.work = Path(temporary.name)
         self.sequence = 0
 
-    def kernel(self, members, *, relative=False):
+    def kernel(self, members, *, relative=False, arch="x86_64", selection=None):
         self.sequence += 1
         build = self.work / str(self.sequence)
         build.mkdir()
+        rust = ((ORIGINAL not in members or any(member in members for member in TRANSLATED))
+                if selection is None else selection == "Rust")
+        (build / ".config").write_text(
+            "CONFIG_64BIT=y\nCONFIG_RUST=y\n" +
+            ("CONFIG_ARM64=y\n" if arch == "aarch64" else "CONFIG_X86_64=y\n") +
+            ("CONFIG_RUST_HEXDUMP=y\n" if rust else ""))
         # Keep all implementations on disk: only archive membership determines
         # the linked selection, including after C -> Rust -> C transitions.
         for member in {ORIGINAL, *TRANSLATED, OBSOLETE, *members}:
@@ -54,7 +60,7 @@ class HexdumpBuildTests(unittest.TestCase):
         subprocess.run([*shlex.split(os.environ.get("AR", "ar")), "crT", "vmlinux.a",
                         *(members if relative else [str(build / member) for member in members])],
                        cwd=build, check=True, capture_output=True)
-        image = build / "arch/x86/boot/bzImage"
+        image = build / ("arch/arm64/boot/Image" if arch == "aarch64" else "arch/x86/boot/bzImage")
         image.parent.mkdir(parents=True)
         image.write_bytes(b"boot-image fixture\n")
         os.utime(build / "vmlinux.a", ns=(1_700_000_000_000_000_000,) * 2)
@@ -77,7 +83,7 @@ class HexdumpBuildTests(unittest.TestCase):
                  ("C", [ORIGINAL, *TRANSLATED]))
         for selection, members in cases:
             with self.subTest(selection=selection, members=members):
-                build = self.kernel(["kernel/main.o", *members])
+                build = self.kernel(["kernel/main.o", *members], selection=selection)
                 with self.assertRaisesRegex(ValueError, "linked hexdump objects"):
                     verify_linked_implementation(build, selection)
 
@@ -90,6 +96,29 @@ class HexdumpBuildTests(unittest.TestCase):
         image.rename(image.with_suffix(".saved"))
         with self.assertRaises(FileNotFoundError):
             verify_linked_implementation(build, "Rust")
+
+    def test_arm64_routing_uses_its_selected_image_and_rejects_invalid_architectures(self):
+        for selection, members in (("C", [ORIGINAL]), ("Rust", list(TRANSLATED))):
+            build = self.kernel(members, arch="aarch64")
+            verify_linked_implementation(build, selection)
+            image = build / "arch/arm64/boot/Image"
+            os.utime(image, ns=(1, 1))
+            other = build / "arch/x86/boot/bzImage"
+            other.parent.mkdir(parents=True)
+            other.touch()
+            with self.assertRaisesRegex(ValueError, "Image is older"):
+                verify_linked_implementation(build, selection)
+        for mutation in ("missing", "both", "32bit", "big-endian"):
+            build = self.kernel(list(TRANSLATED))
+            path = build / ".config"
+            text = path.read_text()
+            if mutation == "missing": text = text.replace("CONFIG_X86_64=y\n", "")
+            elif mutation == "both": text += "CONFIG_ARM64=y\n"
+            elif mutation == "32bit": text = text.replace("CONFIG_64BIT=y\n", "")
+            else: text += "CONFIG_CPU_BIG_ENDIAN=y\n"
+            path.write_text(text)
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(ValueError, "little-endian 64-bit"):
+                verify_linked_implementation(build, "Rust")
 
     def test_actual_makefile_retains_c_rust_c_choice_independent_of_host_language(self):
         harness = self.work / "Makefile"
@@ -170,7 +199,7 @@ pub use production::*;
             self.assertIn("$(wildcard include/config/PRINTK)", command)
             self.assertIn("$(wildcard include/config/PRINTK_INDEX)", command)
 
-    def test_native_export_metadata_and_dwarf_follow_printk_configuration(self):
+    def test_standalone_export_metadata_and_dwarf_follow_printk_configuration(self):
         from test_hexdump_translation import c_environment
         include = c_environment(self.work)
         (include / "linux/compiler.h").write_text('''#ifndef HEX_EXPORT_TEST_COMPILER_H
@@ -226,6 +255,46 @@ pub use production::*;
                                 self.assertEqual(row["section_flags"], 2)
                         wanted = {name.decode(): ("", "", name.decode(), 0) for name in expected}
                         self.assertEqual(records, [wanted, wanted])
+
+    def test_actual_kernel_char_boundary_metadata_and_dwarf_across_printk_options(self):
+        from test_hexdump_abi import RUST_WRAPPER
+        rustc = shlex.split(os.environ.get("HOSTRUSTC", "rustc"))
+        ffi = self.work / "libkernel_ffi.rlib"
+        subprocess.run([*rustc, "--edition=2021", "--crate-name=kernel_ffi", "--crate-type=rlib",
+                        "-Dwarnings", ROOT / "rust/ffi.rs", "-o", ffi], check=True, capture_output=True)
+        source = self.work / "native.rs"
+        source.write_text(RUST_WRAPPER.replace("@SOURCE@", str(ROOT / "lib/hexdump_rust.rs")))
+        tools = dwarf_tools()
+        expected_all = {
+            b"hex_asc": b"0x9cd815e5", b"hex_asc_upper": b"0x9cd815e5",
+            b"hex_to_bin": b"0x53849ca6", b"hex2bin": b"0xe2012513",
+            b"bin2hex": b"0xdbac9fd1", b"hex_dump_to_buffer": b"0xac7338bc",
+            b"print_hex_dump": b"0x676c8f3d",
+        }
+        for printk in (False, True):
+            expected = {name: crc for name, crc in expected_all.items()
+                        if printk or name != b"print_hex_dump"}
+            for version in (4, 5):
+                for optimize in ("0", "2", "s"):
+                    with self.subTest(printk=printk, dwarf=version, optimize=optimize):
+                        obj = self.work / "native.o"
+                        subprocess.run([*rustc, "--edition=2021", "--crate-type=rlib", "--emit=obj",
+                                        "-Cpanic=abort", "-Copt-level=" + optimize, "-Coverflow-checks=yes",
+                                        "-Cdebuginfo=2", "-Zdwarf-version=" + str(version), "-Dwarnings",
+                                        "-Wmissing-docs", "-Wunreachable-pub", "-Wrust-2018-idioms",
+                                        "--extern", "kernel_ffi=" + str(ffi), "--cfg", "CONFIG_RUST",
+                                        "--cfg", "native_char", *(["--cfg", "CONFIG_PRINTK"] if printk else []),
+                                        source, "-o", obj], check=True, capture_output=True,
+                                       env={**os.environ, "RUSTC_BOOTSTRAP": "1"})
+                        versions, _ = dwarf_versions(tools, obj, expected, self.work)
+                        self.assertEqual(versions, expected)
+                        records = read_exports(obj)
+                        self.assertEqual({record["name"] for record in records},
+                                         {name.decode() for name in expected})
+                        for record in records:
+                            self.assertEqual((record["license"], record["namespace"],
+                                              record["relocation_target"], record["relocation_addend"]),
+                                             ("", "", record["name"], 0))
 
 
 if __name__ == "__main__":

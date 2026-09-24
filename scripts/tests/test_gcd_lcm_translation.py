@@ -25,12 +25,20 @@ import tempfile
 import unittest
 
 from test_ctype_translation import command, elf_symbol, run
-from test_int_math_translation import C_TYPES, rust_flags, symbol_names
+from test_int_math_translation import C_TYPES, kernel_api_source, rust_flags, symbol_names
 
 
 ROOT = Path(__file__).resolve().parents[2]
 OPTIMIZATIONS = ("0", "2", "s")
 NAMES = ("gcd", "lcm", "lcm_not_zero")
+SOURCE_REVISION = "d482bb509b7d065808de40ce78b5bca39f40b783"
+
+
+def original_revision_matches(source, manifest_revision):
+    """Check archived source provenance without Git or working-directory state."""
+    expected = b"// SOURCE-COMMIT: " + SOURCE_REVISION.encode("ascii")
+    markers = re.findall(rb"(?m)^.*SOURCE-COMMIT:.*$", source)
+    return manifest_revision == SOURCE_REVISION and markers == [expected]
 
 C_ADAPTER = r"""
 #include <linux/gcd.h>
@@ -178,8 +186,7 @@ class GcdLcmTranslationTests(unittest.TestCase):
         cls.c_source = cls.directory / "adapter.c"
         cls.c_source.write_text(C_ADAPTER)
         cls.kernel_source = cls.directory / "kernel.rs"
-        cls.kernel_source.write_text("//! Actual pure public kernel API.\n#![no_std]\n"
-            '#[path = ' + json.dumps(str(ROOT / "rust/kernel/math.rs")) + "]\npub mod math;\n")
+        cls.kernel_source.write_text(kernel_api_source(*NAMES))
         cls.sources = {}
         for kind in ("canonical", "headers", "consumer"):
             cls.sources[kind] = cls.directory / (kind + ".rs")
@@ -392,15 +399,25 @@ class GcdLcmTranslationTests(unittest.TestCase):
                 self.assertNotIn(ROOT / "lib/math" / name, dependencies)
 
     def test_original_source_commit_markers_and_pure_header_boundaries(self):
+        manifest = Path(__file__).with_name("translated_sources.txt")
+        entries = [line.split() for line in manifest.read_text().splitlines()
+                   if line and not line.startswith("#")]
         for name in ("lib/math/gcd.rs", "lib/math/lcm.rs", "include/linux/gcd_header.rs",
                      "include/linux/lcm_header.rs"):
             source = (ROOT / name).read_bytes()
-            original = run(["git", "show", "68f3e0875:" + name])
-            marker = lambda s: re.findall(rb"(?m)^.*SOURCE-COMMIT:.*$", s)
-            self.assertEqual(marker(source), marker(original), name)
+            revisions = [entry[1:] for entry in entries if entry[0] == name]
+            self.assertEqual(revisions, [[SOURCE_REVISION]], name)
+            self.assertTrue(original_revision_matches(source, revisions[0][0]), name)
             self.assertNotIn(b'extern "C"', source)
             self.assertNotIn(b"unsafe", source)
             self.assertNotIn(b"static_branch_likely", source)
+        marker = b"// SOURCE-COMMIT: " + SOURCE_REVISION.encode("ascii") + b"\n"
+        for source, revision in ((b"", SOURCE_REVISION), (marker * 2, SOURCE_REVISION),
+                                 (marker.replace(b"d482", b"0000"), SOURCE_REVISION),
+                                 (marker.replace(b"// ", b"//"), SOURCE_REVISION),
+                                 (marker, "0" * 40)):
+            with self.subTest(invalid_source=source, invalid_manifest_revision=revision):
+                self.assertFalse(original_revision_matches(source, revision))
 
     def test_genuine_i686_c_and_rust_both_strategies_and_headers(self):
         if self.i686_compile_error or self.i686_execution_error:

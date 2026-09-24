@@ -8,7 +8,15 @@
 //! accesses are confined to these wrappers; the formatter uses checked indices
 //! and byte-access callbacks, without manufacturing aliased Rust references.
 
-use core::ffi::{c_char, c_int, c_void};
+use core::ffi::{c_int, c_void};
+
+// Kernel C is compiled with -funsigned-char, including on targets whose host
+// core::ffi::c_char is signed. The native boundary must preserve the pointee
+// type as well as its width: normalized KCFI distinguishes these signatures.
+#[cfg(not(CONFIG_RUST))]
+use core::ffi::c_char;
+#[cfg(CONFIG_RUST)]
+use kernel::ffi::c_char;
 
 /// Lower-case digits, including the C string terminator.
 #[export_name = "hex_asc"]

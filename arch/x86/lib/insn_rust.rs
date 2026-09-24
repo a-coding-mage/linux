@@ -265,10 +265,10 @@ pub unsafe extern "C" fn insn_decode(
     buf_len: c_int,
     mode: bindings::insn_mode,
 ) -> c_int {
-    let x86_64 = if mode == bindings::insn_mode_INSN_MODE_KERN {
+    let x86_64 = if mode == bindings::insn_mode::INSN_MODE_KERN {
         cfg!(CONFIG_X86_64)
     } else {
-        mode == bindings::insn_mode_INSN_MODE_64
+        mode == bindings::insn_mode::INSN_MODE_64
     };
     // SAFETY: the caller supplies the same native state/input contract as the
     // two component C entry points, including their staged partial results.

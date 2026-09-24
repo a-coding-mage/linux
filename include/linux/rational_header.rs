@@ -1,27 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * rational fractions
- *
- * Copyright (C) 2009 emlix GmbH, Oskar Schirmer <oskar@scara.com>
- *
- * helper functions when coping with rational numbers,
- * e.g. when calculating optimum numerator/denominator pairs for
- * pll configuration taking into account restricted register size
- */
+// SPDX-License-Identifier: GPL-2.0
+// Copyright (C) 2009 emlix GmbH, Oskar Schirmer <oskar@scara.com>
 
-// C header guard: _LINUX_RATIONAL_H
+//! Safe rational approximation without foreign declarations or symbol owners.
 
-use std::os::raw::c_ulong;
+#[path = "../../lib/math/rational.rs"]
+mod fractions;
 
-extern "C" {
-    pub fn rational_best_approximation(
-        given_numerator: c_ulong,
-        given_denominator: c_ulong,
-        max_numerator: c_ulong,
-        max_denominator: c_ulong,
-        best_numerator: *mut c_ulong,
-        best_denominator: *mut c_ulong,
-    );
-}
+pub use fractions::rational_best_approximation;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

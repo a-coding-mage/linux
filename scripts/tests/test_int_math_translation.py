@@ -176,6 +176,21 @@ def symbol_names(path, *flags):
             if line.split()]
 
 
+def kernel_api_source(*names):
+    """Expose the tested family from the real module, not unrelated helpers.
+
+    Rust still type-checks the complete production math module and tracks its
+    dependencies. Restrict this fixture's public surface so a runtime-free
+    family does not pull in another family's legitimate core panic checks at
+    O0. Actual whole-kernel consumers are separately built and run in QEMU.
+    """
+    return ("//! Selected actual kernel math API for independent consumers.\n#![no_std]\n"
+            "#[allow(dead_code, unused_imports, unreachable_pub)]\n#[path = " +
+            json.dumps(str(ROOT / "rust/kernel/math.rs")) + "]\nmod production_math;\n"
+            "/// The production functions exercised by this fixture.\npub mod math {\n"
+            "    pub use crate::production_math::{" + ", ".join(names) + "};\n}\n")
+
+
 def adapter(import_source, owner=False):
     if owner:
         signatures = """
@@ -266,9 +281,7 @@ class IntMathTranslationTests(unittest.TestCase):
                                     "#[path = " + json.dumps(str(ROOT / "lib/math/int_math_rust.rs")) +
                                     "]\nmod implementation;\npub use implementation::*;\n")
         cls.kernel_source = cls.directory / "kernel.rs"
-        cls.kernel_source.write_text("//! Actual pure integer-math public API.\n#![no_std]\n"
-                                     "#[path = " + json.dumps(str(ROOT / "rust/kernel/math.rs")) +
-                                     "]\npub mod math;\n")
+        cls.kernel_source.write_text(kernel_api_source("int_pow", "int_sqrt", "int_sqrt32", "int_sqrt64"))
         cls.consumer_source = cls.directory / "consumer.rs"
         cls.consumer_source.write_text(adapter("use kernel::math as subject;"))
         cls.c = {}

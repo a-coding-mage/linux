@@ -158,6 +158,21 @@ neither. Tests use temporary directories. Normal builds use the Rust tools;
 the C implementations remain selectable build implementations and behavioral
 references.
 
+CORDIC, reciprocal and decoder native-ABI tests also use ``bindgen`` to generate
+the actual structure and enum types from the original C headers. Their KCFI
+comparisons require Clang. With a non-default installation, pass
+``BINDGEN=/path/to/bindgen`` as a ``make`` command-line argument; a shell-only
+environment assignment is overridden by Kbuild's normal tool defaults.
+
+External module builds conservatively rebuild fixdep-tracked targets when the
+kernel's ``include/config/auto.conf`` changes. External builds run outside the
+kernel output directory, so their saved relative configuration wildcards alone
+cannot detect those changes. The shared Kbuild dependency also repairs existing
+``.cmd`` files with either C or Rust host tools, preventing stale module version
+magic after configuration switches. Unchanged builds remain no-ops, and the
+configuration file is not added to archive or module-order inputs. Focused
+regressions are in ``test_external_module_config.py``.
+
 The device-tree compiler uses owned tree nodes, ordered properties and labels,
 byte-valued data with reference markers, and checked blob input/output. Its full
 source grammar includes overlays, includes, binary includes, deletion, labels,
@@ -511,6 +526,52 @@ export metadata emitted directly from Rust, passes the same read-only audit:
 every symtypes file. Both complete kernel images match the C version tool for
 all 6,834 exported symbols, diagnostics and symtypes.
 
+Adding the Rust GCD/LCM owner and enabling jump labels retains this parity:
+438 compilation units and 6,854 CRC records, including every symtypes file,
+match between C/Rust version tools and Kbuild. The complete ``vmlinux.o`` and
+final ``vmlinux`` also match for all 6,854 exported symbols.
+
+With rational approximation and its original KUnit suite added, plus common
+clock support and module unloading enabled for the built-in/module test matrix,
+the final native build has exact per-unit parity for 453 compilation units and
+7,019 CRC records and symtypes. The complete ``vmlinux.o`` and final ``vmlinux``
+also match for all 7,019 exports. Its Rust metadata bridge matches the original
+C bridge for all 3,156 records.
+
+With reciprocal division added, all 453 compilation units, 7,023 CRC records
+and symtypes files match between C/Rust version tools and Kbuild. The complete
+``vmlinux.o`` and final ``vmlinux`` also match for all 7,023 exports, and the
+Rust metadata bridge matches all 3,160 original C records.
+
+With integer logarithms and their original KUnit suite added, all 453
+compilation units, 7,026 CRC records and symtypes files match between C/Rust
+version tools and Kbuild. Both complete kernel images match all 7,026 exports;
+the Rust metadata bridge matches all 3,163 original C records.
+
+With generic wide division and its translated self-test modules added, the
+native x86-64 build matches for all 453 compilation units, 7,065 CRC records
+and symtypes files, and all 7,065 exports in both complete kernel images.
+Its Rust metadata bridge matches 3,202 original C records. The little-endian
+ARM64 build independently matches for 385 compilation units, 6,742 CRC/symtypes
+records, all 6,742 exports in both images and 3,083 bridge records. ARM64's
+bridge comparison uses an explicit private reference compiled from unchanged
+``rust/exports.c`` with that completed build's actual export lists and C flags;
+automatic reference compilation in the bridge checker remains x86-only.
+
+With CORDIC added, x86-64 matches for all 454 compilation units, 7,069
+CRC/symtypes records, 7,069 exports in each complete kernel image and 3,205
+original C bridge records. ARM64 matches for 386 units, 6,746 CRC/symtypes
+records, 6,746 exports in each image and 3,086 bridge records. Its original
+C reference is freshly compiled from the updated generated lists. These are
+read-only audits of the completed native build outputs.
+
+The separate strict normalized-KCFI configurations used for the seven native
+signature corrections also pass these audits. On x86-64, 454 units and 7,064
+CRC/symtypes records match C/Rust/Kbuild; both linked images match all 7,064
+exports, and the bridge matches 3,200 original C records. ARM64 matches 388
+units and 6,743 per-unit records, 6,742 exports in each linked image and 3,081
+bridge records, using a fresh original reference with the final native flags.
+
 Native Rust library export bridge
 ---------------------------------
 
@@ -527,8 +588,8 @@ types: the defining objects still provide the real function/data kinds, DWARF
 and version CRCs. The bridge deliberately generates no second set of versions.
 The optional ``rust_build_error`` retains its existing unversioned policy.
 
-In the combined native x86-64 build, all 3,152 bridge records match the original
-C bridge exactly, and the complete ``Module.symvers`` is byte-identical.
+In the initial combined native x86-64 build, all 3,152 bridge records match the
+original C bridge exactly, and the complete ``Module.symvers`` is byte-identical.
 Switching this metadata-only option therefore does not require rebuilding
 modules. A previously built independent Rust consumer loads and passes its
 8,194-input ctype checks after switching to the native bridge; a new consumer
@@ -558,8 +619,10 @@ remaining C helper implementations or the rest of the target kernel.
 Translated target-kernel code
 -----------------------------
 
-The integer-math, BCD, character-classification and hexadecimal-helper Rust
-owners emit their own native export records using the repaired translation
+The integer-math, integer-logarithm, generic wide-division, CORDIC, GCD/LCM,
+rational-approximation, reciprocal-division, BCD, character-classification and
+hexadecimal-helper Rust owners emit their own native export records using the
+repaired translation
 ``include/linux/export_header.rs``, imported through ``rust/ffi_export.rs``.
 No C export-glue source or object is selected for these implementations.
 Kbuild reads the actual Rust object's DWARF to generate module versions;
@@ -568,7 +631,7 @@ Rust API consumers do not emit these records a second time.
 This interface is for native implementation owners, not a general emulation of
 C preprocessor export macros. Namespaces are explicit printable ASCII strings
 excluding quotes, backslashes and braces; ordinary identifiers and
-``module:name,name*`` namespaces are supported. The four migrated owners retain
+``module:name,name*`` namespaces are supported. These migrated owners retain
 their original empty namespaces.
 
 With ``CONFIG_MODVERSIONS=y``, rebuild modules when switching between the C
@@ -578,14 +641,57 @@ must describe the real implementation, not force a C checksum onto Rust types.
 The existing Rust Kconfig dependency requires ``CONFIG_GENDWARFKSYMS`` for
 module versioning; the original C configuration still supports genksyms.
 
-With minimum Rust 1.85, the combined host regression suite passes all 808 tests
-without skips, including genuine i686 execution and export-object checks.
+At the strict-KCFI repair milestone, the combined host regression suite passed
+all 1,170 tests with minimum Rust 1.85 and no skips, including genuine i686
+execution and export-object checks.
 Native x86-64 QEMU checks pass both C and independent Rust callers for integer
-math, BCD and ctype, all seven hexdump exports, and the original 1,184 hexdump
-tests. A Rust-to-C-to-Rust build cycle restores each choice's symbol versions;
+math, integer logarithms, GCD/LCM, rational approximation, reciprocal division,
+BCD and ctype,
+all seven hexdump exports,
+and the original 1,184 hexdump tests. CORDIC, the wide-division provider and its
+translated self-tests additionally pass the x86-64/ARM64 selection matrices
+described below. A Rust-to-C-to-Rust build cycle restores
+each choice's symbol versions;
 the retained C kernel also loads its previously built ctype test module.
-A repeated final Rust build leaves the four implementation objects, symbol
-versions and kernel images unchanged.
+At the CORDIC milestone, a repeated final Rust build left all 32 monitored
+active implementation, self-test, inspection, metadata, archive, version and
+kernel-image artifacts unchanged in each of the x86-64 and ARM64 output trees.
+Their hashes and timestamps also remained unchanged across that full host
+suite, read-only audits and VM regressions.
+For the subsequent strict-KCFI configurations, 13 x86-64 and 12 ARM64 active
+configuration, implementation, binding/metadata, archive, version and image
+artifacts remained byte- and timestamp-identical across the final no-op builds
+and the 1,170-test suite, including the new polynomial arithmetic tests.
+
+Differential tests generate C reference wrappers and ABI callers only in
+temporary or out-of-tree build directories. These are test programs or
+disposable QEMU modules, not new production implementations. The unchanged
+Kbuild module machinery also generates ``*.mod.c`` metadata for both C and
+Rust modules. Original C sources remain selectable, and translated sources
+retain their ``SOURCE-COMMIT`` markers.
+
+KCFI compatibility is an additional requirement, not implied by matching
+structure layout or passing ordinary direct-call tests. A normalized-KCFI
+code-generation audit identified and corrected type-identity mismatches in
+the two reciprocal constructors, ``bin2hex``, ``hex2bin``, ``hex_dump_to_buffer``,
+``print_hex_dump`` and ``insn_decode``. Native boundaries now retain the actual
+C structure tags, the kernel's unsigned ``char`` type, and the decoder's C enum
+identity, respectively. Compiler regressions compare the original C type IDs
+and execute protected indirect calls; deliberately wrong types still produce
+correct ordinary ABI results but trap with KCFI enabled.
+
+Targeted strict-KCFI runs, with ``CONFIG_CFI=y`` and
+``CONFIG_CFI_PERMISSIVE`` disabled, pass the four hexdump indirect-call paths
+with unload/reload on x86-64 and ARM64. Both also pass the original 1,184-case
+hexdump module twice. Both architectures pass both reciprocal callers with
+reload; x86-64 passes 108 indirect decoder calls plus all seven original kprobe
+cases. The corresponding host regressions are included in the full-suite
+result above; these checks do not imply that the overall translation is complete.
+
+Both strict configurations also pass the retained C providers with the same
+callers and reload checks, including the original hexdump module and x86
+decoder cases. Restoring the Rust selections reproduces each saved complete
+configuration and ``Module.symvers`` byte-for-byte.
 
 ``CONFIG_RUST_INT_MATH=y`` selects translated integer exponentiation and square
 roots. It requires native Rust support, defaults to disabled and is independent
@@ -653,6 +759,350 @@ C implementation. The private test fixture resolves the exact image's key
 address and boots only that image with ``nokaslr`` inside QEMU; no production
 key export is added and no module is loaded on the host. The key is restored
 before module initialization returns, including normal error paths.
+
+Both callers pass with both C and Rust selected, with jump labels enabled and
+disabled. The Rust-to-C-to-Rust cycle restores each implementation's version
+CRCs and restores the complete Rust ``Module.symvers`` byte-for-byte. The native
+key's actual header/binding layout and initializer bytes match C in both
+configurations. The existing false-key macro is also checked at a nonzero
+field offset. Focused tests are in ``test_gcd_lcm*.py`` and
+``test_rust_static_key.py``; pure-algorithm differentials execute genuine
+32-bit and 64-bit code with Rust 1.85 at O0/O2/Os. Native boot validation here
+is x86-64; this is not a claim that other architectures have been boot-tested.
+
+``CONFIG_RUST_RATIONAL=y`` selects translated rational approximation when
+``CONFIG_RATIONAL`` is enabled. It requires ``CONFIG_RUST``, defaults to disabled
+and is independent of the host-tool and other math selectors. The original
+``rational.c`` remains selectable. The Rust composite uses ``rational_rust.o``
+and preserves both the built-in choice and the module name ``rational.ko``.
+The library retains its unrestricted export, ``GPL v2`` module license and
+description, without introducing initialization state or init/exit functions.
+Its export record and module metadata are emitted directly in Rust.
+
+``kernel::math::rational_best_approximation`` and the translated rational header
+share a safe, allocation-free ``const`` function returning a numerator and
+denominator tuple. Native-word wrapping is explicit, including continued-
+fraction limit calculations and tie-breaking products. Zero denominators and
+zero bounds retain the original C behavior. The native six-argument C wrapper
+writes its two raw output pointers sequentially, preserving identical-pointer
+aliasing without creating aliased mutable references.
+
+For a completed x86-64 build with ``CONFIG_RATIONAL`` and
+``CONFIG_RATIONAL_KUNIT_TEST`` enabled, run::
+
+    python3 scripts/tests/check_rational_kernel.py /tmp/lupos-build --reload-modules
+    python3 scripts/tests/check_rational_kernel.py /tmp/lupos-build --caller rust --reload-modules
+
+Each caller compares 12,296 input tuples against the unchanged C algorithm,
+with normal, reversed and identical output pointers. The Rust caller also
+checks the pure tuple API; the independent non-GPL C caller verifies that the
+export remains unrestricted. All eight original rational KUnit cases run.
+The runner supports built-in and modular providers and KUnit tests, loading
+dependencies in order. Optional reload requires ``CONFIG_MODULE_UNLOAD=y``;
+it unloads in reverse dependency order and repeats both caller checks and
+modular KUnit tests. Modules are loaded only inside QEMU. Use
+``--allow-c-baseline`` to test the retained C provider.
+
+Both C and Rust providers pass with both callers in all three valid library/
+KUnit configurations: built-in/built-in, built-in/module and module/module.
+Return builds restore the captured C built-in and Rust built-in/module
+``Module.symvers`` byte-for-byte, without removing intermediate objects.
+
+Focused tests are in ``test_rational*.py``. They exercise actual 32-bit and
+64-bit code with Rust 1.85 at O0/O2/Os, constant evaluation, direct pointer ABI
+and aliasing, exact C module metadata, native DWARF versioning, source selection,
+dependency rebuilding and no-op builds. Composite module versions are read
+from the real constituent owner's saved command, not fabricated on the linked
+aggregate. ``INT_MATH_I686_SYSROOT`` supplies optional genuine i686 support;
+``NATIVE_RATIONAL_KERNEL_BUILD`` enables read-only checks of a completed kernel.
+Both original ``SOURCE-COMMIT`` markers remain unchanged.
+
+``CONFIG_RUST_RECIPROCAL_DIV=y`` selects the translated reciprocal constructors.
+It requires ``CONFIG_RUST``, defaults to disabled and is independent of the
+host-tool and other math choices. Kbuild selects ``reciprocal_div_rust.o`` or
+the unchanged original ``reciprocal_div.o``, never both. The Rust owner emits
+both unrestricted exports directly, retaining their C structure-return ABI.
+Generated Rust bindings import the actual original reciprocal header.
+The native owner converts fields into ``bindings::reciprocal_value`` and
+``bindings::reciprocal_value_adv``. Returning the pure Rust structures directly
+would preserve the machine layout but lose the C struct tags required by KCFI.
+The safe API retains its independent Rust structures.
+
+The canonical translation and thin translated header expose safe, allocation-
+free ``const`` functions through ``kernel::math``. Both reciprocal structures
+are ``repr(C)``. The basic constructor accepts every nonzero ``u32`` divisor.
+The advanced constructor preserves the complete defined C domain: divisors
+``1..=2^31`` and precision up to ``32 + ceil(log2(divisor))``, including zero
+precision and wrapping of the original 64-bit addition. Invalid inputs return
+``None`` in the safe API; the unsafe native C boundary retains the original
+preconditions, without claiming C equivalence for undefined input arithmetic.
+Manually supplied basic multipliers retain wrapping arithmetic when both
+shifts are below 32. The 32-bit implementation uses native high-word division
+and low-word restoring division without a ``__udivdi3`` runtime dependency.
+
+For a completed little-endian x86-64 or ARM64 kernel with ``CONFIG_SLUB=y``,
+``CONFIG_MODULES=y``, ``CONFIG_PRINTK=y`` and ``CONFIG_MULTIUSER=y``, run::
+
+    python3 scripts/tests/check_reciprocal_kernel.py /tmp/lupos-build --reload-modules
+    python3 scripts/tests/check_reciprocal_kernel.py /tmp/lupos-build --caller rust --reload-modules
+
+The original x86-64 validation passes both C and Rust providers with both
+callers, including unload and reload.
+Each load checks 69,728 basic constructors, 557,824 quotient applications and
+16,811 advanced constructors against unchanged C. The Rust caller also checks
+the independent safe API. The non-GPL C caller verifies unrestricted exports
+through volatile, correctly typed constructor pointers. Its SLUB workload runs
+in a separate GPL allocator preload, keeping unrelated GPL-only allocator
+dependencies out of the proprietary arithmetic module. Each run exercises
+24 actual SLUB caches across non-power-of-two object sizes and three alignments,
+with 3,456 allocations, alternating frees and
+replacement allocations, and full-byte checks of live objects. The checker
+requires the actual SLUB object to reference the selected constructor.
+Modules are loaded only inside QEMU; fixtures stay outside the source tree.
+On strict x86 builds, generated module metadata can leave four unused
+page/memory-helper names in the final symbol table after their addressable
+sections are discarded. The private proprietary fixture removes only these
+allowlisted undefined names after proving that no relocation or version record
+uses them. It verifies that all remaining symbols, section contents, relocation
+targets, license metadata and protected calls are unchanged. This does not
+modify production modules or suppress GPL checks on either constructor.
+The checker selects the architecture-specific image and emulator from the
+completed configuration; ``--qemu`` and ``--qemu-data`` override the emulator.
+Use ``--allow-c-baseline`` for the original provider. Optional reload requires
+``CONFIG_MODULE_UNLOAD=y``; the Rust caller requires ``CONFIG_RUST=y``.
+Forced module signatures must be disabled for these unsigned fixtures.
+Rebuild modules when switching providers because
+their native DWARF version CRCs differ, despite the compatible machine ABI.
+That x86-64 provider cycle restores each complete configuration and
+``Module.symvers`` byte-for-byte; only the two constructor versions differ
+between the provider choices. The Rust provider also passes both callers and
+reload with ``CONFIG_BUG=y``, verbose warning metadata and Rust debug assertions
+enabled. The standard test configuration is restored afterwards.
+The corrected native structure identities additionally pass both callers and
+reload on ARM64 with strict normalized KCFI. The equivalent strict x86-64
+runtime check is pending; the earlier x86-64 results above used ordinary builds.
+
+Focused regressions are in ``test_reciprocal*.py``. The pure translation is
+tested with Rust 1.85 at O0/O2/Os on genuine 32-bit and 64-bit targets, including
+independent imports, constant evaluation, original header layouts, all valid
+manual shift pairs and invalid-input rejection. Tests compare structure fields,
+not indeterminate C padding. The native O0 ABI tests link the real core library
+and a fail-fast panic handler, with a forced-panic control; they do not invent
+panic runtime symbols.
+``INT_MATH_I686_SYSROOT`` supplies a matching optional i686 core; an explicitly
+requested toolchain must work, not skip.
+``NATIVE_RECIPROCAL_KERNEL_BUILD`` enables read-only native build inspection.
+Both original ``SOURCE-COMMIT`` markers remain unchanged.
+
+``CONFIG_RUST_INT_LOG=y`` selects the translated fixed-point logarithms.
+It requires ``CONFIG_RUST``, defaults to disabled and is independent of
+``HOST_TOOLS_LANG`` and the other math selectors. Kbuild selects either
+``int_log_rust.o`` or the unchanged original ``int_log.o``. Both functions keep
+their unsigned 32-bit C interfaces and unrestricted exports, without module
+initialization state or C export glue.
+
+The translation retains all 256 table entries, Q24 interpolation, the final
+table-bucket correction and the exact base-conversion multiplier. It does not
+substitute a differently rounded mathematical logarithm: ``intlog10(10)``
+still returns ``16777225``, not exactly ``1 << 24``. Both original LGPL notices,
+copyright notices and ``SOURCE-COMMIT`` markers remain unchanged.
+
+The safe ``const`` helpers ``kernel::math::intlog2`` and ``intlog10``, also
+available through the thin translated header, return ``None`` for zero without
+logging. Nonzero input ``1`` correctly returns ``Some(0)``. The native C
+interface instead preserves the original zero-input behavior: one non-once
+kernel warning per invocation when ``CONFIG_BUG=y``, then a zero return value.
+With ``CONFIG_BUG=n``, it returns zero without a warning. The base-ten wrapper
+does not emit a second warning through the base-two calculation.
+
+For a completed x86-64 build with ``CONFIG_INT_LOG_KUNIT_TEST=y`` or ``m``, run::
+
+    python3 scripts/tests/check_int_log_kernel.py /tmp/lupos-build --reload-modules
+    python3 scripts/tests/check_int_log_kernel.py /tmp/lupos-build --caller rust --reload-modules
+
+The checker compares 71,272 positive inputs per caller against unchanged C,
+covering all positive 16-bit values, table boundaries, powers and full-width
+samples. Each load additionally calls each actual export with zero three times,
+checks its zero return and counts warnings between exact invocation markers.
+Warnings must identify the selected implementation and function. This catches
+once-only suppression and accidental double warnings independently of KUnit.
+The original 17 KUnit cases all run; modular reload repeats all 17 cases.
+The Rust caller additionally exercises the independent safe API, and the
+non-GPL C caller verifies that both exports remain unrestricted.
+
+Both callers pass with both providers, including reload, with warnings disabled
+and built-in KUnit, and with warnings enabled and either built-in or modular
+KUnit. Warning provenance checks require ``CONFIG_KALLSYMS=y`` and
+``CONFIG_DEBUG_BUGVERBOSE=y`` when ``CONFIG_BUG=y``. Other prerequisites are
+``CONFIG_MODULES=y``, ``CONFIG_PRINTK=y`` and ``CONFIG_MULTIUSER=y``; optional
+reload requires ``CONFIG_MODULE_UNLOAD=y``. Modules are loaded only inside QEMU.
+Use ``--allow-c-baseline`` for the retained C provider and rebuild modules when
+switching providers, because their native DWARF versions differ.
+
+Focused regressions are in ``test_int_log*.py``. They cover original-C parity
+with Rust 1.85 at O0/O2/Os on genuine 32-bit and 64-bit targets, constant
+evaluation, imports, table/notice preservation, exports, versions and actual
+Kbuild selection and dependency handling. Checked O0 builds link the real core
+library and a fail-fast panic handler, including a deliberate panic control;
+no panic or arithmetic runtime symbols are fabricated. Older math-family
+consumer fixtures still import and type-check the complete production module,
+but expose only their tested family so dependency checks stay scoped to those
+functions. Actual whole-kernel consumers are separately built and boot-tested.
+``INT_MATH_I686_SYSROOT`` supplies an optional matching i686 core, and
+``NATIVE_INT_LOG_KERNEL_BUILD`` enables read-only completed-kernel inspection.
+
+``CONFIG_RUST_DIV64=y`` selects the translated generic wide-division library.
+It requires ``CONFIG_RUST``, defaults to disabled and is independent of
+``HOST_TOOLS_LANG`` and the other math selectors. Kbuild selects either
+``div64_rust.o`` or the unchanged original ``div64.o``. The native export set
+still follows the architecture: on x86-64 this replaces only
+``iter_div_u64_rem``; on ARM64 it also replaces
+``mul_u64_add_u64_div_u64``. Existing architecture-specific assembly and inline
+implementations remain in use. This is not a migration of every architecture's
+division backend.
+
+The safe, allocation-free ``kernel::math`` API shares the canonical algorithms
+through the translated Linux, vDSO and generic division headers. Division
+returns ``None`` for zero; signed division also rejects the minimum signed
+value divided by minus one. Remainders use tuples or safe mutable references.
+The native C interface instead retains its nonzero-divisor and pointer-validity
+preconditions, including the original generic ILP32 signed-overflow result:
+minimum divided by minus one wraps back to minimum. The shared wide
+multiply/add/divide algorithm saturates an oversized quotient to ``u64::MAX``;
+it does not reproduce the retained x86-64 inline assembly's overflow trap.
+``mul_u64_u32_div`` deliberately retains the generic header's truncating
+quotient rather than adopting saturation. Rounding and shift helpers preserve
+their original wrapping and configuration-specific shift domains. These safe
+helpers support constant evaluation on Rust 1.85 except for the iterative
+division loop, whose real optimization barrier remains a runtime operation.
+
+``CONFIG_RUST_DIV64_TESTS=y`` independently selects the two existing translated
+self-test modules. It does not require the Rust native provider. The original
+``CONFIG_TEST_DIV64`` and ``CONFIG_TEST_MULDIV64`` choices still control
+built-in (``y``), module (``m``) or disabled selection, preserving
+``test_div64.ko`` and ``test_mul_u64_u64_div_u64.ko``. Explicit rules select
+the Rust source for ``.o``, ``.s`` and ``.ll`` targets; disabling the selector
+restores the corresponding C rules. The ordinary ``.rsi`` target remains a
+Rust-source expansion under either selection.
+
+The division test retains all 144 cases in both constant-divisor and runtime
+paths, repeated 1,024 times. The wide test retains all 28 original vectors,
+including their exact full-width divisors, and checks both ordinary and
+rounded-up results: 56 checks per variant. On LP64 there are three variants:
+the public helper, the generic implementation and its smaller-digit algorithm;
+the third variant is omitted on ILP32 as in C. Module lifecycle, original
+diagnostics, real elapsed timing and the original init-return policies are
+preserved. These supplementary self-tests do not alone establish that a
+selected native Rust export was called.
+
+For a completed x86-64 or little-endian ARM64 build with both original test
+options set to ``m``, run::
+
+    python3 scripts/tests/check_div64_kernel.py /tmp/lupos-build --reload-modules
+    python3 scripts/tests/check_div64_kernel.py /tmp/lupos-build --caller rust --reload-modules
+
+Each caller checks 4,222 iterative inputs through the selected native export.
+ARM64 additionally checks 17,462 wide inputs through its selected wide export.
+The independent Rust caller checks the safe generic wide API on all 17,462
+inputs on either architecture. The x86-64 C caller does not claim a wide Rust
+export exists. Comparisons use unchanged C algorithms compiled only into
+private external test fixtures, not new production C glue. The checker verifies
+the actual linked owner, export records, saved source/dependency commands,
+freshness and self-test module identity before loading the two supplementary
+test modules and the caller inside QEMU. Optional reload repeats the sequence;
+it never loads modules into the host kernel.
+
+The checker requires ``CONFIG_MODULES=y``, ``CONFIG_PRINTK=y`` and
+``CONFIG_MULTIUSER=y``. The Rust caller or Rust self-tests require
+``CONFIG_RUST=y``; reload requires ``CONFIG_MODULE_UNLOAD=y``. Forced module
+signatures must be disabled for these unsigned fixtures. Use
+``--allow-c-baseline`` for the original C provider. Rebuild native-export
+consumers when changing providers under DWARF module versioning, because C
+and Rust debug types produce different CRCs despite retaining the C ABI.
+
+Focused validation includes 15 native-owner/build groups, 10 complete-header
+groups and 11 canonical-arithmetic groups, including genuine 32-bit and 64-bit
+coverage with Rust 1.85. The native Rust self-test modules and their assembly
+and LLVM-IR inspection targets have also compiled on x86-64 and ARM64 with
+that compiler. All 16 combinations of architecture, C/Rust provider, C/Rust
+self-tests and C/Rust caller pass, with complete unload/reload in each run.
+Restoring C restores each architecture's exact reference configuration and
+symbol versions; restoring Rust restores its versions too. Rust self-tests
+also pass as built-ins on both architectures through ``make rust-boot-test``,
+with archive/source selection checked separately from their console results.
+``NATIVE_DIV64_KERNEL_BUILD`` enables a read-only completed-kernel audit.
+``INT_MATH_I686_SYSROOT`` supplies an optional matching 32-bit core;
+``DIV64_LLVM_PREFIX`` supplies LLVM 19 for the inline-helper bitcode pipeline
+test. The PowerPC object gate uses the compiler's matching
+``powerpc-unknown-linux-gnu`` core. PowerPC coverage is an actual
+object/link proof, not a kernel boot: the original strong assembly definition
+wins over the generic weak definition in both link orders. Kbuild grants
+``linkage`` only to the native division owner, adding
+``asm_experimental_arch`` for its PowerPC export-record assembly on Rust 1.85;
+the shared arithmetic and independent Rust consumers need neither feature.
+Original copyright notices and all existing ``SOURCE-COMMIT`` markers remain
+unchanged. Architecture-specific inline backends and unrelated translated
+math tests remain outside this integration.
+
+``CONFIG_RUST_CORDIC=y`` selects the translated fixed-point CORDIC library.
+It requires native Rust, defaults to disabled and is independent of
+``HOST_TOOLS_LANG``. The original ``CONFIG_CORDIC`` tristate still controls
+built-in, module or disabled selection. The Rust choice uses
+``cordic_rust.o`` as the implementation of the original ``cordic`` composite;
+the C choice keeps ``cordic.c``. Both retain ``cordic.ko``, the original module
+description, author and license, and the unrestricted ``cordic_calc_iq`` export.
+No initialization, allocation or new production C glue is introduced.
+
+The independent ``kernel::math`` API exposes ``CordicIq``, ``cordic_calc_iq``,
+``cordic_fixed`` and ``cordic_float`` through the translated header and one
+canonical implementation. All three helpers support constant evaluation on
+Rust 1.85. The original eighteen-entry arctangent table remains immutable
+static storage. Conversion to Q16 precedes normalization, preserving discarded
+high input bits, signed remainder and wrapping arithmetic. Rounding also
+retains the original minimum-signed-input exception: ``cordic_float(i32::MIN)``
+returns positive 32768. Existing b43 callers' double fixed-point conversion is
+tested as written, not silently changed to different angle units.
+
+At the native boundary, the result is converted fieldwise to the actual
+``bindings::cordic_iq`` type. Identical structure layout alone is insufficient
+for KCFI: the pure Rust type's different nominal name produces a different
+protected-call identifier. Tests compare the original Clang C and Rust 1.85
+identifiers, execute protected indirect C calls at O0/O2, and show that the
+old-name negative control traps despite passing unprotected ABI comparisons.
+Both actual kernel and bindings metadata are recorded build dependencies.
+
+For a completed x86-64 or little-endian ARM64 kernel, run::
+
+    python3 scripts/tests/check_cordic_kernel.py /tmp/lupos-build --reload-modules
+    python3 scripts/tests/check_cordic_kernel.py /tmp/lupos-build --caller rust --reload-modules
+
+Each load compares 69,841 angles, 69,841 fixed-point conversions and 896
+b43-style double-conversion calls with the unchanged C reference. The Rust
+caller checks both the selected native binding and the independent safe API.
+The checker validates linked objects, actual source and library dependencies,
+export records, module identity, freshness and import/version provenance
+before loading anything inside QEMU. It requires ``MODULES``, ``PRINTK`` and
+``MULTIUSER``; reload additionally requires ``MODULE_UNLOAD``. Forced module
+signatures must be disabled for the unsigned private fixtures. Use
+``--allow-c-baseline`` for the retained C provider, and rebuild consumers when
+switching implementation under module versioning.
+
+All sixteen combinations of architecture, C/Rust provider, built-in/module
+selection and C/Rust caller pass with unload/reload. ARM64 additionally passes
+both callers and both provider placements with strict normalized KCFI, without
+permissive mode. Disabled selections on both architectures have no native
+CORDIC export or linked owner while retaining the independent Rust API.
+With sources held fixed, the C-to-Rust round trip restores each selection's
+exact configuration and symbol-version file. Native Rust assembly and LLVM-IR
+inspection targets also build on both architectures.
+
+The 41 focused regression groups cover genuine 32/64-bit execution, all
+65,536 fixed-angle patterns, all Q16 integer parts around rounding boundaries,
+266,240 aggregate-return inputs, metadata, real Kbuild switching and negative
+controls. ``INT_MATH_I686_SYSROOT`` supplies a matching 32-bit core, ``BINDGEN``
+selects the original-header binding generator, and
+``NATIVE_CORDIC_KERNEL_BUILD`` enables read-only completed-kernel inspection.
+Original notices and both existing ``SOURCE-COMMIT`` markers are preserved.
 
 ``CONFIG_RUST_BCD=y`` selects the translated binary-coded decimal conversions.
 It requires native Rust support, defaults to disabled and is independent of
@@ -759,7 +1209,12 @@ operations, partial writes, native-endian groups, empty-buffer behavior, the
 branch-free hexadecimal-digit conversion, and the kernel's printk formatting
 and pointer policy. ``CONFIG_PRINTK_INDEX`` emits three records using the real
 packed kernel binding and Rust call-site locations. Signed and unsigned host
-``char`` bindings are tested separately from their common pointer ABI.
+``char`` bindings are tested separately. Native char pointers use
+``kernel::ffi::c_char``, matching the kernel's ``-funsigned-char`` setting;
+standalone imports retain ``core::ffi::c_char``. Their machine pointer ABI is
+the same, but normalized KCFI distinguishes signed and unsigned pointees.
+Tests match the original C IDs and protected calls at O0/O2/Os, with
+wrong-signedness controls that work unchecked but trap under KCFI.
 
 Rebuild modules when changing this option. In DWARF module-versioning mode,
 the native Rust definitions have different debug types and CRCs from C despite
@@ -772,15 +1227,25 @@ indexing is verified through QEMU. The unchanged C ``test_hexdump`` module
 passes all 1,184 tests against the Rust implementation. An additional native
 C-caller module checks all seven exported symbols, including conversion errors,
 overlap, null/zero-length calls, and all printk prefix modes. After a completed
-build with ``CONFIG_RUST_HEXDUMP=y``, ``CONFIG_MODULES=y``, ``CONFIG_PRINTK=y``
-and ``CONFIG_MULTIUSER=y``, run it with::
+little-endian x86-64 or ARM64 build with ``CONFIG_RUST_HEXDUMP=y``,
+``CONFIG_MODULES=y``, ``CONFIG_PRINTK=y`` and ``CONFIG_MULTIUSER=y``, run it with::
 
     python3 scripts/tests/check_hexdump_kernel.py /tmp/lupos-build
+    python3 scripts/tests/check_hexdump_kernel.py /tmp/lupos-build --reload-modules
 
 This runner builds a temporary test module and loads it only inside QEMU,
 never into the host kernel. It checks the linked implementation and rejects
-stale images before booting. Use ``--allow-c-baseline`` to run the same checks
-against the retained C selection, ``--make-arg`` for nonstandard toolchain
+stale architecture-specific images before booting. The four pointer-signature
+functions are called through volatile pointers with their actual C types.
+Optional reload requires ``CONFIG_MODULE_UNLOAD=y`` and repeats the complete
+fixture; validation requires both byte-exact print sequences and correctly
+ordered load, unload, reload and final boot markers. Strict-KCFI kernels pass
+this fixture with reload on both architectures. Read-only inspection of those
+actual module objects confirms the unsigned-char/normalized-KCFI compiler
+flags and all 13 protected call sites: x86 type checks and trap records, and
+ARM64 type comparisons with conditional traps before indirect branches.
+Use ``--allow-c-baseline`` to run the same checks against the retained C
+selection, ``--make-arg`` for nonstandard toolchain
 assignments, and ``--qemu``/``--qemu-data`` for an isolated emulator installation.
 Forced module signatures must be disabled for this unsigned test fixture.
 Artifacts remain in ``rust-hexdump-test/`` and ``rust-boot-test/`` under the
@@ -800,6 +1265,12 @@ selected operand/address widths, and partial state after errors. Bounded reads
 visit only requested bytes; cached stages need not access instruction memory.
 Rebased cursors and input overlapping the state structure are covered. The
 safe, allocation-free decoding core remains shared with the host tools.
+The native ``insn_mode`` binding is a transparent integer newtype with the
+original C enum's ``cfi_encoding``. This preserves KCFI type identity without
+using a Rust enum that would make out-of-enumeration integer values invalid.
+Its constants come from the original header; the standalone safe decoder API
+is unchanged. ``test_x86_decoder_kcfi.py`` compares original C type IDs and
+protected calls, including an integer-alias negative control.
 
 Host regressions in ``test_x86_decoder_abi.py`` compare native layouts and
 complete state against the original architecture C headers and implementation,
@@ -807,15 +1278,27 @@ including guarded pages and self-aliasing input. Build-selection and runtime
 checker regressions are in ``test_x86_decoder_build.py`` and
 ``test_x86_decoder_runtime.py``. To run the unchanged kernel kprobe/kretprobe
 KUnit suite inside QEMU, build with ``CONFIG_KPROBES=y``, ``CONFIG_KUNIT=y``,
-``CONFIG_KPROBES_SANITY_TEST=y``, ``CONFIG_MULTIUSER=y``, and a reliable unwinder
+``CONFIG_KPROBES_SANITY_TEST=y``, ``CONFIG_PRINTK=y``, ``CONFIG_MULTIUSER=y``,
+and a reliable unwinder
 such as ``CONFIG_UNWINDER_ORC=y``, then run::
 
     python3 scripts/tests/check_x86_decoder_kernel.py /tmp/lupos-build
+    python3 scripts/tests/check_x86_decoder_kernel.py /tmp/lupos-build --indirect-abi --reload-modules
 
 The checker verifies linked decoder selection and a current boot image, then
 requires every configured kprobe case to pass without skips. Use
 ``--allow-c-baseline`` to run the same tests with the retained C decoder.
 ``--qemu`` and ``--qemu-data`` select an isolated emulator installation.
+``--indirect-abi`` additionally builds a private C module using the exact linked
+``insn_decode`` address from the completed image and its original enum-bearing
+function-pointer type. The symbol is not made into a module export: this is a
+checked-address fixture for the runner's ``nokaslr`` guest only. It requires
+``CONFIG_MODULES=y`` and disabled forced module signatures; reload also requires
+``CONFIG_MODULE_UNLOAD=y``. Each load executes 54 instruction/mode combinations,
+including truncation and out-of-enumeration mode values. With strict normalized
+KCFI, x86-64 passes all 108 calls across load/reload and the seven original
+kprobe/kretprobe cases. The checker verifies the actual fixture's indirect call
+and KCFI trap records when ``CONFIG_CFI=y``.
 The minimal ``UNWINDER_GUESS`` configuration fails the original nested-kretprobe
 stacktrace test with both implementations; it is not a decoder regression.
 With ORC, all seven original kprobe/kretprobe cases pass on both C and Rust
@@ -834,16 +1317,27 @@ installation, and an emulated boot::
     make O=/tmp/lupos-build headers_install INSTALL_HDR_PATH=/tmp/lupos-headers
     make O=/tmp/lupos-build rust-boot-test
 
-The boot test requires QEMU's x86 system emulator and firmware. Set ``QEMU``
-to an alternate emulator command and ``QEMU_DATA`` to an alternate firmware
-directory if necessary. It uses software emulation without networking or
+The boot test supports x86-64 and little-endian ARM64. With ``ARCH=arm64``,
+``make rust-boot-test`` builds ``Image`` and selects QEMU's ARM64 ``virt``
+machine; the default x86 path uses ``bzImage``. ARM64's static Rust PID 1
+requires the matching ``aarch64-unknown-linux-musl`` standard library for
+``HOSTRUSTC`` and uses that toolchain's bundled linker and musl startup files.
+The direct runner accepts ``--arch aarch64`` as well. Set ``QEMU`` to an
+alternate emulator command and ``QEMU_DATA`` to an alternate firmware
+directory if necessary. The test uses software emulation without networking or
 root privileges. It builds a static Rust PID 1, packs an initramfs with the
 migrated generator, and boots the image. PID 1 verifies binary file contents,
 hardlinks, symlinks, ownership, and permissions before printing a success
 marker. The runner then stops QEMU. Artifacts and the console log are kept in
 ``rust-boot-test/`` under the kernel output directory.
 
-The ownership checks require ``CONFIG_MULTIUSER=y``. The runner also accepts
+The ownership checks require ``CONFIG_MULTIUSER=y``. ``CONFIG_PRINTK=y`` is
+also required: PID 1 emits each success marker as one ``/dev/kmsg`` record,
+serialized with module output. The isolated guest disables userspace log
+rate limiting and enables informational console messages. A short record write
+fails instead of retrying a partial marker; strict checks still reject missing,
+duplicated, corrupted or reordered events, with or without printk timestamps.
+The runner also accepts
 ``--module /path/to/module.ko`` to load a module inside the isolated VM and
 repeatable ``--reject-module /path/to/unsigned.ko`` arguments to check signature
 enforcement. Rejection tests require ``CONFIG_MODULE_SIG_FORCE=y`` and expect
@@ -858,6 +1352,143 @@ module's own hexdump tests without loading anything into the host kernel.
 This currently validates a mixed C/Rust kernel build; it does not establish
 that the target-kernel translation is complete.
 
+Polynomial arithmetic
+---------------------
+
+``lib/math/polynomial.rs`` and its translated header now provide a checked,
+allocation-free, constant-evaluable API. ``Polynomial`` borrows a bounded term
+slice instead of representing the C inline flexible array as a pointer field.
+The algorithm retains unsigned degrees, native-long wrapping, the original
+quotient/remainder redistribution order and truncation toward zero. It stops
+at the first constant term, ignores that term's unused step divider and any
+trailing terms, and treats a zero total divider as one. Evaluated invalid
+divisions or a missing terminating term return ``None``.
+
+The focused differential tests use Rust 1.85, genuine 32/64-bit execution
+and both GCC and Clang reference builds. They cover
+all 16 original KUnit vectors, the four original polynomial descriptors from
+three drivers, wrapping/rounding edges, checked errors, constant evaluation,
+and independent consumers of the canonical source, translated header and
+actual public ``kernel::math`` API, including incremental term evaluation.
+The original C source, public header and ``mult_frac`` macro supply the oracle.
+``test_polynomial_translation.py`` contains these checks.
+
+``CONFIG_RUST_POLYNOMIAL=y`` now selects the Rust native owner independently
+of ``HOST_TOOLS_LANG``. The original ``CONFIG_POLYNOMIAL=n/y/m`` selection,
+``polynomial.ko`` identity, GPL export and stateless module metadata remain
+intact. The default-off selector retains the original C implementation.
+``lib/math/polynomial_rust.rs`` uses the original header's generated binding
+types and reads the inline flexible array field by field. It neither creates
+an unbounded Rust slice nor reads a constant term's unused divider, padding,
+or trailing terms. The safe Rust API remains available independently of the
+native provider selection. Existing ``SOURCE-COMMIT`` markers are unchanged.
+
+``test_polynomial_build.py`` checks genuine 32/64-bit native ABI behavior,
+actual binding types, original metadata and GPL export records, KCFI type
+identity and rejection of a wrong nominal pointer type, DWARF versions,
+and parallel/no-op C/Rust build selection. Native version records belong to
+the defining Rust leaf object, not its aggregate ``polynomial.o`` wrapper.
+Set ``NATIVE_POLYNOMIAL_KERNEL_BUILD`` to a completed native build to enable
+the optional selected-owner/archive/version/freshness check.
+
+``check_polynomial_kernel.py BUILD --caller c|rust --reload-modules`` validates
+and boots the actual selected implementation. For the original C provider,
+also pass ``--allow-c-baseline``. The runner accepts repeated ``--make-arg``
+options and the same ``--qemu``/``--qemu-data`` overrides as the other native
+math checks. Its fixtures live only in the output directory and compare
+against unchanged original C; no production C implementation is added.
+
+All 16 native combinations pass with Rust 1.85 on x86-64 and ARM64: C/Rust
+providers, built-in/modular selection and C/Rust callers, each with module
+unload/reload. Each load checks 6,084 cases, including all 16 original KUnit
+vectors and all 1,024 inputs for each of the four original driver descriptors.
+The unchanged original KUnit suite also passes: 16 cases for built-in tests,
+or 32 across module load/reload. These kernels enable symbol versioning and
+strict integer-normalized KCFI, with permissive mode disabled. Actual C
+caller instructions are checked for protected indirect calls on both ISAs.
+Returning to the saved C built-in configuration reproduces its exact
+configuration and symbol-version table. With the provider disabled, both
+values of the Rust selector build successfully on both architectures, with
+no selected native provider, export or module and a fresh safe math API.
+Restoring the final Rust built-in configurations likewise reproduces their
+saved configuration and symbol-version tables; both callers still pass
+afterward on both architectures.
+
+The three unchanged C consumers, ``lan966x-hwmon``, ``eic7700-pvt`` and
+``mxl-gpy``, also build against either provider with real polynomial call
+relocations and matching module dependencies. Both sets of modules register,
+unload and reload in an x86-64 VM. The compile-test configuration enables the
+required regmap and reset-controller support so the EIC probe does not become
+an unconditional error path that optimizes away its polynomial callbacks.
+This configuration necessarily disables ``MODVERSIONS``; versioned parity
+is established by the separate native caller matrix above. These driver
+checks do not claim sensor measurements or hardware probing in the VM.
+
+All 42 polynomial build, runtime-checker and arithmetic tests pass with both
+GCC and Clang references, the native-build gate enabled and genuine 32-bit
+execution, without skips.
+Final strict-kernel DWARF audits match original C tooling for 455 compilation
+units/7,069 unit CRCs on x86-64 and 405 units/6,901 unit CRCs on ARM64. The
+linked-image export counts are 7,069 and 6,900 respectively; both unstripped
+and final images agree. Fresh C references also match all 3,204 x86-64 and
+3,159 ARM64 Rust export-bridge records.
+
+At the native-library integration milestone, the minimum-Rust-1.85 host regression suite
+passes all 1,200 tests without skips, including the new polynomial native
+gate and genuine i686 execution. All 28 monitored active configuration,
+implementation, binding/metadata, archive, version and image artifacts across
+the final strict x86-64/ARM64 builds retain their exact hashes and timestamps
+across the suite and subsequent no-op builds.
+
+Parameterized polynomial KUnit suite
+-----------------------------------
+
+``CONFIG_RUST_POLYNOMIAL_KUNIT_TEST=y`` selects the repaired translation of
+``lib/math/tests/polynomial_kunit.rs`` independently of the native polynomial
+provider and ``HOST_TOOLS_LANG``. The option defaults off, retaining the C
+suite. The original test tristate and ``polynomial_kunit.ko`` name are
+unchanged; explicit object, assembly and LLVM-IR rules select the Rust source
+despite its shared basename with C.
+
+The translation uses generated native binding types, including the original
+polynomial flexible-array layout, and calls the selected provider's real ABI.
+It retains all nine descriptors, 16 parameter values/descriptions, original
+suite/case names, module metadata and exact ``SOURCE-COMMIT``. It now registers
+an actual KUnit suite instead of relying on incomplete private structure
+definitions or discarded expectation results.
+
+Shared helpers in ``rust/kernel/kunit.rs`` supply native parameter registration,
+the real 128-byte description bound, original default attributes and nonfatal
+integer equality expectations. Expectations evaluate operands once, compare
+their original types, record the source location and use the C framework's
+binary diagnostic formatter without aborting Rust frames. Literal suite names
+preserve punctuation in original names; the existing identifier-based macro
+retains its previous defaults. Call-site expansion supports a modular KUnit
+framework without introducing built-in references to its module symbols.
+
+``test_kunit_parameters.py`` checks the shared implementation against original
+C declarations and macros with Rust 1.85, GCC/Clang references and genuine
+32/64-bit execution. ``test_polynomial_kunit.py`` exercises actual translated
+callbacks and generators, including intentionally incorrect provider results,
+as well as metadata, provenance and real Kbuild language selection. Its
+read-only native gate uses ``NATIVE_POLYNOMIAL_KERNEL_BUILD``.
+
+The translated polynomial suite has also run in x86-64 and ARM64 kernels,
+built-in and modular, including module unload/reload and ``KUNIT=m``. The
+native checker verifies the independently selected suite source and preloads
+the framework before provider/test modules when necessary. Each suite run
+retains the original 16 parameter invocations.
+
+``check_kunit_expectations.py BUILD --reload-modules`` adds a private Rust-only
+negative-control module. It requires two intentional expectation failures with
+the exact signed/unsigned diagnostics and source locations, continuation after
+each failure, and a passing following case. The modular-framework control
+passes on both architectures, including unload/reload. Unrelated failures and
+kernel faults are rejected. The original C failure formatter itself executes
+an internal assertion while registering its temporary resources, so it may
+overwrite ``last_seen``; the control checks that field after a successful
+expectation and checks the failure call sites through the actual diagnostics.
+
 Remaining integration
 ---------------------
 
@@ -866,8 +1497,10 @@ Most of the migration is still outstanding. In particular:
 * The remaining Kconfig front ends, device-tree tools,
   architecture tools, and other host utilities still need complete Rust
   implementations and corresponding build changes.
-* Apart from the opt-in integer-math, BCD, ctype, hexadecimal-helper and x86-decoder
-  integrations above,
+* Apart from the opt-in CORDIC, integer-math, integer-logarithm, generic wide-division
+  library and its independently selected self-tests, GCD/LCM,
+  rational-approximation, reciprocal-division, polynomial, BCD, ctype, hexadecimal-helper
+  and x86-decoder integrations above,
   target-kernel C objects still take precedence over adjacent Rust files.
   Their Rust definitions, shared types, configuration handling, exported
   symbols, and module boundaries must be repaired before selecting them.
@@ -876,6 +1509,13 @@ Most of the migration is still outstanding. In particular:
   and starting the kernel.
 * Architecture build files and translated selftests need integration and
   behavioral verification.
+  Apart from the polynomial suite above, the native math-library checks still
+  run the original C KUnit suites. Their adjacent translated KUnit files are
+  not yet selected:
+  actual binding types, parameter generation/registration, nonfatal
+  expectations, original suite/case names and module lifecycle need repair
+  before enabling them. The Rust division self-tests described above are a
+  separate, already selectable integration.
 * A successful mixed C/Rust build validates the migrated components only.
   Full Rust kernel linking, booting, and the applicable kernel/selftest
   suites remain required before declaring the translation complete.

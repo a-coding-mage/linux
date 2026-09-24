@@ -208,6 +208,16 @@ cmd_and_fixdep =                                                             \
 	$(objtree)/scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).cmd;\
 	rm -f $(depfile)
 
+# External builds run outside objtree, where fixdep's relative include/config/
+# wildcards cannot find the kernel's stamps. After reading .cmd files, attach
+# the kernel configuration to fixdep-tracked targets, including old objects.
+# A configuration change conservatively rebuilds them; unchanged builds remain
+# no-ops. Do not attach it to savedcmd-only aggregates, archives or modules.order:
+# their recipes may treat every prerequisite as an input file.
+add-config-deps = $(if $(KBUILD_EXTMOD), \
+	$(foreach f,$(existing-targets), \
+		$(if $(source_$(f)),$(eval $(f): $(objtree)/include/config/auto.conf))))
+
 # Usage: $(call if_changed_rule,foo)
 # Will check if $(cmd_foo) or any of the prerequisites changed,
 # and if so will execute $(rule_foo).

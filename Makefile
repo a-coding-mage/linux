@@ -1591,12 +1591,27 @@ rust-host-tests: rust-host-tools
 	$(Q)env -u MAKEFLAGS -u MFLAGS -u CARGO_MAKEFLAGS \
 		$(PYTHON3) -m unittest discover -s $(srctree)/scripts/tests -p 'test_*.py' -v
 
-QEMU ?= qemu-system-x86_64
+# Keep the image and emulator consistent with the two supported VM fixtures.
+ifeq ($(SRCARCH),arm64)
+rust-boot-arch := aarch64
+rust-boot-image := Image
+else ifeq ($(SRCARCH),x86)
+rust-boot-arch := x86_64
+rust-boot-image := bzImage
+endif
+
 PHONY += rust-boot-test
-rust-boot-test: bzImage usr_gen_init_cpio
+ifneq ($(rust-boot-arch),)
+QEMU ?= qemu-system-$(rust-boot-arch)
+rust-boot-test: $(rust-boot-image) usr_gen_init_cpio
 	$(Q)$(PYTHON3) $(srctree)/scripts/tests/boot_kernel.py --build $(objtree) \
+		--arch $(rust-boot-arch) \
 		--qemu '$(call escsq,$(QEMU))' \
 		$(if $(QEMU_DATA),--qemu-data '$(call escsq,$(QEMU_DATA))')
+else
+rust-boot-test:
+	$(error rust-boot-test supports only x86-64 and ARM64 guests)
+endif
 
 # ---------------------------------------------------------------------------
 # Install
@@ -1967,7 +1982,7 @@ help:
 	@echo  'Rust targets:'
 	@echo  '  rust-host-tools - Build migrated Rust host tools without a kernel config'
 	@echo  '  rust-host-tests - Build and test Rust host tools against the C originals'
-	@echo  '  rust-boot-test  - Build and boot-test an x86-64 image using QEMU'
+	@echo  '  rust-boot-test  - Build and boot-test an x86-64 or ARM64 image using QEMU'
 	@echo  '  rustavailable   - Checks whether the Rust toolchain is'
 	@echo  '		    available and, if not, explains why.'
 	@echo  '  rustfmt	  - Reformat all the Rust code in the kernel'

@@ -16,16 +16,19 @@ ROOT = Path(__file__).resolve().parents[2]
 RUST_WRAPPER = r'''
 //! Independent no-std ABI audit wrapper, using the public packed C layout.
 #![no_std]
-#[cfg(all(CONFIG_PRINTK, CONFIG_RUST))]
+#[cfg(CONFIG_RUST)]
 extern crate self as kernel;
+#[cfg(native_char)]
+pub use kernel_ffi as ffi;
+#[cfg(not(native_char))]
+#[allow(missing_docs, non_camel_case_types)]
+pub mod ffi {
+    pub use core::ffi::{c_int, c_void};
+    pub type c_char = i8;
+}
 #[allow(missing_docs, non_camel_case_types)]
 pub mod bindings {
-    #[cfg(native_char)]
-    use kernel_ffi::{c_char, c_int};
-    #[cfg(not(native_char))]
-    use core::ffi::c_int;
-    #[cfg(not(native_char))]
-    type c_char = i8;
+    use crate::ffi::{c_char, c_int};
     #[repr(C, packed)]
     pub struct pi_entry {
         pub fmt: *const c_char,

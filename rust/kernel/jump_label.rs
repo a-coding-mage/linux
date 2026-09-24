@@ -34,7 +34,7 @@ impl StaticKeyTrue {
         key.key.enabled.counter = 1;
         #[cfg(CONFIG_JUMP_LABEL)]
         {
-            key.key.__bindgen_anon_1.type_ = bindings::JUMP_TYPE_TRUE as _;
+            key.key.__bindgen_anon_1.type_ = bindings::JUMP_TYPE_TRUE as crate::ffi::c_ulong;
         }
         Self {
             key: Opaque::new(key),

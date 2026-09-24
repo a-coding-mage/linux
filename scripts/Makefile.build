@@ -336,15 +336,21 @@ $(obj)/%.lst: $(obj)/%.c FORCE
 # the unstable features in use.
 rust_allowed_features := arbitrary_self_types,asm_goto,generic_arg_infer,used_with_arg
 
+# Native ABI owners may need an additional unstable feature, such as weak
+# linkage. Keep that exception local to the explicitly named object instead
+# of permitting it in all Rust modules. Object settings also apply to the
+# corresponding assembly, LLVM IR and expanded-source inspection targets.
+rust_crate_features = $(rust_allowed_features)$(if $(RUST_ALLOWED_FEATURES_$(target-stem).o),$(comma)$(RUST_ALLOWED_FEATURES_$(target-stem).o))
+
 # `--out-dir` is required to avoid temporaries being created by `rustc` in the
 # current working directory, which may be not accessible in the out-of-tree
 # modules case.
 rust_common_cmd = \
 	OBJTREE=$(abspath $(objtree)) \
 	RUST_MODFILE=$(modfile) $(RUSTC_OR_CLIPPY) $(rust_flags) \
-	-Zallow-features=$(rust_allowed_features) \
+	-Zallow-features=$(rust_crate_features) \
 	-Zcrate-attr=no_std \
-	-Zcrate-attr='feature($(rust_allowed_features))' \
+	-Zcrate-attr='feature($(rust_crate_features))' \
 	-Zunstable-options --extern pin_init --extern kernel \
 	--extern zerocopy --extern zerocopy_derive \
 	--crate-type rlib -L $(objtree)/rust/ \
@@ -601,6 +607,8 @@ $(obj)/: $(if $(KBUILD_BUILTIN), $(targets-for-builtin)) \
 existing-targets := $(wildcard $(sort $(targets)))
 
 -include $(foreach f,$(existing-targets),$(dir $(f)).$(notdir $(f)).cmd)
+
+$(call add-config-deps)
 
 # Create directories for object files if they do not exist
 obj-dirs := $(sort $(patsubst %/,%, $(dir $(targets))))
