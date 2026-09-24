@@ -6,9 +6,41 @@
  * time.
  */
 
-// C dependencies: <stdio.h>, <string.h>, <inttypes.h>, <stdlib.h>, <time.h>
+//! Generate the RAID-6 finite-field tables used by the native implementations.
 
-unsafe fn gfmul(mut a: u8, mut b: u8) -> u8 {
+// Use the C entry point and stdio deliberately: the original ignores arguments
+// and printf errors, returns zero even for /dev/full, and inherits SIGPIPE.
+// Rust's runtime entry point and print! would change those error semantics.
+#![no_main]
+
+use std::ffi::{c_char, c_int};
+
+extern "C" {
+    fn printf(format: *const c_char, ...) -> c_int;
+}
+
+struct CStdout;
+
+impl std::fmt::Write for CStdout {
+    fn write_str(&mut self, text: &str) -> std::fmt::Result {
+        // SAFETY: the format is NUL terminated; precision bounds the byte
+        // string read to its live allocation. Every fragment is short ASCII.
+        // As in the C generator, the printf return value is ignored.
+        unsafe {
+            printf(c"%.*s".as_ptr(), text.len() as c_int, text.as_ptr());
+        }
+        Ok(())
+    }
+}
+
+macro_rules! print {
+    ($($args:tt)*) => {{
+        // Stream formatting without heap allocation, retaining stdio buffering.
+        let _ = std::fmt::write(&mut CStdout, format_args!($($args)*));
+    }};
+}
+
+fn gfmul(mut a: u8, mut b: u8) -> u8 {
     let mut v: u8 = 0;
 
     while b != 0 {
@@ -22,7 +54,7 @@ unsafe fn gfmul(mut a: u8, mut b: u8) -> u8 {
     v
 }
 
-unsafe fn gfpow(mut a: u8, mut b: i32) -> u8 {
+fn gfpow(mut a: u8, mut b: i32) -> u8 {
     let mut v: u8 = 1;
 
     b %= 255;
@@ -41,7 +73,8 @@ unsafe fn gfpow(mut a: u8, mut b: i32) -> u8 {
     v
 }
 
-pub unsafe fn main(_argc: i32, _argv: *mut *mut i8) -> i32 {
+#[no_mangle]
+extern "C" fn main(_argc: c_int, _argv: *mut *mut c_char) -> c_int {
     let mut i: i32;
     let mut j: i32;
     let mut k: i32;
@@ -62,7 +95,11 @@ pub unsafe fn main(_argc: i32, _argv: *mut *mut i8) -> i32 {
             print!("\t\t");
             k = 0;
             while k < 8 {
-                print!("0x{:02x},{}", gfmul(i as u8, (j + k) as u8), if k == 7 { '\n' } else { ' ' });
+                print!(
+                    "0x{:02x},{}",
+                    gfmul(i as u8, (j + k) as u8),
+                    if k == 7 { '\n' } else { ' ' }
+                );
                 k += 1;
             }
             j += 8;
@@ -83,7 +120,11 @@ pub unsafe fn main(_argc: i32, _argv: *mut *mut i8) -> i32 {
             print!("\t\t");
             k = 0;
             while k < 8 {
-                print!("0x{:02x},{}", gfmul(i as u8, (j + k) as u8), if k == 7 { '\n' } else { ' ' });
+                print!(
+                    "0x{:02x},{}",
+                    gfmul(i as u8, (j + k) as u8),
+                    if k == 7 { '\n' } else { ' ' }
+                );
                 k += 1;
             }
             j += 8;
@@ -93,7 +134,11 @@ pub unsafe fn main(_argc: i32, _argv: *mut *mut i8) -> i32 {
             print!("\t\t");
             k = 0;
             while k < 8 {
-                print!("0x{:02x},{}", gfmul(i as u8, ((j + k) << 4) as u8), if k == 7 { '\n' } else { ' ' });
+                print!(
+                    "0x{:02x},{}",
+                    gfmul(i as u8, ((j + k) << 4) as u8),
+                    if k == 7 { '\n' } else { ' ' }
+                );
                 k += 1;
             }
             j += 8;
@@ -115,7 +160,9 @@ pub unsafe fn main(_argc: i32, _argv: *mut *mut i8) -> i32 {
             exptbl[(i + j) as usize] = v;
             print!("0x{:02x},{}", v, if j == 7 { '\n' } else { ' ' });
             v = gfmul(v, 2);
-            if v == 1 { v = 0; }
+            if v == 1 {
+                v = 0;
+            }
             j += 1;
         }
         i += 8;
@@ -133,7 +180,10 @@ pub unsafe fn main(_argc: i32, _argv: *mut *mut i8) -> i32 {
             v = 255;
             k = 0;
             while k < 256 {
-                if exptbl[k as usize] == (i + j) as u8 { v = k as u8; break; }
+                if exptbl[k as usize] == (i + j) as u8 {
+                    v = k as u8;
+                    break;
+                }
                 k += 1;
             }
             print!("0x{:02x},{}", v, if j == 7 { '\n' } else { ' ' });
@@ -168,7 +218,11 @@ pub unsafe fn main(_argc: i32, _argv: *mut *mut i8) -> i32 {
         print!("\t");
         j = 0;
         while j < 8 {
-            print!("0x{:02x},{}", invtbl[(exptbl[(i + j) as usize] ^ 1) as usize], if j == 7 { '\n' } else { ' ' });
+            print!(
+                "0x{:02x},{}",
+                invtbl[(exptbl[(i + j) as usize] ^ 1) as usize],
+                if j == 7 { '\n' } else { ' ' }
+            );
             j += 1;
         }
         i += 8;

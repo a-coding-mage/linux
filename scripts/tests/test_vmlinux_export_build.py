@@ -213,7 +213,8 @@ typedef guid_t uuid_le;
             command = (self.tools / "scripts/mod/.modpost.cmd").read_text()
             self.assertEqual("modpost.rs" in command, language == "rust")
         command = (self.tools / "scripts/mod/.modpost-rust.cmd").read_text()
-        for path in ("modpost.rs", "modpost_header.rs", "vmlinux_export_data.rs", "file2alias.rs", "devicetable-offsets.h"):
+        for path in ("modpost.rs", "modpost_header.rs", "vmlinux_export_data.rs",
+                     "module_metadata_data.rs", "c_literal.rs", "file2alias.rs", "devicetable-offsets.h"):
             self.assertIn(path, command)
         self.assertIn("modpost_target_offsets", command)
         (self.tools / "include/config/auto.conf").write_text("")

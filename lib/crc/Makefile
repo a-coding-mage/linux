@@ -53,6 +53,10 @@ endif # CONFIG_CRC64_ARCH
 obj-y += tests/
 
 hostprogs := gen_crc32table gen_crc64table
+ifneq ($(HOST_TOOLS_LANG),c)
+gen_crc32table-rust := y
+gen_crc64table-rust := y
+endif
 clean-files := crc32table.h crc64table.h
 
 $(obj)/crc32-main.o: $(obj)/crc32table.h

@@ -38,6 +38,11 @@
 *.lzo
 *.mod
 *.mod.c
+*.mod.h
+*.mod.rs
+*.mod.rs.input
+*.mod.rs.tmp
+.*.mod.rs.d.validate
 *.o
 *.o.*
 *.patch

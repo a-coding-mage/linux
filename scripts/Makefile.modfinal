@@ -17,7 +17,7 @@ __modfinal: $(modules:%.o=%.ko)
 	@:
 
 # modname and part-of-module are set to make c_flags define proper module flags
-modname = $(notdir $(@:.mod.o=))
+modname = $(notdir $(patsubst %.mod.rs,%,$(@:.mod.o=)))
 part-of-module = y
 GCOV_PROFILE := n
 ccflags-remove-y := $(CC_FLAGS_CFI)
@@ -26,14 +26,56 @@ ccflags-remove-y := $(CC_FLAGS_CFI)
 # Generated KSYMTAB/SYMBOL_CRC records do not use EXPORT_SYMBOL and are retained.
 ccflags-y += -D__DISABLE_EXPORTS
 
+ifneq ($(filter y,$(CONFIG_RUST_MODULE_METADATA) $(CONFIG_RUST_MODULE_COMMON)),)
+rustflags-remove-y += $(RUSTC_FLAGS_CFI)
+endif
+
+ifeq ($(CONFIG_RUST_MODULE_METADATA),y)
+# This translation unit describes already-versioned owners. Do not use the
+# owner rule: it runs gen_symversions and may inject C helper bitcode.
+module-metadata-asm-feature := $(if $(CONFIG_PPC),asm_experimental_arch)
+
+quiet_cmd_module_metadata_data = MODDATA $@
+      cmd_module_metadata_data = \
+	$(CC) $(c_flags) -fmacro-prefix-map=$<=$(patsubst %.h,%.c,$<) -fsyntax-only -x c $<; \
+	mv $(depfile) $(depfile).validate; \
+	$(CC) $(c_flags) -fmacro-prefix-map=$<=$(patsubst %.h,%.c,$<) \
+		-DLUPOS_RUST_MODULE_RECORDS -E -P -x c $< > $@.input; \
+	cat $(depfile).validate >> $(depfile); \
+	$(objtree)/scripts/mod/modpost-rust --rust-module-records < $@.input > $@.tmp; \
+	mv $@.tmp $@; \
+	rm -f $@.input $(depfile).validate
+
+$(modules:%.o=%.mod.rs): %.mod.rs: %.mod.h $(objtree)/scripts/mod/modpost-rust FORCE
+	$(call if_changed_dep,module_metadata_data)
+
+quiet_cmd_module_metadata_rust = $(RUSTC_OR_CLIPPY_QUIET) [M] $@
+      cmd_module_metadata_rust = \
+	MODULE_METADATA_DATA=$(abspath $(@:.o=.rs)) \
+	$(RUSTC_OR_CLIPPY) $(rust_flags) \
+		-Zallow-features=$(module-metadata-asm-feature) \
+		$(if $(module-metadata-asm-feature),-Zcrate-attr='feature($(module-metadata-asm-feature))') \
+		--crate-name=module_metadata -Cmetadata=$@ --crate-type=rlib \
+		--extern kernel --extern pin_init --sysroot=/dev/null \
+		-L $(objtree)/rust --out-dir $(dir $@) \
+		--emit=dep-info=$(depfile) --emit=obj=$@ $<
+
+$(modules:%.o=%.mod.o): %.mod.o: $(srctree)/scripts/module-metadata.rs %.mod.rs \
+		$(srctree)/include/linux/export-internal_header.rs \
+		$(objtree)/include/generated/rustc_cfg $(objtree)/rust/libcore.rmeta \
+		$(objtree)/rust/libkernel.rmeta $(objtree)/rust/libbindings.rmeta \
+		$(objtree)/rust/libpin_init.rmeta FORCE
+	+$(call if_changed_dep,module_metadata_rust)
+
+targets += $(modules:%.o=%.mod.rs)
+else
 %.mod.o: %.mod.c FORCE
 	$(call if_changed_rule,cc_o_c)
+endif
 
 ifeq ($(CONFIG_RUST_MODULE_COMMON),y)
 # Only data is emitted here. Do not run owner versioning, link C helper
 # bitcode, or add a Rust module initializer to this shared metadata object.
-rustflags-remove-y += $(RUSTC_FLAGS_CFI)
-
 quiet_cmd_module_common_data = MODDATA $@
       cmd_module_common_data = \
 	$(CC) $(c_flags) -fsyntax-only $(srctree)/scripts/module-common.c; \

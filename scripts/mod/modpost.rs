@@ -6,10 +6,12 @@
 // Copyright 2006-2008 Sam Ravnborg
 // Based in part on module-init-tools/depmod.c and file2alias.
 
+mod c_literal;
 #[path = "../elf-parse.rs"]
 mod elf;
 mod file2alias;
 mod modpost_header;
+mod module_metadata_data;
 mod sumversion;
 mod symsearch;
 mod vmlinux_export_data;
@@ -118,6 +120,10 @@ fn parse_options() -> Result<Options, String> {
         }
         if arg == "--rust-vmlinux-export" {
             options.rust_vmlinux_export = true;
+            continue;
+        }
+        if arg == "--rust-module-metadata" {
+            options.rust_module_metadata = true;
             continue;
         }
         let mut chars = arg[1..].char_indices().peekable();
@@ -1398,6 +1404,11 @@ impl Modpost {
             );
             return Ok(());
         }
+        if self.options.rust_module_metadata {
+            let header = module_metadata_data::header(&output, &filename)?;
+            let filename = format!("{}.mod.h", self.modules[module].name);
+            return self.write_file(&filename, &header, true);
+        }
         self.write_file(&filename, &output, true)
     }
 
@@ -1516,6 +1527,25 @@ fn module_namespace(namespace: &str, module: &str) -> bool {
 
 fn main() {
     let result = (|| {
+        if env::args_os()
+            .nth(1)
+            .is_some_and(|arg| arg == "--rust-module-records")
+        {
+            if env::args_os().len() != 2 {
+                return Err("--rust-module-records accepts no arguments\n".into());
+            }
+            use std::io::{Read, Write};
+            let mut input = Vec::new();
+            io::stdin()
+                .read_to_end(&mut input)
+                .map_err(|error| io_error(&error))?;
+            let output = module_metadata_data::generate(&input)?;
+            io::stdout()
+                .lock()
+                .write_all(output.as_bytes())
+                .map_err(|error| io_error(&error))?;
+            return Ok(false);
+        }
         if env::args_os()
             .nth(1)
             .is_some_and(|arg| arg == "--rust-vmlinux-records")

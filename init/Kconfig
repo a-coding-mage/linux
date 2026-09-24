@@ -2295,11 +2295,26 @@ config RUST_VMLINUX_EXPORT
 	  objects still supply every export and symbol version.
 
 	  A dedicated Rust modpost executable supplies this output independently
-	  of HOST_TOOLS_LANG. Per-module metadata and external-module processing
-	  retain their existing C output. Generated strings currently require
-	  UTF-8 input and execution encodings.
+	  of HOST_TOOLS_LANG. Per-module metadata, including external modules,
+	  is selected separately by RUST_MODULE_METADATA. Generated strings
+	  currently require UTF-8 input and execution encodings.
 
 	  If unsure, say N to keep the original C final export metadata.
+
+config RUST_MODULE_METADATA
+	bool "Rust per-module metadata"
+	depends on RUST && MODULES
+	default n
+	help
+	  Emit per-module loader state, export/import version tables and module
+	  information with Rust instead of compiling generated .mod.c files.
+	  Original module owners still supply their code and symbol versions.
+
+	  This choice is independent of the module owner language, common module
+	  metadata, final-vmlinux export metadata and HOST_TOOLS_LANG. It also
+	  applies to external modules built for this configured kernel.
+
+	  If unsure, say N to keep the original C per-module metadata.
 
 config RUST_MODULE_COMMON
 	bool "Rust common module metadata"
@@ -2312,7 +2327,8 @@ config RUST_MODULE_COMMON
 	  This currently requires UTF-8 execution strings; other execution
 	  encodings remain available through the original C implementation.
 
-	  This does not change per-module modpost output or module ownership.
+	  This choice is independent of per-module metadata language selection
+	  (RUST_MODULE_METADATA) and does not change module ownership.
 	  If unsure, say N to keep the original C metadata implementation.
 
 source "rust/kernel/Kconfig.test"

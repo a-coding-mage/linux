@@ -50,6 +50,9 @@ raid6_pq-$(CONFIG_X86)		+= x86/sse2.o \
 				   x86/recov_avx512.o
 
 hostprogs			+= mktables
+ifneq ($(HOST_TOOLS_LANG),c)
+mktables-rust			:= y
+endif
 
 CFLAGS_arm/neon1.o += $(CC_FLAGS_FPU)
 CFLAGS_arm/neon2.o += $(CC_FLAGS_FPU)

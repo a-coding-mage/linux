@@ -49,6 +49,7 @@ include/asm-generic/div64_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/asn1_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/bcd_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/cordic_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
+include/linux/crc32poly_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/ctype_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/export-internal_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/export_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
@@ -63,6 +64,8 @@ include/linux/reciprocal_div_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/math_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/vdso/math64_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/bcd.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/crc/gen_crc32table.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/crc/gen_crc64table.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/ctype.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/hexdump.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/cordic.rs d482bb509b7d065808de40ce78b5bca39f40b783
@@ -86,6 +89,7 @@ lib/math/tests/int_sqrt_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/tests/polynomial_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/tests/prime_numbers_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/tests/rational_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/raid/raid6/mktables.rs d482bb509b7d065808de40ce78b5bca39f40b783
 rust/exports_rust.rs d482bb509b7d065808de40ce78b5bca39f40b783
 scripts/asn1_compiler.rs d482bb509b7d065808de40ce78b5bca39f40b783
 scripts/basic/fixdep.rs d482bb509b7d065808de40ce78b5bca39f40b783

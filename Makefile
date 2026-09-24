@@ -1586,6 +1586,8 @@ rust-host-tools: outputmakefile scripts_basic
 	$(Q)$(MAKE) $(build)=arch/sparc/vdso arch/sparc/vdso/vdso2c
 	$(Q)$(MAKE) $(build)=arch/x86/boot/compressed arch/x86/boot/compressed/mkpiggy
 	$(Q)$(MAKE) $(build)=arch/x86/boot arch/x86/boot/mkcpustr
+	$(Q)$(MAKE) $(build)=lib/raid/raid6 lib/raid/raid6/mktables
+	$(Q)$(MAKE) $(build)=lib/crc lib/crc/gen_crc32table lib/crc/gen_crc64table
 
 rust-host-tests: rust-host-tools
 	$(Q)env -u MAKEFLAGS -u MFLAGS -u CARGO_MAKEFLAGS \
@@ -2328,6 +2330,9 @@ clean: $(clean-dirs)
 		-o -name '*.dwo' -o -name '*.lst' \
 		-o -name '*.su' -o -name '*.mod' \
 		-o -name '.*.d' -o -name '.*.tmp' -o -name '*.mod.c' \
+		-o -name '*.mod.h' -o -name '*.mod.rs' \
+		-o -name '*.mod.rs.input' -o -name '*.mod.rs.tmp' \
+		-o -name '.*.mod.rs.d.validate' \
 		-o -name '*.lex.c' -o -name '*.tab.[ch]' \
 		-o -name '*.asn1.[ch]' \
 		-o -name '*.symtypes' -o -name 'modules.order' \

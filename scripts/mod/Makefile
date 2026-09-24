@@ -15,7 +15,9 @@ devicetable-offsets-file := devicetable-offsets.h
 # This explicit source-to-target rule shares the existing Rust implementation;
 # it is not a hostprogs entry, which would require a separate crate-root file.
 # Native metadata selection must not silently replace HOST_TOOLS_LANG=c.
-always-$(CONFIG_RUST_VMLINUX_EXPORT) += modpost-rust
+ifneq ($(filter y,$(CONFIG_RUST_VMLINUX_EXPORT) $(CONFIG_RUST_MODULE_METADATA)),)
+always-y += modpost-rust
+endif
 targets += modpost-rust
 # Both binaries may compile this crate root in parallel into the same directory.
 # Distinct crate names also keep rustc's intermediate codegen files distinct.

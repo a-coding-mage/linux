@@ -62,6 +62,9 @@ TOOLS = (
     "arch/sparc/boot/piggyback",
     "arch/sparc/vdso/vdso2c",
     "usr/gen_init_cpio",
+    "lib/raid/raid6/mktables",
+    "lib/crc/gen_crc32table",
+    "lib/crc/gen_crc64table",
 )
 
 
@@ -108,6 +111,9 @@ class RustHostBuildTest(unittest.TestCase):
             recordmcount = Path(tmp) / "scripts/.recordmcount.cmd"
             self.assertIn(str(ROOT / "scripts/elf-parse.rs"), recordmcount.read_text())
             self.assertIn(str(ROOT / "scripts/recordmcount_header.rs"), recordmcount.read_text())
+            crc32_module = ROOT / "lib/crc/../../include/linux/crc32poly_header.rs"
+            self.assertIn(str(crc32_module),
+                          (Path(tmp) / "lib/crc/.gen_crc32table.cmd").read_text())
             certificate = Path(tmp) / "scripts/.insert-sys-cert.cmd"
             self.assertIn(str(ROOT / "scripts/elf-parse.rs"), certificate.read_text())
             sign_file = Path(tmp) / "scripts/.sign-file.cmd"
@@ -117,7 +123,8 @@ class RustHostBuildTest(unittest.TestCase):
             extract_ssl_module = ROOT / "certs/../scripts/ssl-common_header.rs"
             self.assertIn(str(extract_ssl_module), extract.read_text())
             modpost = Path(tmp) / "scripts/mod/.modpost.cmd"
-            for module in ("modpost_header", "file2alias", "sumversion", "symsearch"):
+            for module in ("modpost_header", "file2alias", "sumversion", "symsearch",
+                           "c_literal", "vmlinux_export_data", "module_metadata_data"):
                 self.assertIn(str(ROOT / ("scripts/mod/" + module + ".rs")), modpost.read_text())
             modpost_elf_module = ROOT / "scripts/mod/../elf-parse.rs"
             self.assertIn(str(modpost_elf_module), modpost.read_text())
@@ -216,6 +223,11 @@ class RustHostBuildTest(unittest.TestCase):
             self.assertNotIn("HOSTRUSTC", second)
             self.assertEqual(mtimes, [(Path(tmp) / tool).stat().st_mtime_ns
                                       for tool in TOOLS])
+            recursive = shlex.split(os.environ.get("MAKE", "make")) + [
+                "-W", str(crc32_module)]
+            rebuild = make("-n", "MAKE=" + shlex.join(recursive))
+            self.assertIn("--emit=link=lib/crc/gen_crc32table", rebuild)
+            self.assertNotIn("--emit=link=lib/crc/gen_crc64table", rebuild)
             # Pretend the imported module changed; do not edit the source tree.
             # GNU make does not propagate -W through MAKEFLAGS. Supply it to
             # each recursive make, which is where the source dependencies live.
