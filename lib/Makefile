@@ -71,7 +71,12 @@ obj-y += list_sort_rust.o
 else
 obj-y += list_sort.o
 endif
-obj-y += uuid.o iov_iter.o clz_ctz.o \
+ifeq ($(CONFIG_RUST_UUID),y)
+obj-y += uuid_rust.o
+else
+obj-y += uuid.o
+endif
+obj-y += iov_iter.o clz_ctz.o \
 	 bsearch.o find_bit.o llist.o lwq.o memweight.o kfifo.o \
 	 percpu-refcount.o rhashtable.o
 ifeq ($(CONFIG_RUST_BASE64),y)

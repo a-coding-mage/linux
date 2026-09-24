@@ -139,6 +139,18 @@ config RUST_HWEIGHT
 	  Disable this option to retain the original C implementation.
 	  If unsure, say N.
 
+config RUST_UUID
+	bool "Rust implementation of UUID/GUID helpers"
+	depends on RUST
+	default n
+	help
+	  Use Rust UUID/GUID generation, validation and parsing with the original
+	  C ABI, byte order and export licenses. Randomness uses the kernel RNG.
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  may produce different version CRCs without changing the C ABI.
+	  Disable this option to retain the original C implementation.
+	  If unsure, say N.
+
 config RUST_LIST_SORT
 	bool "Rust implementation of stable linked-list sorting"
 	depends on RUST
