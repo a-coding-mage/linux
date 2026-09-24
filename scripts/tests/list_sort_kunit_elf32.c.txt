@@ -1,0 +1,64 @@
+/* Private real ELF32 syscall transport. A failed syscall is a failed gate. */
+typedef __SIZE_TYPE__ size_t;
+extern int main(int, char **);
+void exit(int status) {
+    __asm__ volatile("int $0x80"::"a"(1),"b"(status):"memory");
+    __builtin_unreachable();
+}
+static void output(const char *p,unsigned size) {
+    while(size) {
+        long n;
+        __asm__ volatile("int $0x80":"=a"(n):"0"(4),"b"(1),"c"(p),"d"(size):"memory");
+        if(n<=0) exit(98);
+        p+=n;size-=n;
+    }
+}
+void *memset(void *p,int value,size_t n) { unsigned char *d=p;while(n--) *d++=value;return p; }
+void *memcpy(void *p,const void *q,size_t n) { unsigned char *d=p;const unsigned char *s=q;while(n--) *d++=*s++;return p; }
+void *memmove(void *p,const void *q,size_t n) {
+    unsigned char *d=p;const unsigned char *s=q;
+    if(d<s) return memcpy(p,q,n);
+    while(n) { --n;d[n]=s[n]; }return p;
+}
+void *calloc(size_t n,size_t size) {
+    static unsigned long long arena[32768];static size_t offset;
+    size_t bytes=n*size, aligned=(bytes+7)&~7U;
+    if(offset+aligned>sizeof(arena)) exit(99);
+    void *p=(char *)arena+offset;offset+=aligned;return memset(p,0,bytes);
+}
+unsigned long strtoul(const char *s,char **end,int base) {
+    unsigned long n=0;(void)base;
+    while(*s>='0' && *s<='9') n=n*10+(*s++-'0');
+    if(end) *end=(char *)s;return n;
+}
+int printf(const char *format,...) {
+    __builtin_va_list args;__builtin_va_start(args,format);
+    char buffer[1024];unsigned used=0;
+    while(*format) {
+        if(*format!='%') { buffer[used++]=*format++;continue; }
+        ++format;unsigned width=0;
+        while(*format=='l') { ++width;++format; }
+        if(*format=='s') {
+            const char *s=__builtin_va_arg(args,const char *);
+            while(*s) buffer[used++]=*s++;
+        } else {
+            unsigned long long value;
+            if(*format=='d') {
+                long long signed_value=width==2 ? __builtin_va_arg(args,long long) :
+                    width ? __builtin_va_arg(args,long) : __builtin_va_arg(args,int);
+                if(signed_value<0) { buffer[used++]='-';value=-signed_value; }
+                else value=signed_value;
+            } else if(*format=='u') {
+                value=width==2 ? __builtin_va_arg(args,unsigned long long) :
+                    width ? __builtin_va_arg(args,unsigned long) : __builtin_va_arg(args,unsigned);
+            } else exit(100);
+            char digits[24];unsigned count=0;
+            do { digits[count++]='0'+value%10;value/=10; } while(value);
+            while(count) buffer[used++]=digits[--count];
+        }
+        ++format;
+    }
+    __builtin_va_end(args);output(buffer,used);return used;
+}
+__attribute__((noreturn)) void entry(unsigned *stack) { exit(main(stack[0],(char **)(stack+1))); }
+__asm__(".text\n.globl _start\n_start:\n movl %esp,%eax\n andl $-16,%esp\n subl $12,%esp\n pushl %eax\n call entry\n ud2\n");

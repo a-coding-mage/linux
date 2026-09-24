@@ -1,0 +1,18 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+extern unsigned int __sw_hweight8(unsigned int);
+extern unsigned int __sw_hweight16(unsigned int);
+extern unsigned int __sw_hweight32(unsigned int);
+extern unsigned long __sw_hweight64(unsigned long long);
+extern int abi_probe(void (*)(void), unsigned long long);
+extern void corrupt_callee(void);
+extern int special_probe(void);
+int main(int argc, char **argv)
+{
+    (void)argv;
+    if (argc == 2) return abi_probe(corrupt_callee, 0);
+    if (argc == 3) return special_probe();
+    if (abi_probe((void (*)(void))__sw_hweight8, ~0ULL)) return 8;
+    if (abi_probe((void (*)(void))__sw_hweight16, ~0ULL)) return 16;
+    if (abi_probe((void (*)(void))__sw_hweight32, ~0ULL)) return 32;
+    return abi_probe((void (*)(void))__sw_hweight64, ~0ULL);
+}

@@ -1,0 +1,10 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+.text
+.globl _start
+_start:
+    andl $-16, %esp
+    call main
+    movl %eax, %ebx
+    movl $1, %eax
+    int $0x80
+.section .note.GNU-stack,"",@progbits

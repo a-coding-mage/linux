@@ -67,6 +67,8 @@ TOOLS = (
     "lib/crc/gen_crc32table",
     "lib/crc/gen_crc64table",
     "fs/unicode/mkutf8data",
+    "drivers/accessibility/speakup/makemapdata",
+    "drivers/accessibility/speakup/genmap",
 )
 
 
@@ -123,6 +125,20 @@ class RustHostBuildTest(unittest.TestCase):
                                for name in ("data", "io", "model", "trie", "verify")]
             for dependency in unicode_modules:
                 self.assertIn(str(dependency), unicode)
+            speakup_dir = Path("drivers/accessibility/speakup")
+            speakup_utils = ROOT / speakup_dir / "utils_header.rs"
+            for tool in ("makemapdata", "genmap"):
+                deps = (Path(tmp) / speakup_dir / ("." + tool + ".cmd")).read_text()
+                self.assertIn(str(speakup_utils), deps)
+            self.assertIn(str(Path(tmp) / speakup_dir / "mapdata.bin"),
+                          (Path(tmp) / speakup_dir / ".genmap.cmd").read_text())
+            for target in ("makemapdata.frontend", "mapdata.bin"):
+                deps = (Path(tmp) / speakup_dir / ("." + target + ".cmd")).read_text()
+                self.assertIn(str(ROOT / speakup_dir / "mapdata_frontend.py"), deps)
+                self.assertIn(str(ROOT / speakup_dir / "utils.h"), deps)
+            speakup_outputs = [Path(tmp) / speakup_dir / name for name in (
+                "mapdata.h", "mapdata.bin", "makemapdata.frontend", "speakupmap.h")]
+            speakup_mtimes = [path.stat().st_mtime_ns for path in speakup_outputs]
             crc32_module = ROOT / "lib/crc/../../include/linux/crc32poly_header.rs"
             self.assertIn(str(crc32_module),
                           (Path(tmp) / "lib/crc/.gen_crc32table.cmd").read_text())
@@ -235,6 +251,18 @@ class RustHostBuildTest(unittest.TestCase):
             self.assertNotIn("HOSTRUSTC", second)
             self.assertEqual(mtimes, [(Path(tmp) / tool).stat().st_mtime_ns
                                       for tool in TOOLS])
+            self.assertEqual(speakup_mtimes,
+                             [path.stat().st_mtime_ns for path in speakup_outputs])
+            recursive = shlex.split(os.environ.get("MAKE", "make")) + ["-W", str(speakup_utils)]
+            rebuild = make("-n", "MAKE=" + shlex.join(recursive))
+            for tool in ("makemapdata", "genmap"):
+                self.assertIn("--emit=link=" + str(speakup_dir / tool), rebuild)
+            for dependency in (ROOT / speakup_dir / "mapdata_frontend.py",
+                               ROOT / "include/uapi/linux/input-event-codes.h"):
+                recursive = shlex.split(os.environ.get("MAKE", "make")) + ["-W", str(dependency)]
+                rebuild = make("-n", "MAKE=" + shlex.join(recursive))
+                self.assertIn("mapdata_frontend.py", rebuild)
+                self.assertIn("--emit=link=" + str(speakup_dir / "genmap"), rebuild)
             recursive = shlex.split(os.environ.get("MAKE", "make")) + [
                 "-W", str(crc32_module)]
             rebuild = make("-n", "MAKE=" + shlex.join(recursive))

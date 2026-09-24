@@ -326,7 +326,10 @@ def verify_module_metadata(build, module, *, work=None, require_c_suppression=Fa
             "--rust-module-records" not in generated_flags or "-D__DISABLE_EXPORTS" not in generated_flags or
             "-U__DISABLE_EXPORTS" in generated_flags):
         raise ValueError("generated metadata bypasses original frontend/record validation")
-    newer(data,[source,build/"scripts/mod/modpost-rust",build/"include/config/auto.conf"])
+    # fixdep above checks the exact recorded CONFIG_* dependencies. A change
+    # to an unrelated option updates auto.conf without regenerating identical
+    # metadata; auto.conf itself is not a prerequisite of this data rule.
+    newer(data,[source,build/"scripts/mod/modpost-rust"])
     newer(obj,[cfg,*dependencies])
     newer(module,[obj,module.with_suffix(".o"),data,source])
     values = generated_values(data)

@@ -45,6 +45,9 @@ arch/x86/tools/relocs_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 arch/x86/tools/vdso2c.rs d482bb509b7d065808de40ce78b5bca39f40b783
 arch/x86/tools/vdso2c_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 certs/extract-cert.rs d482bb509b7d065808de40ce78b5bca39f40b783
+drivers/accessibility/speakup/makemapdata.rs d482bb509b7d065808de40ce78b5bca39f40b783
+drivers/accessibility/speakup/genmap.rs d482bb509b7d065808de40ce78b5bca39f40b783
+drivers/accessibility/speakup/utils_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 fs/unicode/mkutf8data.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/asm-generic/div64_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/asn1_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
@@ -69,7 +72,10 @@ lib/bcd.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/crc/gen_crc32table.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/crc/gen_crc64table.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/ctype.rs d482bb509b7d065808de40ce78b5bca39f40b783
+include/linux/base64_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/base64.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/hexdump.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/hweight.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/list_sort.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/cordic.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/div64.rs d482bb509b7d065808de40ce78b5bca39f40b783
@@ -93,6 +99,7 @@ lib/math/tests/polynomial_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/tests/prime_numbers_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/tests/rational_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/raid/raid6/mktables.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/tests/test_list_sort.rs d482bb509b7d065808de40ce78b5bca39f40b783
 rust/exports_rust.rs d482bb509b7d065808de40ce78b5bca39f40b783
 scripts/asn1_compiler.rs d482bb509b7d065808de40ce78b5bca39f40b783
 scripts/basic/fixdep.rs d482bb509b7d065808de40ce78b5bca39f40b783

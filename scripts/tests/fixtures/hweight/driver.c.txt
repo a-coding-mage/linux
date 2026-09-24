@@ -1,0 +1,41 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+typedef unsigned int u32;
+typedef unsigned long long u64;
+#define DECL(N, T, R) extern R __sw_hweight##N(T); extern R c_hweight##N(T)
+DECL(8, u32, u32); DECL(16, u32, u32); DECL(32, u32, u32);
+DECL(64, u64, unsigned long);
+static u32 (*volatile f8)(u32) = __sw_hweight8;
+static u32 (*volatile f16)(u32) = __sw_hweight16;
+static u32 (*volatile f32)(u32) = __sw_hweight32;
+static unsigned long (*volatile f64)(u64) = __sw_hweight64;
+static int check(u64 v)
+{
+    u32 w = (u32)v;
+    if (f8(w) != c_hweight8(w)) return 8;
+    if (f16(w) != c_hweight16(w)) return 16;
+    if (f32(w) != c_hweight32(w)) return 32;
+    if (f64(v) != c_hweight64(v)) return 64;
+    return 0;
+}
+int main(void)
+{
+    u64 state = 0x8e937abc1234d5efULL;
+    for (u32 i = 0; i < 65536; ++i) {
+        u64 values[] = {i, (u64)i << 16, ((u64)i << 32) | i,
+            0xffff0000U | i, ~((u64)i), ((u64)i << 48) | 0x80000100U};
+        for (u32 j = 0; j < sizeof(values)/sizeof(values[0]); ++j) {
+            int result = check(values[j]); if (result) return result;
+        }
+    }
+    for (u32 i = 0; i < 64; ++i) {
+        u64 v = 1ULL << i;
+        int r = check(v); if (r) return r;
+        r = check(~v); if (r) return r;
+        r = check(v-1); if (r) return r;
+    }
+    for (u32 i = 0; i < 200000; ++i) {
+        state ^= state << 13; state ^= state >> 7; state ^= state << 17;
+        int result = check(state); if (result) return result;
+    }
+    return 0;
+}

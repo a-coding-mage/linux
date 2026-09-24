@@ -1590,6 +1590,10 @@ rust-host-tools: outputmakefile scripts_basic
 	$(Q)$(MAKE) $(build)=lib/raid/raid6 lib/raid/raid6/mktables
 	$(Q)$(MAKE) $(build)=lib/crc lib/crc/gen_crc32table lib/crc/gen_crc64table
 	$(Q)$(MAKE) $(build)=fs/unicode fs/unicode/mkutf8data
+	$(Q)$(MAKE) $(build)=drivers/accessibility/speakup \
+		drivers/accessibility/speakup/makemapdata \
+		drivers/accessibility/speakup/genmap \
+		drivers/accessibility/speakup/speakupmap.h
 
 rust-host-tests: rust-host-tools
 	$(Q)env -u MAKEFLAGS -u MFLAGS -u CARGO_MAKEFLAGS \

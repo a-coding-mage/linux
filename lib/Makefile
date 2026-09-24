@@ -73,8 +73,14 @@ obj-y += list_sort.o
 endif
 obj-y += uuid.o iov_iter.o clz_ctz.o \
 	 bsearch.o find_bit.o llist.o lwq.o memweight.o kfifo.o \
-	 percpu-refcount.o rhashtable.o base64.o \
-	 once.o refcount.o rcuref.o usercopy.o errseq.o bucket_locks.o \
+	 percpu-refcount.o rhashtable.o
+ifeq ($(CONFIG_RUST_BASE64),y)
+obj-y += base64_rust.o
+RUST_ALLOWED_FEATURES_base64_rust.o := $(if $(CONFIG_PPC),asm_experimental_arch)
+else
+obj-y += base64.o
+endif
+obj-y += once.o refcount.o rcuref.o usercopy.o errseq.o bucket_locks.o \
 	 generic-radix-tree.o bitmap-str.o
 obj-y += string_helpers.o
 ifeq ($(CONFIG_RUST_HEXDUMP),y)
@@ -158,7 +164,11 @@ lib-$(CONFIG_INDIRECT_IOMEM) += logic_iomem.o
 
 obj-$(CONFIG_TRACE_MMIO_ACCESS) += trace_readwrite.o
 
+ifeq ($(CONFIG_RUST_HWEIGHT),y)
+obj-$(CONFIG_GENERIC_HWEIGHT) += hweight_rust.o
+else
 obj-$(CONFIG_GENERIC_HWEIGHT) += hweight.o
+endif
 
 obj-$(CONFIG_BTREE) += btree.o
 obj-$(CONFIG_INTERVAL_TREE) += interval_tree.o

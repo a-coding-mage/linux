@@ -33,6 +33,8 @@
 # enums that appear in indirect function calls should specify a cfi type
 --newtype-enum lru_status
 --with-attribute-custom-enum=lru_status='#[cfi_encoding="10lru_status"]'
+--newtype-enum base64_variant
+--with-attribute-custom-enum=base64_variant='#[cfi_encoding="14base64_variant"]'
 --newtype-enum insn_mode
 --with-attribute-custom-enum=insn_mode='#[cfi_encoding="9insn_mode"]'
 

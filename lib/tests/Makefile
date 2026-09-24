@@ -31,6 +31,17 @@ obj-$(CONFIG_LIST_KUNIT_TEST) += list-test.o
 obj-$(CONFIG_LIST_PRIVATE_KUNIT_TEST) += list-private-test.o
 obj-$(CONFIG_KFIFO_KUNIT_TEST) += kfifo_kunit.o
 obj-$(CONFIG_TEST_LIST_SORT) += test_list_sort.o
+ifeq ($(CONFIG_RUST_LIST_SORT_KUNIT_TEST),y)
+# Keep the original suite tristate, module name and independent provider.
+$(obj)/test_list_sort.o: $(src)/test_list_sort.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+
+$(obj)/test_list_sort.s: $(src)/test_list_sort.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+
+$(obj)/test_list_sort.ll: $(src)/test_list_sort.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 obj-$(CONFIG_LINEAR_RANGES_TEST) += test_linear_ranges.o
 obj-$(CONFIG_LIVEUPDATE_TEST) += liveupdate.o
 

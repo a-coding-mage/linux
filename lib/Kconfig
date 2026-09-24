@@ -8,6 +8,19 @@ config BINARY_PRINTF
 
 menu "Library routines"
 
+config RUST_BASE64
+	bool "Use Rust for the Base64 C interfaces"
+	depends on RUST
+	default n
+	help
+	  Use the Rust implementation of the original GPL-only base64_encode
+	  and base64_decode interfaces, including standard, URL-safe and IMAP
+	  alphabets, padding rules and in-place decoding. The original C code
+	  remains selected when this option is disabled.
+
+	  Native Rust DWARF type descriptions differ from the C descriptions;
+	  rebuild dependent modules when changing this option with MODVERSIONS.
+
 config RUST_BCD
 	bool "Rust implementation of binary-coded decimal helpers"
 	depends on RUST
@@ -108,6 +121,22 @@ config RUST_POLYNOMIAL
 	  Disable this option to retain the original C implementation. This
 	  choice is independent of HOST_TOOLS_LANG and the other math helpers.
 
+	  If unsure, say N.
+
+config RUST_HWEIGHT
+	bool "Rust implementation of generic software Hamming weight"
+	depends on RUST && GENERIC_HWEIGHT
+	default n
+	help
+	  Use Rust for the generic __sw_hweight8/16/32/64 implementations,
+	  retaining their original C interfaces and unrestricted exports.
+	  Architecture-specific assembly implementations remain selected by
+	  their existing configuration and build rules.
+
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
+
+	  Disable this option to retain the original C implementation.
 	  If unsure, say N.
 
 config RUST_LIST_SORT

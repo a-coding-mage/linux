@@ -1,0 +1,5 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+extern unsigned int __sw_hweight8(unsigned int);
+static unsigned long (*volatile bad)(unsigned long, unsigned long) =
+    (unsigned long (*)(unsigned long, unsigned long))__sw_hweight8;
+int main(void) { return (int)bad(255, 0); }

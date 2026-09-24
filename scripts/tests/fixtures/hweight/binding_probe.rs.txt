@@ -1,0 +1,12 @@
+// SPDX-License-Identifier: GPL-2.0
+//! Type-check native bindings against the actual owner without fabricated aliases.
+#[path = "@OWNER@"]
+pub mod owner;
+const _: extern "C" fn(core::ffi::c_uint) -> core::ffi::c_uint = owner::__sw_hweight8;
+const _: extern "C" fn(core::ffi::c_uint) -> core::ffi::c_uint = owner::__sw_hweight16;
+const _: extern "C" fn(core::ffi::c_uint) -> core::ffi::c_uint = owner::__sw_hweight32;
+const _: extern "C" fn(u64) -> usize = owner::__sw_hweight64;
+const _: unsafe extern "C" fn(core::ffi::c_uint) -> core::ffi::c_uint = kernel::bindings::__sw_hweight8;
+const _: unsafe extern "C" fn(core::ffi::c_uint) -> core::ffi::c_uint = kernel::bindings::__sw_hweight16;
+const _: unsafe extern "C" fn(core::ffi::c_uint) -> core::ffi::c_uint = kernel::bindings::__sw_hweight32;
+const _: unsafe extern "C" fn(u64) -> usize = kernel::bindings::__sw_hweight64;

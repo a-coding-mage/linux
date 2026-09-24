@@ -1,0 +1,125 @@
+/* Disposable transport; fixture.h is extracted from the original kernel headers. */
+#include "fixture.h"
+extern int printf(const char *, ...);
+extern void exit(int) __attribute__((noreturn));
+extern void *calloc(size_t, size_t);
+extern unsigned long strtoul(const char *, char **, int);
+extern struct kunit_suite *__suites_start[], *__suites_end[];
+struct debug_el { unsigned poison1; struct list_head list; unsigned poison2; int value; unsigned serial; };
+static struct kunit *active;
+static unsigned mode, allocations, random_state, random_calls, callbacks, self_calls;
+static struct debug_el *elements[644];
+static struct debug_el **table;
+static struct list_head *head;
+static list_cmp_func_t original_cmp;
+static int equal(const char *a,const char *b) {
+    if(!a || !b) return a==b;
+    while(*a && *a==*b) { ++a;++b; } return *a==*b;
+}
+static long pointer_id(const void *p) {
+    if(!p) return -1;
+    if(p==head) return -2;
+    for(unsigned i=0;i<642;++i) if(elements[i] && (p==elements[i] || p==&elements[i]->list)) return i;
+    if((unsigned long)p >= (unsigned long)-4095) return (long)p;
+    return -3;
+}
+static void done(unsigned aborted) {
+    printf("END %u %u %u %u %u\n",aborted,allocations,random_calls,callbacks,self_calls);
+    exit(0);
+}
+void __kunit_abort(struct kunit *test) { if(test!=active) exit(90); done(1); __builtin_unreachable(); }
+void kunit_binary_assert_format(const struct kunit_assert *a,const struct va_format *v,struct string_stream *s) { (void)a;(void)v;(void)s; }
+void kunit_binary_ptr_assert_format(const struct kunit_assert *a,const struct va_format *v,struct string_stream *s) { (void)a;(void)v;(void)s; }
+void kunit_ptr_not_err_assert_format(const struct kunit_assert *a,const struct va_format *v,struct string_stream *s) { (void)a;(void)v;(void)s; }
+void __kunit_do_failed_assertion(struct kunit *test,const struct kunit_loc *loc,
+    enum kunit_assert_type type,const struct kunit_assert *a,assert_format_t format,const char *fmt,...) {
+    if(test!=active || !loc->file || loc->line<=0 || test->last_seen.line!=loc->line ||
+       test->last_seen.file!=loc->file) exit(91);
+    if(format==kunit_ptr_not_err_assert_format) {
+        const struct kunit_ptr_not_err_assert *p=(const void *)a;
+        printf("ALLOC_FAIL %u %s %ld %s\n",type,p->text,pointer_id(p->value),fmt?fmt:"NULL");
+    } else {
+        const struct kunit_binary_assert *b=(const void *)a;
+        long long left=b->left_value,right=b->right_value;
+        if(format==kunit_binary_ptr_assert_format) {
+            const struct kunit_binary_ptr_assert *p=(const void *)a;
+            left=pointer_id(p->left_value);right=pointer_id(p->right_value);
+        } else if(format!=kunit_binary_assert_format) exit(92);
+        printf("FAIL %u %u [%s] %s [%s] %lld %lld %s\n",type,
+            format==kunit_binary_ptr_assert_format,b->text->left_text,b->text->operation,
+            b->text->right_text,left,right,fmt?fmt:"NULL");
+    }
+}
+void *kunit_kmalloc_array(struct kunit *test,size_t n,size_t size,unsigned flags) {
+    if(test!=active) exit(93);
+    unsigned index=allocations++;
+    printf("ALLOC %u %lu %lu %u\n",index,(unsigned long)n,(unsigned long)size,flags);
+    if((mode==1 && index==0) || (mode==2 && index==1) || (mode==3 && index==501)) return NULL;
+    if(mode==4 && index==2) return (void *)-12L;
+    if(index==0) { table=calloc(644,size);return table; }
+    if(index>642) exit(94);
+    return elements[index-1]=calloc(n,size);
+}
+u8 get_random_u8(void) {
+    random_state=random_state*1664525U+1013904223U;
+    u8 value=mode==14 ? 127 : random_state>>24;
+    ++random_calls;printf("RANDOM %u\n",value);return value;
+}
+static int trace_cmp(void *ctx,const struct list_head *a,const struct list_head *b) {
+    ++callbacks;self_calls+=a==b;
+    printf("CMP %ld %ld\n",pointer_id(a),pointer_id(b));
+    return original_cmp(ctx,a,b);
+}
+extern void provider_sort(void *,struct list_head *,list_cmp_func_t);
+void list_sort(void *ctx,struct list_head *list,list_cmp_func_t cmp) {
+    head=list;original_cmp=cmp;
+    if(mode>=5 && mode<=8) {
+        unsigned serial=elements[0]->serial, poison=elements[0]->poison1;
+        if(mode==5 || mode==8) elements[0]->poison1=0;
+        if(mode==6 || mode==8) { elements[0]->serial=642;table[642]=elements[0]; }
+        if(mode==7) table[0]=elements[1];
+        if(mode==8) {
+            elements[0]->poison2=0;elements[1]->poison1=0;elements[1]->poison2=0;
+            elements[1]->serial=643;table[642]=NULL;table[643]=NULL;
+        }
+        trace_cmp(ctx,&elements[0]->list,&elements[1]->list);
+        elements[0]->serial=serial;elements[0]->poison1=poison;table[0]=elements[0];
+        if(mode==8) {
+            elements[0]->poison2=0xA324354C;elements[1]->poison1=0xDEADBEEF;
+            elements[1]->poison2=0xA324354C;elements[1]->serial=1;
+        }
+    }
+    provider_sort(ctx,list,trace_cmp);
+    if(mode==9) list->next->next->prev=list;
+    if(mode==10) {
+        struct debug_el *a=(void *)((char *)list->next-__builtin_offsetof(struct debug_el,list));
+        a->value=214;
+    }
+    if(mode==11) {
+        struct list_head *a=list->next;
+        while(a->next!=list) {
+            struct debug_el *x=(void *)((char *)a-__builtin_offsetof(struct debug_el,list));
+            struct debug_el *y=(void *)((char *)a->next-__builtin_offsetof(struct debug_el,list));
+            if(x->value==y->value) {
+                unsigned tmp=x->serial;x->serial=y->serial;y->serial=tmp;
+                table[x->serial]=x;table[y->serial]=y;break;
+            }
+            a=a->next;
+        }
+    }
+    if(mode==12) list->prev=list;
+    if(mode==13) { list->next=list->next->next;list->next->prev=list; }
+}
+int main(int argc,char **argv) {
+    if(argc!=3) return 95;
+    mode=strtoul(argv[1],NULL,0);random_state=strtoul(argv[2],NULL,0);
+    if(__suites_end-__suites_start!=1) return 96;
+    struct kunit_suite *suite=__suites_start[0];
+    struct kunit_case *c=suite->test_cases;
+    if(!equal(suite->name,"list_sort") || !equal(c->name,"list_sort_test") ||
+       !equal(c->module_name,"test_list_sort") || suite->attr.speed!=KUNIT_SPEED_UNSET ||
+       c->attr.speed!=KUNIT_SPEED_UNSET || c[1].run_case || c[1].name ||
+       suite->suite_init || suite->suite_exit || suite->init || suite->exit ||
+       c->generate_params || c->param_init || c->param_exit) return 97;
+    struct kunit test={};active=&test;c->run_case(&test);done(0);
+}

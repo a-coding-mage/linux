@@ -54,6 +54,7 @@ The following normal Kbuild targets have Rust implementations:
 * ``scripts/mod/mk_elfconfig``
 * ``scripts/mod/modpost``
 * ``scripts/selinux/mdp/mdp``
+* ``security/selinux/genheaders``
 * ``scripts/kconfig/conf``
 * ``scripts/genksyms/genksyms``
 * ``scripts/gendwarfksyms/gendwarfksyms``
@@ -186,6 +187,38 @@ official corpus and its checked provenance; an explicitly invalid corpus is
 an error, not a skip. The expanded 52-tool aggregate build/dependency gate
 passes. This validates the host generator, not a Rust Unicode target driver
 or execution of the complete generator on a 32-bit host.
+
+The SELinux header generator reuses the translated class/permission and initial
+SID tables. Original ordering, permission bits and SID holes are unchanged.
+Its fallible uppercase allocation and narrow libc boundary preserve original
+allocation-failure status, raw paths, inherited signals, each output-format
+call and close-error behavior. In particular, the finite-file-size regression
+at 65,535 bytes detects a fragmented writer that otherwise emits identical
+normal output. Sixteen integrated groups pass without skips; independent GCC
+and Clang runs also pass all sixteen, including allocation-failure controls,
+210 output-size-limit combinations and actual C/Rust build switching and
+dependencies. The expanded 53-tool aggregate and three language/provenance
+invariants pass. The maintained ASCII-source/ASCII-compatible-encoding boundary
+and untested libc/startup-exhaustion cases are documented in
+``scripts/tests/selinux_genheaders.md``; arbitrary frontend encodings are not
+claimed equivalent.
+
+The Speakup ``makemapdata`` and ``genmap`` translations now share the repaired
+translated utility module and generate the real keyboard maps through Kbuild.
+The selected host C frontend validates the retained originals and produces
+initializer data only: original translation-unit preprocessing is preserved,
+function bodies are removed before code generation, and an independent ELF
+guard rejects executable content. No original C algorithm is linked or run
+inside either Rust tool. Unsupported declaration syntax, object/relocation
+formats, LTO and non-UTF-8 frontend encodings explicitly require the retained
+C selection; this is not an arbitrary-C parser or cross-host execution claim.
+
+Ten integrated groups pass with GCC and Clang, without skips, including exact
+maps/diagnostics, raw strings/paths, output failures and inherited SIGPIPE,
+macro expansion context, attributed declarations, executable-leakage controls,
+strict minimum Rust 1.85 and real C/Rust switching/dependencies/no-ops. The
+expanded 55-tool aggregate passes, including imported utility/frontend/input
+dependencies and unchanged generated maps on a no-op build.
 
 Build the migrated tools without creating a kernel configuration::
 
@@ -2020,12 +2053,19 @@ Strict native x86-64 and ARM64 modular builds pass with common and per-module
 metadata selected. Two further native builds pass with final-vmlinux and
 per-module metadata selected, leaving common metadata in C. The shared runtime
 checker validates the selected typed metadata rather than stale ``*.mod.c``
-artifacts. Nineteen integrated groups include real native artifacts and
+artifacts. Twenty-one integrated groups include real native artifacts and
 semantic negative controls. Lifecycle fields are compared independently to
 the actual implementation definitions, so consistently omitting cleanup from
 both generated Rust and linked ELF cannot satisfy the checker. Unchanged
 metadata may legitimately predate a rebuilt owner because modpost uses
 write-if-changed; timestamps alone do not establish semantic staleness.
+Unrelated updates to ``auto.conf`` likewise do not imply staleness: the checker
+uses the actual recorded header and fine-grained CONFIG dependencies. Separate
+controls accept unrelated configuration changes and reject changed recorded
+dependencies. All twenty-one groups pass after the list-sort selection matrix
+and refreshed external Rust prime callers on both architectures.
+The combined metadata build/fidelity/cleanup/runtime and downstream consumer
+regression subsequently passes 285 tests without skips in one process.
 
 Both architectures pass proprietary C and Rust prime callers, ordered loading
 of provider/framework/suite modules, and unload/reload with selected Rust
@@ -2053,8 +2093,51 @@ trapping negative controls, actual Makefile selection/dependencies/no-ops,
 and read-only audits of both selected native kernels. Native x86-64 and ARM64
 builds and boots pass with the original C KUnit suite calling the Rust
 provider. The complete boot logs contain 97 and 90 passing KUnit cases
-respectively, without failures or skips. This does not yet migrate the
-adjacent Rust KUnit suite or claim external list-sort caller lifecycle tests.
+respectively, without failures or skips. Subsequent external proprietary C and
+Rust callers both pass 6,435 cases per load on both architectures, including
+unload/reload, exact comparator/link traces, stable ties and bidirectional
+list traversal. Twenty-one integrated runtime checker groups pass.
+
+``CONFIG_RUST_LIST_SORT_KUNIT_TEST`` independently selects the repaired
+existing Rust suite while retaining ``CONFIG_TEST_LIST_SORT`` and the original
+``test_list_sort.o/.ko`` identity. Original assertions, diagnostic operands,
+allocation flags/order, random-byte rejection sampling and KUnit ownership are
+preserved. Five integrated groups pass without skips, including genuine ELF32
+execution and minimum-Rust native compilation/KCFI checks on x86-64 and ARM64.
+The deterministic failure transport is not native FAILSLAB coverage. Native
+modular validation now passes all four independent provider/suite selections
+(C/C, C/Rust, Rust/C and Rust/Rust) on x86-64 and ARM64: eight image/module
+builds and sixteen VM runs with both C and Rust external callers, 6,435 cases
+per load and ordered framework/suite unload/reload. Both outputs were restored
+to Rust/Rust. Built-in execution of the translated suite is still unproven;
+the earlier built-in VM evidence used the original C suite.
+
+Generic software Hamming weight
+-------------------------------
+
+``CONFIG_RUST_HWEIGHT`` selects the repaired existing ``lib/hweight.rs`` through
+a sole native export owner, in the original generic object's archive slot.
+The default remains C. All four unsigned interfaces and unrestricted exports
+are retained, including full unsigned-int inputs to the 8/16-bit algorithms
+and a native unsigned-long result for the 64-bit input. Both configured
+multiplier paths preserve the original wrapping arithmetic.
+
+Nine integrated groups pass without skips: original-C differential matrices
+at O0/O2/Os with checked/unchecked arithmetic on genuine ELF32/ELF64, real
+native x86-64/ARM64 bindings/KCFI/export/DWARF checks, semantic and ABI negative
+controls, and actual Kbuild switching/archive/dependency/no-op tests. Native
+compiler flags are taken from an always-C object; a regression repeats the
+proof with the unselected C objects' saved commands absent.
+
+Architecture-specific assembly remains under its existing selection. In
+particular, native x86's stronger register-preservation convention is not
+replaced by an ordinary Rust C-ABI function; generic UML is a separate case.
+An ARM64 image and modules now build with the generic Rust owner selected;
+the linked archive has only ``hweight_rust.o`` and the image retains all four
+unrestricted exports with genuine Rust-derived versions. That kernel boots
+and passes the Rust list-sort consumer/KUnit load-reload smoke test. This
+does not replace a dedicated native caller of each Hamming-weight interface;
+that specific differential runtime gate remains outstanding.
 
 Remaining integration
 ---------------------

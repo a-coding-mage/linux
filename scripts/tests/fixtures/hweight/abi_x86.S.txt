@@ -1,0 +1,87 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+.text
+.globl abi_probe
+.type abi_probe,@function
+abi_probe:
+    push %rbx
+    push %rbp
+    push %r12
+    push %r13
+    push %r14
+    push %r15
+    sub $8, %rsp
+    mov %rdi, %r11
+    mov %rsi, %rdi
+    mov $0x123456, %ebx
+    mov $0x234567, %ebp
+    mov $0x345678, %r12d
+    mov $0x456789, %r13d
+    mov $0x56789a, %r14d
+    mov $0x6789ab, %r15d
+    call *%r11
+    cmp $0x123456, %rbx
+    jne 1f
+    cmp $0x234567, %rbp
+    jne 1f
+    cmp $0x345678, %r12
+    jne 1f
+    cmp $0x456789, %r13
+    jne 1f
+    cmp $0x56789a, %r14
+    jne 1f
+    cmp $0x6789ab, %r15
+    jne 1f
+    xor %eax, %eax
+    jmp 2f
+1:  mov $1, %eax
+2:  add $8, %rsp
+    pop %r15
+    pop %r14
+    pop %r13
+    pop %r12
+    pop %rbp
+    pop %rbx
+    ret
+.size abi_probe,.-abi_probe
+.globl corrupt_callee
+.type corrupt_callee,@function
+corrupt_callee:
+    xor %ebx, %ebx
+    ret
+.size corrupt_callee,.-corrupt_callee
+.globl special_probe
+.type special_probe,@function
+special_probe:
+    sub $8, %rsp
+    mov $0x123456, %edi
+    mov $0x234567, %esi
+    mov $0x345678, %edx
+    mov $0x456789, %ecx
+    mov $0x56789a, %r8d
+    mov $0x6789ab, %r9d
+    mov $0x789abc, %r10d
+    mov $0x89abcd, %r11d
+    call __sw_hweight64
+    cmp $0x123456, %rdi
+    jne 3f
+    cmp $0x234567, %rsi
+    jne 3f
+    cmp $0x345678, %rdx
+    jne 3f
+    cmp $0x456789, %rcx
+    jne 3f
+    cmp $0x56789a, %r8
+    jne 3f
+    cmp $0x6789ab, %r9
+    jne 3f
+    cmp $0x789abc, %r10
+    jne 3f
+    cmp $0x89abcd, %r11
+    jne 3f
+    xor %eax, %eax
+    jmp 4f
+3:  mov $1, %eax
+4:  add $8, %rsp
+    ret
+.size special_probe,.-special_probe
+.section .note.GNU-stack,"",@progbits

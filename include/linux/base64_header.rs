@@ -2,43 +2,36 @@
 /*
  * base64 encoding, lifted from fs/crypto/fname.c.
  */
+//! Safe, allocation-free Base64 interfaces shared by Rust consumers.
+//!
+//! These slice functions are not alternate declarations of the C exports.
+//! The `ffi` module calls the selected C or Rust provider through its actual
+//! generated C enum and pointer bindings; it never duplicates the provider.
 
-// Dependency: `u8` corresponds directly to the Linux `u8` type.
+#[path = "../../lib/base64.rs"]
+mod implementation;
 
-#[repr(C)]
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum base64_variant {
-    /// RFC 4648 (standard)
-    BASE64_STD,
-    /// RFC 4648 (base64url)
-    BASE64_URLSAFE,
-    /// RFC 3501
-    BASE64_IMAP,
+pub use implementation::{
+    base64_chars, base64_decode, base64_encode, encoded_len, Base64Error, Base64Variant,
+};
+
+/// Original unsafe native API and nominal C enum, from generated bindings.
+///
+/// Pointer extents, valid variants and output capacity are the caller's
+/// responsibility. The decoder permits in-place buffers. Negative lengths
+/// retain C behavior: encode returns zero, padded decode returns -1, and
+/// unpadded decode reads a three-character tail and may write two bytes.
+#[cfg(CONFIG_RUST)]
+pub mod ffi {
+    pub use kernel::bindings::{base64_decode, base64_encode, base64_variant};
 }
-
-#[macro_export]
-macro_rules! BASE64_CHARS {
-    ($nbytes:expr) => {
-        (($nbytes) * 4 + 2) / 3
-    };
-}
-
-unsafe extern "C" {
-    pub fn base64_encode(
-        src: *const u8,
-        len: core::ffi::c_int,
-        dst: *mut core::ffi::c_char,
-        padding: bool,
-        variant: base64_variant,
-    ) -> core::ffi::c_int;
-
-    pub fn base64_decode(
-        src: *const core::ffi::c_char,
-        len: core::ffi::c_int,
-        dst: *mut u8,
-        padding: bool,
-        variant: base64_variant,
-    ) -> core::ffi::c_int;
-}
+/// Standard RFC 4648 alphabet.
+pub const BASE64_STD: Base64Variant = Base64Variant::Standard;
+/// URL-safe RFC 4648 alphabet.
+pub const BASE64_URLSAFE: Base64Variant = Base64Variant::UrlSafe;
+/// Modified RFC 3501 alphabet.
+pub const BASE64_IMAP: Base64Variant = Base64Variant::Imap;
+/// Checked equivalent of the original size macro (unpadded output).
+pub use base64_chars as BASE64_CHARS;
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

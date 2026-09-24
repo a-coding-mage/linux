@@ -244,6 +244,32 @@ class NativeMetadataMixin:
             checker.verify_object(module.with_suffix(".mod.o"), owner,
                                   self.config, self.values, self.layout)
 
+    def test_unrelated_auto_conf_change_keeps_precise_fixdep_freshness(self):
+        view = self.work / "build-view"
+        (view / "include/config").mkdir(parents=True)
+        for relative in (".config", "Module.symvers", ".module-common.o", "rust", "scripts", "arch",
+                         "include/generated"):
+            (view / relative).symlink_to(self.build / relative)
+        auto_conf = view / "include/config/auto.conf"
+        shutil.copy2(self.build / "include/config/auto.conf", auto_conf)
+        stamp = max(auto_conf.stat().st_mtime_ns, self.module.stat().st_mtime_ns) + 1000000
+        os.utime(auto_conf, ns=(stamp, stamp))
+        self.assertEqual(checker.verify_module_metadata(view, self.module),
+                         self.module.with_suffix(".mod.h"))
+        # A changed recorded CONFIG dependency is still stale. Append a private
+        # dependency to a copied command instead of touching any native input.
+        module = self.copy_inputs()
+        data = module.with_suffix(".mod.rs")
+        command = data.with_name("." + data.name + ".cmd")
+        dependency = self.work / "CONFIG_RECORDED"
+        dependency.write_text("changed\n")
+        text = command.read_text()
+        marker = "deps_" + str(data.relative_to(self.work)) + " := "
+        self.assertIn(marker, text)
+        command.write_text(text.replace(marker, marker + str(dependency) + " ", 1))
+        with self.assertRaisesRegex(ValueError, "older than a recorded dependency"):
+            checker.verify_module_metadata(self.build, module)
+
 
 class X86ModuleMetadataRuntimeTests(NativeMetadataMixin,unittest.TestCase):
     variable="MODULE_METADATA_X86_BUILD"

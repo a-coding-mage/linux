@@ -2296,6 +2296,15 @@ config TEST_LIST_SORT
 
 	  If unsure, say N.
 
+config RUST_LIST_SORT_KUNIT_TEST
+	bool "Use Rust for the list_sort KUnit test"
+	depends on RUST && TEST_LIST_SORT
+	default n
+	help
+	  Run the translated list_sort suite against the selected C or Rust
+	  provider, retaining the original test_list_sort module identity.
+	  If unsure, say N.
+
 config TEST_SORT
 	tristate "Array-based sort test" if !KUNIT_ALL_TESTS
 	depends on KUNIT
