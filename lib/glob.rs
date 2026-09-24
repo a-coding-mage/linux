@@ -1,164 +1,206 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
-// Dependency intent: Linux module metadata and symbol-export declarations.
+//! Allocation-free Linux glob matching with unsigned byte semantics.
 
-/*
- * The only reason this code can be compiled as a module is because the
- * ATA code that depends on it can be as well.  In practice, they're
- * both usually compiled in and the module overhead goes away.
- */
-// MODULE_DESCRIPTION("glob(7) matching");
-// MODULE_LICENSE("Dual MIT/GPL");
+#[cfg(not(CONFIG_RUST))]
+use core::ffi::c_char;
+// Kernel char is unsigned on every architecture, including x86 KCFI.
+#[cfg(CONFIG_RUST)]
+use kernel::ffi::c_char;
 
-unsafe fn glob_match_str(
-    mut pat: *const u8,
-    mut str_: *const u8,
-    str_end: *const u8,
-) -> bool {
-    /*
-     * Backtrack to previous * on mismatch and retry starting one
-     * character later in the string.  Because * matches all characters
-     * (no exception for /), it can be easily proved that there's
-     * never a need to backtrack multiple levels.
-     */
-    let mut back_pat: *const u8 = core::ptr::null();
-    let mut back_str: *const u8 = core::ptr::null();
+/// Matches the entire input; a NUL in either slice terminates it.
+/// Missing terminators are treated as NUL at the slice boundary.
+pub fn matches(pattern: &[u8], input: &[u8]) -> bool {
+    match_readers(
+        |i| pattern.get(i).copied().unwrap_or(0),
+        |i| input.get(i).copied().unwrap_or(0),
+    )
+}
 
-    /*
-     * Loop over each token (character or class) in pat, matching
-     * it against the remaining unmatched tail of str.  Return false
-     * on mismatch, or true after matching the trailing nul bytes.
-     */
+fn match_readers(mut pattern: impl FnMut(usize) -> u8, mut input: impl FnMut(usize) -> u8) -> bool {
+    let (mut p, mut s) = (0, 0);
+    let mut backtrack = None;
     loop {
-        let c = if !str_end.is_null() && str_ >= str_end {
-            0
-        } else {
-            *str_
-        };
-        let mut d = *pat;
-        pat = pat.add(1);
-        str_ = str_.add(1);
-
-        match d {
+        let c = input(s);
+        let mut d = pattern(p);
+        p += 1;
+        s += 1;
+        let matched = match d {
             b'?' => {
                 if c == 0 {
                     return false;
                 }
+                true
             }
             b'*' => {
-                if *pat == 0 {
+                if pattern(p) == 0 {
                     return true;
                 }
-                back_pat = pat;
-                back_str = str_.sub(1);
+                s -= 1;
+                backtrack = Some((p, s));
+                true
             }
             b'[' => {
                 if c == 0 {
                     return false;
                 }
-                let inverted = *pat == b'!';
-                let mut class = if inverted { pat.add(1) } else { pat };
-                let mut a = *class;
-                class = class.add(1);
-                let mut matched = false;
-
-                /* Iterate over each span in the character class. */
+                let inverted = pattern(p) == b'!';
+                let mut class = p + usize::from(inverted);
+                let mut a = pattern(class);
+                class += 1;
+                let mut hit = false;
                 loop {
-                    let mut b = a;
                     if a == 0 {
-                        d = b'[';
-                        break;
+                        break c == b'[';
                     }
-                    if *class == b'-' && *class.add(1) != b']' {
-                        b = *class.add(1);
+                    let mut b = a;
+                    if pattern(class) == b'-' && pattern(class + 1) != b']' {
+                        b = pattern(class + 1);
                         if b == 0 {
-                            d = b'[';
-                            break;
+                            break c == b'[';
                         }
-                        class = class.add(2);
+                        class += 2;
                     }
-                    if a <= c && c <= b {
-                        matched = true;
-                    }
-                    a = *class;
-                    class = class.add(1);
+                    hit |= a <= c && c <= b;
+                    a = pattern(class);
+                    class += 1;
                     if a == b']' {
-                        if matched == inverted {
-                            if c == 0 || back_pat.is_null() {
-                                return false;
-                            }
-                            pat = back_pat;
-                            back_str = back_str.add(1);
-                            str_ = back_str;
-                        } else {
-                            pat = class;
+                        if hit != inverted {
+                            p = class;
                         }
-                        d = b'\0';
-                        break;
+                        break hit != inverted;
                     }
                 }
-                if d == 0 {
-                    continue;
-                }
-                if c == d {
-                    continue;
-                }
-                if c == 0 || back_pat.is_null() {
-                    return false;
-                }
-                pat = back_pat;
-                back_str = back_str.add(1);
-                str_ = back_str;
-            }
-            b'\\' => {
-                d = *pat;
-                pat = pat.add(1);
-                if c == d {
-                    if d == 0 {
-                        return true;
-                    }
-                    continue;
-                }
-                if c == 0 || back_pat.is_null() {
-                    return false;
-                }
-                pat = back_pat;
-                back_str = back_str.add(1);
-                str_ = back_str;
             }
             _ => {
-                if c == d {
-                    if d == 0 {
-                        return true;
-                    }
-                    continue;
+                if d == b'\\' {
+                    d = pattern(p);
+                    p += 1;
                 }
-                if c == 0 || back_pat.is_null() {
-                    return false;
+                if c == d && d == 0 {
+                    return true;
                 }
-                pat = back_pat;
-                back_str = back_str.add(1);
-                str_ = back_str;
+                c == d
+            }
+        };
+        if !matched {
+            if c == 0 {
+                return false;
+            }
+            match backtrack {
+                Some((bp, bs)) => {
+                    p = bp;
+                    s = bs + 1;
+                    backtrack = Some((bp, s));
+                }
+                None => return false,
             }
         }
     }
 }
 
-/// Shell-style pattern matching, like !fnmatch(pat, str, 0).
-pub unsafe extern "C" fn glob_match(pat: *const core::ffi::c_char, str_: *const core::ffi::c_char) -> bool {
-    glob_match_str(pat.cast(), str_.cast(), core::ptr::null())
+// Reads are lazy: do not inspect suffixes that the matcher never visits.
+// In particular, a zero bound returns NUL without doing pointer arithmetic.
+unsafe fn read_byte(ptr: *const c_char, index: usize, limit: usize) -> u8 {
+    if index >= limit {
+        return 0;
+    }
+    #[cfg(test)]
+    READS.with(|count| count.set(count.get() + 1));
+    // SAFETY: The caller provides readable, stable bytes through NUL or limit.
+    // The matcher never requests a byte beyond a terminator.
+    unsafe { *ptr.add(index) as u8 }
 }
 
-// EXPORT_SYMBOL(glob_match);
+unsafe fn match_raw(pat: *const c_char, input: *const c_char, len: usize) -> bool {
+    // SAFETY: Forward the caller's string contracts to each lazy access.
+    unsafe {
+        match_readers(
+            |i| read_byte(pat, i, usize::MAX),
+            |i| read_byte(input, i, len),
+        )
+    }
+}
 
-/// Glob match against a length-bounded string.
+/// Shell-style matching, like `!fnmatch(pat, str, 0)`.
+///
+/// # Safety
+/// Both pointers must reference readable NUL-terminated strings, stable for this call.
+#[no_mangle]
+pub unsafe extern "C" fn glob_match(pat: *const c_char, str_: *const c_char) -> bool {
+    // SAFETY: Required by this function's contract.
+    unsafe { match_raw(pat, str_, usize::MAX) }
+}
+
+/// Matches an input that need not be NUL-terminated.
+///
+/// # Safety
+/// `pat` must be a readable NUL-terminated string. `str_` must be readable
+/// through its first NUL or `len` bytes, whichever comes first. These bytes
+/// must remain stable for this call and belong to one object.
+#[no_mangle]
 pub unsafe extern "C" fn glob_match_len(
-    pat: *const core::ffi::c_char,
-    str_: *const core::ffi::c_char,
+    pat: *const c_char,
+    str_: *const c_char,
     len: usize,
 ) -> bool {
-    glob_match_str(pat.cast(), str_.cast(), str_.cast::<u8>().add(len))
+    // SAFETY: Required by this function's contract; a zero limit reads nothing.
+    unsafe { match_raw(pat, str_, len) }
 }
 
-// EXPORT_SYMBOL(glob_match_len);
+#[cfg(test)]
+std::thread_local! {
+    static READS: core::cell::Cell<usize> = const { core::cell::Cell::new(0) };
+}
+
+#[cfg(test)]
+mod access_tests {
+    use super::*;
+
+    #[test]
+    fn slice_boundaries_and_nul() {
+        assert!(matches(b"a*", b"abc"));
+        assert!(matches(b"a\0b", b"a\0c"));
+        assert!(matches(b"", b""));
+        assert!(!matches(b"?", b""));
+        assert!(!matches(b"b", b"a"));
+    }
+
+    #[test]
+    fn early_exit_read_counts_do_not_scale_with_suffixes() {
+        for n in [1, 64, 4096, 1 << 20] {
+            let mut input = vec![b'a'; n];
+            input.push(0);
+            let mut long_pattern = vec![b'b'; n];
+            long_pattern.push(0);
+            for (pattern, expected, reads) in [
+                (&b"*\0"[..], true, 3),
+                (&b"a*\0"[..], true, 5),
+                (&b"b\0"[..], false, 2),
+                (&long_pattern[..], false, 2),
+            ] {
+                for bounded in [false, true] {
+                    READS.with(|count| count.set(0));
+                    // SAFETY: Both vectors/slices include a NUL and remain live.
+                    let actual = unsafe {
+                        if bounded {
+                            glob_match_len(pattern.as_ptr().cast(), input.as_ptr().cast(), n)
+                        } else {
+                            glob_match(pattern.as_ptr().cast(), input.as_ptr().cast())
+                        }
+                    };
+                    let count = READS.with(|count| count.get());
+                    assert_eq!(actual, expected);
+                    let expected_reads = reads - usize::from(bounded && n == 1 && pattern == b"a*\0");
+                    assert_eq!(count, expected_reads, "size={n} bounded={bounded} pattern={:?}", &pattern[..pattern.len().min(3)]);
+                    println!("size={n} bounded={bounded} reads={count} expected={expected_reads}");
+                }
+            }
+        }
+        READS.with(|count| count.set(0));
+        // SAFETY: A zero-length input is never read; the pattern is terminated.
+        assert!(unsafe { glob_match_len(b"*\0".as_ptr().cast(), core::ptr::null(), 0) });
+        assert_eq!(READS.with(|count| count.get()), 2);
+    }
+}
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

@@ -218,6 +218,32 @@ This requires the kernel ``.config``.
 
 Currently, they are mostly used for testing the ``macros`` crate's examples.
 
+Translated C library regression tests
+------------------------------------
+
+The translated-library tests are discovered by ``rust-host-tests`` or directly::
+
+    python3 -B -m unittest discover -s scripts/tests -p 'test_parser.py' -v
+    python3 -B -m unittest discover -s scripts/tests -p 'test_cmdline.py' -v
+    python3 -B -m unittest discover -s scripts/tests -p 'test_memweight.py' -v
+    python3 -B -m unittest discover -s scripts/tests -p 'test_win_minmax.py' -v
+
+Native fixture gates require read-only kernel outputs and the matching Rust
+compiler (minimum 1.85). ``PARSER_NATIVE`` and ``PARSER_ARM64_NATIVE`` supply
+parser inputs; ``WIN_MINMAX_NATIVE`` supplies min/max inputs. ``CMDLINE_NATIVE``
+and ``MEMWEIGHT_NATIVE`` accept colon-separated native paths. Use the respective
+``*_RUSTC`` variables for the compiler. Enable command-line Kbuild checks with
+``CMDLINE_KBUILD=1``. Genuine i686 core sysroots are supplied through
+``PARSER_I686_SYSROOT``, ``WIN_MINMAX_I686_SYSROOT``, ``CMDLINE_SYSROOT32`` and
+``MEMWEIGHT_SYSROOT32``; a nonzero ELF32 execution is a failure, not a skip.
+
+Final selected-output audits additionally use ``PARSER_SELECTED_X86`` and
+``PARSER_SELECTED_ARM64``, or ``NATIVE_WIN_MINMAX_KERNEL_BUILD`` and
+``NATIVE_WIN_MINMAX_ARM64_KERNEL_BUILD``. Fixture success alone does not prove
+the final kernel selected the translation. Omitted optional inputs are reported
+as skips; explicitly empty or invalid inputs fail. Test build artifacts use
+temporary directories; optional external log destinations retain evidence.
+
 The Kselftests
 --------------
 

@@ -1,0 +1,194 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/* Test-only userspace driver against genuine kernel headers and C bodies.
+ * Only the allocator leaf is replaced; kmemdup_nul and its inline helper are
+ * exact mm/util.c code and exercise the configured kmalloc call chain.
+ */
+#include <linux/types.h>
+#include <linux/parser.h>
+#include <linux/slab.h>
+#include <linux/string.h>
+
+extern void *malloc(size_t);
+extern void free(void *);
+extern void abort(void) __attribute__((noreturn));
+extern int puts(const char *);
+extern int printf(const char *, ...);
+#define CHECK(x) do { if (!(x)) { printf("line %d: %s\n", __LINE__, #x); abort(); } } while (0)
+extern int c_match_token(char *, const match_table_t, substring_t *);
+extern int c_match_int(substring_t *, int *);
+extern int c_match_uint(substring_t *, unsigned *);
+extern int c_match_u64(substring_t *, u64 *);
+extern int c_match_octal(substring_t *, int *);
+extern int c_match_hex(substring_t *, int *);
+extern bool c_match_wildcard(const char *, const char *);
+extern size_t c_match_strlcpy(char *, const substring_t *, size_t);
+extern char *c_match_strdup(const substring_t *);
+
+static bool fail_alloc;
+static size_t allocated_size;
+static gfp_t allocated_flags;
+static unsigned alloc_calls;
+void *__kmalloc_node_track_caller_noprof(DECL_KMALLOC_PARAMS(size, b, token),
+                                       gfp_t flags, int node, unsigned long caller)
+{
+    allocated_size = size;
+    allocated_flags = flags;
+    ++alloc_calls;
+    CHECK(node == NUMA_NO_NODE);
+    return fail_alloc ? NULL : malloc(size);
+}
+
+static void numbers(void)
+{
+    static const char *const values[] = {
+        "", "-", "+", "0", "00", "08", "09", "010", "0x", "0Xf", "0xff",
+        "-0xff", "+0xff", "123garbage", "12\n", "12\n\n", " 12", "12 ",
+        "-1", "+1", "2147483647", "2147483648", "-2147483648", "-2147483649",
+        "4294967295", "4294967296", "9223372036854775807",
+        "9223372036854775808", "18446744073709551615", "18446744073709551616",
+        "01777777777777777777777", "00000000000000000000000",
+        "000000000000000000000000", "999999999999999999999999999", "f", "FF", "0xg",
+    };
+    int (*volatile rust[])(substring_t *, int *) = {match_int, match_octal, match_hex};
+    int (*volatile original[])(substring_t *, int *) = {c_match_int, c_match_octal, c_match_hex};
+    unsigned i, j;
+    for (i = 0; i < ARRAY_SIZE(values); ++i) {
+        substring_t s = {(char *)values[i], (char *)values[i] + strlen(values[i])};
+        for (j = 0; j < ARRAY_SIZE(rust); ++j) {
+            int a = 0x12345678, b = a;
+            int ra = rust[j](&s, &a), rb = original[j](&s, &b);
+            CHECK(ra == rb && a == b);
+            if (rb) CHECK(rust[j](&s, NULL) == original[j](&s, NULL));
+        }
+        unsigned a = 0x12345678, b = a;
+        int ra = match_uint(&s, &a), rb = c_match_uint(&s, &b);
+        CHECK(ra == rb && a == b);
+        if (rb) CHECK(match_uint(&s, NULL) == c_match_uint(&s, NULL));
+        u64 x = 0x123456789abcdef0ULL, y = x;
+        ra = match_u64(&s, &x); rb = c_match_u64(&s, &y);
+        CHECK(ra == rb && x == y);
+        if (rb) CHECK(match_u64(&s, NULL) == c_match_u64(&s, NULL));
+    }
+    /* Results overlap source bytes, but only after the stack copy. */
+    union { unsigned value; char text[32]; } a, b;
+    strcpy(a.text, "12345"); strcpy(b.text, "12345");
+    substring_t sa = {a.text, a.text + 5}, sb = {b.text, b.text + 5};
+    CHECK(match_uint(&sa, &a.value) == c_match_uint(&sb, &b.value));
+    CHECK(a.value == b.value);
+}
+
+static void captures(void)
+{
+    static const char *const patterns[] = {
+        "", "abc", "%%", "%%%s", "%s", "%0s", "%1s", "%2sX", "%d", "%u",
+        "%o", "%x", "%q", "%", "%4294967295s", "%4294967296s",
+        "%2147483648s", "%18446744073709551615s",
+        "%1s%1s%1s", "%1s%1s%1s%1s", "%d,%s", "%sX",
+    };
+    static const char *const values[] = {
+        "", "abc", "%", "%abc", "aX", "123", "-1", "-", "+1", "0x",
+        "08", "0xff", "ff", "7,abc", "ABCD", "\200x",
+    };
+    unsigned i, j, k;
+    for (i = 0; i < ARRAY_SIZE(patterns); ++i)
+        for (j = 0; j < ARRAY_SIZE(values); ++j) {
+            char buf[32];
+            strcpy(buf, values[j]);
+            struct match_token table[] = {{17, patterns[i]}, {42, "fallback"}, {99, NULL}};
+            substring_t a[3], b[3];
+            for (k = 0; k < 3; ++k) a[k] = b[k] = (substring_t){buf + 28, buf + 29};
+            int ra = match_token(buf, table, a), rb = c_match_token(buf, table, b);
+            CHECK(ra == rb);
+            CHECK(memcmp(a, b, sizeof(a)) == 0);
+        }
+    struct match_token end[] = {{-5, NULL}};
+    CHECK(match_token(NULL, end, NULL) == -5);
+    CHECK(c_match_token(NULL, end, NULL) == -5); /* sentinelNULL */
+    struct match_token literal[] = {{71, "literal"}, {-5, NULL}};
+    char text[] = "literal";
+    CHECK(match_token(text, literal, NULL) == 71); /* literalNULL */
+    CHECK(c_match_token(text, literal, NULL) == 71);
+    /* singlecapture: both alternatives write only slot zero; no initialization
+     * is required before those writes, including the failed first alternative. */
+    struct match_token single[] = {{72, "%dX"}, {73, "%d"}, {-5, NULL}};
+    char number[] = "123";
+    substring_t one_rust, one_c;
+    CHECK(match_token(number, single, &one_rust) == 73);
+    CHECK(c_match_token(number, single, &one_c) == 73);
+    CHECK(one_rust.from == one_c.from && one_rust.to == one_c.to);
+    /* Captures alias the table itself; C reloads the resulting token. */
+    union { struct match_token table[3]; substring_t args[3]; } a, b;
+    char shared[] = "overlap";
+    memset(&a, 0, sizeof(a)); memset(&b, 0, sizeof(b));
+    a.table[0] = b.table[0] = (struct match_token){17, "%s"};
+    CHECK(match_token(shared, a.table, a.args) == c_match_token(shared, b.table, b.args));
+    CHECK(memcmp(&a, &b, sizeof(a)) == 0);
+}
+
+static void wildcard(void)
+{
+    char p[7], s[7];
+    unsigned i, j, n;
+    const char alphabet[] = "ab*?";
+    for (i = 0; i < 1365; ++i) {
+        unsigned v = i;
+        for (n = 0; v; ++n) { p[n] = alphabet[(v-1) % 4]; v = (v-1) / 4; }
+        p[n] = 0;
+        for (j = 0; j < 63; ++j) {
+            v = j;
+            for (n = 0; v; ++n) { s[n] = "ab"[(v-1) % 2]; v = (v-1) / 2; }
+            s[n] = 0;
+            CHECK(match_wildcard(p, s) == c_match_wildcard(p, s));
+        }
+    }
+}
+
+static void strings(void)
+{
+    char data[] = {'a', 0, 'b', 'c', 'd', 0};
+    unsigned n, size;
+    for (n = 0; n < sizeof(data); ++n) {
+        substring_t s = {data, data + n};
+        for (size = 0; size < 9; ++size) {
+            char a[12], b[12];
+            memset(a, 0x55, sizeof(a)); memset(b, 0x55, sizeof(b));
+            CHECK(match_strlcpy(a, &s, size) == c_match_strlcpy(b, &s, size));
+            CHECK(memcmp(a, b, sizeof(a)) == 0);
+        }
+        CHECK(match_strlcpy(NULL, &s, 0) == n);
+        fail_alloc = false;
+        char *a = match_strdup(&s);
+        CHECK(a && allocated_size == n+1 && allocated_flags == GFP_KERNEL);
+        char *b = c_match_strdup(&s);
+        CHECK(b && allocated_size == n+1 && allocated_flags == GFP_KERNEL);
+        CHECK(!memcmp(a, b, n+1) && !memcmp(a, data, n) && a[n] == 0);
+        free(a); free(b);
+        fail_alloc = true;
+        CHECK(match_strdup(&s) == NULL);
+        CHECK(allocated_size == n+1 && allocated_flags == GFP_KERNEL);
+        CHECK(c_match_strdup(&s) == NULL);
+    }
+    CHECK(alloc_calls == 4 * sizeof(data));
+    /* memcpy destination may overlap the descriptor, not the source bytes. */
+    substring_t a = {data, data + 4}, b = a;
+    CHECK(match_strlcpy((char *)&a, &a, 5) == c_match_strlcpy((char *)&b, &b, 5));
+    CHECK(memcmp(&a, &b, sizeof(a)) == 0);
+}
+
+int main(int argc, char **argv)
+{
+    if (argc > 1) {
+        /* Deliberately wrong indirect signature must trap under native KCFI. */
+        void (*volatile bad)(void) = (void (*)(void))(void *)match_token;
+        bad();
+        return 77;
+    }
+    numbers(); captures(); wildcard(); strings();
+#ifdef WITH_RUST_HEADER
+    extern bool parser_header_smoke(void);
+    fail_alloc = false;
+    CHECK(parser_header_smoke());
+#endif
+    puts("parser: all nine APIs, captures, ranges, wildcards, copy and allocation passed");
+    return 0;
+}

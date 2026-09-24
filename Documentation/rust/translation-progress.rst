@@ -2178,16 +2178,20 @@ than skip. Strict native x86-64 and ARM64 images/modules build with both Rust
 providers and their original C KUnit suites selected as modules.
 
 Dedicated Base64 and UUID runtime checkers are integrated: respectively 21
-groups (5.433 seconds) and 16 groups (7.214 seconds) pass without skips. Both
+groups (5.433 seconds) and 22 groups (8.827 seconds) pass without skips. Both
 languages own their complete native consumer loops, with unchanged original C
 used only as the algorithm oracle (and Base64 case data). Compiled UUID
 constant-result and C-dispatch-delegation controls are rejected. Actual module
 metadata, defining/imported versions, protected call sites, licenses, exact
-KUnit results and unload/reload ordering are checked. The C-provider matrix
-passes for both callers on both architectures; final Rust-provider roundtrips
-are in progress. Earlier Rust-provider preflights passed both Base64 callers
-and the UUID C caller on both architectures, not the then-unfinished independent
-UUID Rust workload.
+KUnit results and unload/reload ordering are checked. The full C/Rust-provider
+by C/Rust-caller matrix passes on both architectures: four kernel builds and
+16 VM runs across both components, with their original C suites loaded twice
+per VM. Rust providers are restored afterward. Each Base64 load checks 154,328
+cases; each UUID load checks 9,217 parser inputs across 61 overlap offsets,
+1,024 real RNG calls and both exported null values. This completes the two
+providers' dedicated native gates, not the new full regression or every
+configuration. The conservative lib inventory becomes 28 native units plus
+three host generators (31/526); these overlap the separate host-tool inventory.
 
 The translated UUID suite is independently selectable with
 ``CONFIG_RUST_UUID_KUNIT_TEST``, default off, preserving ``UUID_KUNIT_TEST`` y/m
@@ -2197,8 +2201,39 @@ using actual KUnit assertions/formatters and nominal UUID/GUID bindings.
 Eight integrated groups pass without skips (10.289 seconds), including actual
 ELF32/ELF64 traces, fault injection, protected callbacks, native x86/ARM64
 compilation, module/builtin metadata and real Kbuild selection/dependencies.
-Native execution of the translated suite and the new full regression remain
-outstanding; private compilation is not counted as a native suite pass.
+The translated suite now also passes four native builds and eight VM runs,
+covering both C/Rust providers and C/Rust callers on x86-64 and ARM64, with
+all eight cases run twice per VM through module unload/reload. Together with
+the original-suite matrix, UUID covers all provider/suite/caller language
+combinations on both architectures. Rust provider and suite are restored.
+Builtin execution of the translated suite and the new full regression remain
+outstanding. Adding this natively executed test unit makes the conservative
+lib inventory 29 native units plus three host generators (32/526); the
+separate host-tool inventory overlaps these counts.
+
+Parser, command-line, memory-weight and windowed min/max candidates
+----------------------------------------------------------------
+
+``CONFIG_RUST_PARSER``, ``CONFIG_RUST_CMDLINE``, ``CONFIG_RUST_MEMWEIGHT`` and
+``CONFIG_RUST_WIN_MINMAX`` independently select repaired translations while
+retaining the original C selections and archive positions. Parser and min/max
+types are generated from their unchanged C headers. Original SOURCE-COMMIT
+markers and export licenses are preserved; modules must be rebuilt after a
+language change because genuine Rust DWARF symbol versions can differ.
+
+The parser retains all nine APIs, conditional/partial capture writes, numeric
+errors and real kernel allocation. Command-line helpers preserve pointer/write
+order and integer wrapping, including count-only ranges. Memory weight keeps
+the leading-byte scan before the original BUG threshold and the big-endian
+tail contract. Windowed min/max retains wrapping timestamps, exact comparison
+edges and the C-defined partial-initialization domain without creating a Rust
+reference to an incompletely initialized tracker.
+
+Initial integrated tests pass for cmdline (seven groups) and memweight (six),
+without skips, including genuine ELF32 execution. Parser and min/max host,
+ELF32 and native-object fixture gates pass; their selected-kernel audits and
+full native runtime gates remain outstanding. These four candidates are not
+yet included in the conservative completed-unit count above.
 
 Remaining integration
 ---------------------

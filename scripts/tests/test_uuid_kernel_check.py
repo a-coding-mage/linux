@@ -6,6 +6,7 @@ import io
 import os
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -105,6 +106,17 @@ class ProtocolTests(unittest.TestCase):
                     {"KUNIT":"y","UUID_KUNIT_TEST":"y","RUST_UUID":"y"}):
             with self.assertRaises(ValueError): check.states(cfg)
 
+    def test_independent_rust_suite_selector(self):
+        for provider in ("n","y"):
+            for language in ("n","y"):
+                for framework,suite in (("y","y"),("y","m"),("m","m")):
+                    cfg=dict(RUST="y",RUST_UUID=provider,RUST_UUID_KUNIT_TEST=language,
+                             KUNIT=framework,UUID_KUNIT_TEST=suite)
+                    self.assertEqual(check.states(cfg),(suite,framework))
+        for language in ("m","invalid","y"):
+            with self.assertRaises(ValueError):
+                check.states(dict(RUST="n",KUNIT="y",UUID_KUNIT_TEST="y",RUST_UUID_KUNIT_TEST=language))
+
     def test_cli_rejects_before_writes(self):
         with tempfile.TemporaryDirectory() as directory:
             build=Path(directory)
@@ -180,6 +192,89 @@ class MetadataTests(unittest.TestCase):
         for name in check.GPL: self.assertIn(name+"(&value)",check.license_source(name))
 
 
+class SuiteCommandTests(unittest.TestCase):
+    """Real saved-command/freshness checks with scoped ELF transport mocks.
+
+    Actual header-derived objects and registration/KCFI are exercised separately
+    by NativeCallerTests; these files do not purport to be ABI objects.
+    """
+    def setUp(self):
+        temporary=tempfile.TemporaryDirectory(prefix="uuid-suite-command-")
+        self.addCleanup(temporary.cleanup)
+        self.build=Path(temporary.name)
+        self.obj=self.build/"lib/tests/uuid_kunit.o"
+        self.kernel=self.build/"rust/kernel.o"
+        self.metadata=[self.build/"rust/libkernel.rmeta",self.build/"rust/libbindings.rmeta"]
+        for path in (self.obj,self.kernel,*self.metadata):
+            path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_bytes(b"transport")
+        (self.build/".config").write_text("CONFIG_CFI=y\n")
+        for name in ("elf_target","verify_references","verify_suite_registration","verify_suite_metadata"):
+            patch=mock.patch.object(check,name)
+            patch.start();self.addCleanup(patch.stop)
+        self.command(self.kernel,ROOT/"rust/kernel/lib.rs",[ROOT/"rust/kernel/kunit.rs"],True)
+
+    def command(self,obj,source,deps,rust):
+        path=obj.with_name("."+obj.name+".cmd")
+        key=str(obj.relative_to(self.build))
+        flags=["rustc","-Zsanitizer=kcfi"] if rust else ["clang","-fsanitize=kcfi"]
+        path.write_text(f"savedcmd_{key} := "+shlex.join([*flags,str(source)])+"\n"+
+            f"source_{key} := {source}\n"+f"deps_{key} := "+shlex.join(map(str,deps))+"\n")
+        os.utime(obj,ns=(source.stat().st_mtime_ns+10_000_000_000,
+                        max(p.stat().st_mtime_ns for p in (source,*deps))+10_000_000_000))
+        return path
+
+    def prepare(self,rust):
+        source=ROOT/("lib/tests/uuid_kunit.rs" if rust else "lib/tests/uuid_kunit.c")
+        deps=[ROOT/"include/linux/uuid_header.rs",*self.metadata] if rust else [ROOT/"include/kunit/test.h",ROOT/"include/linux/uuid.h"]
+        return self.command(self.obj,source,deps,rust)
+
+    def verify(self,rust=True,members=None):
+        check.verify_suite_object(self.build,self.obj,"x86_64",builtin=True,rust_suite=rust,
+            members={self.kernel.resolve()} if members is None else members)
+
+    def test_selected_original_source_and_wrong_language(self):
+        for rust in (False,True):
+            self.prepare(rust)
+            self.verify(rust)
+            with self.assertRaises(ValueError): self.verify(not rust)
+
+    def test_missing_dependency_and_stale_source(self):
+        for rust in (False,True):
+            path=self.prepare(rust)
+            original=path.read_text()
+            missing="include/linux/uuid_header.rs" if rust else "include/kunit/test.h"
+            path.write_text(original.replace(str(ROOT/missing),""))
+            with self.assertRaises(ValueError): self.verify(rust)
+            path.write_text(original)
+            os.utime(self.obj,ns=(1,1))
+            with self.assertRaises(ValueError): self.verify(rust)
+
+    def test_real_rust_helper_membership_dependencies_and_rmeta_freshness(self):
+        self.prepare(True)
+        self.verify()
+        with self.assertRaises(ValueError): self.verify(members=set())
+        path=self.kernel.with_name("."+self.kernel.name+".cmd")
+        text=path.read_text()
+        path.write_text(text.replace(str(ROOT/"rust/kernel/kunit.rs"),""))
+        with self.assertRaises(ValueError): self.verify()
+        path.write_text(text)
+        for metadata in self.metadata:
+            stamp=metadata.stat().st_mtime_ns
+            os.utime(metadata,ns=(1,1))
+            with self.assertRaises(ValueError): self.verify()
+            os.utime(metadata,ns=(stamp,stamp))
+
+    def test_selected_compile_flags_must_retain_kcfi(self):
+        for rust in (False,True):
+            path=self.prepare(rust)
+            original=path.read_text()
+            flag="-Zsanitizer=kcfi" if rust else "-fsanitize=kcfi"
+            for replacement in ("",flag+" -fno-sanitize=all",flag+" -fno-sanitize=kcfi"):
+                path.write_text(original.replace(flag,replacement))
+                with self.assertRaises(ValueError): self.verify(rust)
+
+
 class NativeCallerTests(unittest.TestCase):
     def setUp(self):
         self.fixture=native_fixture.UUIDTest("test_native_x86")
@@ -245,6 +340,105 @@ class NativeCallerTests(unittest.TestCase):
 
     def test_actual_x86_protected_callers(self): self.compile("x86")
     def test_actual_arm64_protected_callers(self): self.compile("arm64")
+
+    def test_actual_c_rust_suite_registration_lifecycles_and_kcfi(self):
+        fixture=self.fixture
+        n=fixture.n
+        for arch in ("x86","arm64"):
+            fixture.require(arch)
+            build=fixture.builds[arch]
+            n.BUILDS={arch:build}
+            rf,cf=n.flags(build,True),n.flags(build,False)
+            # The ARM donor may itself be modular. Exercise both UUID suite
+            # lifecycles explicitly, retaining every other actual target flag.
+            rf=[arg for i,arg in enumerate(rf) if arg!="--cfg=MODULE" and
+                not (arg=="--cfg" and i+1<len(rf) and rf[i+1]=="MODULE") and
+                not (arg=="MODULE" and i>0 and rf[i-1]=="--cfg")]
+            cf=[arg.replace('"lib/uuid"','"lib/tests/uuid_kunit"').replace('"uuid"','"uuid_kunit"')
+                .replace('=uuid','=uuid_kunit') for arg in cf]
+            makefile=(ROOT/"lib/tests/Makefile").read_text()
+            self.assertNotRegex(makefile,r'(?m)^\s*CFLAGS_(?:REMOVE_)?uuid_kunit\.o\s*[:+?]?=')
+            n.env.update(OBJTREE=str(build),RUST_MODFILE="lib/tests/uuid_kunit")
+            rust_source=fixture.out/"suite.rs"
+            text=(ROOT/"lib/tests/uuid_kunit.rs").read_text()
+            self.assertEqual(text.count('../../include/linux/uuid_header.rs'),1)
+            rust_source.write_text(text.replace('../../include/linux/uuid_header.rs',str(ROOT/"include/linux/uuid_header.rs")))
+            for builtin in (False,True):
+                ids=[]
+                for language in ("c","rust"):
+                    tag=f"suite-{arch}-{builtin}-{language}"
+                    obj=fixture.out/(tag+".o")
+                    if language=="c":
+                        n.command(["clang",*cf,"-O2",*(["-DMODULE"] if not builtin else []),
+                            "-c",ROOT/"lib/tests/uuid_kunit.c","-o",obj],tag,build)
+                    else:
+                        n.command([n.RUST,*rf,"-Copt-level=2",*(["--cfg=MODULE"] if not builtin else []),
+                            rust_source,"--emit=obj="+str(obj)],tag)
+                    n.command(["nm",obj],tag+"-symbols")
+                    callbacks=check.verify_suite_registration(obj,"x86_64" if arch=="x86" else "aarch64",
+                        rust_suite=language=="rust",builtin=builtin,cfi=True)
+                    check.verify_references(obj,("guid_parse","uuid_parse","guid_gen","uuid_gen",
+                        "generate_random_uuid","generate_random_guid","__kunit_do_failed_assertion",
+                        "kunit_binary_assert_format","kunit_unary_assert_format"))
+                    check.verify_suite_metadata(obj,builtin)
+                    values=check.provider_type_ids(obj,names=tuple(s[0].decode() for s in callbacks))
+                    ids.append(list(values.values()))
+                    self.registration_negatives(obj,arch,language=="rust",builtin)
+                    linked=fixture.out/(tag+".linked.o")
+                    n.command(["ld.lld","-r",obj,"-o",linked],tag+"-link")
+                    check.verify_suite_registration(linked,"x86_64" if arch=="x86" else "aarch64",
+                        rust_suite=language=="rust",builtin=builtin,cfi=True)
+                self.assertEqual(ids[0],ids[1],"original C and actual-binding Rust callback KCFI")
+
+    def registration_negatives(self,obj,arch,rust_suite,builtin):
+        arch="x86_64" if arch=="x86" else "aarch64"
+        parsed=check.module_elf(obj)
+        sections=parsed[1]
+        registration=next(i for i,s in enumerate(sections) if s[0]==b".kunit_test_suites")
+        relocation=next(i for i,s in enumerate(sections) if s[1]==4 and s[6]==registration)
+        def reject(changed):
+            with mock.patch.object(check,"module_elf",return_value=(parsed[0],changed,*parsed[2:])),self.assertRaises(ValueError):
+                check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+        for field,value in ((1,8),(2,2),(4,16),(7,4)):
+            changed=list(sections);section=list(changed[registration]);section[field]=value;changed[registration]=tuple(section)
+            reject(changed)
+        for payload in ((),sections[relocation][-1]*2):
+            changed=list(sections);section=list(changed[relocation]);section[-1]=payload;changed[relocation]=tuple(section)
+            reject(changed)
+        for offset,kind in ((4,1),(0,999)):
+            changed=list(sections);section=list(changed[relocation]);r=list(section[-1][0]);r[0]=offset;r[1]=kind
+            section[-1]=(tuple(r),);changed[relocation]=tuple(section);reject(changed)
+        changed=list(sections);section=list(changed[relocation]);r=list(section[-1][0]);symbol=list(r[2])
+        symbol[3]=0;r[2]=tuple(symbol);section[-1]=(tuple(r),);changed[relocation]=tuple(section)
+        reject(changed)
+        callbacks=check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+        callback_addresses={(s[3],s[4]) for s in callbacks}
+        for i,s in enumerate(sections):
+            if s[1]!=4 or not 0<s[6]<len(sections) or not sections[s[6]][2]&2 or sections[s[6]][2]&4: continue
+            matches=[j for j,r in enumerate(s[-1]) if (r[2][3],r[2][4]+r[3]) in callback_addresses]
+            if len(matches)!=8: continue
+            for mode in ("missing","reordered","duplicate"):
+                records=list(s[-1]);a,b=matches[:2]
+                if mode=="missing": records.pop(a)
+                elif mode=="duplicate": records.append(records[a])
+                else:
+                    first,second=records[a],records[b]
+                    records[a]=(first[0],*second[1:]);records[b]=(second[0],*first[1:])
+                changed=list(sections);changed[i]=(*s[:-1],tuple(records));reject(changed)
+            break
+        else: self.fail("actual callback registration relocation table missing")
+        for name in (b"init_module",b"cleanup_module"):
+            symbols=[*parsed[2],(name,*callbacks[0][1:])]
+            with mock.patch.object(check,"module_elf",return_value=(parsed[0],sections,symbols,*parsed[3:])),self.assertRaises(ValueError):
+                check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+        # The same real object must fail the opposite language/module marker gate.
+        if not builtin:
+            with self.assertRaises(ValueError):
+                check.verify_suite_registration(obj,arch,rust_suite=not rust_suite,builtin=builtin,cfi=True)
+        with mock.patch.object(check,"read_exports",return_value=[{"name":"unexpected"}]),self.assertRaises(ValueError):
+            check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
+        with mock.patch.object(check,"provider_type_ids",return_value={str(i):i+1 for i in range(8)}),self.assertRaises(ValueError):
+            check.verify_suite_registration(obj,arch,rust_suite=rust_suite,builtin=builtin,cfi=True)
 
     def execute(self,build,rf,cf):
         fixture=self.fixture

@@ -1,0 +1,23 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+typedef __SIZE_TYPE__ size_t;
+extern int main(void);
+void *memcpy(void *d, const void *s, size_t n)
+{
+    unsigned char *a = d;
+    const unsigned char *b = s;
+    for (size_t i = 0; i < n; i++) a[i] = b[i];
+    return d;
+}
+void *memset(void *d, int v, size_t n)
+{
+    unsigned char *a = d;
+    for (size_t i = 0; i < n; i++) a[i] = v;
+    return d;
+}
+__attribute__((noreturn)) void suite(void)
+{
+    int result = main();
+    __asm__ volatile("int $0x80" : : "a"(1), "b"(result) : "memory");
+    __builtin_unreachable();
+}
+__asm__(".text\n.globl _start\n_start:\n andl $-16,%esp\n call suite\n ud2\n");

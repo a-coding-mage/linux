@@ -39,13 +39,28 @@ else
 lib-y := ctype.o
 endif
 
-lib-y += string.o vsprintf.o cmdline.o \
+ifeq ($(CONFIG_RUST_CMDLINE),y)
+cmdline-provider := cmdline_rust.o
+# The implementation basename changes, but the provider still owns lib/cmdline.
+$(obj)/cmdline_rust.o: modfile := lib/cmdline
+else
+cmdline-provider := cmdline.o
+endif
+
+# Keep the provider at cmdline's original position in lib.a.
+lib-y += string.o vsprintf.o $(cmdline-provider) \
 	 rbtree.o radix-tree.o timerqueue.o xarray.o \
 	 maple_tree.o idr.o extable.o irq_regs.o argv_split.o \
 	 flex_proportions.o ratelimit.o \
 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
-	 nmi_backtrace.o win_minmax.o memcat_p.o \
+	 nmi_backtrace.o
+ifeq ($(CONFIG_RUST_WIN_MINMAX),y)
+lib-y += win_minmax_rust.o
+else
+lib-y += win_minmax.o
+endif
+lib-y += memcat_p.o \
 	 buildid.o objpool.o iomem_copy.o sys_info.o
 
 lib-$(CONFIG_UNION_FIND) += union_find.o
@@ -64,7 +79,14 @@ else
 obj-y += bcd.o
 endif
 
-obj-y += sort.o parser.o debug_locks.o random32.o \
+obj-y += sort.o
+ifeq ($(CONFIG_RUST_PARSER),y)
+obj-y += parser_rust.o
+$(obj)/parser_rust.o: private __modname := parser
+else
+obj-y += parser.o
+endif
+obj-y += debug_locks.o random32.o \
 	 bust_spinlocks.o kasprintf.o bitmap.o scatterlist.o
 ifeq ($(CONFIG_RUST_LIST_SORT),y)
 obj-y += list_sort_rust.o
@@ -77,7 +99,13 @@ else
 obj-y += uuid.o
 endif
 obj-y += iov_iter.o clz_ctz.o \
-	 bsearch.o find_bit.o llist.o lwq.o memweight.o kfifo.o \
+	 bsearch.o find_bit.o llist.o lwq.o
+ifeq ($(CONFIG_RUST_MEMWEIGHT),y)
+obj-y += memweight_rust.o
+else
+obj-y += memweight.o
+endif
+obj-y += kfifo.o \
 	 percpu-refcount.o rhashtable.o
 ifeq ($(CONFIG_RUST_BASE64),y)
 obj-y += base64_rust.o
@@ -262,6 +290,15 @@ obj-$(CONFIG_CLOSURES) += closure.o
 obj-$(CONFIG_DQL) += dynamic_queue_limits.o
 
 obj-$(CONFIG_GLOB) += glob.o
+ifeq ($(CONFIG_RUST_GLOB),y)
+# Keep glob.o in the original archive slot and retain its build identity.
+$(obj)/glob.o: $(src)/glob_rust.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+$(obj)/glob.s: $(src)/glob_rust.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+$(obj)/glob.ll: $(src)/glob_rust.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 
 obj-$(CONFIG_DIMLIB) += dim/
 obj-$(CONFIG_SIGNATURE) += digsig.o

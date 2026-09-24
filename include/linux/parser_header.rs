@@ -8,28 +8,17 @@
  * parsing is required.
  */
 
-/* associates an integer enumerator with a pattern string. */
-#[repr(C)]
-pub struct match_token {
-    pub token: ::core::ffi::c_int,
-    pub pattern: *const ::core::ffi::c_char,
-}
+//! Parser declarations using the layouts generated from linux/parser.h.
+pub use kernel::bindings::{match_table_t, substring_t, MAX_OPT_ARGS};
 
-pub type match_table_t = [match_token; 0];
+/// Original table-entry type, without also importing the same-named C function.
+#[allow(non_camel_case_types)]
+pub type match_token = kernel::bindings::match_token;
 
-/* Maximum number of arguments that match_token will find in a pattern */
-pub const MAX_OPT_ARGS: ::core::ffi::c_int = 3;
-
-/* Describe the location within a string of a substring */
-#[repr(C)]
-pub struct substring_t {
-    pub from: *mut ::core::ffi::c_char,
-    pub to: *mut ::core::ffi::c_char,
-}
-
+#[allow(missing_docs)] // These declarations mirror the documented C header.
 unsafe extern "C" {
     pub fn match_token(
-        s: *mut ::core::ffi::c_char,
+        s: *mut kernel::ffi::c_char,
         table: *const match_token,
         args: *mut substring_t,
     ) -> ::core::ffi::c_int;
@@ -54,15 +43,15 @@ unsafe extern "C" {
         result: *mut ::core::ffi::c_int,
     ) -> ::core::ffi::c_int;
     pub fn match_wildcard(
-        pattern: *const ::core::ffi::c_char,
-        str_: *const ::core::ffi::c_char,
+        pattern: *const kernel::ffi::c_char,
+        str_: *const kernel::ffi::c_char,
     ) -> bool;
     pub fn match_strlcpy(
-        dest: *mut ::core::ffi::c_char,
+        dest: *mut kernel::ffi::c_char,
         src: *const substring_t,
         size: usize,
     ) -> usize;
-    pub fn match_strdup(s: *const substring_t) -> *mut ::core::ffi::c_char;
+    pub fn match_strdup(s: *const substring_t) -> *mut kernel::ffi::c_char;
 }
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

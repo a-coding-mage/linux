@@ -66,6 +66,7 @@
 #include <linux/fwctl.h>
 #include <linux/fs.h>
 #include <linux/gcd.h>
+#include <linux/glob.h>
 #include <linux/i2c.h>
 #include <linux/int_log.h>
 #include <linux/interrupt.h>
@@ -79,6 +80,7 @@
 #include <linux/mm.h>
 #include <linux/miscdevice.h>
 #include <linux/of_device.h>
+#include <linux/parser.h>
 #include <linux/pci.h>
 #include <linux/phy.h>
 #include <linux/pid_namespace.h>
@@ -104,6 +106,7 @@
 #include <linux/usb.h>
 #include <linux/uuid.h>
 #include <linux/wait.h>
+#include <linux/win_minmax.h>
 #include <linux/workqueue.h>
 #include <linux/xarray.h>
 #include <net/genetlink.h>

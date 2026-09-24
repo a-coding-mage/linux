@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: GPL-2.0-only
+//! Exercises the translated header with genuine kernel parser types.
+#[path = "PARSER_HEADER"]
+pub mod declarations;
+use declarations::*;
+unsafe extern "C" { fn free(p: *mut core::ffi::c_void); }
+
+/// Exercise all declarations through the Rust-side header.
+///
+/// # Safety
+/// Test runtime supplies the C allocator and the selected parser symbols.
+#[no_mangle]
+pub unsafe extern "C" fn parser_header_smoke() -> bool {
+    // SAFETY: All inputs terminate and storage remains live throughout.
+    unsafe {
+        let mut text = *b"12\0";
+        let mut s = substring_t { from: text.as_mut_ptr(), to: text.as_mut_ptr().add(2) };
+        let table = [
+            match_token { token: 7, pattern: b"%d\0".as_ptr() },
+            match_token { token: 9, pattern: core::ptr::null() },
+        ];
+        let mut args = [s; 3];
+        let mut signed = 0;
+        let mut unsigned = 0;
+        let mut wide = 0;
+        let mut dest = [0; 3];
+        if match_token(text.as_mut_ptr(), table.as_ptr(), args.as_mut_ptr()) != 7
+            || match_int(&mut s, &mut signed) != 0 || signed != 12
+            || match_octal(&mut s, &mut signed) != 0 || signed != 10
+            || match_hex(&mut s, &mut signed) != 0 || signed != 18
+            || match_uint(&mut s, &mut unsigned) != 0 || unsigned != 12
+            || match_u64(&mut s, &mut wide) != 0 || wide != 12
+            || !match_wildcard(b"1?\0".as_ptr(), text.as_ptr())
+            || match_strlcpy(dest.as_mut_ptr(), &s, 3) != 2
+            || dest != text
+        { return false; }
+        let copy = match_strdup(&s);
+        if copy.is_null() { return false; }
+        let ok = *copy == b'1' && *copy.add(1) == b'2' && *copy.add(2) == 0;
+        free(copy.cast());
+        ok
+    }
+}

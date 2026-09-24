@@ -1,0 +1,18 @@
+//! Test-only callers of the translated inline header.
+#[path = "HEADER"]
+/// Translated inline header under test.
+pub mod declarations;
+/// Test reset caller.
+/// # Safety
+/// Requires writable aligned tracker storage.
+#[no_mangle]
+pub unsafe extern "C" fn rust_reset(m: *mut declarations::minmax, t: u32, v: u32) -> u32 {
+    unsafe { declarations::minmax_reset(m, t, v) }
+}
+/// Test get caller.
+/// # Safety
+/// Requires aligned tracker storage with readable, initialized `s[0].v` only.
+#[no_mangle]
+pub unsafe extern "C" fn rust_get(m: *const declarations::minmax) -> u32 {
+    unsafe { declarations::minmax_get(m) }
+}

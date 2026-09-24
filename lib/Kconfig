@@ -8,6 +8,30 @@ config BINARY_PRINTF
 
 menu "Library routines"
 
+config RUST_CMDLINE
+	bool "Rust implementation of command-line helpers"
+	depends on RUST
+	help
+	  Build the allocation-free Rust command-line parsers with the original
+	  C interfaces and exports. The original C implementation remains the
+	  default. This choice is independent of HOST_TOOLS_LANG.
+
+	  Rebuild modules after switching: native Rust DWARF types can produce
+	  different version CRCs while retaining the C ABI.
+
+	  If unsure, say N.
+
+config RUST_WIN_MINMAX
+	bool "Rust implementation of windowed min/max tracking"
+	depends on RUST
+	help
+	  Build the translated windowed min/max tracker with the original C
+	  interface and unrestricted exports. No allocation is required.
+	  Disable to retain the original C implementation.
+	  Rebuild modules after switching: native Rust DWARF types can produce
+	  different version CRCs even when the C ABI is unchanged.
+	  If unsure, say N.
+
 config RUST_BASE64
 	bool "Use Rust for the Base64 C interfaces"
 	depends on RUST
@@ -20,6 +44,17 @@ config RUST_BASE64
 
 	  Native Rust DWARF type descriptions differ from the C descriptions;
 	  rebuild dependent modules when changing this option with MODVERSIONS.
+
+config RUST_MEMWEIGHT
+	bool "Rust implementation of memweight"
+	depends on RUST
+	default n
+	help
+	  Use the native Rust implementation in the original memweight archive
+	  position. The original C implementation remains the default.
+
+	  Native Rust DWARF type descriptions differ from C; rebuild dependent
+	  modules when changing this option with MODVERSIONS.
 
 config RUST_BCD
 	bool "Rust implementation of binary-coded decimal helpers"
@@ -35,6 +70,18 @@ config RUST_BCD
 
 	  Disable this option to retain the original C implementation. This
 	  choice is independent of the HOST_TOOLS_LANG build-tool selector.
+
+	  If unsure, say N.
+
+config RUST_PARSER
+	bool "Rust implementation of the option parser"
+	depends on RUST
+	help
+	  Build the translated Rust implementation of all nine parser functions.
+	  Capture updates, integer conversions, wildcards and kernel allocation
+	  retain the existing C API. Disable this option to use the original C.
+	  Rebuild modules after changing this option: native Rust DWARF types
+	  produce different version CRCs without changing the C ABI.
 
 	  If unsure, say N.
 
@@ -766,6 +813,17 @@ config CPU_RMAP
 
 config DQL
 	bool
+
+config RUST_GLOB
+	bool "Rust implementation of glob matching"
+	depends on RUST
+	help
+	  Build the allocation-free Rust glob matcher when GLOB is enabled.
+	  Preserve the original C ABI, exports and glob object identity.
+	  Rebuild modules when changing this option, since native Rust DWARF
+	  can produce different symbol version CRCs. Disable to retain C.
+
+	  If unsure, say N.
 
 config GLOB
 	bool

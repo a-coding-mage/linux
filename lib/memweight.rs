@@ -2,58 +2,55 @@
 // Translated from the Linux kernel implementation. The original dependencies
 // are supplied by the surrounding kernel environment.
 
-use core::ffi::{c_int, c_ulong, c_void};
+use core::ffi::c_ulong;
 use core::mem::size_of;
 
-extern "C" {
-    fn hweight8(x: u8) -> c_int;
-    fn bitmap_weight(bitmap: *const c_ulong, bits: usize) -> c_int;
-}
-
-// BITS_PER_LONG is supplied by the target kernel configuration.
-const BITS_PER_LONG: usize = size_of::<c_ulong>() * 8;
-const INT_MAX: usize = c_int::MAX as usize;
-
-/**
- * memweight - count the total number of bits set in memory area
- * @ptr: pointer to the start of the area
- * @bytes: the size of the area
- */
-pub unsafe fn memweight(ptr: *const c_void, mut bytes: usize) -> usize {
-    let mut ret: usize = 0;
-    let longs: usize;
-    let mut bitmap = ptr as *const u8;
-
-    while bytes > 0 && (bitmap as usize) % size_of::<c_ulong>() != 0 {
-        ret += hweight8(*bitmap) as usize;
+/// Counts the set bits, returning `None` at the original BUG_ON threshold.
+///
+/// The callback receives only aligned, whole words and an unsigned bit count.
+/// Its result is widened without passing through a signed integer.
+///
+/// # Safety
+/// `ptr` must be readable for `bytes` bytes, except that an input reaching the
+/// original BUG_ON needs only its leading unaligned bytes to be readable.
+/// Zero bytes access no memory, so `ptr` may be null in that case. An aligned
+/// pointer at the BUG threshold also needs no readable allocation.
+/// `weight` must implement bitmap_weight for the supplied words without mutation.
+pub(crate) unsafe fn memweight_with(
+    mut ptr: *const u8,
+    mut bytes: usize,
+    mut weight: impl FnMut(*const c_ulong, u32) -> u32,
+) -> Option<usize> {
+    let mut result = 0usize;
+    const WORD: usize = size_of::<c_ulong>();
+    const BITS: usize = WORD * 8;
+    while bytes != 0 && (ptr as usize) % WORD != 0 {
+        // SAFETY: The caller supplies readable leading bytes.
+        result = result.wrapping_add(unsafe { *ptr }.count_ones() as usize);
         bytes -= 1;
-        bitmap = bitmap.add(1);
+        // SAFETY: Advance within the caller's readable region (or one past it).
+        ptr = unsafe { ptr.add(1) };
     }
-
-    longs = bytes / size_of::<c_ulong>();
+    let longs = bytes / WORD;
     if longs != 0 {
-        // Equivalent to the source BUG_ON(longs >= INT_MAX / BITS_PER_LONG).
-        if longs >= INT_MAX / BITS_PER_LONG {
-            core::intrinsics::abort();
+        if longs >= (i32::MAX as usize) / BITS {
+            return None;
         }
-        ret += bitmap_weight(bitmap as *const c_ulong, longs * BITS_PER_LONG) as usize;
-        bytes -= longs * size_of::<c_ulong>();
-        bitmap = bitmap.add(longs * size_of::<c_ulong>());
+        result = result.wrapping_add(weight(ptr.cast(), (longs * BITS) as u32) as usize);
+        bytes -= longs * WORD;
+        // SAFETY: These whole words are within the caller's region.
+        ptr = unsafe { ptr.add(longs * WORD) };
     }
-    /*
-     * The reason that this last loop is distinct from the preceding
-     * bitmap_weight() call is to compute 1-bits in the last region smaller
-     * than sizeof(long) properly on big-endian systems.
-     */
-    while bytes > 0 {
-        ret += hweight8(*bitmap) as usize;
+    // Keep the trailing bytes separate: a partial native word has different
+    // bitmap bit numbering on big-endian machines.
+    while bytes != 0 {
+        // SAFETY: The remaining bytes are readable by the caller's contract.
+        result = result.wrapping_add(unsafe { *ptr }.count_ones() as usize);
         bytes -= 1;
-        bitmap = bitmap.add(1);
+        // SAFETY: Advance within the region or to its one-past pointer.
+        ptr = unsafe { ptr.add(1) };
     }
-
-    ret
+    Some(result)
 }
-
-// EXPORT_SYMBOL(memweight);
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

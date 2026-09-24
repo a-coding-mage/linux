@@ -1,0 +1,107 @@
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Compiled with the unchanged original header by the test runner. */
+extern u32 c_minmax_running_min(struct minmax *, u32, u32, u32);
+extern u32 c_minmax_running_max(struct minmax *, u32, u32, u32);
+extern u32 rust_reset(struct minmax *, u32, u32);
+extern u32 rust_get(const struct minmax *);
+static u32 seed = 0x391f1823;
+static u32 random32(void)
+{
+    seed ^= seed << 13;
+    seed ^= seed >> 17;
+    seed ^= seed << 5;
+    return seed;
+}
+static int equal(const struct minmax *a, const struct minmax *b)
+{
+    for (unsigned i = 0; i < 3; i++)
+        if (a->s[i].t != b->s[i].t || a->s[i].v != b->s[i].v)
+            return 0;
+    return 1;
+}
+static int step(struct minmax *a, struct minmax *b, unsigned op, u32 w, u32 t, u32 v)
+{
+    u32 x, y;
+    if (op == 0) {
+        x = c_minmax_running_min(a, w, t, v);
+        y = minmax_running_min(b, w, t, v);
+    } else if (op == 1) {
+        x = c_minmax_running_max(a, w, t, v);
+        y = minmax_running_max(b, w, t, v);
+    } else {
+        x = minmax_reset(a, t, v);
+        y = rust_reset(b, t, v);
+    }
+    return x == y && equal(a, b) && minmax_get(a) == rust_get(b);
+}
+int main(void)
+{
+    const u32 windows[] = {0, 1, 2, 3, 4, 7, 8, 9, 100, 0x7fffffff, 0x80000000, 0xffffffff};
+    struct minmax a, b;
+    /* C-defined partial initialization: no reads/copies of untouched fields.
+     * Value reset reads s[0].v; expiry reset also reads s[2].t. */
+    for (unsigned op = 0; op < 2; op++) {
+        struct minmax c, r, ce, re;
+        c.s[0].v = r.s[0].v = 10;
+        if (!step(&c, &r, op, 100, 42, op ? 11 : 9)) return 7;
+        ce.s[0].v = re.s[0].v = 10;
+        ce.s[2].t = re.s[2].t = 0;
+        if (!step(&ce, &re, op, 10, 11, op ? 9 : 11)) return 8;
+    }
+    {
+        struct minmax c, r;
+        c.s[0].v = r.s[0].v = 123;
+        if (minmax_get(&c) != 123 || rust_get(&r) != 123) return 9;
+    }
+    /* Reset must be valid even on previously uninitialized storage. */
+    if (!step(&a, &b, 2, 0, 0xffffffff, 0x80000000)) return 1;
+    /* Force one and two expired-choice promotions without an early reset. */
+    for (unsigned op = 0; op < 2; op++)
+        for (u32 t = 11; t <= 12; t++) {
+            a.s[0] = (struct minmax_sample){0, op ? 300 : 100};
+            a.s[1] = (struct minmax_sample){1, 200};
+            a.s[2] = (struct minmax_sample){10, op ? 100 : 300};
+            b = a;
+            if (!step(&a, &b, op, 10, t, op ? 50 : 350)) return 6;
+        }
+    for (unsigned op = 0; op < 2; op++)
+        for (unsigned wi = 0; wi < sizeof(windows)/sizeof(windows[0]); wi++) {
+            u32 w = windows[wi];
+            const u32 edges[] = {0, w/4, w/4+1, w/2, w/2+1, w, w+1, 0xffffffff};
+            for (unsigned ti = 0; ti < 8; ti++)
+                for (unsigned init = 0; init < 3; init++) {
+                    u32 t = 0xfffffff0;
+                    a.s[0] = (struct minmax_sample){t, 100};
+                    a.s[1] = (struct minmax_sample){t + (init > 0), 100};
+                    a.s[2] = (struct minmax_sample){t + (init > 1), 100};
+                    b = a;
+                    if (!step(&a, &b, op, w, t + edges[ti], op ? 99 : 101)) return 2;
+                    /* Ties must refresh timestamps, including repeated samples. */
+                    if (!step(&a, &b, op, w, t + edges[ti], a.s[0].v)) return 3;
+                }
+        }
+    /* Bounded reviewer corpus: exactly 20,000 streams / 10,000,000 updates.
+     * Counters make accidental step-zero resets/tie masking fail this test. */
+    unsigned first_updates = 0, first_non_ties = 0;
+    for (unsigned stream = 0; stream < 20000; stream++) {
+        for (unsigned i = 0; i < 3; i++)
+            a.s[i] = (struct minmax_sample){random32(), random32()};
+        b = a;
+        u32 t = random32(), w = windows[stream % 12];
+        for (unsigned j = 0; j < 500; j++) {
+            t += (j % 5 == 0) ? random32() : j % 11;
+            u32 v = (j != 0 && j % 4 == 0) ? a.s[j % 3].v : random32();
+            unsigned op = (j != 0 && j % 97 == 0) ? 2 : stream % 2;
+            if (j == 0) {
+                first_updates += op != 2;
+                first_non_ties += v != a.s[0].v;
+            }
+            if (!step(&a, &b, op, w, t, v)) return 4;
+        }
+    }
+    if (first_updates != 20000 || first_non_ties < 19000) return 10;
+    /* Public inputs are scalar values: reading values from m before the call
+     * is the only applicable overlapping-input case. */
+    if (!step(&a, &b, 2, 0, a.s[2].t, a.s[0].v)) return 5;
+    return 0;
+}
