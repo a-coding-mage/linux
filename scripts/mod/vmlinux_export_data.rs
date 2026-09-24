@@ -332,9 +332,11 @@ pub(crate) fn generate(input: &[u8]) -> Result<String, String> {
                         if name == b"LUPOS_EXPORT_FLAGS" {
                             let number = u8::try_from(number)
                                 .map_err(|_| "export flags do not fit in a byte")?;
-                            writeln!(out, "SYMBOL_FLAGS!({symbol:?}, 0x{number:02x});").unwrap();
+                            writeln!(out, "SYMBOL_FLAGS_NORMALIZED!({symbol:?}, 0x{number:02x});")
+                                .unwrap();
                         } else {
-                            writeln!(out, "SYMBOL_CRC!({symbol:?}, 0x{number:08x});").unwrap();
+                            writeln!(out, "SYMBOL_CRC_NORMALIZED!({symbol:?}, 0x{number:08x});")
+                                .unwrap();
                         }
                     }
                     b"LUPOS_EXPORT_ALIAS" if values.len() == 1 => {

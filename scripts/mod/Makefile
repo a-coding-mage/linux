@@ -17,7 +17,9 @@ devicetable-offsets-file := devicetable-offsets.h
 # Native metadata selection must not silently replace HOST_TOOLS_LANG=c.
 always-$(CONFIG_RUST_VMLINUX_EXPORT) += modpost-rust
 targets += modpost-rust
-HOSTRUSTFLAGS_modpost-rust += --cfg modpost_target_offsets
+# Both binaries may compile this crate root in parallel into the same directory.
+# Distinct crate names also keep rustc's intermediate codegen files distinct.
+HOSTRUSTFLAGS_modpost-rust += --crate-name=modpost_rust --cfg modpost_target_offsets
 $(obj)/modpost-rust: private export MODPOST_DEVICETABLE_OFFSETS := $(abspath $(obj)/$(devicetable-offsets-file))
 $(obj)/modpost-rust: $(src)/modpost.rs $(obj)/$(devicetable-offsets-file) FORCE
 	+$(call if_changed_dep,host-rust)

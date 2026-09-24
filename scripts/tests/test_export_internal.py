@@ -365,7 +365,7 @@ class ExportInternalTests(unittest.TestCase):
                             rust = directory / f'normalized-{compiler_number}.rs'
                             rust.write_text(self.preamble() + '\n__KSYMTAB_NORMALIZED!(' +
                                             ', '.join(rust_literal(v) for v in decoded[0]) + ');\n' +
-                                            'SYMBOL_FLAGS!("NAME", 0x01);\nSYMBOL_CRC!("NAME", 0x12345678);\n')
+                                            'SYMBOL_FLAGS_NORMALIZED!("NAME", 0x01);\nSYMBOL_CRC_NORMALIZED!("NAME", 0x12345678);\n')
                             c_object, r_object = directory / f'original-{compiler_number}.o', rust.with_suffix('.o')
                             run([*compiler, *flags, '-c', original, '-o', c_object])
                             run([*self.rustc, *self.rustflags(architecture, prel, '2'), '--emit=obj', rust, '-o', r_object])
@@ -386,6 +386,50 @@ class ExportInternalTests(unittest.TestCase):
                 result = run([*self.rustc, *self.rustflags('x86_64', True, '2'), '--emit=obj', translated,
                               '-o', translated.with_suffix('.o')], failure=True)
                 self.assertIn(b'inline asm', result.stderr)
+
+    def test_normalized_flags_crc_preserve_names_rejected_by_direct_apis(self):
+        for name in ('123', '.'):
+            with self.subTest(name=name):
+                original, translated = self.work / 'normalized-values.c', self.work / 'normalized-values.rs'
+                original.write_text('#include <linux/export-internal.h>\n' +
+                                    f'SYMBOL_FLAGS({name}, 0xff);\nSYMBOL_CRC({name}, 0xfedcba98);\n')
+                translated.write_text(self.preamble() +
+                                      f'SYMBOL_FLAGS_NORMALIZED!({rust_literal(name)}, 0xff);\n' +
+                                      f'SYMBOL_CRC_NORMALIZED!({rust_literal(name)}, 0xfedcba98);\n')
+                result = self.work / 'normalized-values.o'
+                run([*self.rustc, *self.rustflags('x86_64', True, '2'), '--emit=obj', translated, '-o', result])
+                for index, compiler in enumerate((self.cc, self.clang)):
+                    reference = self.work / f'normalized-values-{index}.o'
+                    run([*compiler, *self.cflags('x86_64', True, '2', compiler), '-c', original, '-o', reference])
+                    self.assertEqual(elf(result)[:5], elf(reference)[:5])
+                translated.write_text(self.preamble() +
+                                      f'SYMBOL_FLAGS!({rust_literal(name)}, 0xff);\n' +
+                                      f'SYMBOL_CRC!({rust_literal(name)}, 0xfedcba98);\n')
+                rejected = run([*self.rustc, *self.rustflags('x86_64', True, '2'), '--emit=obj', translated,
+                                '-o', result], failure=True)
+                self.assertIn(b'error[E0080]', rejected.stderr)
+
+    def test_normalized_unicode_identifiers_keep_llvm_assembler_limitation_visible(self):
+        # GNU as accepts this spelling; both original Clang C and Rust LLVM
+        # reject its unquoted labels. The normalized APIs must not turn that
+        # backend limitation into an invented ASCII const-validation rule.
+        original, translated = self.work / 'unicode-values.c', self.work / 'unicode-values.rs'
+        original.write_text('#include <linux/export-internal.h>\n' +
+                            'SYMBOL_FLAGS(donné, 0x01);\nSYMBOL_CRC(donné, 0x12345678);\n')
+        translated.write_text(self.preamble() +
+                              'SYMBOL_FLAGS_NORMALIZED!("donné", 0x01);\n' +
+                              'SYMBOL_CRC_NORMALIZED!("donné", 0x12345678);\n')
+        macros = run([*self.cc, '-dM', '-E', '-x', 'c', '/dev/null']).stdout
+        run([*self.cc, *self.cflags('x86_64', True, '2', self.cc), '-c', original,
+             '-o', self.work / 'unicode-host.o'], failure=b'#define __clang__' in macros)
+        rejected = run([*self.clang, *self.cflags('x86_64', True, '2', self.clang), '-c', original,
+                        '-o', original.with_suffix('.o')], failure=True)
+        self.assertIn(b'invalid character', rejected.stderr)
+        rejected = run([*self.rustc, *self.rustflags('x86_64', True, '2'), '--emit=obj', translated,
+                        '-o', translated.with_suffix('.o')], failure=True)
+        self.assertIn(b'invalid character', rejected.stderr)
+        self.assertIn(b'inline asm', rejected.stderr)
+        self.assertNotIn(b'error[E0080]', rejected.stderr)
 
     def test_bad_linkage_namespace_and_numeric_inputs_fail_before_injection(self):
         statements = [

@@ -1872,10 +1872,11 @@ preservation of a previous good object after an error, and cleanup after the
 selector is disabled. All 27 focused metadata groups pass without skips with
 both GCC and Clang references. Native original-C object comparisons and both
 VM unload/reload checks also pass after the execution-charset guard.
-Per-module ``*.mod.c`` and ``.vmlinux.export.c`` are still generated and compiled
-as C; this option does not yet migrate those paths.
+This option does not migrate per-module ``*.mod.c`` or final-vmlinux exports;
+the latter now have the separate selection described below.
 
-With the common metadata integration and private callback correction included,
+Before the subsequent final-vmlinux export integration, with the common
+metadata integration and private callback correction included,
 the complete regression passes all 1,456 tests without skips in 620.018
 seconds. This run uses minimum Rust 1.85, ``-Dwarnings``, genuine i686 execution,
 the explicit bindgen make argument and all configured native-artifact gates.
@@ -1885,6 +1886,56 @@ above. Across the full suite and true no-op builds, all 44,441 regular files
 in these eight output trees retain their exact paths, sizes, nanosecond
 timestamps and SHA-256 hashes. This is a component integration checkpoint,
 not a completed Rust kernel.
+
+Final-vmlinux export metadata
+----------------------------
+
+``CONFIG_RUST_VMLINUX_EXPORT`` independently selects Rust construction of the
+final export tables and built-in aliases. It requires Rust support and defaults
+off; the original C path remains selectable. A dedicated Rust modpost helper
+also works with ``HOST_TOOLS_LANG=c``, without changing the ordinary host-tool
+selection. Its explicit, distinct crate name prevents temporary-object
+collisions when both Rust modpost executables compile concurrently.
+
+The selected path generates ``.vmlinux.export.h`` for original target-frontend
+syntax validation and field preprocessing, then ``.vmlinux.export.rs``. The
+frontend emits no C object. The repaired ``export-internal_header.rs`` constructs
+the actual PREL32 or native-width tables, symbol labels, CRCs and flags; Rust
+also emits the normalized alias bytes. The original macro expansion and
+stringification remain authoritative, including compiler/header macro
+collisions, adjacent literals, counters and source-filename builtins. This is
+not a passthrough of C-expanded table assembly. No module-owner marker,
+initializer, export declarations or new version calculations are introduced.
+
+The field parser requires UTF-8 input and execution strings and UTF-8 decoded
+export names, references and namespaces; alias byte strings retain the
+frontend's accepted escapes. Unsupported filename-prefix mappings fail with
+retained-C guidance. GNU-as-only unquoted Unicode identifiers are not rewritten
+to overcome LLVM assembler limitations and still require the C selection.
+Strict direct export APIs remain distinct from trusted preprocessed fields.
+
+Twelve export-header groups and 34 emitter groups pass with minimum Rust 1.85,
+including genuine i686, x86-64, ARM64 and big-endian PowerPC object comparisons
+and the existing-kernel-object gate. Ten actual Kbuild groups pass with both
+GCC and Clang references, including C/Rust/C switching, missing-output
+regeneration, transitive dependencies, external-module C routing, cleanup,
+cold parallel Rust/Rust host-tool compilation and exact subsequent no-ops.
+The minimal fixtures isolate inherited parent-kernel flags while retaining
+explicit per-test flag and response-file probes. A poisoned-parent regression
+executes the original top-level test recipe and the real nested C/Rust/C and
+charset cases, covering the environment leak found by full-suite execution.
+
+Native x86-64 and ARM64 builds select the Rust path successfully with strict
+warnings and KCFI retained on their owners. Fresh private original-C modpost
+and target-compiler references match all 7,079 and 6,907 exports respectively:
+section contents, flags, alignment, symbol labels, relocations and all 8/41
+built-in aliases. Full ``Module.symvers`` contents are unchanged by selection.
+Both VMs boot and pass their unfiltered KUnit suites and the proprietary Rust
+integer-logarithm ABI caller, including 71,272 positive inputs and six zero
+probes per load, expected warnings and module unload/reload. The other six
+modular, debug, RT and normal compatibility builds also pass with the selector
+disabled. This does not establish native boot coverage for every Rust-enabled
+architecture or migrate the remaining per-module metadata objects.
 
 Remaining integration
 ---------------------
@@ -1913,10 +1964,10 @@ Most of the migration is still outstanding. In particular:
   ``lib/math/tests/Makefile`` entries; tests elsewhere still need their own
   translation, binding and native lifecycle audits. The Rust division
   self-tests described above are a separate, already selectable integration.
-* Module finalization still compiles generated ``*.mod.c`` and
-  ``.vmlinux.export.c``. Common module metadata has a selectable Rust
-  selection as described above.
-  Their Rust selection requires complete module layouts, lifecycle
+* Module finalization still compiles generated per-module ``*.mod.c``.
+  Common module metadata and final-vmlinux exports have separate selectable
+  Rust implementations as described above.
+  A per-module Rust selection requires complete module layouts, lifecycle
   relocations, loader export/version tables and architecture metadata;
   the existing adjacent Rust translations do not yet provide these paths.
 * A successful mixed C/Rust build validates the migrated components only.

@@ -12,6 +12,11 @@
 //! and NUL are rejected so the argument cannot terminate the assembler string.
 //! A generator must separately preserve the C source-literal decoding step;
 //! passing raw modpost input here is not an arbitrary-byte escaping protocol.
+//!
+//! Normalized primitives retain target assembler diagnostics. In particular,
+//! GNU as accepts some unquoted non-ASCII identifiers that LLVM's assembler
+//! rejects; the Rust selection does not rewrite those expressions. Such
+//! GCC-only metadata inputs continue to require the retained C selection.
 
 /// Literal alignment directive for `concat!` assembly templates.
 #[cfg(any(CONFIG_HAVE_ARCH_PREL32_RELOCATIONS, not(CONFIG_64BIT)))]
@@ -196,11 +201,14 @@ macro_rules! KSYMTAB_DATA {
     };
 }
 
-/// Emit the already computed CRC; never recompute a metadata object's version.
+/// Emit an already computed CRC using a trusted, CPP-normalized symbol name.
+///
+/// Unlike the direct API, this preserves the original macro's stringified name
+/// without imposing a linker-identifier grammar. The target assembler owns
+/// syntax diagnostics. The metadata object never recomputes symbol versions.
 #[macro_export]
-macro_rules! SYMBOL_CRC {
+macro_rules! SYMBOL_CRC_NORMALIZED {
     ($name:tt, $crc:expr) => {
-        $crate::__KSYM_VALIDATE!($name, "");
         const _: u32 = $crc;
         core::arch::global_asm!(
             concat!(
@@ -219,11 +227,23 @@ macro_rules! SYMBOL_CRC {
         );
     };
 }
-/// Emit modpost's symbol flags, including the original GPL-only bit.
+
+/// Emit the already computed CRC for an exact ordinary linker name.
 #[macro_export]
-macro_rules! SYMBOL_FLAGS {
-    ($name:tt, $flags:expr) => {
+macro_rules! SYMBOL_CRC {
+    ($name:tt, $crc:expr) => {
         $crate::__KSYM_VALIDATE!($name, "");
+        $crate::SYMBOL_CRC_NORMALIZED!($name, $crc);
+    };
+}
+
+/// Emit flags using a trusted, CPP-normalized original stringified name.
+///
+/// This includes the original GPL-only bit and retains target assembler
+/// diagnostics, without constraining compiler-normalized fields to ASCII.
+#[macro_export]
+macro_rules! SYMBOL_FLAGS_NORMALIZED {
+    ($name:tt, $flags:expr) => {
         const _: u8 = $flags;
         core::arch::global_asm!(
             concat!(
@@ -240,6 +260,15 @@ macro_rules! SYMBOL_FLAGS {
                 value
             }
         );
+    };
+}
+
+/// Emit modpost's symbol flags for an exact ordinary linker name.
+#[macro_export]
+macro_rules! SYMBOL_FLAGS {
+    ($name:tt, $flags:expr) => {
+        $crate::__KSYM_VALIDATE!($name, "");
+        $crate::SYMBOL_FLAGS_NORMALIZED!($name, $flags);
     };
 }
 
