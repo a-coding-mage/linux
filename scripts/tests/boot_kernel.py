@@ -13,6 +13,8 @@ import subprocess
 import sys
 import time
 
+from kernel_console import normalize_console_transport
+
 
 ROOT = Path(__file__).resolve().parents[2]
 MARKER = b"LUPOS_RUST_BUILD_BOOT_OK"
@@ -107,6 +109,7 @@ def module_name(path):
 
 def verify_module_events(console, *, preloads=0, module=False, rejected=0, reload=False):
     """Require requested actions, not just PID 1's final optional-fixture marker."""
+    console = normalize_console_transport(console)
     expected = [f"LUPOS_RUST_MODULE_REJECT_OK {index}" for index in range(rejected)]
     expected += [f"LUPOS_RUST_PRELOAD_OK {index}" for index in range(preloads)]
     if module:
@@ -130,6 +133,7 @@ def verify_module_events(console, *, preloads=0, module=False, rejected=0, reloa
 
 def verify_failslab_setup(console, requested):
     """Require one verified setup before any module action, only when requested."""
+    console = normalize_console_transport(console)
     records = []
     for line in console.splitlines():
         line = re.sub(rb"^\[\s*\d+\.\d+\]\s*", b"", line.strip(), count=1)

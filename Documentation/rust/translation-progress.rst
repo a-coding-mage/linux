@@ -2211,8 +2211,22 @@ outstanding. Adding this natively executed test unit makes the conservative
 lib inventory 29 native units plus three host generators (32/526); the
 separate host-tool inventory overlaps these counts.
 
-Parser, command-line, memory-weight and windowed min/max candidates
-----------------------------------------------------------------
+The translated Base64 suite is now independently selectable through
+``CONFIG_RUST_BASE64_KUNIT``, default off, retaining ``BASE64_KUNIT`` y/m and
+the original ``base64_kunit`` object/module identity. All four cases, vector
+order, assertions and the two 1,000-iteration timing workloads are retained.
+Allocation uses the existing kernel Rust allocator path; fatal allocation
+assertions preserve the original three allocation attempts and abort behavior.
+Exact original-C traces, real nominal bindings, protected callback dispatch,
+printk-index records, ELF32/ELF64 execution and actual Kbuild switching are
+covered by eleven integrated groups. Both GCC and Clang reference runs pass
+without skips (72.737 and 76.549 seconds). Native x86-64 and ARM64 builds also
+pass with the original C provider and translated modular suite. The dedicated
+suite-language runtime matrix and built-in execution are still pending; this
+new test unit is not yet included in the completed-unit count above.
+
+Parser, command-line, memory-weight, min/max and glob candidates
+--------------------------------------------------------------
 
 ``CONFIG_RUST_PARSER``, ``CONFIG_RUST_CMDLINE``, ``CONFIG_RUST_MEMWEIGHT`` and
 ``CONFIG_RUST_WIN_MINMAX`` independently select repaired translations while
@@ -2229,11 +2243,26 @@ tail contract. Windowed min/max retains wrapping timestamps, exact comparison
 edges and the C-defined partial-initialization domain without creating a Rust
 reference to an incompletely initialized tracker.
 
-Initial integrated tests pass for cmdline (seven groups) and memweight (six),
-without skips, including genuine ELF32 execution. Parser and min/max host,
-ELF32 and native-object fixture gates pass; their selected-kernel audits and
-full native runtime gates remain outstanding. These four candidates are not
-yet included in the conservative completed-unit count above.
+``CONFIG_RUST_GLOB`` selects the allocation-free, lazy matcher when the original
+GLOB bool is enabled. Immediate mismatch and trailing-star completion do not
+scan the remaining input. Selected object, assembly and LLVM-IR targets retain
+the Rust source and dependency tracking; C remains selectable.
+
+Integrated tests pass without skips for parser (eight groups), cmdline (seven),
+memweight (six), min/max (seven) and glob (five), including genuine ELF32
+execution. Parser/minmax additionally audit the final selected x86/ARM64
+kernel objects, archives, bindings and symbol versions. The first full native
+build exposed a parser type/function name collision hidden by a type-only
+fixture; a type alias preserves the real nominal binding, and a compiled
+negative control now rejects the old duplicate import.
+
+Both architectures now build with all five Rust providers selected. Original
+C cmdline and glob KUnit modules pass in two preflight VMs, each loaded twice:
+eight cmdline cases and 64 glob parameters per load, with exact successful
+case/order/summary and unload/reload checks. Dedicated independent C/Rust
+consumer matrices and the refreshed complete regression remain outstanding.
+These five candidates are not yet included in the conservative completed-unit
+count above.
 
 Remaining integration
 ---------------------

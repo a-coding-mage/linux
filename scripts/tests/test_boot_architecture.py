@@ -14,6 +14,7 @@ import unittest
 from unittest import mock
 
 import boot_kernel as boot
+from kernel_console import REPLAY_MARKER
 
 
 class BootArchitectureTests(unittest.TestCase):
@@ -190,6 +191,35 @@ class BootArchitectureTests(unittest.TestCase):
             changed[index:index + 2] = reversed(changed[index:index + 2])
             with self.subTest(swapped=index), self.assertRaises(ValueError):
                 self.verify(changed)
+
+    def test_exact_marked_replays_of_every_guest_event_are_accepted(self):
+        for stamped in (False, True):
+            events = [(b"[ 1.000000] " if stamped else b"") + event for event in self.events()]
+            for index, event in enumerate(events):
+                for length in range(1, len(event) + 1):
+                    with self.subTest(stamped=stamped, index=index, length=length):
+                        self.verify([*events[:index], event[:length], REPLAY_MARKER, *events[index:]])
+
+    def test_replay_cannot_hide_mismatched_or_duplicate_guest_events(self):
+        events = self.events()
+        for index, event in enumerate(events):
+            malformed = ([event, event], [b"wrong", REPLAY_MARKER, event],
+                         [event, b" " + REPLAY_MARKER, event], [REPLAY_MARKER, event],
+                         [event, REPLAY_MARKER], [event, REPLAY_MARKER, event, event])
+            for replacement in malformed:
+                with self.subTest(index=index, replacement=replacement), self.assertRaises(ValueError):
+                    self.verify([*events[:index], *replacement, *events[index + 1:]])
+
+    def test_failslab_setup_replay_preserves_exact_count_and_order(self):
+        records = [boot.FAILSLAB_MARKER, b"LUPOS_RUST_MODULE_LOAD_OK", boot.MARKER]
+        original = b"\n".join(records) + b"\n"
+        for length in range(1, len(boot.FAILSLAB_MARKER) + 1):
+            replay = b"\n".join([boot.FAILSLAB_MARKER[:length], REPLAY_MARKER, *records]) + b"\n"
+            boot.verify_failslab_setup(replay, True)
+            with self.assertRaises(ValueError): boot.verify_failslab_setup(replay, False)
+        for changed in (boot.FAILSLAB_MARKER + b"\n" + original,
+                        b"\n".join([records[1], records[0], records[2]]) + b"\n"):
+            with self.assertRaises(ValueError): boot.verify_failslab_setup(changed, True)
 
     def test_console_reader_waits_for_a_complete_final_record(self):
         for suffix, success in ((b"\r\n", True), (b"_CORRUPTED\n", False), (b"", False)):

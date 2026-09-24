@@ -5,6 +5,17 @@
 # KUnit tests
 CFLAGS_bitfield_kunit.o := $(DISABLE_STRUCTLEAK_PLUGIN)
 obj-$(CONFIG_BASE64_KUNIT) += base64_kunit.o
+ifeq ($(CONFIG_RUST_BASE64_KUNIT),y)
+# Preserve the original suite tristate and module identity independently of the provider.
+$(obj)/base64_kunit.o: $(src)/base64_kunit.rs FORCE
+	+$(call if_changed_rule,rustc_o_rs)
+
+$(obj)/base64_kunit.s: $(src)/base64_kunit.rs FORCE
+	+$(call if_changed_dep,rustc_s_rs)
+
+$(obj)/base64_kunit.ll: $(src)/base64_kunit.rs FORCE
+	+$(call if_changed_dep,rustc_ll_rs)
+endif
 obj-$(CONFIG_BITOPS_KUNIT) += bitops_kunit.o
 obj-$(CONFIG_BITFIELD_KUNIT) += bitfield_kunit.o
 obj-$(CONFIG_BITS_TEST) += test_bits.o

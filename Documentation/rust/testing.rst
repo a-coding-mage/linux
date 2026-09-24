@@ -227,6 +227,8 @@ The translated-library tests are discovered by ``rust-host-tests`` or directly::
     python3 -B -m unittest discover -s scripts/tests -p 'test_cmdline.py' -v
     python3 -B -m unittest discover -s scripts/tests -p 'test_memweight.py' -v
     python3 -B -m unittest discover -s scripts/tests -p 'test_win_minmax.py' -v
+    python3 -B -m unittest discover -s scripts/tests -p 'test_glob.py' -v
+    python3 -B -m unittest discover -s scripts/tests -p 'test_base64_kunit.py' -v
 
 Native fixture gates require read-only kernel outputs and the matching Rust
 compiler (minimum 1.85). ``PARSER_NATIVE`` and ``PARSER_ARM64_NATIVE`` supply
@@ -236,6 +238,13 @@ and ``MEMWEIGHT_NATIVE`` accept colon-separated native paths. Use the respective
 ``CMDLINE_KBUILD=1``. Genuine i686 core sysroots are supplied through
 ``PARSER_I686_SYSROOT``, ``WIN_MINMAX_I686_SYSROOT``, ``CMDLINE_SYSROOT32`` and
 ``MEMWEIGHT_SYSROOT32``; a nonzero ELF32 execution is a failure, not a skip.
+
+Glob fixtures use ``GLOB_RUSTC``, colon-separated ``GLOB_NATIVE`` paths and
+``GLOB_I686_SYSROOT``. Base64 KUnit fixtures use ``HOSTRUSTC``, ``BINDGEN``,
+``INT_MATH_I686_SYSROOT`` and read-only ``BASE64_KUNIT_NATIVE_X86`` /
+``BASE64_KUNIT_NATIVE_ARM64`` outputs. Set ``HOSTCC`` to choose the original-C
+reference compiler. These fixture inputs do not select the final kernel's
+provider or suite language.
 
 Final selected-output audits additionally use ``PARSER_SELECTED_X86`` and
 ``PARSER_SELECTED_ARM64``, or ``NATIVE_WIN_MINMAX_KERNEL_BUILD`` and

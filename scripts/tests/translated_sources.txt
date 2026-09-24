@@ -109,6 +109,7 @@ lib/math/tests/polynomial_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/tests/prime_numbers_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/math/tests/rational_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/raid/raid6/mktables.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/tests/base64_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/tests/test_list_sort.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/tests/uuid_kunit.rs d482bb509b7d065808de40ce78b5bca39f40b783
 rust/exports_rust.rs d482bb509b7d065808de40ce78b5bca39f40b783

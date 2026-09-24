@@ -54,6 +54,18 @@ def console(caller="c", *, suite="n", framework=False, reload=False):
 
 
 class ProtocolTests(unittest.TestCase):
+    def test_independent_suite_language_selector(self):
+        for provider in ("n", "y"):
+            for language in ("n", "y"):
+                for suite, framework in (("y", "y"), ("m", "y"), ("m", "m")):
+                    config = dict(RUST="y", RUST_BASE64=provider,
+                                  RUST_BASE64_KUNIT=language, BASE64_KUNIT=suite, KUNIT=framework)
+                    self.assertEqual(checker.states(config), (suite, framework))
+        for config in (dict(RUST="n", RUST_BASE64_KUNIT="y", BASE64_KUNIT="m", KUNIT="m"),
+                       dict(RUST="y", RUST_BASE64_KUNIT="y", BASE64_KUNIT="n", KUNIT="y"),
+                       dict(RUST="y", RUST_BASE64_KUNIT="m", BASE64_KUNIT="m", KUNIT="m")):
+            with self.assertRaises(ValueError): checker.states(config)
+
     def test_original_registration_and_corpus_count(self):
         source = (ROOT / "lib/tests/base64_kunit.c").read_bytes()
         self.assertEqual(re.findall(rb"KUNIT_CASE\((\w+)\)", source), list(checker.CASES))
@@ -278,6 +290,89 @@ class ArtifactChecks(Temporary):
         path = fixture.build / "rust/libbindings.rmeta"
         os.utime(path, ns=(fixture.stamp + 1, fixture.stamp + 1))
         with self.assertRaises(ValueError): fixture.verify()
+
+
+class SuiteCommandTests(unittest.TestCase):
+    """Real saved-command/freshness checks with scoped ELF transport mocks.
+
+    Actual header-derived objects and registration/KCFI are exercised separately
+    by NativeFixtureChecks; these files do not purport to be ABI objects.
+    """
+    def setUp(self):
+        temporary=tempfile.TemporaryDirectory(prefix="base64-suite-command-")
+        self.addCleanup(temporary.cleanup)
+        self.build=Path(temporary.name)
+        self.obj=self.build/"lib/tests/base64_kunit.o"
+        self.kernel=self.build/"rust/kernel.o"
+        self.metadata=[self.build/"rust/libkernel.rmeta",self.build/"rust/libbindings.rmeta"]
+        for path in (self.obj,self.kernel,*self.metadata):
+            path.parent.mkdir(parents=True,exist_ok=True)
+            path.write_bytes(b"transport")
+        (self.build/".config").write_text("CONFIG_CFI=y\n")
+        for name in ("elf_target","verify_references","verify_suite_registration","verify_suite_metadata","verify_bindings"):
+            patch=mock.patch.object(checker,name)
+            patch.start();self.addCleanup(patch.stop)
+        self.command(self.kernel,ROOT/"rust/kernel/lib.rs",[ROOT/name for name in ("rust/kernel/kunit.rs","rust/kernel/alloc.rs","rust/kernel/alloc/allocator.rs")],True)
+
+    def command(self,obj,source,deps,rust):
+        path=obj.with_name("."+obj.name+".cmd")
+        key=str(obj.relative_to(self.build))
+        flags=["rustc","-Zsanitizer=kcfi"] if rust else ["clang","-fsanitize=kcfi"]
+        path.write_text(f"savedcmd_{key} := "+shlex.join([*flags,str(source)])+"\n"+
+            f"source_{key} := {source}\n"+f"deps_{key} := "+shlex.join(map(str,deps))+"\n")
+        os.utime(obj,ns=(source.stat().st_mtime_ns+10_000_000_000,
+                        max(p.stat().st_mtime_ns for p in (source,*deps))+10_000_000_000))
+        return path
+
+    def prepare(self,rust):
+        source=ROOT/("lib/tests/base64_kunit.rs" if rust else "lib/tests/base64_kunit.c")
+        deps=[*self.metadata] if rust else [ROOT/"include/kunit/test.h",ROOT/"include/linux/base64.h"]
+        return self.command(self.obj,source,deps,rust)
+
+    def verify(self,rust=True,members=None):
+        checker.verify_suite_object(self.build,self.obj,"x86_64",builtin=True,rust_suite=rust,
+            members={self.kernel.resolve()} if members is None else members)
+
+    def test_selected_original_source_and_wrong_language(self):
+        for rust in (False,True):
+            self.prepare(rust)
+            self.verify(rust)
+            with self.assertRaises(ValueError): self.verify(not rust)
+
+    def test_missing_dependency_and_stale_source(self):
+        for rust in (False,True):
+            path=self.prepare(rust)
+            original=path.read_text()
+            missing=str(self.metadata[0]) if rust else str(ROOT/"include/kunit/test.h")
+            path.write_text(original.replace(missing,""))
+            with self.assertRaises(ValueError): self.verify(rust)
+            path.write_text(original)
+            os.utime(self.obj,ns=(1,1))
+            with self.assertRaises(ValueError): self.verify(rust)
+
+    def test_real_rust_helper_membership_dependencies_and_rmeta_freshness(self):
+        self.prepare(True)
+        self.verify()
+        with self.assertRaises(ValueError): self.verify(members=set())
+        path=self.kernel.with_name("."+self.kernel.name+".cmd")
+        text=path.read_text()
+        path.write_text(text.replace(str(ROOT/"rust/kernel/kunit.rs"),""))
+        with self.assertRaises(ValueError): self.verify()
+        path.write_text(text)
+        for metadata in self.metadata:
+            stamp=metadata.stat().st_mtime_ns
+            os.utime(metadata,ns=(1,1))
+            with self.assertRaises(ValueError): self.verify()
+            os.utime(metadata,ns=(stamp,stamp))
+
+    def test_selected_compile_flags_must_retain_kcfi(self):
+        for rust in (False,True):
+            path=self.prepare(rust)
+            original=path.read_text()
+            flag="-Zsanitizer=kcfi" if rust else "-fsanitize=kcfi"
+            for replacement in ("",flag+" -fno-sanitize=all",flag+" -fno-sanitize=kcfi"):
+                path.write_text(original.replace(flag,replacement))
+                with self.assertRaises(ValueError): self.verify(rust)
 
 
 class NativeFixtureChecks(Temporary):

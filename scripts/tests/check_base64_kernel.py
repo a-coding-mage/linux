@@ -26,6 +26,7 @@ from check_polynomial_kernel import elf_target, newer, verify_framework_module, 
 from check_prime_numbers_kernel import provider_type_ids, verify_guarded_calls, verify_module_import_versions, verify_rust_entrypoints
 from check_int_log_kernel import normalize_console_transport, kunit_runs as int_log_runs, verify_kunit_warnings
 from check_rational_kernel import compilation_flags, metadata_fields, require_metadata_field
+from check_reciprocal_kernel import module_elf
 from check_rust_exports_bridge import version_records
 from rust_exports_test_support import read_exports
 
@@ -43,6 +44,10 @@ def states(config):
         raise ValueError("invalid Base64/KUnit tristate")
     if suite != "n" and (framework == "n" or suite == "y" and framework == "m"):
         raise ValueError("Base64 suite requires compatible KUnit framework")
+    if config.get("RUST_BASE64_KUNIT", "n") not in ("n", "y"):
+        raise ValueError("invalid Base64 KUnit language selector")
+    if config.get("RUST_BASE64_KUNIT") == "y" and (config.get("RUST") != "y" or suite == "n"):
+        raise ValueError("Rust Base64 suite requires RUST and an enabled original suite")
     return suite, framework
 
 
@@ -62,6 +67,92 @@ def verify_bindings(build):
     newer(build / "rust/libbindings.rmeta", [ROOT / "include/linux/base64.h",
                                            ROOT / "rust/bindings/bindings_helper.h", ROOT / "rust/bindgen_parameters"])
     newer(build / "rust/libkernel.rmeta", [build / "rust/libbindings.rmeta"])
+
+
+def verify_suite_metadata(obj, builtin):
+    info = metadata_fields(obj)
+    prefix = b"base64_kunit." if builtin else b""
+    for key, value in ((b"license", b"GPL"), (b"author", b"Guan-Chun Wu <409411716@gms.tku.edu.tw>"),
+            (b"description", b"KUnit tests for Base64 encoding/decoding, including performance checks")):
+        require_metadata_field(info, prefix + key, value)
+
+
+def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi):
+    """Check real registration/callback relocations, not merely section names."""
+    _,sections,symbols,_,_=module_elf(obj)
+    registration=[(i,s) for i,s in enumerate(sections) if s[0]==b".kunit_test_suites"]
+    if (len(registration)!=1 or registration[0][1][1:3]!=(1,3) or
+            registration[0][1][4]!=8 or registration[0][1][7]!=8):
+        raise ValueError("Base64 suite registration absent, duplicated or malformed")
+    index=registration[0][0]
+    relocations=[r for s in sections if s[1]==4 and s[6]==index for r in s[-1]]
+    absolute=257 if arch=="aarch64" else 1
+    if len(relocations)!=1 or relocations[0][0]!=0 or relocations[0][1]!=absolute:
+        raise ValueError("Base64 suite needs one actual registration relocation")
+    _,_,target,addend=relocations[0]
+    if (not 0<target[3]<len(sections) or not sections[target[3]][2]&2 or
+            sections[target[3]][2]&4 or not 0<=target[4]+addend-sections[target[3]][3]<sections[target[3]][4]):
+        raise ValueError("Base64 registration points outside allocated suite data")
+    defined=[s for s in symbols if 0<s[3]<len(sections)]
+    if {s[0] for s in symbols} & {b"init_module",b"cleanup_module"} or any(s[0].startswith(b".initcall") for s in sections):
+        raise ValueError("Base64 suite must retain stateless KUnit registration")
+    if sum(b"__IS_RUST_MODULE" in s[0] for s in defined)!=int(rust_suite and not builtin):
+        raise ValueError("Base64 KUnit Rust owner marker differs from selected lifecycle")
+    if read_exports(obj): raise ValueError("Base64 KUnit suite must not export symbols")
+    callbacks=[]
+    for case in CASES:
+        matches=[s for s in defined if s[1]&15==2 and not s[0].startswith(b"__cfi_") and
+                 (s[0]==case or re.search(rb"[0-9]"+re.escape(case)+rb"(?:17h[0-9a-f]+E)?$",s[0]))]
+        if len(matches)!=1: raise ValueError("Base64 suite missing original callback: "+case.decode())
+        callbacks.append(matches[0])
+    references=[]
+    for section in sections:
+        if section[1]!=4 or not 0<section[6]<len(sections): continue
+        owner=sections[section[6]]
+        if not owner[2]&2 or owner[2]&4: continue
+        for offset,kind,symbol,addend in section[-1]:
+            for i,callback in enumerate(callbacks):
+                if (symbol[3],symbol[4]+addend)==(callback[3],callback[4]):
+                    if kind!=absolute: raise ValueError("Base64 callback registration is not a native pointer")
+                    references.append((section[6],offset,i))
+    if [r[2] for r in sorted(references)]!=list(range(len(CASES))):
+        raise ValueError("Base64 callback registration missing, duplicated or reordered")
+    if cfi:
+        types=provider_type_ids(obj,names=tuple(s[0].decode() for s in callbacks))
+        if len(set(types.values()))!=1 or not next(iter(types.values())):
+            raise ValueError("Base64 callbacks lost their common native KUnit KCFI type")
+    return callbacks
+
+
+def verify_suite_object(build, tests, arch, *, builtin, rust_suite, members):
+    source = ROOT / ("lib/tests/base64_kunit.rs" if rust_suite else "lib/tests/base64_kunit.c")
+    dependencies = ([build / "rust/libkernel.rmeta", build / "rust/libbindings.rmeta"] if rust_suite else
+                    [ROOT / "include/linux/base64.h", ROOT / "include/kunit/test.h"])
+    verify_build_command(build, tests, source, dependencies)
+    elf_target(tests, arch)
+    verify_references(tests, (*SYMBOLS, "__kunit_do_failed_assertion", "__kunit_abort",
+        "kunit_binary_assert_format", "kunit_ptr_not_err_assert_format",
+        "kunit_binary_str_assert_format", "kunit_mem_assert_format", "kfree", "get_random_bytes", "ktime_get"))
+    cfi = configuration(build).get("CFI") == "y"
+    if cfi:
+        flags = compilation_flags(tests)
+        required = "-Zsanitizer=kcfi" if rust_suite else "-fsanitize=kcfi"
+        if required not in flags or any(flag.startswith("-fno-sanitize=") and
+                {"all", "kcfi"} & set(flag.split("=", 1)[1].split(",")) for flag in flags):
+            raise ValueError("Base64 suite lost actual KCFI compilation")
+    verify_suite_registration(tests, arch, rust_suite=rust_suite, builtin=builtin, cfi=cfi)
+    verify_suite_metadata(tests, builtin)
+    if rust_suite:
+        verify_bindings(build)
+        kernel = build / "rust/kernel.o"
+        if kernel.resolve() not in members:
+            raise ValueError("Rust Base64 suite kernel helpers are not linked")
+        helpers = [ROOT / name for name in ("rust/kernel/kunit.rs", "rust/kernel/alloc.rs",
+                                            "rust/kernel/alloc/allocator.rs")]
+        verify_build_command(build, kernel, ROOT / "rust/kernel/lib.rs", helpers)
+        newer(build / "rust/libkernel.rmeta", helpers)
+        newer(build / "rust/libbindings.rmeta", [ROOT / "include/kunit/test.h",
+                                                ROOT / "include/kunit/assert.h"])
 
 
 def verify_linked_implementation(build, selection):
@@ -108,19 +199,8 @@ def verify_linked_implementation(build, selection):
         raise ValueError("Base64 KUnit archive membership mismatch")
     preloads = []
     if suite != "n":
-        elf_target(tests, arch)
-        verify_build_command(build, tests, ROOT / "lib/tests/base64_kunit.c",
-                             [ROOT / "include/linux/base64.h", ROOT / "include/kunit/test.h"])
-        verify_references(tests, SYMBOLS)
-        sections = tool("readelf", "-SW", tests)
-        sizes = re.findall(rb"\]\s+\.kunit_test_suites\s+PROGBITS\s+[0-9a-f]+\s+[0-9a-f]+\s+([0-9a-f]+)\b", sections)
-        if len(sizes) != 1 or int(sizes[0], 16) != 8:
-            raise ValueError("Base64 KUnit registration must contain one real suite")
-        info = metadata_fields(tests)
-        prefix = b"base64_kunit." if suite == "y" else b""
-        for key, value in ((b"license", b"GPL"), (b"author", b"Guan-Chun Wu <409411716@gms.tku.edu.tw>"),
-                (b"description", b"KUnit tests for Base64 encoding/decoding, including performance checks")):
-            require_metadata_field(info, prefix + key, value)
+        rust_suite = config.get("RUST_BASE64_KUNIT") == "y"
+        verify_suite_object(build, tests, arch, builtin=suite == "y", rust_suite=rust_suite, members=members)
         if framework == "m": preloads.append(verify_framework_module(build, members, arch))
         else:
             for name in ("test", "assert"):
@@ -134,6 +214,8 @@ def verify_linked_implementation(build, selection):
             newer(module, [selected_metadata(build, module)])
             verify_references(module, SYMBOLS)
             verify_module_import_versions(build, module)
+            verify_suite_metadata(module, False)
+            verify_suite_registration(module, arch, rust_suite=rust_suite, builtin=False, cfi=config.get("CFI") == "y")
             preloads.append(module)
     newer(build / "Module.symvers", [owner, *([tests] if suite != "n" else [])])
     newer(archive, [owner, *([tests] if suite == "y" else [])])

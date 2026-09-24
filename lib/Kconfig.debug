@@ -2944,6 +2944,16 @@ config BASE64_KUNIT
 
 	  If unsure, say N.
 
+config RUST_BASE64_KUNIT
+	bool "Use Rust for the Base64 KUnit suite"
+	depends on RUST && BASE64_KUNIT
+	default n
+	help
+	  Build the original Base64 correctness and performance KUnit cases
+	  from their Rust translation, independently of the Base64 provider.
+	  The original BASE64_KUNIT tristate and module name are unchanged.
+	  Say N to retain the original C suite.
+
 config BITS_TEST
 	tristate "KUnit test for bit functions and macros" if !KUNIT_ALL_TESTS
 	depends on KUNIT
