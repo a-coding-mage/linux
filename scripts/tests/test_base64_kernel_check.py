@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import re
 import shlex
+import struct
 import subprocess
 import sys
 import tempfile
@@ -17,6 +18,7 @@ from unittest import mock
 
 import check_base64_kernel as checker
 import base64_kernel_fixtures as fixtures
+import rust_exports_test_support as export_support
 from rust_exports_test_support import compile_c_exports
 from test_base64 import headers
 from test_base64 import native_c_arguments
@@ -178,7 +180,7 @@ class FixtureChecks(Temporary):
         kernel.write_text(kernel.read_text() + "\n#define ARRAY_SIZE(a) (sizeof(a)/sizeof((a)[0]))\n")
         string = self.work / "include/linux/string.h"
         string.write_text("#include <string.h>\n")
-        subprocess.run(args, check=True, capture_output=True)
+        subprocess.run(args, cwd=self.work, check=True, capture_output=True)
         library = ctypes.CDLL(str(output))
         case = library.base64_case
         case.argtypes = [ctypes.c_uint, ctypes.POINTER(ctypes.c_uint), ctypes.POINTER(ctypes.c_int),
@@ -225,9 +227,12 @@ class ArtifactChecks(Temporary):
         write(".config", "".join(f"CONFIG_{key}={value}\n" for key, value in
             {**REQUIRED, "RUST_BASE64": "y" if selection == "Rust" else "n"}.items()))
         for name in ("kernel", "bindings"): write(f"rust/lib{name}.rmeta", "test metadata")
-        exported = compile_c_exports('#include <linux/export.h>\n'
-            'int base64_encode(void) {return 1;}\nint base64_decode(void) {return 2;}\n'
-            'EXPORT_SYMBOL_GPL(base64_encode);\nEXPORT_SYMBOL_GPL(base64_decode);\n', build / "compiler")
+        actual_run = export_support.run
+        with mock.patch.object(export_support, "run", side_effect=lambda args, **kwargs:
+                               actual_run(args, cwd=build, **kwargs)):
+            exported = compile_c_exports('#include <linux/export.h>\n'
+                'int base64_encode(void) {return 1;}\nint base64_decode(void) {return 2;}\n'
+                'EXPORT_SYMBOL_GPL(base64_encode);\nEXPORT_SYMBOL_GPL(base64_decode);\n', build / "compiler")
         owners = [write("lib/" + name + ".o", exported.read_bytes()) for name in ("base64", "base64_rust")]
         owner = owners[selection == "Rust"]
         source = ROOT / "lib" / (owner.stem + (".rs" if selection == "Rust" else ".c"))
@@ -309,7 +314,7 @@ class SuiteCommandTests(unittest.TestCase):
             path.parent.mkdir(parents=True,exist_ok=True)
             path.write_bytes(b"transport")
         (self.build/".config").write_text("CONFIG_CFI=y\n")
-        for name in ("elf_target","verify_references","verify_suite_registration","verify_suite_metadata","verify_bindings"):
+        for name in ("elf_target","verify_references","verify_suite_registration","verify_suite_metadata","verify_bindings","kunit_callback_type"):
             patch=mock.patch.object(checker,name)
             patch.start();self.addCleanup(patch.stop)
         self.command(self.kernel,ROOT/"rust/kernel/lib.rs",[ROOT/name for name in ("rust/kernel/kunit.rs","rust/kernel/alloc.rs","rust/kernel/alloc/allocator.rs")],True)
@@ -356,8 +361,9 @@ class SuiteCommandTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.verify(members=set())
         path=self.kernel.with_name("."+self.kernel.name+".cmd")
         text=path.read_text()
-        path.write_text(text.replace(str(ROOT/"rust/kernel/kunit.rs"),""))
-        with self.assertRaises(ValueError): self.verify()
+        for dependency in ("rust/kernel/kunit.rs", "rust/kernel/alloc.rs", "rust/kernel/alloc/allocator.rs"):
+            path.write_text(text.replace(str(ROOT/dependency),""))
+            with self.subTest(dependency=dependency), self.assertRaises(ValueError): self.verify()
         path.write_text(text)
         for metadata in self.metadata:
             stamp=metadata.stat().st_mtime_ns
@@ -370,9 +376,101 @@ class SuiteCommandTests(unittest.TestCase):
             path=self.prepare(rust)
             original=path.read_text()
             flag="-Zsanitizer=kcfi" if rust else "-fsanitize=kcfi"
-            for replacement in ("",flag+" -fno-sanitize=all",flag+" -fno-sanitize=kcfi"):
+            negatives = (["",flag+" -Zsanitizer=none", flag+" -Zsanitizer=", "-Zsanitizer=kernel-address"] if rust else
+                         ["",flag+" -fno-sanitize=all",flag+" -fno-sanitize=kcfi"])
+            for replacement in negatives:
                 path.write_text(original.replace(flag,replacement))
                 with self.assertRaises(ValueError): self.verify(rust)
+            positives = [flag+",kernel-address", flag+",kernel-address "+flag]
+            if rust: positives += ["-Zsanitizer=kernel-address "+flag, flag+" -Zsanitizer=kernel-address"]
+            else: positives += [flag+" -fno-sanitize=all "+flag]
+            for replacement in positives:
+                path.write_text(original.replace(flag,replacement))
+                self.verify(rust)
+
+
+def absolute_native_flags(arguments, build):
+    """Relocate only input paths; compiler outputs always belong to the test.
+
+    Preserve target/config/user flags while making replay independent of the
+    original command's native output cwd. Response files remain read-only.
+    """
+    def absolute(path):
+        return str(Path(path) if Path(path).is_absolute() else build / path)
+    def search(path):
+        kind, separator, value = path.partition("=")
+        return kind + separator + absolute(value) if separator else absolute(path)
+    flags, iterator = [], iter(arguments)
+    for flag in iterator:
+        if flag in ("-I", "-isystem", "-iquote", "-include", "-imacros"):
+            flags += [flag, absolute(next(iterator))]
+        elif flag == "-L": flags += [flag, search(next(iterator))]
+        elif flag.startswith("-I") and len(flag) > 2: flags.append("-I" + absolute(flag[2:]))
+        elif flag.startswith("-L") and len(flag) > 2: flags.append("-L" + search(flag[2:]))
+        elif flag.startswith("@"): flags.append("@" + absolute(flag[1:]))
+        elif flag.startswith("--target=") and flag.endswith(".json"):
+            flags.append("--target=" + absolute(flag.split("=", 1)[1]))
+        elif flag == "--extern":
+            dependency = next(iterator)
+            name, separator, value = dependency.partition("=")
+            flags += [flag, name + separator + absolute(value) if separator else name]
+        elif flag.startswith("-Cincremental="):
+            raise ValueError("native incremental cache cannot be reused by a private proof")
+        else: flags.append(flag)
+    return flags
+
+
+class ReplayPolicyChecks(Temporary):
+    def test_native_input_paths_are_absolute_without_changing_flags(self):
+        flags = ["-I./include", "-I", "arch/generated", "-include", "include/generated/autoconf.h",
+                 "-isystem", "system", "-iquote", "quoted", "-imacros", "macros.h", "@./cfg",
+                 "--target=./scripts/target.json", "-L", "./rust/", "-Ldependency=rust",
+                 "--extern", "kernel=rust/libkernel.rmeta", "--extern", "pin_init", "-DKEEP=1", "-Dwarnings"]
+        result = absolute_native_flags(flags, self.work)
+        for value in ("include", "arch/generated", "include/generated/autoconf.h", "system", "quoted", "macros.h"):
+            self.assertTrue(any(str(self.work / value) in flag for flag in result))
+        self.assertIn("@" + str(self.work / "cfg"), result)
+        self.assertIn("--target=" + str(self.work / "scripts/target.json"), result)
+        self.assertIn("-Ldependency=" + str(self.work / "rust"), result)
+        self.assertIn("kernel=" + str(self.work / "rust/libkernel.rmeta"), result)
+        self.assertEqual(result[-4:], ["--extern", "pin_init", "-DKEEP=1", "-Dwarnings"])
+        with self.assertRaises(ValueError): absolute_native_flags(["-Cincremental=old-cache"], self.work)
+
+    def test_explicit_empty_native_inputs_fail_instead_of_skipping(self):
+        for variable, arch in (("BASE64_X86_BUILD", "x86_64"), ("BASE64_ARM64_BUILD", "aarch64")):
+            with mock.patch.dict(os.environ, {variable: ""}):
+                for case_type, method in ((NativeFixtureChecks, "check_native"), (NativeSuiteChecks, "check_suite")):
+                    case = case_type(); case.setUp()
+                    try:
+                        with self.assertRaises((AssertionError, ValueError)):
+                            getattr(case, method)(variable, arch)
+                    finally: case.doCleanups()
+
+    def test_reference_callback_requires_actual_framework_flags_type_and_freshness(self):
+        build = self.work
+        (build / ".config").write_text("CONFIG_CFI=y\n")
+        with ExitStack() as stack:
+            source = stack.enter_context(mock.patch.object(checker, "verify_build_command"))
+            target = stack.enter_context(mock.patch.object(checker, "elf_target"))
+            flags = stack.enter_context(mock.patch.object(checker, "compilation_flags", return_value=["-fsanitize=kcfi"]))
+            types = stack.enter_context(mock.patch.object(checker, "provider_type_ids", return_value={"kunit_cleanup": 123}))
+            self.assertEqual(checker.kunit_callback_type(build, "x86_64"), 123)
+            source.assert_called_once_with(build, build / "lib/kunit/test.o", ROOT / "lib/kunit/test.c",
+                                           [ROOT / "include/kunit/test.h"])
+            types.assert_called_once_with(build / "lib/kunit/test.o", names=("kunit_cleanup",))
+            for options in ([], ["-fsanitize=kcfi", "-fno-sanitize=kcfi"], ["-fsanitize=kcfi", "-fno-sanitize=all"]):
+                flags.return_value = options
+                with self.assertRaises(ValueError): checker.kunit_callback_type(build, "x86_64")
+            flags.return_value = ["-fsanitize=kcfi"]
+            types.return_value = {"kunit_cleanup": 0}
+            with self.assertRaises(ValueError): checker.kunit_callback_type(build, "x86_64")
+            types.return_value = {"kunit_cleanup": 123}
+            for gate in (source, target):
+                gate.side_effect = ValueError("stale/wrong actual framework")
+                with self.assertRaises(ValueError): checker.kunit_callback_type(build, "x86_64")
+                gate.side_effect = None
+            (build / ".config").write_text("# CONFIG_CFI is not set\n")
+            with self.assertRaises(ValueError): checker.kunit_callback_type(build, "x86_64")
 
 
 class NativeFixtureChecks(Temporary):
@@ -393,10 +491,11 @@ class NativeFixtureChecks(Temporary):
         env = {**checker.clean_environment(), "RUSTC_BOOTSTRAP": "1", "OBJTREE": str(build),
                "RUST_MODFILE": "base64_rust_main"}
         def run(args):
-            result = subprocess.run(list(map(str, args)), cwd=build, env=env, capture_output=True, timeout=90)
+            result = subprocess.run(list(map(str, args)), cwd=self.work, env=env, capture_output=True, timeout=90)
             self.assertEqual(result.returncode, 0, shlex.join(map(str, args)) + "\n" + result.stderr.decode(errors="replace"))
             return result.stdout
         compiler, cflags = native_c_arguments(build)
+        cflags = absolute_native_flags(cflags, build)
         def flags(stem):
             return [f.replace("lib/base64", stem).replace('"base64"', '"' + stem + '"') if f.startswith("-DKBUILD_")
                 else "-D__KBUILD_MODNAME=" + stem if f.startswith("-D__KBUILD_MODNAME=") else f
@@ -410,7 +509,8 @@ class NativeFixtureChecks(Temporary):
         types = {key.replace("base64_reference_", "base64_"): value for key, value in original.items()}
         checker.verify_guarded_calls(self.work / "base64_c_main.o", arch, types, wrappers=checker.WRAPPERS)
         args = first_saved_command(build / "rust/bindings/.bindings_generated.rs.cmd")
-        bflags = [arg for arg in args[args.index("--") + 1:] if not arg.startswith("-Wp,-MMD,")]
+        bflags = absolute_native_flags([arg for arg in args[args.index("--") + 1:]
+                                       if not arg.startswith("-Wp,-MMD,")], build)
         binding = self.work / "bindings.rs"
         run([*shlex.split(os.environ.get("BINDGEN", args[0])), ROOT / "include/linux/base64.h",
             "--rust-target=1.85", "--use-core", "--ctypes-prefix=ffi", "--allowlist-type=base64_variant",
@@ -423,10 +523,13 @@ class NativeFixtureChecks(Temporary):
         rustc, rflags, iterator = args[0], [], iter(args[1:])
         for arg in iterator:
             if arg == "--out-dir": next(iterator)
+            elif arg.startswith("--out-dir="): continue
             elif arg == "--extern":
                 dependency = next(iterator)
-                if dependency != "kernel": rflags += [arg, dependency]
+                if dependency.split("=", 1)[0] != "kernel": rflags += [arg, dependency]
             elif not arg.startswith("--emit=") and not arg.endswith("/int_log_rust.rs"): rflags.append(arg)
+        rflags = absolute_native_flags(rflags, build)
+        rflags += ["--out-dir=" + str(self.work)]
         self.assertIn("-Dwarnings", rflags)
         self.assertIn("-Zsanitizer=kcfi", rflags)
         features = next(arg.split("=", 1)[1] for arg in rflags if arg.startswith("-Zallow-features="))
@@ -437,7 +540,7 @@ class NativeFixtureChecks(Temporary):
             'pub use real_kernel::bindings::*;\nuse real_kernel::ffi;\ninclude!("' + str(binding) + '");\n}\n')
         library = self.work / "libbase64_fixture_kernel.rlib"
         run([rustc, *rflags, "--extern", "real_kernel=" + str(build / "rust/libkernel.rmeta"),
-             "--crate-name=base64_fixture_kernel", "--emit=link", facade, "-o", library])
+             "--crate-name=base64_fixture_kernel", "--emit=link=" + str(library), facade])
         source = self.work / "base64_rust_main.rs"; source.write_text(fixtures.caller_source(ROOT, "rust"))
         obj = self.work / "base64_rust_main.o"
         run([rustc, *rflags, "--extern", "kernel=" + str(library), "--cfg=MODULE",
@@ -457,6 +560,132 @@ class NativeFixtureChecks(Temporary):
 
     def test_actual_arm64_c_rust_callers_and_protected_type_identity(self):
         self.check_native("BASE64_ARM64_BUILD", "aarch64")
+
+    def test_concurrent_same_crates_keep_compiler_cwd_and_intermediates_private(self):
+        variable = next((name for name in ("BASE64_X86_BUILD", "BASE64_ARM64_BUILD") if name in os.environ), None)
+        if variable is None: self.skipTest("actual native inputs absent")
+        arch = "x86_64" if variable == "BASE64_X86_BUILD" else "aarch64"
+        shared = self.work / "shared-invocation-cwd"; shared.mkdir()
+        script = ('import sys,unittest\nfrom test_base64_kernel_check import NativeFixtureChecks\n'
+                  'case=NativeFixtureChecks();case.setUp()\n'
+                  'try: case.check_native(sys.argv[1],sys.argv[2])\n'
+                  'finally: case.doCleanups()\n')
+        env = {**os.environ, "PYTHONDONTWRITEBYTECODE": "1",
+               "PYTHONPATH": os.pathsep.join((str(Path(__file__).parent), str(ROOT / "scripts/tests")))}
+        children = [subprocess.Popen([sys.executable, "-c", script, variable, arch], cwd=shared,
+                    env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE) for _ in range(2)]
+        for child in children:
+            stdout, stderr = child.communicate(timeout=120)
+            self.assertEqual(child.returncode, 0, (stdout, stderr))
+        self.assertEqual(list(shared.iterdir()), [])
+
+
+class NativeSuiteChecks(Temporary):
+    """Actual original C and selected Rust suites, not invented ABI layouts.
+
+    These are object/registration controls only. Native final module linking,
+    import CRCs and loading remain the runtime checker's separate gates.
+    """
+    def check_suite(self, variable, arch):
+        if variable not in os.environ: self.skipTest("set " + variable + " for actual suite proof")
+        if not os.environ[variable].strip(): raise ValueError(variable + " explicitly empty")
+        build = Path(os.environ[variable]).resolve()
+        self.assertEqual(checker.architecture(checker.configuration(build)), arch)
+        from test_base64_kunit import native_fixture, SUITE, ORIGINAL
+        work = self.work / "objects"
+        compiler, flags, cc, cflags, env, _ = native_fixture(work, build)
+        expected_type = checker.kunit_callback_type(build, arch)
+        def run(args):
+            result = subprocess.run(list(map(str, args)), cwd=work, env=env,
+                                    capture_output=True, timeout=90)
+            self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
+            return result.stdout
+        # Actual minimum compiler option semantics: repeated sets accumulate.
+        cfg = run([compiler, *flags, "-Zsanitizer=kernel-address", "--print=cfg"])
+        self.assertIn(b'sanitize="kcfi"', cfg)
+        self.assertIn(b'sanitize="address"', cfg)
+        original_ids = None
+        for module in (False, True):
+            for rust in (False, True):
+                obj = work / f"suite-{rust}-{module}.o"
+                if rust:
+                    run([compiler, *flags, *(["--cfg=MODULE"] if module else []),
+                         "--crate-name=base64_kunit", "--emit=obj=" + str(obj), SUITE])
+                else:
+                    run([cc, *cflags, *(["-DMODULE"] if module else []), "-c", ORIGINAL, "-o", obj])
+                callbacks = checker.verify_suite_registration(obj, arch, rust_suite=rust, builtin=not module, cfi=True,
+                                                              expected_type=expected_type)
+                names = [symbol[0].decode() for symbol in callbacks]
+                ids = list(checker.provider_type_ids(obj, names=names).values())
+                if original_ids is None: original_ids = ids
+                self.assertEqual(ids, original_ids)
+                self.assertEqual(set(ids), {expected_type})
+                checker.verify_suite_metadata(obj, not module)
+                with self.assertRaises(ValueError): checker.verify_suite_metadata(obj, module)
+                checker.verify_references(obj, checker.SYMBOLS)
+                # The original allocation interface may lower to __kmalloc*
+                # while Kmalloc uses the established null-krealloc helper.
+                _, _, symbols, _, _ = checker.module_elf(obj)
+                imports = {symbol[0] for symbol in symbols if symbol[3] == 0}
+                if rust:
+                    self.assertTrue(any(b"7Kmalloc" in name and b"9Allocator5alloc" in name
+                                        for name in imports) or b"rust_helper_krealloc_node_align" in imports)
+                else:
+                    self.assertTrue(any(b"kmalloc" in name for name in imports))
+                self.assertIn(b"kfree", imports)
+                self.assert_rejected_mutations(obj, arch, rust, not module, names, expected_type)
+        # Real compiler negative control: rename the original struct tag in
+        # every original declaration; layout remains real, nominal CFI changes.
+        wrong = work / "wrong-nominal.o"
+        run([cc, *cflags, "-Dkunit=wrong_kunit", "-c", ORIGINAL, "-o", wrong])
+        self.assertNotEqual(list(checker.provider_type_ids(wrong, names=[x.decode() for x in checker.CASES]).values()), original_ids)
+        with self.assertRaises(ValueError, msg="original KUnit callback IDs: " + repr(original_ids)):
+            checker.verify_suite_registration(wrong, arch, rust_suite=False, builtin=True, cfi=True,
+                                              expected_type=expected_type)
+        unguarded = work / "no-cfi.o"
+        run([cc, *cflags, "-fno-sanitize=kcfi", "-c", ORIGINAL, "-o", unguarded])
+        checker.verify_suite_registration(unguarded, arch, rust_suite=False, builtin=True, cfi=False)
+        with self.assertRaises(ValueError):
+            checker.verify_suite_registration(unguarded, arch, rust_suite=False, builtin=True, cfi=True,
+                                              expected_type=expected_type)
+
+    def assert_rejected_mutations(self, obj, arch, rust, builtin, names, expected_type):
+        _, normalized, symbols, _, _ = checker.module_elf(obj)
+        data = obj.read_bytes()
+        section_at = struct.unpack_from("<Q", data, 40)[0]
+        sections = [struct.unpack_from("<IIQQQQIIQQ", data, section_at + i * 64) for i in range(len(normalized))]
+        labels = [section[0] for section in normalized]
+        changes = []
+        def at(offset, replacement):
+            result = bytearray(data); result[offset:offset+len(replacement)] = replacement
+            return result
+        registration = labels.index(b".kunit_test_suites")
+        # Actual section flags, count, relocation and callback code identity.
+        changes += [at(section_at + registration * 64 + 8, struct.pack("<Q", 2)),
+                    at(section_at + registration * 64 + 32, struct.pack("<Q", 0))]
+        relocation = next(section for section in sections if section[1] == 4 and section[7] == registration)
+        changes.append(at(relocation[4], struct.pack("<Q", 8)))
+        addend = struct.unpack_from("<q", data, relocation[4] + 16)[0]
+        changes.append(at(relocation[4] + 16, struct.pack("<q", addend + 8)))
+        for name in names:
+            symbol = next(value for value in symbols if value[0] == name.encode())
+            changes.append(at(sections[symbol[3]][4] + symbol[4] - 4, bytes(4)))
+        for index, changed in enumerate(changes):
+            path = obj.with_name(obj.stem + f"-bad-{index}.o"); path.write_bytes(changed)
+            with self.subTest(rust=rust, builtin=builtin, mutation=index), self.assertRaises(ValueError):
+                checker.verify_suite_registration(path, arch, rust_suite=rust, builtin=builtin, cfi=True,
+                                                  expected_type=expected_type)
+        for field in (b"license=GPL", b"author=Guan-Chun Wu"):
+            self.assertIn(field, data)
+            path = obj.with_name(obj.stem + "-bad-metadata.o")
+            path.write_bytes(data.replace(field, field[:-1] + b"!", 1))
+            with self.assertRaises(ValueError): checker.verify_suite_metadata(path, builtin)
+
+    def test_actual_x86_original_and_rust_suite_registration_metadata_and_kcfi(self):
+        self.check_suite("BASE64_X86_BUILD", "x86_64")
+
+    def test_actual_arm64_original_and_rust_suite_registration_metadata_and_kcfi(self):
+        self.check_suite("BASE64_ARM64_BUILD", "aarch64")
 
 
 class ConsumerPolicyChecks(Temporary):
@@ -522,6 +751,27 @@ class ConsumerPolicyChecks(Temporary):
         self.assertIn(ROOT / "include/linux/base64.h", guard.call_args_list[0].args[1])
         with mock.patch.object(checker, "newer", side_effect=ValueError("stale nominal enum metadata")):
             with self.assertRaisesRegex(ValueError, "stale nominal enum"): checker.verify_bindings(build)
+
+    def test_modular_suite_requires_real_selected_metadata_common_imports_and_registration(self):
+        build = self.work; tests = build / "lib/tests/base64_kunit.o"; module = tests.with_suffix(".ko")
+        (build / ".config").write_text("CONFIG_CFI=y\n")
+        gates = ("verify_module", "newer", "verify_module_metadata", "verify_common_metadata",
+                 "verify_references", "verify_module_import_versions", "verify_suite_metadata",
+                 "verify_suite_registration", "kunit_callback_type")
+        for rust in (False, True):
+            for broken in (None, *gates):
+                with self.subTest(rust=rust, broken=broken), ExitStack() as stack:
+                    calls = {name: stack.enter_context(mock.patch.object(checker, name,
+                             side_effect=ValueError(name) if broken == name else None)) for name in gates}
+                    stack.enter_context(mock.patch.object(checker, "selected_metadata", return_value=module.with_suffix(".mod.c")))
+                    if broken:
+                        with self.assertRaisesRegex(ValueError, broken): checker.verify_suite_module(build, tests, "x86_64", rust_suite=rust)
+                    else:
+                        self.assertEqual(checker.verify_suite_module(build, tests, "x86_64", rust_suite=rust), module)
+                        calls["verify_module_metadata"].assert_called_once_with(build, module, require_c_suppression=True)
+                        calls["verify_common_metadata"].assert_called_once_with(build, build, flags=checker.compilation_flags,
+                                                                               exports=checker.read_exports)
+                        self.assertEqual(calls["verify_suite_registration"].call_args.kwargs["rust_suite"], rust)
 
 
 class CliChecks(Temporary):

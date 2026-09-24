@@ -77,7 +77,47 @@ def verify_suite_metadata(obj, builtin):
         require_metadata_field(info, prefix + key, value)
 
 
-def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi):
+def suite_kcfi_flags(flags, rust):
+    """Match actual sanitizer option composition, not one exact spelling."""
+    if rust:
+        # Rust 1.85 accumulates repeated sets, including separate KCFI/KASAN
+        # options. Empty/none are compiler-invalid, not disabling spellings.
+        selections = [set(flag.split("=", 1)[1].split(",")) for flag in flags
+                      if flag.startswith("-Zsanitizer=")]
+        return (any("kcfi" in selection for selection in selections) and
+                not any(selection & {"", "none"} for selection in selections))
+    enabled = False
+    for flag in flags:
+        if flag.startswith("-fsanitize=") and "kcfi" in flag.split("=", 1)[1].split(","):
+            enabled = True
+        elif flag.startswith("-fno-sanitize=") and {"all", "kcfi"} & set(flag.split("=", 1)[1].split(",")):
+            enabled = False
+    return enabled
+
+
+def kunit_callback_type(build, arch):
+    """Derive the callback identity from the real selected C KUnit framework.
+
+    kunit_cleanup has exactly void (struct kunit *), including the original
+    nominal struct tag. Do not accept four mutually equal but wrong callbacks.
+    """
+    obj = build / "lib/kunit/test.o"
+    header = ROOT / "include/kunit/test.h"
+    source = ROOT / "lib/kunit/test.c"
+    if (not re.search(r"^void kunit_cleanup\(struct kunit \*test\);$", header.read_text(), re.M) or
+            not re.search(r"^void kunit_cleanup\(struct kunit \*test\)\s*\{", source.read_text(), re.M)):
+        raise ValueError("original KUnit callback type reference changed")
+    verify_build_command(build, obj, source, [header])
+    elf_target(obj, arch)
+    flags = compilation_flags(obj)
+    if configuration(build).get("CFI") != "y" or not suite_kcfi_flags(flags, False):
+        raise ValueError("actual KUnit callback reference lost KCFI compilation")
+    value = provider_type_ids(obj, names=("kunit_cleanup",))["kunit_cleanup"]
+    if not value: raise ValueError("actual KUnit callback reference has zero KCFI identity")
+    return value
+
+
+def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi, expected_type=None):
     """Check real registration/callback relocations, not merely section names."""
     _,sections,symbols,_,_=module_elf(obj)
     registration=[(i,s) for i,s in enumerate(sections) if s[0]==b".kunit_test_suites"]
@@ -93,6 +133,14 @@ def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi):
     if (not 0<target[3]<len(sections) or not sections[target[3]][2]&2 or
             sections[target[3]][2]&4 or not 0<=target[4]+addend-sections[target[3]][3]<sections[target[3]][4]):
         raise ValueError("Base64 registration points outside allocated suite data")
+    # The first field of the actual original kunit_suite is its char name[256].
+    # Merely pointing somewhere into allocated data is not a registration.
+    if not re.search(r"struct kunit_suite \{\s*const char name\[256\];",
+                     (ROOT / "include/kunit/test.h").read_text()):
+        raise ValueError("original KUnit suite name layout changed")
+    offset = target[4] + addend - sections[target[3]][3]
+    if sections[target[3]][-1][offset:offset + 256] != b"base64" + bytes(250):
+        raise ValueError("Base64 registration does not point to the original suite name")
     defined=[s for s in symbols if 0<s[3]<len(sections)]
     if {s[0] for s in symbols} & {b"init_module",b"cleanup_module"} or any(s[0].startswith(b".initcall") for s in sections):
         raise ValueError("Base64 suite must retain stateless KUnit registration")
@@ -119,8 +167,8 @@ def verify_suite_registration(obj, arch, *, rust_suite, builtin, cfi):
         raise ValueError("Base64 callback registration missing, duplicated or reordered")
     if cfi:
         types=provider_type_ids(obj,names=tuple(s[0].decode() for s in callbacks))
-        if len(set(types.values()))!=1 or not next(iter(types.values())):
-            raise ValueError("Base64 callbacks lost their common native KUnit KCFI type")
+        if not expected_type or set(types.values()) != {expected_type}:
+            raise ValueError("Base64 callbacks lost the original native KUnit KCFI type")
     return callbacks
 
 
@@ -136,11 +184,10 @@ def verify_suite_object(build, tests, arch, *, builtin, rust_suite, members):
     cfi = configuration(build).get("CFI") == "y"
     if cfi:
         flags = compilation_flags(tests)
-        required = "-Zsanitizer=kcfi" if rust_suite else "-fsanitize=kcfi"
-        if required not in flags or any(flag.startswith("-fno-sanitize=") and
-                {"all", "kcfi"} & set(flag.split("=", 1)[1].split(",")) for flag in flags):
+        if not suite_kcfi_flags(flags, rust_suite):
             raise ValueError("Base64 suite lost actual KCFI compilation")
-    verify_suite_registration(tests, arch, rust_suite=rust_suite, builtin=builtin, cfi=cfi)
+    verify_suite_registration(tests, arch, rust_suite=rust_suite, builtin=builtin, cfi=cfi,
+                              expected_type=kunit_callback_type(build, arch) if cfi else None)
     verify_suite_metadata(tests, builtin)
     if rust_suite:
         verify_bindings(build)
@@ -209,20 +256,28 @@ def verify_linked_implementation(build, selection):
                 verify_build_command(build, obj, ROOT / "lib/kunit" / (name + ".c"), [])
                 newer(archive, [obj])
         if suite == "m":
-            module = tests.with_suffix(".ko")
-            verify_module(build, module, tests, "base64_kunit", arch)
-            newer(module, [selected_metadata(build, module)])
-            verify_references(module, SYMBOLS)
-            verify_module_import_versions(build, module)
-            verify_suite_metadata(module, False)
-            verify_suite_registration(module, arch, rust_suite=rust_suite, builtin=False, cfi=config.get("CFI") == "y")
-            preloads.append(module)
+            preloads.append(verify_suite_module(build, tests, arch, rust_suite=rust_suite))
     newer(build / "Module.symvers", [owner, *([tests] if suite != "n" else [])])
     newer(archive, [owner, *([tests] if suite == "y" else [])])
     newer(build / "vmlinux.o", [archive])
     newer(build / "vmlinux", [build / "vmlinux.o"])
     newer(build / ("arch/arm64/boot/Image" if arch == "aarch64" else "arch/x86/boot/bzImage"), [build / "vmlinux"])
     return preloads
+
+
+def verify_suite_module(build, tests, arch, *, rust_suite):
+    module = tests.with_suffix(".ko")
+    verify_module(build, module, tests, "base64_kunit", arch)
+    newer(module, [selected_metadata(build, module)])
+    verify_module_metadata(build, module, require_c_suppression=True)
+    verify_common_metadata(build, build, flags=compilation_flags, exports=read_exports)
+    verify_references(module, SYMBOLS)
+    verify_module_import_versions(build, module)
+    verify_suite_metadata(module, False)
+    cfi = configuration(build).get("CFI") == "y"
+    verify_suite_registration(module, arch, rust_suite=rust_suite, builtin=False, cfi=cfi,
+                              expected_type=kunit_callback_type(build, arch) if cfi else None)
+    return module
 
 
 def verify_consumer(build, work, caller):
