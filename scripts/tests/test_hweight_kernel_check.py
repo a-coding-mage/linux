@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: GPL-2.0-only
 """Fail-closed hweight runtime gates and genuinely independent caller fixtures."""
-from contextlib import redirect_stderr
+from contextlib import ExitStack, redirect_stderr
 import io
 import os
 from pathlib import Path
@@ -13,6 +13,9 @@ import sys
 import tempfile
 import unittest
 from unittest import mock
+
+from rbtree_native.transport import (NativeWriteWatch, compiler_environment,
+    native_flags, outside, response_flags, validate_compiler_outputs)
 
 import check_hweight_kernel as check
 
@@ -203,17 +206,24 @@ class ArtifactTests(unittest.TestCase):
 
 def private_compile(build, out, caller):
     """Replay native flags read-only; every generated artifact stays under out."""
+    build, out = build.resolve(), out.resolve()
+    protected = (ROOT, build)
+    outside(out, protected)
     out.mkdir(parents=True, exist_ok=True)
     env = {**os.environ, 'RUSTC_BOOTSTRAP': '1', 'OBJTREE': str(build), 'RUST_MODFILE': 'hweight_abi', 'LC_ALL': 'C'}
+    env = compiler_environment(out, env)
     commands = []
     def run(args):
         args = list(map(str, args)); commands.append(shlex.join(args))
-        result = subprocess.run(args, cwd=build, env=env, capture_output=True, timeout=120)
+        validate_compiler_outputs(args, out, out, protected)
+        result = subprocess.run(args, cwd=out, env=env, capture_output=True, timeout=120)
         (out / 'commands.txt').write_text('\n'.join(commands) + '\n')
         if result.returncode: raise AssertionError('\n'.join(commands) + '\n' + result.stdout.decode(errors='replace') + result.stderr.decode(errors='replace'))
         return result
     raw = check.compilation_flags(build / 'lib/scatterlist.o')
+    raw = [raw[0], *response_flags(raw[1:], build, 'c')]
     cflags = [flag for flag in raw[1:raw.index('-c')] if not flag.startswith(('-Wp,-MMD,', '-DKBUILD_MODFILE=', '-DKBUILD_MODNAME=', '-DKBUILD_BASENAME=', '-D__KBUILD_MODNAME='))]
+    cflags = native_flags(cflags, build, 'c')
     cflags += ['-DMODULE', '-D__DISABLE_EXPORTS', '-DKBUILD_MODNAME="hweight_abi"', '-DKBUILD_BASENAME="hweight_abi"',
                '-DKBUILD_MODFILE="hweight_abi"', '-D__KBUILD_MODNAME=hweight_abi', '-Werror']
     reference = out / 'reference.c'
@@ -226,22 +236,66 @@ def private_compile(build, out, caller):
         donor = build / ('lib/list_sort_rust.o' if check.architecture(check.configuration(build)) == 'x86_64' else 'lib/math/cordic_rust.o')
         raw = check.compilation_flags(donor)
         while raw and not raw[0].endswith('rustc'): raw.pop(0)
-        compiler = os.environ.get('HWEIGHT_RUSTC', os.environ.get('HOSTRUSTC', raw.pop(0)))
-        flags, index = [], 0
-        while index < len(raw):
-            flag = raw[index]
-            if flag == '--out-dir': index += 2; continue
-            if flag.startswith('--emit=') or flag.endswith('.rs'): index += 1; continue
-            flags.append(flag); index += 1
+        if not raw: raise ValueError('missing actual Rust compiler in saved command')
+        saved_compiler = raw.pop(0)
+        compiler = os.environ.get('HWEIGHT_RUSTC', os.environ.get('HOSTRUSTC', saved_compiler))
+        flags = native_flags(raw, build, 'rust')
         run([compiler, *flags, '--cfg', 'MODULE', '-Dwarnings', '-Dunsafe_op_in_unsafe_fn', '--crate-name=hweight_rust_abi',
-             '--emit=obj=' + str(out / 'caller.o') + ',llvm-ir=' + str(out / 'caller.ll'), path])
+             '--out-dir=' + str(out), '--emit=obj=' + str(out / 'caller.o') + ',llvm-ir=' + str(out / 'caller.ll'), path])
     # Original generic object is a valid KCFI oracle even on special-ABI x86.
     run(['clang', *cflags, '-c', '-o', out / 'generic.o', ROOT / 'lib/hweight.c'])
     run([*shlex.split(os.environ.get('LD_LLD', 'ld.lld')), '-r', '-o', out / 'linked.o', out / 'caller.o', out / 'reference.o'])
     return out / 'caller.o', out / 'linked.o', out / 'generic.o'
 
 
+class TransportTests(unittest.TestCase):
+    def test_private_native_response_replay_and_early_output_rejection(self):
+        with tempfile.TemporaryDirectory(prefix='hweight-transport-control-') as temporary:
+            work = Path(temporary)
+            donor, out = work / 'donor', work / 'output'
+            donor.mkdir()
+            (donor / 'c.rsp').write_text('-I "include directory" -include generated/header.h -c old.c -o old.o')
+            (donor / 'rust-inner.rsp').write_text('--extern\nkernel=rust/libkernel.rmeta\n-Ldependency=rust\n')
+            (donor / 'rust.rsp').write_text('@rust-inner.rsp\n--target=scripts/target.json\n--out-dir\nlib/\n--emit=obj=lib/old.o\nold.rs\n')
+            calls = []
+            def saved(path):
+                return ['clang', '@c.rsp'] if path.name == 'scatterlist.o' else ['rustc', '@rust.rsp']
+            def run(argv, **kwargs):
+                calls.append(argv)
+                self.assertEqual(kwargs['cwd'], out)
+                self.assertTrue(all(Path(kwargs['env'][key]).is_relative_to(out)
+                                    for key in ('TMPDIR', 'TMP', 'TEMP')))
+                return subprocess.CompletedProcess(argv, 0, b'', b'')
+            with mock.patch.object(check, 'compilation_flags', side_effect=saved), \
+                 mock.patch.object(check, 'configuration', return_value={}), \
+                 mock.patch.object(check, 'architecture', return_value='x86_64'), \
+                 mock.patch('subprocess.run', side_effect=run):
+                private_compile(donor, out, 'rust')
+                with self.assertRaises(ValueError): private_compile(donor, donor / 'forbidden', 'c')
+            rust = next(argv for argv in calls if any(a.startswith('--crate-name=hweight_rust_abi') for a in argv))
+            self.assertIn('kernel=' + str(donor / 'rust/libkernel.rmeta'), rust)
+            self.assertIn('--target=' + str(donor / 'scripts/target.json'), rust)
+            self.assertIn('--out-dir=' + str(out), rust)
+            self.assertNotIn('old.rs', rust)
+            self.assertIn(str(donor / 'include directory'), calls[0])
+            self.assertIn(str(donor / 'generated/header.h'), calls[0])
+            self.assertFalse((donor / 'forbidden').exists())
+
+
 class NativeTests(unittest.TestCase):
+    def setUp(self):
+        stack = ExitStack()
+        watches = []
+        for variable in ('HWEIGHT_NATIVE_X86', 'HWEIGHT_NATIVE_ARM64'):
+            value = os.environ.get(variable)
+            if value and Path(value).is_dir():
+                watches.append(stack.enter_context(NativeWriteWatch(Path(value).resolve())))
+        def finish():
+            stack.close()
+            self.assertFalse(any(watch.events for watch in watches),
+                             [watch.events for watch in watches])
+        self.addCleanup(finish)
+
     def build(self, variable):
         value = os.environ.get(variable)
         if value is None: self.skipTest(variable + ' not supplied; native gate not run')
@@ -319,14 +373,17 @@ int main(void) {
                 mutant.write_text(original)
                 for args in ([command[0], *flags, '-c', '-o', out / 'driver.o', driver],
                              [command[0], *flags, '-c', '-o', out / 'mutant.o', mutant]):
-                    result = subprocess.run(list(map(str, args)), cwd=build, capture_output=True, timeout=90)
+                    result = subprocess.run(list(map(str, args)), cwd=out,
+                        env=compiler_environment(out, os.environ), capture_output=True, timeout=90)
                     self.assertEqual(result.returncode, 0, result.stderr)
                 for provider, expected in ((generic, 0), (out / 'mutant.o', 1)):
                     target = out / ('good' if expected == 0 else 'bad')
                     result = subprocess.run([command[0], '-no-pie', '-o', str(target), str(out / 'driver.o'),
-                        str(obj), str(out / 'reference.o'), str(provider)], capture_output=True, timeout=90)
+                        str(obj), str(out / 'reference.o'), str(provider)], cwd=out,
+                        env=compiler_environment(out, os.environ), capture_output=True, timeout=90)
                     self.assertEqual(result.returncode, 0, result.stderr)
-                    result = subprocess.run([str(target)], capture_output=True, timeout=60,
+                    result = subprocess.run([str(target)], cwd=out,
+                        env=compiler_environment(out, os.environ), capture_output=True, timeout=60,
                         preexec_fn=lambda: resource.setrlimit(resource.RLIMIT_CORE, (0, 0)))
                     self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
                     if expected:

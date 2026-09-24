@@ -6,8 +6,11 @@ C body/header and the actual generated enum binding are used unchanged.
 """
 
 import base64
+import ctypes
 import functools
+import hashlib
 import itertools
+import json
 import os
 from pathlib import Path
 import random
@@ -18,23 +21,275 @@ import shutil
 import signal
 import struct
 import subprocess
+import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
 from kconfig_test_support import cached_conf_tools
 from rust_exports_test_support import dwarf_tools, dwarf_versions, read_exports, rust_targets
-from test_ctype_translation import elf_symbol
-from test_rational_build import environment, headers as export_headers, run
-from test_module_metadata_fidelity import first_saved_command
+from test_rational_build import environment, headers as export_headers
 
-ROOT = Path(os.environ.get("BASE64_SOURCE_ROOT", Path(__file__).resolve().parents[2]))
-CANDIDATE = Path(os.environ.get("BASE64_CANDIDATE", ROOT))
+ROOT = Path(os.environ.get("BASE64_SOURCE_ROOT", Path(__file__).resolve().parents[2])).resolve()
+CANDIDATE = Path(os.environ.get("BASE64_CANDIDATE", ROOT)).resolve()
 for variable in ("BASE64_SOURCE_ROOT", "BASE64_CANDIDATE"):
     if variable in os.environ and not os.environ[variable]:
         raise ValueError("explicit " + variable + " is empty")
 OWNER = CANDIDATE / "lib/base64_rust.rs"
 NAMES = ("base64_encode", "base64_decode")
+
+
+class WriteWatch:
+    """Inotify includes intermediates deleted before final filesystem snapshots."""
+    def __init__(self,paths):
+        libc=ctypes.CDLL(None,use_errno=True)
+        self.fd=libc.inotify_init1(os.O_NONBLOCK|os.O_CLOEXEC)
+        if self.fd<0: raise OSError(ctypes.get_errno(),'inotify_init1')
+        self.paths={}
+        for path in paths:
+            wd=libc.inotify_add_watch(self.fd,os.fsencode(path),0x100|0x200|0x2|0x4|0x8|0x40|0x80)
+            if wd<0:
+                os.close(self.fd);raise OSError(ctypes.get_errno(),'inotify_add_watch',str(path))
+            self.paths[wd]=str(path)
+
+    def finish(self):
+        events=[]
+        try:
+            while True:
+                try: data=os.read(self.fd,1024*1024)
+                except BlockingIOError: break
+                offset=0
+                while offset<len(data):
+                    wd,mask,_,length=struct.unpack_from('iIII',data,offset)
+                    name=os.fsdecode(data[offset+16:offset+16+length].rstrip(b'\0'))
+                    events.append((self.paths.get(wd,'OVERFLOW'),hex(mask),name));offset+=16+length
+        finally: os.close(self.fd)
+        return events
+
+
+def donor_inputs(flags,build,*,rust):
+    def expand(words,active=()):
+        result=[]
+        for token in words:
+            if token.startswith('@'):
+                response=(build/token[1:]).resolve()
+                if response in active: raise ValueError('recursive compiler response file')
+                data=response.read_text()
+                result.extend(expand(data.splitlines() if rust else shlex.split(data),(*active,response)))
+            else: result.append(token)
+        return result
+    flags=expand(flags)
+    def path(value): return str((build/value).resolve())
+    def library(value):
+        kind,sep,name=value.partition('=')
+        return kind+sep+path(name) if sep else path(value)
+    def external(value):
+        name,sep,filename=value.partition('=')
+        return name+sep+path(filename) if sep else value
+    def target(value): return path(value) if value.endswith('.json') or '/' in value else value
+    options={'-I':path,'-L':library,'-include':path,'-isystem':path,'-iquote':path,'-idirafter':path,
+             '-imacros':path,'-isysroot':path,'--sysroot':path,'--target':target,'--extern':external}
+    result=[];index=0
+    while index<len(flags):
+        token=flags[index]
+        if token in options:
+            if index+1==len(flags): raise ValueError('missing donor path argument: '+token)
+            result += [token,options[token](flags[index+1])];index+=2;continue
+        for option,convert in options.items():
+            if token.startswith(option+'='):
+                token=option+'='+convert(token[len(option)+1:]);break
+            if option in ('-I','-L','-include','-isystem','-iquote','-idirafter','-imacros') and token.startswith(option):
+                token=option+convert(token[len(option):]);break
+        result.append(token);index+=1
+    return result
+
+
+
+def first_saved_command(path):
+    # Same first-shell-command parser as the metadata helper, without importing
+    # its unrelated gettempdir() side effect before our input preflight.
+    lines=path.read_text().splitlines()
+    if not lines or ' := ' not in lines[0]: raise ValueError('malformed saved compiler command')
+    lexer=shlex.shlex(lines[0].split(' := ',1)[1],posix=True,punctuation_chars=';')
+    lexer.whitespace_split=True
+    arguments=[]
+    for token in lexer:
+        if token and set(token)=={';'}: break
+        arguments.append(token)
+    if not arguments: raise ValueError('empty saved compiler command')
+    return arguments
+
+
+def command(value, label, *, optional=False):
+    if not isinstance(value,str) or not value.strip(): raise ValueError(label+' explicitly empty')
+    try: words=shlex.split(value)
+    except ValueError as error: raise ValueError(label+' malformed command') from error
+    if not words or not words[0]: raise ValueError(label+' empty executable')
+    executable=shutil.which(words[0])
+    if executable is None:
+        if optional: return None
+        raise ValueError(label+' unavailable executable: '+words[0])
+    words[0]=os.path.abspath(executable)
+    return words
+
+
+def native_rust_arguments(build):
+    arguments=first_saved_command(build/'lib/math/.int_log_rust.o.cmd')
+    while arguments and re.fullmatch(r'[A-Z_]+=.*',arguments[0]): arguments.pop(0)
+    if not arguments: raise ValueError('native Rust command has no compiler')
+    executable=arguments.pop(0)
+    if '/' in executable: executable=str((build/executable).absolute())
+    compiler=command(shlex.quote(executable),'native rustc')[0]
+    arguments=donor_inputs(arguments,build,rust=True)
+    flags=[];iterator=iter(arguments);sources=0
+    for argument in iterator:
+        if argument in ('--out-dir','--extern','--emit','-o'):
+            if next(iterator,None) is None: raise ValueError('missing native Rust operand')
+        elif argument.startswith(('--emit=','--out-dir=','--extern=')):
+            continue
+        elif not argument.startswith('-') and (build/argument).resolve()==(ROOT/'lib/math/int_log_rust.rs').resolve():
+            sources+=1
+        else: flags.append(argument)
+    if sources!=1: raise ValueError('native Rust donor source identity is not unique')
+    return compiler,flags+['-Dwarnings']
+
+
+def native_binding_arguments(build):
+    arguments=first_saved_command(build/'rust/bindings/.bindings_generated.rs.cmd')
+    if '--' not in arguments: raise ValueError('native bindgen command lacks clang boundary')
+    flags=donor_inputs(arguments[arguments.index('--')+1:],build,rust=False)
+    tool=str((build/arguments[0]).absolute()) if '/' in arguments[0] else arguments[0]
+    return tool,[a for a in flags if not a.startswith('-Wp,-MMD,')]
+
+
+def settings():
+    allowed={'BASE64_SOURCE_ROOT','BASE64_CANDIDATE','BASE64_X86_BUILD','BASE64_ARM64_BUILD','BASE64_LOGS'}
+    # Combined discovery also loads test_base64_kunit. These four settings
+    # belong solely to that sibling; do not interpret or validate their values.
+    sibling={'BASE64_KUNIT_SOURCE_ROOT','BASE64_KUNIT_CANDIDATE',
+             'BASE64_KUNIT_NATIVE_X86','BASE64_KUNIT_NATIVE_ARM64'}
+    if {key for key in os.environ if key.startswith('BASE64_')}-allowed-sibling: raise ValueError('unknown BASE64 input')
+    for key in allowed:
+        if key in os.environ and not os.environ[key].strip(): raise ValueError(key+' explicitly empty')
+    for root,names in ((ROOT,('lib/base64.c','include/linux/base64.h','rust/ffi.rs','lib/scatterlist.c')),
+                       (CANDIDATE,('lib/base64.rs','lib/base64_rust.rs','include/linux/base64_header.rs','lib/Makefile','lib/Kconfig'))):
+        if any(not (root/name).is_file() for name in names): raise ValueError('invalid Base64 source/candidate')
+    protected=[ROOT.resolve(),CANDIDATE.resolve()]
+    native_compilers=set()
+    for variable in ('BASE64_X86_BUILD','BASE64_ARM64_BUILD'):
+        if variable not in os.environ: continue
+        build=Path(os.environ[variable]).resolve()
+        for name in ('.config','lib/.scatterlist.o.cmd','lib/math/.int_log_rust.o.cmd',
+                     'rust/bindings/.bindings_generated.rs.cmd','include/generated/rustc_cfg'):
+            if not (build/name).is_file(): raise ValueError(variable+' missing '+name)
+        config=(build/'.config').read_text().splitlines()
+        for item in ('CONFIG_CFI=y','CONFIG_RUST_INT_LOG=y',
+                     'CONFIG_'+('X86_64' if variable=='BASE64_X86_BUILD' else 'ARM64')+'=y'):
+            if item not in config: raise ValueError(variable+' lacks '+item)
+        compiler,_=native_c_arguments(build);command(shlex.quote(compiler),'native C compiler')
+        compiler,_=native_rust_arguments(build);native_compilers.add(compiler)
+        bindgen,_=native_binding_arguments(build)
+        command(os.environ.get('BINDGEN',shlex.quote(bindgen)),'native bindgen')
+        protected.append(build)
+    if 'INT_MATH_I686_SYSROOT' in os.environ:
+        value=os.environ['INT_MATH_I686_SYSROOT']
+        if not value.strip(): raise ValueError('INT_MATH_I686_SYSROOT explicitly empty')
+        root=Path(value).resolve()
+        if not list((root/'lib/rustlib/i686-unknown-linux-gnu/lib').glob('libcore*.rlib')):
+            raise ValueError('invalid genuine i686 core sysroot')
+        protected.append(root)
+    for key,default in (('HOSTCC','cc'),('HOSTRUSTC','rustc'),('CLANG','clang'),('OBJDUMP','llvm-objdump')):
+        command(os.environ.get(key,default),key)
+    for key in ('INT_MATH_I686_RUNNER','BINDGEN','KCONFIG_C_CONF','KCONFIG_RUST_CONF','GENDWARFKSYMS_C','GENDWARFKSYMS_RUST'):
+        if key in os.environ: command(os.environ[key],key)
+    logs=Path(os.environ['BASE64_LOGS']).resolve() if 'BASE64_LOGS' in os.environ else None
+    outside=lambda p: not any(p.is_relative_to(root) for root in protected)
+    if logs is not None:
+        if not outside(logs): raise ValueError('BASE64_LOGS inside read-only input')
+        if any(p.exists() and not p.is_dir() for p in (logs,*logs.parents)): raise ValueError('invalid BASE64_LOGS')
+        ancestor=next(p for p in (logs,*logs.parents) if p.exists())
+        if not os.access(ancestor,os.W_OK|os.X_OK): raise ValueError('unwritable BASE64_LOGS')
+    parent=next((p for value in [os.environ.get(k) for k in ('TMPDIR','TMP','TEMP')]+['/tmp'] if value
+                 for p in [Path(value).resolve()] if p.is_dir() and outside(p) and os.access(p,os.W_OK|os.X_OK)),None)
+    if parent is None: raise ValueError('no private temporary parent outside inputs')
+    rust=command(os.environ.get('HOSTRUSTC','rustc'),'HOSTRUSTC')
+    version=subprocess.run([*rust,'--version'],cwd=parent,capture_output=True,text=True,timeout=15)
+    match=re.match(r'rustc (\d+)\.(\d+)\.(\d+)',version.stdout)
+    if version.returncode or not match or tuple(map(int,match.groups()))<(1,85,0): raise ValueError('Rust >=1.85 required')
+    for compiler in native_compilers-{rust[0]}:
+        version=subprocess.run([compiler,'--version'],cwd=parent,capture_output=True,text=True,timeout=15)
+        match=re.match(r'rustc (\d+)\.(\d+)\.(\d+)',version.stdout)
+        if version.returncode or not match or tuple(map(int,match.groups()))<(1,85,0): raise ValueError('native donor requires Rust >=1.85')
+    return dict(protected=protected,parent=parent,logs=logs,rust=rust)
+
+
+def setUpModule():
+    global SETTINGS,EVIDENCE
+    SETTINGS=settings()
+    base=SETTINGS['logs'] or SETTINGS['parent'];base.mkdir(parents=True,exist_ok=True)
+    EVIDENCE=Path(tempfile.mkdtemp(prefix='base64-evidence-',dir=base))
+    (EVIDENCE/'settings.txt').write_text(repr(SETTINGS)+'\n')
+    print('base64 retained evidence:',EVIDENCE,flush=True)
+    # Shared host-tool builders also allocate only in this private evidence
+    # tree. Fixture cwd is private; direct commands get their own cwd below.
+    old_temp=tempfile.tempdir
+    tempfile.tempdir=str(EVIDENCE)
+    unittest.addModuleCleanup(setattr,tempfile,'tempdir',old_temp)
+    environment_patch=patch.dict(os.environ,TMPDIR=str(EVIDENCE),TMP=str(EVIDENCE),TEMP=str(EVIDENCE))
+    environment_patch.start();unittest.addModuleCleanup(environment_patch.stop)
+
+
+CURRENT=None
+
+
+def run(arguments, *, cwd=None, env=None, input=None, expected=0):
+    if CURRENT is None: raise ValueError('command needs private fixture')
+    work,logs=CURRENT
+    arguments=list(map(str,arguments))
+    if not arguments or not arguments[0]: raise ValueError('empty command')
+    executable=shutil.which(arguments[0])
+    if executable is None: raise ValueError('unavailable executable: '+arguments[0])
+    arguments[0]=os.path.abspath(executable)
+    cwd=Path(cwd).resolve() if cwd is not None else None
+    if cwd is not None and not cwd.is_relative_to(work):
+        # git show is explicitly read-only, but even it runs from private cwd.
+        if Path(arguments[0]).name=='git' and arguments[1:2]==['show']:
+            arguments[1:1]=['-C',str(cwd)];cwd=None
+        else: raise ValueError('command cwd must be private')
+    if any(a=='--out-dir' or a.startswith('--out-dir=') for a in arguments):
+        raise ValueError('direct compiler command retains output directory')
+    outputs=[arguments[i+1] for i,a in enumerate(arguments[:-1]) if a in ('-o','-MF')]
+    outputs += [item.split('=',1)[1] for a in arguments if a.startswith('--emit=')
+                for item in a[7:].split(',') if '=' in item]
+    if any(not Path(p).is_absolute() or not Path(p).resolve().is_relative_to(work) for p in outputs):
+        raise ValueError('command output must be absolute and private')
+    scratch=Path(tempfile.mkdtemp(prefix='command-',dir=logs))
+    if any(a.startswith('--emit=') for a in arguments) and '-o' not in arguments:
+        arguments += ['--out-dir',str(scratch)]
+    environment=dict(os.environ if env is None else env,TMPDIR=str(scratch),TMP=str(scratch),TEMP=str(scratch))
+    watch=WriteWatch([scratch,work]);started=time.monotonic_ns()
+    heading='$ '+shlex.join(arguments)+'\ncwd='+str(cwd or scratch)+'\nTMPDIR=TMP=TEMP='+str(scratch)+'\n'
+    (scratch/'command.log').write_text(heading)
+    try:
+        result=subprocess.run(arguments,cwd=cwd or scratch,env=environment,input=input,capture_output=True,
+                              timeout=120,preexec_fn=lambda:resource.setrlimit(resource.RLIMIT_CORE,(0,0)))
+    except (OSError,subprocess.TimeoutExpired) as error:
+        with (scratch/'command.log').open('a') as stream: stream.write('launch-error='+repr(error)+'\n')
+        raise
+    finally:
+        (scratch/'interval.json').write_text(json.dumps([arguments,started,time.monotonic_ns()])+'\n')
+        (scratch/'write-events.json').write_text(json.dumps(watch.finish())+'\n')
+    with (scratch/'command.log').open('a') as stream:
+        for name,data in (('stdout',result.stdout),('stderr',result.stderr)):
+            stream.write(name+': bytes='+str(len(data))+' sha256='+hashlib.sha256(data).hexdigest()+'\n')
+            if len(data)<=65536: stream.write(data.decode(errors='backslashreplace')+'\n')
+            else: stream.write('(large binary/diagnostic output: exact digest above; comparison remains in original test)\n')
+        stream.write('exit='+str(result.returncode)+'\n')
+    if expected is not None and result.returncode!=expected:
+        raise AssertionError('command failed ('+str(result.returncode)+'); see '+str(scratch/'command.log'))
+    return result
+
 
 
 def native_c_arguments(build, makefile=None):
@@ -53,6 +308,8 @@ def native_c_arguments(build, makefile=None):
     if not path.is_file():
         raise ValueError("native C flag proof requires always-C lib/.scatterlist.o.cmd")
     arguments = first_saved_command(path)
+    arguments[1:]=donor_inputs(arguments[1:],build,rust=False)
+    if '/' in arguments[0]: arguments[0]=str((build/arguments[0]).absolute())
     replacements = {
         '-DKBUILD_MODFILE="lib/scatterlist"': '-DKBUILD_MODFILE="lib/base64"',
         '-DKBUILD_BASENAME="scatterlist"': '-DKBUILD_BASENAME="base64"',
@@ -247,9 +504,25 @@ pub extern "C" fn trigger_fixture_panic() { panic!("Base64 ABI panic control"); 
 
 class Fixture(unittest.TestCase):
     def setUp(self):
-        temporary = tempfile.TemporaryDirectory(prefix="base64-native-")
+        global CURRENT
+        settings()  # Explicit invalid options fail before allocating this fixture.
+        temporary = tempfile.TemporaryDirectory(prefix="base64-native-",dir=EVIDENCE)
         self.addCleanup(temporary.cleanup)
         self.work = Path(temporary.name)
+        self.logs=Path(tempfile.mkdtemp(prefix=self._testMethodName+'-',dir=EVIDENCE))
+        CURRENT=(self.work,self.logs)
+        self.addCleanup(lambda: globals().__setitem__('CURRENT',None))
+        # Shared helper builders retain their original implementations and run
+        # from this private cwd, with temp allocations under module evidence.
+        old_cwd=Path.cwd();os.chdir(self.work);self.addCleanup(os.chdir,old_cwd)
+        directories=sorted({Path(directory) for key in ('BASE64_X86_BUILD','BASE64_ARM64_BUILD')
+                            if key in os.environ for directory,_,_ in os.walk(Path(os.environ[key]).resolve())})
+        watch=WriteWatch(directories) if directories else None
+        def finish_watch():
+            events=watch.finish() if watch is not None else []
+            (self.logs/'donor-events.json').write_text(json.dumps(dict(directories=len(directories),events=events))+'\n')
+            self.assertEqual(events,[],'transient write in read-only Base64 donor')
+        self.addCleanup(finish_watch)
         self.cc = shlex.split(os.environ.get("HOSTCC", "cc"))
         self.rustc = shlex.split(os.environ.get("HOSTRUSTC", "rustc"))
         self.flags = headers(self.work)
@@ -363,8 +636,7 @@ class Base64NativeTests(Fixture):
             else:
                 self.assertEqual(result.stdout, expected, (bits, language, optimize))
             if native and optimize == "0":
-                result = subprocess.run([*runner, executable], input=struct.pack("<I", 0xffffffff),
-                                        capture_output=True, timeout=30)
+                result = run([*runner, executable], input=struct.pack("<I", 0xffffffff),expected=None)
                 self.assertEqual((result.returncode, result.stdout, result.stderr), (97, b"", b""))
 
     def test_native_64(self):
@@ -451,8 +723,7 @@ class Base64NativeTests(Fixture):
         self.assertEqual(run([driver], input=data).stdout, expected)
         driver = self.driver(64, native, "mutant-protected", compiler=clang, extra=(*cflags, "-DTEST_KCFI"))
         for value in ((0, 1, 0, b"f"), (1, 1, 0, b"Zg==")):
-            result = subprocess.run([driver], input=serialize((value,)), capture_output=True, timeout=30,
-                                    preexec_fn=lambda: resource.setrlimit(resource.RLIMIT_CORE, (0, 0)))
+            result = run([driver], input=serialize((value,)),expected=None)
             self.assertEqual((result.returncode, result.stdout, result.stderr), (-signal.SIGILL, b"", b""))
 
     def test_provenance(self):
@@ -709,30 +980,20 @@ class Base64NativeConfigurationTests(Fixture):
         self.assertIn("-funsigned-char", cflags)
         self.assertIn("-fsanitize=kcfi", cflags)
         original, original_ir = self.work / "original-native.o", self.work / "original-native.ll"
-        run([ccompiler, *cflags, "-c", ROOT / "lib/base64.c", "-o", original], cwd=build)
-        run([ccompiler, *cflags, "-S", "-emit-llvm", ROOT / "lib/base64.c", "-o", original_ir], cwd=build)
-        bargs = first_saved_command(build / "rust/bindings/.bindings_generated.rs.cmd")
-        bflags = [arg for arg in bargs[bargs.index("--") + 1:] if not arg.startswith("-Wp,-MMD,")]
+        run([ccompiler, *cflags, "-c", ROOT / "lib/base64.c", "-o", original])
+        run([ccompiler, *cflags, "-S", "-emit-llvm", ROOT / "lib/base64.c", "-o", original_ir])
+        bindgen,bflags=native_binding_arguments(build)
         binding = self.work / "native-bindings.rs"
-        run([*shlex.split(os.environ.get("BINDGEN", bargs[0])), ROOT / "include/linux/base64.h",
+        run([*command(os.environ.get("BINDGEN", shlex.quote(bindgen)),"native bindgen"), ROOT / "include/linux/base64.h",
              "--rust-target=1.85", "--use-core", "--ctypes-prefix=ffi", "--allowlist-type=base64_variant",
              "--newtype-enum=base64_variant", '--with-attribute-custom-enum=base64_variant=#[cfi_encoding="14base64_variant"]',
-             "--no-layout-tests", "--no-doc-comments", "-o", binding, "--", *bflags], cwd=build)
+             "--no-layout-tests", "--no-doc-comments", "-o", binding, "--", *bflags])
         self.assertIn("pub struct base64_variant(pub ffi::c_uint);", binding.read_text())
         # This optional gate requires the completed Rust int_log donor; it is
         # not advertised as accepting an arbitrary CONFIG_RUST kernel build.
         rpath = build / "lib/math/.int_log_rust.o.cmd"
         self.assertTrue(rpath.is_file(), "native Rust flag proof requires selected lib/math/.int_log_rust.o.cmd")
-        rargs = first_saved_command(rpath)
-        while re.fullmatch(r"[A-Z_]+=.*", rargs[0]):
-            rargs.pop(0)
-        compiler, rflags = rargs[0], []
-        iterator = iter(rargs[1:])
-        for argument in iterator:
-            if argument in ("--out-dir", "--extern"):
-                next(iterator)
-            elif not argument.startswith("--emit=") and not argument.endswith("/lib/math/int_log_rust.rs"):
-                rflags.append(argument)
+        compiler,rflags=native_rust_arguments(build)
         self.assertIn("-Zsanitizer=kcfi", rflags)
         self.assertIn("-Zsanitizer-cfi-normalize-integers", rflags)
         self.assertIn("-Dunsafe_op_in_unsafe_fn", rflags)
@@ -743,7 +1004,7 @@ class Base64NativeConfigurationTests(Fixture):
         library = self.work / "libbase64_fixture_kernel.rlib"
         allow = next(arg.split("=", 1)[1] for arg in rflags if arg.startswith("-Zallow-features="))
         run([compiler, *rflags, "-Zallow-features=" + allow + ",cfi_encoding", "--crate-name=base64_fixture_kernel",
-             "--emit=link", kernel, "-o", library], cwd=build, env={**environment(), "RUSTC_BOOTSTRAP": "1"})
+             "--emit=link", kernel, "-o", library], env={**environment(), "RUSTC_BOOTSTRAP": "1"})
         source = self.work / "native-owner.rs"
         owner = OWNER.read_text()
         for old, new in (("../rust/ffi_export.rs", str(ROOT / "rust/ffi_export.rs")),
@@ -756,7 +1017,7 @@ class Base64NativeConfigurationTests(Fixture):
         run([compiler, *rflags, "--crate-name=base64_native", "--extern", "kernel=" + str(library),
              "--emit=obj=" + str(native), "--emit=llvm-ir=" + str(native_ir),
              "--emit=dep-info=" + str(self.work / "native-config.d"), source],
-            cwd=build, env={**environment(), "RUSTC_BOOTSTRAP": "1"})
+            env={**environment(), "RUSTC_BOOTSTRAP": "1"})
         def ids(path):
             text = path.read_text()
             result = {}
@@ -785,7 +1046,7 @@ int guarded_decode(const char *s, int n, u8 *d, bool p, enum base64_variant v) {
 }
 ''')
         callobj = self.work / "indirect.o"
-        run([ccompiler, *cflags, "-c", caller, "-o", callobj], cwd=build)
+        run([ccompiler, *cflags, "-c", caller, "-o", callobj])
         assembly = run([*shlex.split(os.environ.get("OBJDUMP", "llvm-objdump")), "-dr", callobj]).stdout.decode()
         for name in NAMES:
             self.assertIn(name, assembly)
@@ -795,6 +1056,9 @@ int guarded_decode(const char *s, int n, u8 *d, bool p, enum base64_variant v) {
         else:
             self.assertIn("ud2", assembly)
             self.assertRegex(assembly, r"(?:callq?|jmpq?)\s+\*")
+        for artifact in self.work.iterdir():
+            if artifact.is_file() and artifact.suffix in ('.o','.ll','.d','.rs','.rlib'):
+                shutil.copyfile(artifact,self.logs/artifact.name)
 
     def test_actual_x86_headers_flags_and_protected_calls(self):
         self.check_native("BASE64_X86_BUILD", "x86")
@@ -836,5 +1100,144 @@ int guarded_decode(const char *s, int n, u8 *d, bool p, enum base64_variant v) {
         self.check_without_original_owner_command("BASE64_ARM64_BUILD", "arm64")
 
 
+class Base64TransportTests(Fixture):
+    def test_composed_sibling_settings_are_not_host_inputs(self):
+        before=settings()
+        sibling={'BASE64_KUNIT_SOURCE_ROOT':'/not/a/host/source',
+                 'BASE64_KUNIT_CANDIDATE':'',
+                 'BASE64_KUNIT_NATIVE_X86':'/not/a/host/native',
+                 'BASE64_KUNIT_NATIVE_ARM64':'"not host argv'}
+        with patch.dict(os.environ,sibling),patch.object(Path,'mkdir') as mkdir,patch.object(tempfile,'mkdtemp') as mkdtemp:
+            self.assertEqual(settings(),before)
+            mkdir.assert_not_called();mkdtemp.assert_not_called()
+        with patch.dict(os.environ,BASE64_KUNIT_UNKNOWN='invalid'),self.assertRaises(ValueError): settings()
+        with patch.dict(os.environ,{**sibling,'BASE64_X86_BUILD':''}),self.assertRaises(ValueError): settings()
+
+    def test_nested_response_and_quoted_command_transport(self):
+        build=self.work/'donor with spaces';build.mkdir()
+        (build/'rust.rsp').write_text('-I\ninclude directory\n-Ldependency=rust\n--extern\nkernel=rust/libkernel.rmeta\n--target=scripts/target.json\n')
+        (build/'outer.rsp').write_text('@rust.rsp\n--sysroot=/dev/null\n')
+        self.assertEqual(donor_inputs(['@outer.rsp'],build,rust=True),
+            ['-I',str(build/'include directory'),'-Ldependency='+str(build/'rust'),'--extern',
+             'kernel='+str(build/'rust/libkernel.rmeta'),'--target='+str(build/'scripts/target.json'),'--sysroot=/dev/null'])
+        (build/'c.rsp').write_text('-I "include directory" -include "generated header.h"')
+        self.assertEqual(donor_inputs(['@c.rsp'],build,rust=False),
+                         ['-I',str(build/'include directory'),'-include',str(build/'generated header.h')])
+        (build/'operand.rsp').write_text('include directory\n')
+        self.assertEqual(donor_inputs(['-I','@operand.rsp'],build,rust=True),['-I',str(build/'include directory')])
+        (build/'cycle.rsp').write_text('@cycle.rsp\n')
+        for args,rust in ((['@cycle.rsp'],True),(['@missing.rsp'],True),(['-I'],False)):
+            with self.subTest(args=args),self.assertRaises((ValueError,OSError)): donor_inputs(args,build,rust=rust)
+        (build/'bad.rsp').write_text('"unterminated')
+        with self.assertRaises(ValueError): donor_inputs(['@bad.rsp'],build,rust=False)
+        for bad in ('',' ','"unterminated','/missing/compiler','"" -arg'):
+            with self.subTest(command=bad),self.assertRaises(ValueError): command(bad,'probe')
+        alias=build/'compiler with spaces';alias.symlink_to(sys.executable)
+        self.assertEqual(command(shlex.quote(str(alias))+' -V','probe'),[str(alias),'-V'])
+        (build/'lib/math').mkdir(parents=True)
+        (build/'all.rsp').write_text('@outer.rsp\n--out-dir\nread-only-output\n--emit=obj=read-only.o\n'+str(ROOT/'lib/math/int_log_rust.rs')+'\n-Dunsafe_op_in_unsafe_fn\n')
+        saved=build/'lib/math/.int_log_rust.o.cmd'
+        saved.write_text('savedcmd_x := '+shlex.join(self.rustc)+' @all.rsp\n')
+        _,flags=native_rust_arguments(build)
+        self.assertIn('-Dwarnings',flags);self.assertIn('-Dunsafe_op_in_unsafe_fn',flags)
+        self.assertFalse(any('read-only' in flag or flag.startswith(('--out-dir','--emit=','--extern')) for flag in flags))
+        for bad in ('','savedcmd_x := ','savedcmd_x := "unterminated','savedcmd_x := rustc @missing.rsp'):
+            saved.write_text(bad+'\n')
+            with self.subTest(saved=bad),self.assertRaises((ValueError,OSError)): native_rust_arguments(build)
+
+    def test_private_cwd_temp_outputs_and_preflight(self):
+        trap=self.work/'forbidden-temp';trap.mkdir();watch=WriteWatch([trap])
+        code='import os,pathlib,tempfile;assert all(os.environ[k]==os.getcwd() for k in ("TMPDIR","TMP","TEMP"));p=pathlib.Path("transient");p.write_text("x");p.unlink();f=tempfile.NamedTemporaryFile();raise SystemExit(7)'
+        try:
+            result=run([sys.executable,'-c',code],env=dict(os.environ,TMPDIR=str(trap),TMP=str(trap),TEMP=str(trap)),expected=7)
+            self.assertEqual(result.returncode,7)
+            before=set(self.logs.iterdir())
+            for argv,cwd in (([],None),(['/missing/compiler'],None),([sys.executable],ROOT),
+                             ([sys.executable,'--out-dir',str(ROOT)],None),([sys.executable,'-o',str(ROOT/'forbidden.o')],None)):
+                with self.subTest(argv=argv),self.assertRaises(ValueError): run(argv,cwd=cwd)
+            self.assertEqual(set(self.logs.iterdir()),before)
+        finally: events=watch.finish()
+        self.assertEqual(events,[])
+        private=[row for p in self.logs.glob('command-*/write-events.json') for row in json.loads(p.read_text())]
+        self.assertTrue(any(row[2]=='transient' and row[1]=='0x100' for row in private))
+        self.assertTrue(any(row[2]=='transient' and row[1]=='0x200' for row in private))
+
+    def test_explicit_invalid_inputs_before_work_or_skips(self):
+        for name,value in (('BASE64_LOGS',str(ROOT)),('BASE64_LOGS',str(OWNER/'child')),
+                           ('BASE64_X86_BUILD',''),('BASE64_ARM64_BUILD','/missing/native'),
+                           ('INT_MATH_I686_SYSROOT',''),('INT_MATH_I686_RUNNER','"unterminated'),
+                           ('HOSTCC',''),('HOSTRUSTC','/missing/compiler'),('HOSTRUSTC','true'),
+                           ('BINDGEN','"" -arg'),('BASE64_UNKNOWN','bad')):
+            with self.subTest(name=name,value=value),patch.dict(os.environ,{name:value}),patch.object(Path,'mkdir') as mkdir,patch.object(tempfile,'mkdtemp') as mkdtemp:
+                with self.assertRaises(ValueError): settings()
+                mkdir.assert_not_called();mkdtemp.assert_not_called()
+        alias=self.work/'source alias';alias.symlink_to(ROOT,target_is_directory=True)
+        with patch.dict(os.environ,BASE64_LOGS=str(alias/'logs')),self.assertRaises(ValueError): settings()
+
+    def test_bounded_concurrent_native_transport(self):
+        donors=[(variable,arch,Path(os.environ[variable]).resolve()) for variable,arch in
+                (('BASE64_X86_BUILD','x86'),('BASE64_ARM64_BUILD','arm64')) if variable in os.environ]
+        if not donors: self.skipTest('native inputs absent; concurrent compiler transport unproven')
+        directories=sorted({Path(p) for _,_,donor in donors for p,_,_ in os.walk(donor)})
+        watch=WriteWatch(directories);jobs=[];streams=[]
+        try:
+            for variable,arch,_ in donors:
+                for index in range(2):
+                    out=self.logs/(arch+'-'+str(index));out.mkdir()
+                    stream=(out/'worker.log').open('x');streams.append(stream)
+                    env=dict(os.environ,BASE64_LOGS=str(out),PYTHONDONTWRITEBYTECODE='1',TMPDIR=str(out),TMP=str(out),TEMP=str(out))
+                    job=subprocess.Popen([sys.executable,str(Path(__file__).resolve()),'--base64-transport-worker',variable,arch,str(out)],cwd=self.work,env=env,stdout=stream,stderr=subprocess.STDOUT)
+                    jobs.append((job,out))
+            deadline=time.monotonic()+30
+            while not all((out/'ready').is_file() for _,out in jobs):
+                if time.monotonic()>deadline or any(job.poll() is not None for job,_ in jobs): self.fail('bounded compiler barrier failed; see worker.log')
+                time.sleep(0.01)
+            (self.logs/'start-replays').write_text('release real native compiler workers\n')
+            for job,out in jobs: self.assertEqual(job.wait(timeout=120),0,str(out/'worker.log'))
+        finally:
+            for job,_ in jobs:
+                if job.poll() is None: job.kill();job.wait()
+            for stream in streams: stream.close()
+            events=watch.finish()
+            (self.logs/'all-donor-events.json').write_text(json.dumps(dict(directories=len(directories),events=events))+'\n')
+        self.assertEqual(events,[])
+        intervals=[];transients=[]
+        for _,out in jobs:
+            private=[row for p in out.rglob('write-events.json') for row in json.loads(p.read_text())]
+            created={row[2] for row in private if row[1]=='0x100' and row[2].endswith('.rcgu.o')}
+            deleted={row[2] for row in private if row[1]=='0x200' and row[2].endswith('.rcgu.o')}
+            self.assertTrue(created&deleted,'real private Rust intermediate creation/deletion required')
+            transients.append((out.name,sorted(created&deleted)))
+            for p in out.rglob('interval.json'):
+                argv,start,stop=json.loads(p.read_text())
+                if Path(argv[0]).name in ('rustc','clang'): intervals.append((out.name,argv[0],start,stop))
+        overlaps=[(a,b) for a in intervals for b in intervals if a[0]!=b[0] and max(a[2],b[2])<min(a[3],b[3])]
+        self.assertTrue(overlaps,'actual compiler invocation intervals must overlap')
+        (self.logs/'concurrent-proof.json').write_text(json.dumps(dict(intervals=intervals,overlaps=overlaps,private_transients=transients),indent=2)+'\n')
+
+
+def bounded_transport_worker(variable,architecture,out):
+    options=settings()
+    if (variable,architecture) not in (('BASE64_X86_BUILD','x86'),('BASE64_ARM64_BUILD','arm64')) or variable not in os.environ:
+        raise ValueError('invalid bounded native worker')
+    if not out.is_dir() or any(out.is_relative_to(p) for p in options['protected']): raise ValueError('worker output must be private')
+    setUpModule()
+    case=Base64NativeConfigurationTests()
+    try:
+        case.setUp()
+        (out/'ready').write_text('real native worker ready\n')
+        deadline=time.monotonic()+30
+        while not (out.parent/'start-replays').is_file():
+            if time.monotonic()>deadline: raise RuntimeError('bounded native compiler barrier timeout')
+            time.sleep(0.01)
+        case.check_native(variable,architecture)
+    finally:
+        clean=case.doCleanups();unittest.doModuleCleanups()
+        if not clean: raise AssertionError('bounded native worker cleanup failed')
+
+
 if __name__ == "__main__":
-    unittest.main()
+    if len(sys.argv)==5 and sys.argv[1]=='--base64-transport-worker':
+        bounded_transport_worker(sys.argv[2],sys.argv[3],Path(sys.argv[4]).resolve())
+    else:
+        unittest.main()

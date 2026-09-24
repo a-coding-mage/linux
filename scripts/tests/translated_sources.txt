@@ -53,6 +53,7 @@ include/asm-generic/div64_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/asn1_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/base64_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/bcd_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
+include/linux/bsearch_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/cordic_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/crc32poly_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/ctype_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
@@ -78,6 +79,7 @@ include/linux/uuid_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 include/linux/win_minmax_header.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/base64.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/bcd.rs d482bb509b7d065808de40ce78b5bca39f40b783
+lib/bsearch.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/cmdline.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/crc/gen_crc32table.rs d482bb509b7d065808de40ce78b5bca39f40b783
 lib/crc/gen_crc64table.rs d482bb509b7d065808de40ce78b5bca39f40b783

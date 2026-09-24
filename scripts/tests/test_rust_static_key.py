@@ -8,13 +8,19 @@ No substitute C layouts or Opaque implementations are used. Run once with
 JUMP_LABEL disabled and again with it enabled to cover both native paths.
 """
 
+from concurrent.futures import ThreadPoolExecutor
 import os
 from pathlib import Path
 import re
 import shlex
+import shutil
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
+
+from rbtree_native.transport import (NativeWriteWatch, compiler_environment,
+    native_flags, outside, response_flags, validate_compiler_outputs)
 
 from rust_exports_test_support import ROOT, read_exports
 from test_ctype_translation import elf_symbol
@@ -105,6 +111,9 @@ def jump_relocations(path, symbol):
 
 def compiler_invocation(build, command_path, source, output, rust, extra=()):
     """Reuse flags, never execute saved shell fragments or retain output paths."""
+    build, source, output = build.resolve(), source.resolve(), output.resolve()
+    protected = (ROOT.resolve(), build)
+    outside(output.parent, protected)
     data = command_path.read_text()
     saved = next(line.partition(":=")[2] for line in data.splitlines() if line.startswith("savedcmd_"))
     original = next(line.partition(":=")[2].strip() for line in data.splitlines() if line.startswith("source_"))
@@ -119,6 +128,13 @@ def compiler_invocation(build, command_path, source, output, rust, extra=()):
     while tokens and re.match(r"^[A-Za-z_][A-Za-z_0-9]*=", tokens[0]):
         name, _, value = tokens.pop(0).partition("=")
         environment[name] = value
+    if not tokens:
+        raise ValueError("saved compiler command is empty")
+    executable = str(build / tokens[0]) if "/" in tokens[0] and not Path(tokens[0]).is_absolute() else tokens[0]
+    executable = shutil.which(executable)
+    if executable is None:
+        raise ValueError("saved compiler executable is missing")
+    tokens = [executable, *response_flags(tokens[1:], build, "rust" if rust else "c")]
     command = []
     skip = False
     for token in tokens:
@@ -132,6 +148,7 @@ def compiler_invocation(build, command_path, source, output, rust, extra=()):
             continue
         else:
             command.append(token)
+    command = [command[0], *native_flags(command[1:], build, "rust" if rust else "c")]
     if rust:
         environment["RUST_MODFILE"] = "static_key_fixture"
         command += ["--crate-name=static_key_fixture", "--out-dir", str(output.parent),
@@ -140,7 +157,11 @@ def compiler_invocation(build, command_path, source, output, rust, extra=()):
     else:
         command += ["-o", str(output)]
     command += [*extra, str(source)]
-    return subprocess.run(command, cwd=build, env=environment, capture_output=True, timeout=120)
+    validate_compiler_outputs(command, output.parent, output.parent, protected)
+    with tempfile.TemporaryDirectory(prefix="static-key-compiler-", dir=output.parent) as temporary:
+        work = Path(temporary)
+        environment = compiler_environment(work, environment)
+        return subprocess.run(command, cwd=work, env=environment, capture_output=True, timeout=120)
 
 
 class RustStaticKeyTests(unittest.TestCase):
@@ -148,6 +169,8 @@ class RustStaticKeyTests(unittest.TestCase):
     def setUpClass(cls):
         supplied = os.environ.get("NATIVE_STATIC_KEY_BUILD", os.environ.get("NATIVE_RUST_KERNEL_BUILD"))
         if not supplied:
+            if "NATIVE_STATIC_KEY_BUILD" in os.environ or "NATIVE_RUST_KERNEL_BUILD" in os.environ:
+                raise ValueError("explicit native build must not be empty")
             raise unittest.SkipTest("set NATIVE_STATIC_KEY_BUILD to test actual native kernel bindings")
         cls.build = Path(supplied).resolve()
         config = (cls.build / ".config").read_text().splitlines()
@@ -159,15 +182,25 @@ class RustStaticKeyTests(unittest.TestCase):
         for source in (ROOT / "rust/kernel/jump_label.rs", ROOT / "rust/kernel/types.rs"):
             if metadata.stat().st_mtime_ns < source.stat().st_mtime_ns:
                 raise AssertionError(f"native kernel metadata is older than {source}; finish the build first")
+        outside(Path(tempfile.gettempdir()), (ROOT.resolve(), cls.build))
         cls.temporary = tempfile.TemporaryDirectory(prefix="native-static-key-")
         cls.addClassCleanup(cls.temporary.cleanup)
         cls.work = Path(cls.temporary.name)
         cls.rust_command = cls.build / "lib/.ctype_rust.o.cmd"
-        cls.c_command = cls.build / "lib/math/.gcd.o.cmd"
+        # Header/layout fixtures need genuine C flags even when gcd is Rust.
+        # scatterlist is always C; never require an unselected/stale gcd object.
+        cls.c_command = cls.build / "lib/.scatterlist.o.cmd"
         for command in (cls.rust_command, cls.c_command):
             if not command.exists():
-                raise AssertionError(f"retain original C gcd and native Rust owner commands: {command}")
+                raise AssertionError(f"retain always-C scatterlist and native Rust owner commands: {command}")
         cls.sequence = 0
+        watch = NativeWriteWatch(cls.build)
+        watch.__enter__()
+        def finish_watch():
+            watch.__exit__(None, None, None)
+            if watch.events:
+                raise AssertionError("native static-key donor writes: " + repr(watch.events))
+        cls.addClassCleanup(finish_watch)
         cls.original = cls.compile_source(C_SOURCE, rust=False)
         cls.translated = cls.compile_source(RUST_SOURCE)
 
@@ -264,7 +297,8 @@ class RustStaticKeyTests(unittest.TestCase):
         definition = self.compile_source(FALSE_DEFINITION, rust=False)
         linked = self.work / "legacy-linked.o"
         result = subprocess.run([*shlex.split(os.environ.get("LD", "ld")), "-r", "-o", linked,
-                                 self.translated, definition], capture_output=True)
+                                 self.translated, definition], cwd=self.work,
+                                env=compiler_environment(self.work, os.environ), capture_output=True)
         self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
         self.assertEqual(elf_symbol(linked, b"fixture_false"), elf_symbol(self.original, b"fixture_false"))
         self.assertEqual(jump_relocations(linked, "fixture_false"), rust)
@@ -291,6 +325,71 @@ class RustStaticKeyTests(unittest.TestCase):
                 targets = shlex.split(line.partition(": ")[0])
                 for target in targets:
                     self.assertTrue(Path(target).is_relative_to(self.work), target)
+
+    def test_concurrent_actual_native_compilers_leave_donor_read_only(self):
+        # Independent sources/outputs; no mutable class compile counter in workers.
+        jobs = []
+        for index, rust in enumerate((True, False, True, False)):
+            folder = self.work / ("concurrent-" + str(index))
+            folder.mkdir()
+            source = folder / ("fixture.rs" if rust else "fixture.c")
+            source.write_text(RUST_SOURCE if rust else C_SOURCE)
+            jobs.append((self.build, self.rust_command if rust else self.c_command,
+                         source, folder / "fixture.o", rust))
+        with NativeWriteWatch(self.build) as watch, ThreadPoolExecutor(max_workers=4) as pool:
+            results = list(pool.map(lambda args: compiler_invocation(*args), jobs))
+        self.assertEqual(watch.events, [])
+        for result, args in zip(results, jobs):
+            self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace"))
+            self.assertEqual(elf_symbol(args[3], b"fixture_key"), elf_symbol(self.original, b"fixture_key"))
+
+
+class StaticKeyTransportTests(unittest.TestCase):
+    def test_nested_response_transport_and_output_rejection(self):
+        with tempfile.TemporaryDirectory(prefix="static-key-transport-") as temporary:
+            work = Path(temporary)
+            donor, private = work / "donor", work / "private"
+            donor.mkdir(); private.mkdir()
+            source, output = private / "fixture.rs", private / "fixture.o"
+            source.write_text("// transport fixture\n")
+            (donor / "inner.rsp").write_text("--extern\nkernel=rust/libkernel.rmeta\n-Ldependency=rust\n")
+            (donor / "outer.rsp").write_text("@inner.rsp\n--target=scripts/target.json\n--out-dir\nlib/\n--emit=obj=lib/old.o\noriginal.rs\n")
+            record = donor / ".old.o.cmd"
+            record.write_text("savedcmd_x := rustc @outer.rsp\nsource_x := original.rs\n")
+            captured = []
+            def run(command, **options):
+                captured.append((command, options))
+                self.assertTrue(Path(options["cwd"]).is_relative_to(private))
+                self.assertNotEqual(Path(options["cwd"]), donor)
+                self.assertTrue(all(Path(options["env"][key]).is_relative_to(private)
+                                    for key in ("TMPDIR", "TMP", "TEMP")))
+                self.assertIn("kernel=" + str(donor / "rust/libkernel.rmeta"), command)
+                self.assertIn("-Ldependency=" + str(donor / "rust"), command)
+                self.assertIn("--target=" + str(donor / "scripts/target.json"), command)
+                self.assertIn("--emit=obj=" + str(output), command)
+                self.assertNotIn("@outer.rsp", command)
+                self.assertNotIn("original.rs", command)
+                return subprocess.CompletedProcess(command, 0, b"", b"")
+            with mock.patch("subprocess.run", side_effect=run), mock.patch("shutil.which", return_value="/fixture/rustc"):
+                compiler_invocation(donor, record, source, output, True)
+                with self.assertRaises(ValueError):
+                    compiler_invocation(donor, record, source, donor / "forbidden.o", True)
+                with self.assertRaises(ValueError):
+                    compiler_invocation(donor, record, source, output, True,
+                                        ("--emit=llvm-ir=" + str(donor / "forbidden.ll"),))
+            self.assertEqual(len(captured), 1)
+
+    def test_deleted_transient_write_observation(self):
+        with tempfile.TemporaryDirectory(prefix="static-key-watch-control-") as temporary:
+            work = Path(temporary)
+            with NativeWriteWatch(work) as watch:
+                transient = work / "private-mimic.rcgu.o"
+                transient.write_bytes(b"control")
+                transient.unlink()
+            self.assertTrue(any(path.endswith(".rcgu.o") and int(mask, 16) & 0x100
+                                for path, mask in watch.events))
+            self.assertTrue(any(path.endswith(".rcgu.o") and int(mask, 16) & 0x200
+                                for path, mask in watch.events))
 
 
 if __name__ == "__main__":

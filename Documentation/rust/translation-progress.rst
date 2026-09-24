@@ -2348,6 +2348,29 @@ unit: 35 native units plus three host generators, or 38/526 (7.22%), with 488
 remaining. The resumed runtime cycle totals 56 successful VMs across seven
 components, not proof of every architecture/configuration or full regression.
 
+RBTree and binary search: runtime validation pending
+---------------------------------------------------
+
+``CONFIG_RUST_RBTREE`` and ``CONFIG_RUST_BSEARCH`` now add independently
+selectable Rust providers; both default off and retain the original C archive
+positions and logical ownership identities. The existing translated sources
+and headers keep their exact ``SOURCE-COMMIT`` markers. Manual binding adapters
+preserve nullable callbacks on the original defined paths and the exact
+signature-specific normalized CFI identities. The generated general callback
+typedefs are not replaced with universally non-null function pointers.
+
+RBTree's integrated 17-group suite passes, and its selected x86-64 and ARM64
+images/modules have built successfully. Binary search's private 10-group suite
+passes original-C differential, real native ABI/CFI/export/version checks,
+conditional kprobe exclusion and Kbuild C/Rust/C/Rust switching; root's
+integrated rerun and selected builds are in progress. Root additionally keeps
+binary search's original ``lib/bsearch`` modfile identity. Genuine C and Rust
+defining-object version CRCs can differ, so dependent modules must be rebuilt.
+
+Neither component is included in the 38/526 validated inventory yet. Dedicated
+selected-kernel caller/module and C/Rust-provider runtime matrices remain
+required; these intermediate results are not full regression or runtime proof.
+
 Remaining integration
 ---------------------
 

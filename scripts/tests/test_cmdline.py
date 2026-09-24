@@ -12,14 +12,21 @@ Default workspaces and logs are temporary and cleaned, outside source/native
 inputs. Explicit logs retain evidence in unique per-operation run directories.
 """
 import argparse
+import ctypes
+import json
 import os
 from pathlib import Path
 import re
+import resource
 import shlex
 import shutil
 import subprocess
+import struct
+import sys
 import tempfile
+import time
 import unittest
+from unittest.mock import patch
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -38,15 +45,182 @@ def function(text, name):
     return text[match.start():end] + "\n"
 
 
-def run(argv, cwd, log, env=None):
-    result = subprocess.run(argv, cwd=cwd, env=env, text=True,
-                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    with log.open("a") as out:
-        out.write(shlex.join(map(str, argv)) + "\n" + result.stdout)
-        out.write(f"exit={result.returncode}\n")
-    if result.returncode:
-        raise RuntimeError(f"command failed ({result.returncode}); see {log}")
-    return result.stdout
+class WriteWatch:
+    """Inotify includes intermediates deleted before final filesystem snapshots."""
+    def __init__(self,paths):
+        libc=ctypes.CDLL(None,use_errno=True)
+        self.fd=libc.inotify_init1(os.O_NONBLOCK|os.O_CLOEXEC)
+        if self.fd<0: raise OSError(ctypes.get_errno(),'inotify_init1')
+        self.paths={}
+        for path in paths:
+            wd=libc.inotify_add_watch(self.fd,os.fsencode(path),0x100|0x200|0x2|0x4|0x8|0x40|0x80)
+            if wd<0:
+                os.close(self.fd);raise OSError(ctypes.get_errno(),'inotify_add_watch',str(path))
+            self.paths[wd]=str(path)
+
+    def finish(self):
+        events=[]
+        try:
+            while True:
+                try: data=os.read(self.fd,1024*1024)
+                except BlockingIOError: break
+                offset=0
+                while offset<len(data):
+                    wd,mask,_,length=struct.unpack_from('iIII',data,offset)
+                    name=os.fsdecode(data[offset+16:offset+16+length].rstrip(b'\0'))
+                    events.append((self.paths.get(wd,'OVERFLOW'),hex(mask),name));offset+=16+length
+        finally: os.close(self.fd)
+        return events
+
+
+def donor_inputs(flags,build,*,rust):
+    def expand(words,active=()):
+        result=[]
+        for token in words:
+            if token.startswith('@'):
+                response=(build/token[1:]).resolve()
+                if response in active: raise ValueError('recursive compiler response file')
+                data=response.read_text()
+                result.extend(expand(data.splitlines() if rust else shlex.split(data),(*active,response)))
+            else: result.append(token)
+        return result
+    flags=expand(flags)
+    def path(value): return str((build/value).resolve())
+    def library(value):
+        kind,sep,name=value.partition('=')
+        return kind+sep+path(name) if sep else path(value)
+    def external(value):
+        name,sep,filename=value.partition('=')
+        return name+sep+path(filename) if sep else value
+    def target(value): return path(value) if value.endswith('.json') or '/' in value else value
+    options={'-I':path,'-L':library,'-include':path,'-isystem':path,'-iquote':path,'-idirafter':path,
+             '-imacros':path,'-isysroot':path,'--sysroot':path,'--target':target,'--extern':external}
+    result=[];index=0
+    while index<len(flags):
+        token=flags[index]
+        if token in options:
+            if index+1==len(flags): raise ValueError('missing donor path argument: '+token)
+            result += [token,options[token](flags[index+1])];index+=2;continue
+        for option,convert in options.items():
+            if token.startswith(option+'='):
+                token=option+'='+convert(token[len(option)+1:]);break
+            if option in ('-I','-L','-include','-isystem','-iquote','-idirafter','-imacros') and token.startswith(option):
+                token=option+convert(token[len(option):]);break
+        result.append(token);index+=1
+    return result
+
+
+
+# Only directories allocated by execute() or its bounded worker may be written.
+ACTIVE_WORKSPACES = set()
+
+
+def process(argv, cwd, log, env=None, *, input=None, expected=0, keep_cwd=False):
+    cwd, log = Path(cwd).resolve(), Path(log).resolve()
+    owned = lambda p: any(p.is_relative_to(root) for root in ACTIVE_WORKSPACES)
+    if not owned(cwd) or not owned(log.parent):
+        raise ValueError('command cwd and evidence must be private')
+    argv = list(map(str, argv))
+    if not argv or not argv[0].strip():
+        raise ValueError('empty command')
+    executable = shutil.which(argv[0])
+    if executable is None:
+        raise ValueError('missing executable: '+argv[0])
+    argv[0] = os.path.abspath(executable)
+    if any(a == '--out-dir' or a.startswith('--out-dir=') for a in argv):
+        raise ValueError('direct replay retained an output directory')
+    # Outputs must already be private, including expected-failure invocations.
+    outputs = [argv[i+1] for i,a in enumerate(argv[:-1]) if a in ('-o','-MF')]
+    outputs += [item.split('=',1)[1] for a in argv if a.startswith('--emit=')
+                for item in a[7:].split(',') if '=' in item]
+    if any(not Path(p).is_absolute() or not owned(Path(p).resolve()) for p in outputs):
+        raise ValueError('direct replay output must be absolute and private')
+    scratch = Path(tempfile.mkdtemp(prefix='command-', dir=log.parent))
+    command_cwd = cwd if keep_cwd else scratch
+    if any(a.startswith('--emit=') for a in argv) and '-o' not in argv:
+        argv += ['--out-dir',str(scratch)]
+    environment = dict(os.environ if env is None else env,
+                       TMPDIR=str(scratch), TMP=str(scratch), TEMP=str(scratch))
+    heading = '$ '+shlex.join(argv)+'\n'+'cwd='+str(command_cwd)+'\nTMPDIR=TMP=TEMP='+str(scratch)+'\n'
+    command_log = scratch/'command.log'
+    command_log.write_text(heading)
+    watch = WriteWatch([scratch, cwd])
+    started = time.monotonic_ns()
+    try:
+        result = subprocess.run(argv, cwd=command_cwd, env=environment, text=True,
+                                capture_output=True, input=input, timeout=90,
+                                preexec_fn=lambda: resource.setrlimit(resource.RLIMIT_CORE, (0,0)))
+    except (OSError, subprocess.TimeoutExpired) as error:
+        with command_log.open('a') as out: out.write('launch-error='+repr(error)+'\n')
+        raise
+    finally:
+        stopped = time.monotonic_ns()
+        (scratch/'write-events.json').write_text(json.dumps(watch.finish())+'\n')
+        (scratch/'interval.json').write_text(json.dumps([argv,started,stopped])+'\n')
+    output = result.stdout+result.stderr+f'\nexit={result.returncode}\n'
+    with command_log.open('a') as out: out.write(output)
+    with log.open('a') as out: out.write(heading+output)
+    if expected is not None and result.returncode != expected:
+        raise RuntimeError(f'command failed ({result.returncode}); see {command_log}')
+    return result
+
+
+def run(argv, cwd, log, env=None, *, keep_cwd=False):
+    result = process(argv,cwd,log,env,keep_cwd=keep_cwd)
+    return result.stdout+result.stderr
+
+
+def native_commands(args, build):
+    """Resolve real donor inputs before leaving their saved compilation cwd."""
+    def command(relative, rust):
+        lines = (build/relative).read_text().splitlines()
+        if not lines or ' := ' not in lines[0]: raise ValueError('malformed saved compiler command')
+        text = lines[0].split(' := ',1)[1]
+        words = shlex.split(text)
+        environment = dict(os.environ, RUSTC_BOOTSTRAP='1')
+        while words and re.fullmatch(r'[A-Za-z_][A-Za-z_0-9]*=.*',words[0]):
+            key,value = words.pop(0).split('=',1); environment[key]=value
+        if not words: raise ValueError('empty saved compiler command')
+        if any(word in (';','&&','||','|','>','>>') for word in words):
+            raise ValueError('saved compiler command must be a single argv')
+        if rust:
+            executable = str(args.rustc)
+        else:
+            tool = str((build/words[0]).absolute()) if '/' in words[0] else words[0]
+            executable = shutil.which(tool)
+        if not executable: raise ValueError('missing saved compiler executable: '+words[0])
+        flags = donor_inputs(words[1:],build,rust=rust)
+        result = [executable]; index=0; sources=0
+        old = args.source/('lib/hexdump_rust.rs' if rust else 'lib/scatterlist.c')
+        while index<len(flags):
+            token=flags[index]; index+=1
+            if token in ('--out-dir','--emit','-o','-MF'):
+                if index==len(flags): raise ValueError('missing saved output argument')
+                index+=1; continue
+            if token.startswith(('--out-dir=','--emit=','-Wp,-MMD,')): continue
+            if not token.startswith('-') and (build/token).resolve()==old.resolve():
+                sources+=1; continue
+            if not rust and token.startswith(('-DKBUILD_','-D__KBUILD_')):
+                token=token.replace('scatterlist','cmdline')
+            result.append(token)
+        if sources != 1: raise ValueError('saved compiler source identity is not unique: '+str(old))
+        return result,environment
+    rust,env=command('lib/.hexdump_rust.o.cmd',True)
+    c,_=command('lib/.scatterlist.o.cmd',False)
+    env['RUST_MODFILE']='lib/cmdline'
+    return rust+['-Dwarnings'],c,env
+
+
+def kbuild_flags(args,build):
+    rust,c,_=native_commands(args,build)
+    config=donor_inputs(['@include/generated/rustc_cfg'],build,rust=True)
+    positions=[i for i in range(len(rust)) if rust[i:i+len(config)]==config] if config else []
+    if len(positions)!=1 or '--edition=2021' not in rust[1:positions[0]]:
+        raise ValueError('saved Kbuild Rust configuration boundary is not unique')
+    # Makefile.build supplies config, externs, crate attributes and private
+    # outputs itself. Only the genuine global flags precede rustc_cfg.
+    return ([a for a in c[1:] if a!='-c' and not a.startswith(('-DKBUILD_','-D__KBUILD_'))],
+            rust[1:positions[0]]+['-Dwarnings'])
 
 
 def fixture(source):
@@ -312,7 +486,7 @@ static int original_corpus(void) {
     (tmp/'mutant.rs').write_text('#![no_std]\n'+mutant)
     run(rust+['-Copt-level=s',str(tmp/'mutant.rs'),'-o',str(tmp/'mutant.o')],tmp,log)
     run(link+[str(tmp/'mutant.o'),str(tmp/'oracle.o'),str(tmp/'harness.o'),'-o',str(tmp/'negative')],tmp,log)
-    result=subprocess.run([str(tmp/'negative')])
+    result=process([str(tmp/'negative')],tmp,log,expected=None)
     with log.open('a') as out: out.write(f'negative suffix control: exit={result.returncode}\n')
     assert result.returncode > 0, 'semantic negative control was not detected'
     print(f'PASS {bits}-bit semantic negative control',flush=True)
@@ -324,30 +498,17 @@ static int original_corpus(void) {
     (tmp/'wrapping_mutant.rs').write_text('#![no_std]\n'+mutant)
     run(rust+['-Copt-level=s',str(tmp/'wrapping_mutant.rs'),'-o',str(tmp/'wrapping_mutant.o')],tmp,log)
     run(link+[str(tmp/'wrapping_mutant.o'),str(tmp/'oracle.o'),str(tmp/'harness.o'),'-o',str(tmp/'wrapping_negative')],tmp,log)
-    result=subprocess.run([str(tmp/'wrapping_negative')])
+    result=process([str(tmp/'wrapping_negative')],tmp,log,expected=None)
     with log.open('a') as out: out.write(f'negative saturating-count control: exit={result.returncode}\n')
     assert result.returncode > 0, 'wrapping negative control was not detected'
     print(f'PASS {bits}-bit wrapping-specific saturating mutant rejected',flush=True)
 
 
 def native(args, native, tmp, log):
-    donor = native/'lib/.hexdump_rust.o.cmd'
-    line = donor.read_text().splitlines()[0].split(' := ',1)[1]
-    argv = shlex.split(line)
-    env = os.environ.copy(); env['RUSTC_BOOTSTRAP']='1'
-    while '=' in argv[0] and not argv[0].startswith('-'):
-        k,v=argv.pop(0).split('=',1); env[k]=v
-    env['RUST_MODFILE']='lib/cmdline'
-    argv[0]=str(args.rustc)
-    converted=[]
-    for arg in argv:
-        if arg.startswith('--emit=') or arg == str(args.source/'lib/hexdump_rust.rs'):
-            continue
-        if arg == 'lib/': arg=str(tmp)
-        converted.append(arg)
+    converted,c,env=native_commands(args,native)
     converted += ['--emit=obj='+str(tmp/'cmdline_rust.o'), '--emit=llvm-ir='+str(tmp/'cmdline_rust.ll'),
                   '--emit=dep-info='+str(tmp/'cmdline_rust.d'),str(args.root/'lib/cmdline_rust.rs'), '-Dwarnings']
-    run(converted,native,log,env)
+    run(converted,tmp,log,env)
     nm=run(['llvm-nm',str(tmp/'cmdline_rust.o')],tmp,log)
     for name in ('get_option','get_options','memparse','parse_option_str','next_arg'):
         assert re.search(r' T '+name+r'$',nm,re.M), name
@@ -368,21 +529,17 @@ const _: unsafe extern "C" fn(*mut c_char,*mut *mut c_char,*mut *mut c_char)->*m
 '''
     (tmp/'binding_check.rs').write_text(bindings)
     check=[a for a in converted if not a.startswith('--emit=') and a!=str(args.root/'lib/cmdline_rust.rs')]
-    run(check+['--emit=obj='+str(tmp/'binding_check.o'),str(tmp/'binding_check.rs')],native,log,env)
+    run(check+['--emit=obj='+str(tmp/'binding_check.o'),str(tmp/'binding_check.rs')],tmp,log,env)
     # A wrong C pointee type must fail against the genuine generated binding.
     (tmp/'binding_bad.rs').write_text(bindings.replace('fn(*mut *mut c_char,*mut c_int)', 'fn(*mut *mut u16,*mut c_int)'))
     bad=check+['--emit=obj='+str(tmp/'binding_bad.o'),str(tmp/'binding_bad.rs')]
-    result=subprocess.run(bad,cwd=native,env=env,text=True,capture_output=True)
-    with log.open('a') as out: out.write(shlex.join(bad)+'\n'+result.stdout+result.stderr)
+    result=process(bad,tmp,log,env,expected=None)
     assert result.returncode != 0 and 'mismatched types' in result.stderr
     # Replay ALWAYS-C donor with all flags, original source and original owner.
-    c=shlex.split((native/'lib/.scatterlist.o.cmd').read_text().splitlines()[0].split(' := ',1)[1])
-    c=[a.replace('scatterlist','cmdline') for a in c]
-    c=[a for a in c if not a.startswith('-Wp,-MMD,')]
-    c[c.index('-o')+1]=str(tmp/'cmdline_c.o')
-    run(c,native,log)
+    c += [str(args.source/'lib/cmdline.c'),'-o',str(tmp/'cmdline_c.o')]
+    run(c,tmp,log)
     c[c.index('-o')+1]=str(tmp/'cmdline_c.ll')
-    run(c+['-S','-emit-llvm'],native,log)
+    run(c+['-S','-emit-llvm'],tmp,log)
     cir=(tmp/'cmdline_c.ll').read_text()
     def kcfi(text,name):
         line=next(l for l in text.splitlines() if l.startswith('define ') and '@'+name+'(' in l)
@@ -391,18 +548,12 @@ const _: unsafe extern "C" fn(*mut c_char,*mut *mut c_char,*mut *mut c_char)->*m
     for name in ('get_option','get_options','memparse','parse_option_str','next_arg'):
         assert kcfi(ir,name)==kcfi(cir,name), name
     run(['llvm-dwarfdump','--debug-info',str(tmp/'cmdline_rust.o')],tmp,log)
-    verify=subprocess.run(['llvm-dwarfdump','--verify',str(tmp/'cmdline_rust.o')],
-                          text=True,capture_output=True)
-    with log.open('a') as out:
-        out.write('llvm-dwarfdump --verify\n'+verify.stdout+verify.stderr+f'exit={verify.returncode}\n')
+    verify=process(['llvm-dwarfdump','--verify',str(tmp/'cmdline_rust.o')],tmp,log,expected=None)
     print(f'Generic DWARF verifier: {"FAIL" if verify.returncode else "PASS"} (exit={verify.returncode}); separate from gendwarfksyms',flush=True)
     # The kernel consumer is authoritative for symbol-version extraction.
     dwarf = native/'scripts/gendwarfksyms/gendwarfksyms'
-    result = subprocess.run([str(dwarf), str(tmp/'cmdline_rust.o')],
-                            input='get_option\nget_options\nmemparse\nnext_arg\n',
-                            text=True, capture_output=True)
-    with log.open('a') as out:
-        out.write('gendwarfksyms '+str(tmp/'cmdline_rust.o')+'\n'+result.stdout+result.stderr)
+    result = process([str(dwarf), str(tmp/'cmdline_rust.o')],tmp,log,
+                     input='get_option\nget_options\nmemparse\nnext_arg\n',expected=None)
     assert result.returncode == 0 and result.stdout.count('#SYMVER ') == 4
     for artifact in tmp.glob('cmdline*'):
         if artifact.is_file():
@@ -431,17 +582,7 @@ obj-m :=
 always-y :=
 '''
     (src/'lib/Makefile').write_text(makefile)
-    c=shlex.split((native/'lib/.scatterlist.o.cmd').read_text().splitlines()[0].split(' := ',1)[1])
-    cflags=[]; skip=False
-    for a in c[1:]:
-        if skip: skip=False; continue
-        if a in ('-o','-c'):
-            if a=='-o': skip=True
-            continue
-        if a.startswith(('-Wp,-MMD,','-DKBUILD_','-D__KBUILD_')) or a.endswith('scatterlist.c'): continue
-        cflags.append(a)
-    r=shlex.split((native/'lib/.hexdump_rust.o.cmd').read_text().splitlines()[0].split(' := ',1)[1])
-    rflags=r[r.index('--edition=2021'):next(i for i,a in enumerate(r) if a.startswith('@'))]+['-Dwarnings']
+    cflags,rflags=kbuild_flags(args,native)
     wrapper=tmp/'kbuild.mk'
     wrapper.write_text('''srctree := '''+str(args.source)+'''
 srcroot := '''+str(src)+'''
@@ -464,13 +605,13 @@ include $(srctree)/scripts/Makefile.build
 ''')
     env=os.environ.copy();env['RUSTC_BOOTSTRAP']='1'
     def build(selection):
-        result=run(['make','-rR','-f',str(wrapper),'CONFIG_RUST_CMDLINE='+selection,'lib/lib.a','V=1'],out,log,env)
+        result=run(['make','-rR','-f',str(wrapper),'CONFIG_RUST_CMDLINE='+selection,'lib/lib.a','V=1'],out,log,env,keep_cwd=True)
         line=next(l for l in result.splitlines() if l.startswith('ORIGINAL_SLOT='))
         members=line.split('=',1)[1].split()
         selected='cmdline_rust.o' if selection=='y' else 'cmdline.o'
         assert members[members.index(selected)-1]=='vsprintf.o'
         assert members[members.index(selected)+1]=='rbtree.o'
-        archive=run(['llvm-ar','t','lib/lib.a'],out,log)
+        archive=run(['llvm-ar','t',str(out/'lib/lib.a')],out,log)
         assert archive.strip().endswith(selected) and len(archive.splitlines())==1
         return out/'lib'/selected
     cobj=build('n'); initial=cobj.stat().st_mtime_ns
@@ -496,6 +637,10 @@ include $(srctree)/scripts/Makefile.build
 
 CLI_ARGS = None
 ENV_KEYS = ('source', 'root', 'rustc', 'native', 'sysroot32', 'kbuild', 'logs')
+# Separate runtime checker settings may coexist during complete discovery.
+# Their owning module validates them; they are not host-fixture overrides.
+RUNTIME_ENV_KEYS = {'CMDLINE_RUNTIME_NATIVE', 'CMDLINE_RUNTIME_RUSTC',
+                    'CMDLINE_RUNTIME_LOGS', 'CMDLINE_SOURCE_ROOT'}
 
 
 def configuration(environ=None):
@@ -503,7 +648,8 @@ def configuration(environ=None):
     use_cli = environ is None
     environ = os.environ if environ is None else environ
     unknown = sorted(k for k in environ if k.startswith('CMDLINE_')
-                     and k not in {'CMDLINE_'+key.upper() for key in ENV_KEYS})
+                     and k not in {'CMDLINE_'+key.upper() for key in ENV_KEYS}
+                     and k not in RUNTIME_ENV_KEYS)
     if unknown:
         raise ValueError('unknown CMDLINE input: '+', '.join(unknown))
     values = {key: environ['CMDLINE_'+key.upper()] for key in ENV_KEYS
@@ -511,7 +657,7 @@ def configuration(environ=None):
     if use_cli and CLI_ARGS is not None:
         values.update(vars(CLI_ARGS))
     for key, value in values.items():
-        if value == '' or (isinstance(value, list) and any(v == '' for v in value)):
+        if (isinstance(value,str) and not value.strip()) or (isinstance(value, list) and any(not v.strip() for v in value)):
             raise ValueError('explicit '+key+' input must not be empty')
     def path(value):
         value = Path(value)
@@ -557,10 +703,6 @@ def configuration(environ=None):
         # Preserve the executable name: rustup dispatches on argv[0].
         args.rustc = Path(os.path.abspath(ROOT/compiler))
         require(args.rustc.is_file() and os.access(args.rustc, os.X_OK), 'invalid rustc tool')
-        version = subprocess.run([str(args.rustc), '--version'], text=True, capture_output=True)
-        match = re.match(r'rustc (\d+)\.(\d+)\.(\d+)', version.stdout)
-        require(version.returncode == 0 and match is not None, 'invalid rustc --version')
-        require(tuple(map(int, match.groups())) >= (1, 85, 0), 'rustc must be at least 1.85.0')
     if args.sysroot32 is not None:
         require(bool(list((args.sysroot32/'lib/rustlib/i686-unknown-linux-gnu/lib').glob('libcore*.rlib'))),
                 'invalid 32-bit sysroot')
@@ -587,10 +729,35 @@ def configuration(environ=None):
                              if outside_inputs(p) and p.is_dir()
                              and os.access(p, os.W_OK | os.X_OK)), None)
     require(args.temp_parent is not None, 'no temporary directory outside input trees')
+    if args.rustc is not None:
+        version = subprocess.run([str(args.rustc), '--version'], cwd=args.temp_parent,
+                                 text=True, capture_output=True, timeout=15)
+        match = re.match(r'rustc (\d+)\.(\d+)\.(\d+)', version.stdout)
+        require(version.returncode == 0 and match is not None, 'invalid rustc --version')
+        require(tuple(map(int, match.groups())) >= (1, 85, 0), 'rustc must be at least 1.85.0')
+    for n in args.native:
+        # Malformed/missing responses and donor commands fail before evidence.
+        native_commands(args,n)
+        if args.kbuild: kbuild_flags(args,n)
+    if args.kbuild: require(shutil.which('make') is not None,'missing make executable')
     return args
 
 
+def setUpModule():
+    # Invalid explicit optional inputs must not hide behind another group's skip.
+    configuration()
+
+
 class InputValidationTests(unittest.TestCase):
+    def test_sibling_runtime_settings_do_not_override_host_inputs(self):
+        base = {'CMDLINE_SOURCE': str(ROOT), 'CMDLINE_ROOT': str(ROOT)}
+        selected = configuration({**base, **{key: 'runtime-owned' for key in RUNTIME_ENV_KEYS}})
+        self.assertEqual(selected.root, ROOT)
+        self.assertEqual(selected.source, ROOT)
+        self.assertEqual(selected.native, [])
+        with self.assertRaisesRegex(ValueError, 'unknown CMDLINE input'):
+            configuration({**base, 'CMDLINE_RUNTIME_TYPO': 'invalid'})
+
     def test_selected_inputs(self):
         selected = configuration()
         runner = BuildTestCase()
@@ -652,10 +819,162 @@ class BuildTestCase(unittest.TestCase):
                 logs = Path(tempfile.mkdtemp(prefix=self._testMethodName+'-', dir=requested_logs))
                 print('cmdline retained evidence: '+str(logs), flush=True)
             self.args.logs = logs
+            ACTIVE_WORKSPACES.update((tmp.resolve(),logs.resolve()))
+            directories=sorted({Path(directory) for donor in inputs if isinstance(donor,Path)
+                                for directory,_,_ in os.walk(donor)})
+            watch=WriteWatch(directories) if directories else None
             try:
                 operation(self.args, *inputs, tmp, logs/'test_cmdline.log')
             finally:
+                events=[]
+                if watch is not None:
+                    events=watch.finish()
+                    (logs/'donor-write-events.json').write_text(json.dumps(dict(directories=len(directories),events=events))+'\n')
+                ACTIVE_WORKSPACES.difference_update((tmp.resolve(),logs.resolve()))
                 self.args.logs = requested_logs
+                if events: raise AssertionError('transient write in read-only native donor: '+repr(events))
+
+
+class TransportTests(BuildTestCase):
+    def test_nested_responses_and_input_paths(self):
+        def check(args,tmp,log):
+            build=tmp/'donor with spaces'; build.mkdir()
+            (build/'inner.rsp').write_text('--extern\nkernel=rust/libkernel.rmeta\n-Ldependency=rust/\n--target=scripts/target.json\n')
+            (build/'outer.rsp').write_text('-I\ninclude directory\n@inner.rsp\n--sysroot=/dev/null\n')
+            result=donor_inputs(['@outer.rsp'],build,rust=True)
+            self.assertEqual(result,['-I',str(build/'include directory'),'--extern',
+                'kernel='+str(build/'rust/libkernel.rmeta'),'-Ldependency='+str(build/'rust'),
+                '--target='+str(build/'scripts/target.json'),'--sysroot=/dev/null'])
+            (build/'c-inner.rsp').write_text('-include "generated header.h" -iquote "quote directory"')
+            (build/'c-outer.rsp').write_text('@c-inner.rsp -I "include directory"')
+            self.assertEqual(donor_inputs(['@c-outer.rsp'],build,rust=False),
+                ['-include',str(build/'generated header.h'),'-iquote',str(build/'quote directory'),'-I',str(build/'include directory')])
+            (build/'operand.rsp').write_text('include directory\n')
+            self.assertEqual(donor_inputs(['-I','@operand.rsp'],build,rust=True),['-I',str(build/'include directory')])
+            (build/'cycle.rsp').write_text('@cycle.rsp\n')
+            for words,rust in ((['@cycle.rsp'],True),(['-I'],True),(['@missing.rsp'],False)):
+                with self.subTest(words=words),self.assertRaises((ValueError,OSError)):
+                    donor_inputs(words,build,rust=rust)
+            (build/'bad.rsp').write_text('"unterminated')
+            with self.assertRaises(ValueError): donor_inputs(['@bad.rsp'],build,rust=False)
+            # Output flags and original input may also occur in nested responses.
+            (build/'lib').mkdir()
+            (build/'all.rsp').write_text('@outer.rsp\n--out-dir\nlib/\n--emit=obj=lib/donor.o\n'+str(args.source/'lib/hexdump_rust.rs')+'\n')
+            (build/'lib/.hexdump_rust.o.cmd').write_text('savedcmd_x := rustc @all.rsp\n')
+            (build/'lib/.scatterlist.o.cmd').write_text('savedcmd_x := clang -Iinclude -c '+shlex.quote(str(args.source/'lib/scatterlist.c'))+' -o lib/scatterlist.o\n')
+            rust,c,_=native_commands(args,build)
+            self.assertFalse(any(a.startswith(('--emit=','--out-dir')) for a in rust))
+            self.assertNotIn(str(args.source/'lib/hexdump_rust.rs'),rust)
+            self.assertNotIn('-o',c)
+            self.assertIn('-I'+str(build/'include'),c)
+            self.assertIn('-Dwarnings',rust)
+            (build/'include/generated').mkdir(parents=True)
+            (build/'include/generated/rustc_cfg').write_text('--cfg=CONFIG_TEST\n')
+            (build/'all.rsp').write_text('--edition=2021\n@outer.rsp\n@include/generated/rustc_cfg\n--out-dir\nlib/\n--emit=obj=lib/donor.o\n'+str(args.source/'lib/hexdump_rust.rs')+'\n')
+            cf,rf=kbuild_flags(args,build)
+            self.assertIn('--edition=2021',rf)
+            self.assertIn('--target='+str(build/'scripts/target.json'),rf)
+            self.assertNotIn('--cfg=CONFIG_TEST',rf)
+            self.assertNotIn('-c',cf)
+            saved=(build/'lib/.hexdump_rust.o.cmd').read_text()
+            for bad in ('','savedcmd_x := ','savedcmd_x := "unterminated','savedcmd_x := rustc @missing.rsp','savedcmd_x := rustc ; true'):
+                (build/'lib/.hexdump_rust.o.cmd').write_text(bad+'\n')
+                with self.subTest(command=bad),patch.object(Path,'mkdir') as mkdir,patch.object(tempfile,'mkdtemp') as mkdtemp:
+                    with self.assertRaises((ValueError,OSError)): native_commands(args,build)
+                    mkdir.assert_not_called();mkdtemp.assert_not_called()
+            (build/'lib/.hexdump_rust.o.cmd').write_text(saved)
+            (build/'tools').mkdir()
+            (build/'tools/clang with spaces').symlink_to(shutil.which('clang'))
+            c_saved=(build/'lib/.scatterlist.o.cmd').read_text()
+            (build/'lib/.scatterlist.o.cmd').write_text(c_saved.replace(':= clang ',':= "tools/clang with spaces" '))
+            _,c,_=native_commands(args,build)
+            self.assertEqual(c[0],str(build/'tools/clang with spaces'))
+            (build/'lib/.scatterlist.o.cmd').write_text(c_saved.replace(':= clang ',':= tools/missing '))
+            with self.assertRaises(ValueError): native_commands(args,build)
+        self.execute(check)
+
+    def test_private_cwd_outputs_temp_and_invalid_launch(self):
+        def check(args,tmp,log):
+            trap=tmp/'forbidden temp';trap.mkdir();watch=WriteWatch([trap])
+            environment=dict(os.environ,TMPDIR=str(trap),TEMP=str(trap),TMP=str(trap))
+            code='import os,pathlib,tempfile;assert all(os.environ[k]==os.getcwd() for k in ("TMPDIR","TMP","TEMP"));p=pathlib.Path("transient");p.write_text("x");p.unlink();f=tempfile.NamedTemporaryFile();raise SystemExit(7)'
+            try:
+                result=process([sys.executable,'-c',code],tmp,log,environment,expected=7)
+                self.assertEqual(result.returncode,7)
+                before=set(log.parent.iterdir())
+                for argv,cwd in (([],tmp),(['/missing/compiler'],tmp),([sys.executable],args.root),
+                                 ([sys.executable,'--out-dir',str(args.root)],tmp),
+                                 ([sys.executable,'-o',str(args.root/'forbidden.o')],tmp)):
+                    with self.subTest(argv=argv),self.assertRaises(ValueError): process(argv,cwd,log)
+                self.assertEqual(set(log.parent.iterdir()),before)
+                # Preserve quoted executable paths as one argv element.
+                alias=tmp/'python with spaces';alias.symlink_to(sys.executable)
+                self.assertEqual(run([str(alias),'-c','print("quoted path")'],tmp,log).strip(),'quoted path')
+            finally: events=watch.finish()
+            self.assertEqual(events,[])
+            private=[row for p in log.parent.glob('command-*/write-events.json') for row in json.loads(p.read_text())]
+            self.assertTrue(any(row[2]=='transient' and row[1]=='0x100' for row in private))
+            self.assertTrue(any(row[2]=='transient' and row[1]=='0x200' for row in private))
+        self.execute(check)
+
+    def test_explicit_preflight_before_writes_or_skips(self):
+        def check(args,tmp,log):
+            environment={k:v for k,v in os.environ.items() if not k.startswith('CMDLINE_')}
+            environment.update(CMDLINE_ROOT=str(args.root),CMDLINE_SOURCE=str(args.source),CMDLINE_RUSTC=str(args.rustc))
+            for name,value in (('CMDLINE_RUSTC',' '),('CMDLINE_RUSTC','/missing/compiler'),
+                               ('CMDLINE_RUSTC',shutil.which('true')),('CMDLINE_NATIVE',''),
+                               ('CMDLINE_NATIVE','/missing/native'),('CMDLINE_SYSROOT32',''),
+                               ('CMDLINE_LOGS',str(args.root)),('CMDLINE_LOGS',str(Path(__file__)/'child')),
+                               ('CMDLINE_TOOL','unknown')):
+                with self.subTest(name=name,value=value),patch.object(Path,'mkdir') as mkdir,patch.object(tempfile,'mkdtemp') as mkdtemp:
+                    with self.assertRaises(ValueError): configuration(dict(environment,**{name:value}))
+                    mkdir.assert_not_called();mkdtemp.assert_not_called()
+            alias=tmp/'source alias';alias.symlink_to(args.root,target_is_directory=True)
+            with self.assertRaises(ValueError): configuration(dict(environment,CMDLINE_LOGS=str(alias/'forbidden')))
+        self.execute(check)
+
+    def test_bounded_concurrent_native_transport(self):
+        if not self.args.native: self.skipTest('native inputs absent; concurrent transport unproven')
+        def check(args,tmp,log):
+            directories=sorted({Path(directory) for donor in args.native for directory,_,_ in os.walk(donor)})
+            watch=WriteWatch(directories);jobs=[];streams=[]
+            try:
+                for index,donor in enumerate(args.native):
+                    for copy in range(2):
+                        out=log.parent/(str(index)+'-'+str(copy));out.mkdir()
+                        stream=(out/'worker.log').open('x');streams.append(stream)
+                        env=dict(os.environ,PYTHONDONTWRITEBYTECODE='1',TMPDIR=str(out),TMP=str(out),TEMP=str(out))
+                        env.update(CMDLINE_ROOT=str(args.root),CMDLINE_SOURCE=str(args.source),CMDLINE_RUSTC=str(args.rustc),CMDLINE_NATIVE=os.pathsep.join(map(str,args.native)))
+                        job=subprocess.Popen([sys.executable,str(Path(__file__).resolve()),'--cmdline-transport-worker',str(donor),str(out)],cwd=tmp,env=env,stdout=stream,stderr=subprocess.STDOUT)
+                        jobs.append((job,out))
+                deadline=time.monotonic()+30
+                while not all((out/'ready').is_file() for _,out in jobs):
+                    if time.monotonic()>deadline or any(job.poll() is not None for job,_ in jobs):
+                        self.fail('bounded real compiler worker failed before barrier; see worker.log')
+                    time.sleep(0.01)
+                (log.parent/'start-replays').write_text('release real compiler workers\n')
+                for job,out in jobs: self.assertEqual(job.wait(timeout=120),0,str(out/'worker.log'))
+            finally:
+                for job,_ in jobs:
+                    if job.poll() is None: job.kill();job.wait()
+                for stream in streams: stream.close()
+                events=watch.finish()
+                (log.parent/'all-donor-events.json').write_text(json.dumps(dict(directories=len(directories),events=events))+'\n')
+            self.assertEqual(events,[],'concurrent donor writes')
+            intervals=[];transients=[]
+            for _,out in jobs:
+                private=[row for p in out.glob('command-*/write-events.json') for row in json.loads(p.read_text())]
+                created={row[2] for row in private if row[1]=='0x100' and row[2].endswith('.rcgu.o')}
+                deleted={row[2] for row in private if row[1]=='0x200' and row[2].endswith('.rcgu.o')}
+                self.assertTrue(created&deleted,'actual rustc transient creation/deletion required')
+                transients.append((out.name,sorted(created&deleted)))
+                for p in out.glob('command-*/interval.json'):
+                    argv,start,stop=json.loads(p.read_text())
+                    if Path(argv[0]).name in ('rustc','clang'): intervals.append((out.name,argv[0],start,stop))
+            overlaps=[(a,b) for a in intervals for b in intervals if a[0]!=b[0] and max(a[2],b[2])<min(a[3],b[3])]
+            self.assertTrue(overlaps,'genuine compiler invocation intervals must overlap')
+            (log.parent/'concurrent-proof.json').write_text(json.dumps(dict(intervals=intervals,overlaps=overlaps,private_transients=transients),indent=2)+'\n')
+        self.execute(check)
 
 
 class DifferentialTests(BuildTestCase):
@@ -698,5 +1017,24 @@ def main():
     unittest.main(argv=[__file__], verbosity=2)
 
 
+def bounded_transport_worker(build,out):
+    """One bounded native replay, never recursive test-suite discovery."""
+    args=configuration()
+    protected=[args.root,args.source,*args.native]+([args.sysroot32] if args.sysroot32 else [])
+    if build not in args.native or not out.is_dir() or any(out.is_relative_to(p) for p in protected):
+        raise ValueError('worker needs a validated donor and private output')
+    args.logs=out;ACTIVE_WORKSPACES.add(out)
+    native_commands(args,build)
+    (out/'ready').write_text('validated native replay\n')
+    deadline=time.monotonic()+30
+    while not (out.parent/'start-replays').is_file():
+        if time.monotonic()>deadline: raise RuntimeError('bounded compiler barrier timed out')
+        time.sleep(0.01)
+    native(args,build,out,out/'commands.log')
+
+
 if __name__=='__main__':
-    main()
+    if len(sys.argv)==4 and sys.argv[1]=='--cmdline-transport-worker':
+        bounded_transport_worker(Path(sys.argv[2]).resolve(),Path(sys.argv[3]).resolve())
+    else:
+        main()

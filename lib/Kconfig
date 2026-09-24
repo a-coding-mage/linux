@@ -8,6 +8,21 @@ config BINARY_PRINTF
 
 menu "Library routines"
 
+config RUST_BSEARCH
+	bool "Rust implementation of binary search"
+	depends on RUST
+	default n
+	help
+	  Use the complete Rust binary search with the original C interface,
+	  zero-count nullable callback contract, unrestricted export and
+	  kprobe exclusion. The original C implementation remains the default.
+
+	  Rebuild dependent modules after switching: the native defining-object
+	  DWARF types determine version CRCs and may differ from the C selection.
+
+	  If unsure, say N.
+
+
 config RUST_CMDLINE
 	bool "Rust implementation of command-line helpers"
 	depends on RUST

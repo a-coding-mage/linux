@@ -18,6 +18,9 @@ import tempfile
 import unittest
 from unittest import mock
 
+from rbtree_native.transport import (NativeWriteWatch, compiler_environment,
+    native_flags, outside)
+
 import check_gcd_lcm_kernel as checker
 from test_gcd_lcm_runtime import BuildFixture, console as runtime_console
 from kconfig_test_support import cached_conf_tools
@@ -186,6 +189,16 @@ class GcdLcmNativeBuildTests(TemporaryTest):
         self.selection = "Rust" if "CONFIG_RUST_GCD_LCM=y" in self.config else "C"
         checker.verify_linked_implementation(self.build, self.selection)
         checker.key_symbol(self.build)
+        outside(self.work, (ROOT.resolve(), self.build))
+        watch = NativeWriteWatch(self.build)
+        watch.__enter__()
+        def finish_watch():
+            watch.__exit__(None, None, None)
+            self.assertEqual(watch.events, [], "native GCD/LCM donor writes")
+        self.addCleanup(finish_watch)
+
+    def private_environment(self, env=None):
+        return compiler_environment(self.work, environment() if env is None else env)
 
     def rust_object(self, optimize="2", dwarf=5, disabled=False):
         # Reuse the actual compiler, target specification, cfg file, real
@@ -202,38 +215,26 @@ class GcdLcmNativeBuildTests(TemporaryTest):
             env[name] = value
         output = self.work / "owner.o"
         dependency = self.work / "owner.d"
-        arguments = []
-        index = 0
-        while index < len(tokens):
-            token = tokens[index]
-            if token == "--out-dir":
-                arguments += [token, str(self.work)]
-                index += 2
-                continue
-            if token.startswith("--out-dir="):
-                token = "--out-dir=" + str(self.work)
-            elif token.startswith("--emit="):
-                index += 1
-                continue
-            elif token.startswith(("-Copt-level=", "-Zdwarf-version=")):
-                index += 1
-                continue
-            elif token.endswith(".rs") and Path(token).is_file():
-                token = str(ROOT / "lib/math/gcd_lcm_rust.rs")
-            arguments.append(token)
-            index += 1
+        # Resolve response/config/metadata inputs before leaving the donor cwd.
+        flags = native_flags(tokens[1:], self.build, "rust")
+        flags = [token for token in flags if not token.startswith(("-Copt-level=", "-Zdwarf-version="))]
+        arguments = [tokens[0], *flags, "--out-dir=" + str(self.work),
+                     str(ROOT / "lib/math/gcd_lcm_rust.rs")]
         arguments += ["--emit=obj=" + str(output), "--emit=dep-info=" + str(dependency),
                       "-Copt-level=" + optimize, "-Zdwarf-version=" + str(dwarf), "-Dwarnings"]
         if disabled:
             arguments += ["--cfg", "CONFIG_CPU_NO_EFFICIENT_FFS"]
-        subprocess.run(arguments, cwd=self.build, env=env, check=True, capture_output=True, timeout=120)
+        subprocess.run(arguments, cwd=self.work, env=self.private_environment(env),
+                       check=True, capture_output=True, timeout=120)
         return output, dependency
 
     def c_arguments(self, compiler):
-        saved = self.build / "lib/math/.gcd.o.cmd"
+        # Always-C donor flags remain available with the Rust gcd owner selected.
+        saved = self.build / "lib/.scatterlist.o.cmd"
         if not saved.exists():
-            raise AssertionError("retain the original C baseline .gcd.o.cmd for real-header comparisons")
-        tokens = saved_tokens(saved)
+            raise AssertionError("retain the always-C scatterlist command for real-header comparisons")
+        saved_command = saved_tokens(saved)
+        tokens = [saved_command[0], *native_flags(saved_command[1:], self.build, "c")]
         flags = []
         index = 1
         while index < len(tokens):
@@ -251,7 +252,7 @@ class GcdLcmNativeBuildTests(TemporaryTest):
         output = self.work / (name + ".o")
         subprocess.run([*self.c_arguments(compiler), "-g", "-gdwarf-" + str(dwarf), "-O" + optimize,
                         "-c", ROOT / "lib/math" / (name + ".c"), "-o", output],
-                       cwd=self.build, env=environment(), check=True, capture_output=True, timeout=120)
+                       cwd=self.work, env=self.private_environment(), check=True, capture_output=True, timeout=120)
         return output
 
     def test_real_owner_dependencies_key_bytes_exports_and_noefficient_branch(self):
@@ -344,15 +345,18 @@ class GcdLcmNativeBuildTests(TemporaryTest):
         source = ROOT / "scripts/genksyms"
         c, rust = self.work / "genksyms-c", self.work / "genksyms-rust"
         subprocess.run([*shlex.split(os.environ.get("YACC", "bison")), "-d", "-t", "-o",
-                        self.work / "parse.tab.c", source / "parse.y"], check=True, capture_output=True)
+                        self.work / "parse.tab.c", source / "parse.y"], cwd=self.work,
+                       env=self.private_environment(), check=True, capture_output=True)
         subprocess.run([*shlex.split(os.environ.get("LEX", "flex")), "-d", "-o",
-                        self.work / "lex.lex.c", source / "lex.l"], check=True, capture_output=True)
+                        self.work / "lex.lex.c", source / "lex.l"], cwd=self.work,
+                       env=self.private_environment(), check=True, capture_output=True)
         subprocess.run([*shlex.split(os.environ.get("HOSTCC", "cc")), "-O2",
                         "-I" + str(source), "-I" + str(ROOT / "scripts/include"), "-I" + str(self.work),
                         source / "genksyms.c", self.work / "parse.tab.c", self.work / "lex.lex.c", "-o", c],
-                       check=True, capture_output=True)
+                       cwd=self.work, env=self.private_environment(), check=True, capture_output=True)
         subprocess.run([*shlex.split(os.environ.get("HOSTRUSTC", "rustc")), "--edition=2021", "-O", "-Dwarnings",
-                        source / "genksyms.rs", "-o", rust], check=True, capture_output=True)
+                        source / "genksyms.rs", "-o", rust], cwd=self.work,
+                       env=self.private_environment(), check=True, capture_output=True)
         compilers = [shlex.split(os.environ.get("HOSTCC", "cc"))]
         if shutil.which("clang") and "clang" not in Path(compilers[0][0]).name:
             compilers.append(["clang"])
@@ -361,12 +365,13 @@ class GcdLcmNativeBuildTests(TemporaryTest):
             records = {}
             for name in ("gcd", "lcm"):
                 data = subprocess.run([*self.c_arguments(compiler), "-E", "-D__GENKSYMS__",
-                                       ROOT / "lib/math" / (name + ".c")], cwd=self.build,
-                                      env=environment(), check=True, capture_output=True).stdout
+                                       ROOT / "lib/math" / (name + ".c")], cwd=self.work,
+                                      env=self.private_environment(), check=True, capture_output=True).stdout
                 outcomes = []
                 for tool in (c, rust):
                     types = self.work / "genksyms.types"
-                    result = subprocess.run([tool, "-T", types], input=data, check=True, capture_output=True)
+                    result = subprocess.run([tool, "-T", types], cwd=self.work,
+                                            env=self.private_environment(), input=data, check=True, capture_output=True)
                     outcomes.append((result.stdout, result.stderr, types.read_bytes()))
                 self.assertEqual(outcomes[0], outcomes[1])
                 self.assertEqual(outcomes[0][1], b"")
@@ -376,6 +381,45 @@ class GcdLcmNativeBuildTests(TemporaryTest):
             if combined is not None:
                 self.assertEqual(records, combined)
             combined = records
+
+
+class GcdLcmTransportTests(TemporaryTest):
+    def test_native_response_paths_and_private_compiler_environment(self):
+        donor, private = self.work / "donor", self.work / "private"
+        (donor / "lib/math").mkdir(parents=True)
+        private.mkdir()
+        (donor / "rust-inner.rsp").write_text("--extern\nkernel=rust/libkernel.rmeta\n-Ldependency=rust\n")
+        (donor / "rust.rsp").write_text("@rust-inner.rsp\n--target=scripts/target.json\n--out-dir\nlib/\n--emit=obj=lib/old.o\n-Copt-level=3\n-Zdwarf-version=4\nold.rs\n")
+        (donor / "lib/math/.gcd_lcm_rust.o.cmd").write_text("savedcmd_x := rustc @rust.rsp\n")
+        (donor / "c.rsp").write_text('-I "include directory" -include generated/header.h -D__KERNEL__ -c original.c -o lib/old.o')
+        (donor / "lib/.scatterlist.o.cmd").write_text("savedcmd_x := clang @c.rsp\n")
+        fixture = GcdLcmNativeBuildTests()
+        fixture.build, fixture.work = donor, private
+        calls = []
+        def run(command, **options):
+            calls.append((command, options))
+            self.assertEqual(options["cwd"], private)
+            self.assertTrue(all(Path(options["env"][key]).is_relative_to(private)
+                                for key in ("TMPDIR", "TMP", "TEMP")))
+            return subprocess.CompletedProcess(command, 0, b"", b"")
+        with mock.patch("subprocess.run", side_effect=run):
+            output, _ = fixture.rust_object("0", 5)
+            fixture.c_object("gcd", ["clang"])
+        rust = calls[0][0]
+        self.assertIn("kernel=" + str(donor / "rust/libkernel.rmeta"), rust)
+        self.assertIn("--target=" + str(donor / "scripts/target.json"), rust)
+        self.assertIn("--out-dir=" + str(private), rust)
+        self.assertIn("--emit=obj=" + str(output), rust)
+        self.assertIn("-Copt-level=0", rust)
+        self.assertNotIn("-Copt-level=3", rust)
+        self.assertIn("-Zdwarf-version=5", rust)
+        self.assertNotIn("-Zdwarf-version=4", rust)
+        self.assertNotIn("old.rs", rust)
+        self.assertIn(str(ROOT / "lib/math/gcd_lcm_rust.rs"), rust)
+        c = calls[1][0]
+        self.assertIn(str(donor / "include directory"), c)
+        self.assertIn(str(donor / "generated/header.h"), c)
+        self.assertIn(ROOT / "lib/math/gcd.c", c)
 
 
 class GcdLcmRuntimeTests(TemporaryTest):

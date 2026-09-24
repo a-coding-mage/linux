@@ -5,6 +5,7 @@ The disposable foreign transport records allocation/RNG/time/assertion events;
 it is not a kernel allocator or a replacement KUnit implementation. The Rust
 Allocator/Kmalloc bodies and KUnit registration come from their real sources.
 """
+from contextlib import ExitStack
 import json
 import os
 from pathlib import Path
@@ -31,6 +32,7 @@ from kconfig_test_support import cached_conf_tools
 from test_int_math_translation import rust_flags
 from test_rational_build import module_info, run
 from test_rational_build import environment
+from rbtree_native.transport import NativeWriteWatch, native_flags as replay_flags, outside
 
 ROOT = Path(os.environ.get("BASE64_KUNIT_SOURCE_ROOT", Path(__file__).resolve().parents[2]))
 CANDIDATE = Path(os.environ.get("BASE64_KUNIT_CANDIDATE", ROOT))
@@ -518,24 +520,14 @@ def native_fixture(work, build):
     always-C scatterlist donor and selected list_sort Rust donor are audited
     by the shared helpers. All outputs are in work, never in build.
     """
+    work = outside(work, (ROOT.resolve(), CANDIDATE.resolve(), build.resolve()))
     work.mkdir(parents=True)
-    def absolute_flags(arguments):
-        result = []
-        previous = None
-        for argument in arguments:
-            if previous in ("-I", "-isystem", "-iquote", "-include", "-imacros"):
-                result.append(str(build / argument) if not Path(argument).is_absolute() else argument)
-            elif argument.startswith("-I") and len(argument) > 2:
-                result.append("-I" + (str(build / argument[2:]) if not Path(argument[2:]).is_absolute() else argument[2:]))
-            else: result.append(argument)
-            previous = argument
-        return result
     cc, cflags = listing.native_c_flags(build)
-    cflags = absolute_flags([arg.replace("test_list_sort", "base64_kunit") for arg in cflags])
+    cflags = replay_flags([arg.replace("test_list_sort", "base64_kunit") for arg in cflags], build, "c")
     if re.search(r'^\s*CFLAGS_(?:REMOVE_)?base64_kunit\.o\s*[:+?]?=', MAKEFILE.read_text(), re.M):
         raise ValueError("new Base64 suite source flags require an explicit donor audit")
     args = first_saved_command(build / "rust/bindings/.bindings_generated.rs.cmd")
-    bflags = absolute_flags([arg for arg in args[args.index("--") + 1:] if not arg.startswith("-Wp,-MMD,")])
+    bflags = replay_flags(args[args.index("--") + 1:], build, "c")
     binding = work / "base64_bindings.rs"
     bindgen = shlex.split(os.environ["BINDGEN"])
     run([*bindgen, ROOT / "include/linux/base64.h", "--use-core", "--rust-target=1.85", "--ctypes-prefix=ffi",
@@ -568,6 +560,22 @@ class Base64KunitNative(unittest.TestCase):
         self.inputs = [native_input(name) for name in ("BASE64_KUNIT_NATIVE_X86", "BASE64_KUNIT_NATIVE_ARM64")]
         temporary = tempfile.TemporaryDirectory(prefix="base64-kunit-native-")
         self.addCleanup(temporary.cleanup); self.work = Path(temporary.name)
+        outside(self.work, (ROOT.resolve(), CANDIDATE.resolve(), *[p for p in self.inputs if p]))
+        stack = ExitStack()
+        self.addCleanup(stack.close)
+        watches = [stack.enter_context(NativeWriteWatch(p)) for p in self.inputs if p]
+        def finish():
+            stack.close()
+            self.assertFalse(any(w.events for w in watches), [w.events for w in watches])
+        self.addCleanup(finish)
+
+    def test_native_fixture_refuses_donor_outputs_before_allocation(self):
+        for build in [p for p in self.inputs if p] or [ROOT.resolve()]:
+            with self.subTest(build=build), mock.patch.object(Path, "mkdir") as mkdir, \
+                    mock.patch(__name__ + ".run") as command, self.assertRaises(ValueError):
+                native_fixture(build / "forbidden-base64-fixture", build)
+            mkdir.assert_not_called()
+            command.assert_not_called()
 
     def test_actual_native_flags_callbacks_kcfi_metadata_and_binding_dependencies(self):
         available = [build for build in self.inputs if build]
@@ -612,8 +620,10 @@ class Base64KunitNative(unittest.TestCase):
         for relative in ("include", "arch"):
             (self.work / relative).symlink_to(build / relative)
         wrapper = self.work / "rules.mk"
+        response = self.work / "native-rust-flags.rsp"
+        response.write_text("\n".join(flags) + "\n")
         wrapper.write_text("include " + str(ROOT / "scripts/Makefile.build") + "\n" +
-            "rust_common_cmd = " + shlex.join([compiler, *flags]) + " --crate-name=base64_kunit --out-dir $(dir $@) --emit=dep-info=$(depfile) $(if $(filter m,$(CONFIG_BASE64_KUNIT)),--cfg=MODULE)\n" +
+            "rust_common_cmd = " + shlex.join([compiler, "@" + str(response)]) + " --crate-name=base64_kunit --out-dir $(dir $@) --emit=dep-info=$(depfile) $(if $(filter m,$(CONFIG_BASE64_KUNIT)),--cfg=MODULE)\n" +
             "c_flags = " + shlex.join(cflags) + " -Wp,-MMD,$(depfile) $(if $(filter m,$(CONFIG_BASE64_KUNIT)),-DMODULE)\n")
         base = ["make", "--no-print-directory", "-f", wrapper, "obj=lib/tests", "srctree=" + str(ROOT),
                 "srcroot=" + str(source), "objtree=" + str(self.work), "VPATH=" + str(source), "CC=" + cc,

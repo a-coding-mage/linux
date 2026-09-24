@@ -107,8 +107,15 @@ obj-y += uuid_rust.o
 else
 obj-y += uuid.o
 endif
-obj-y += iov_iter.o clz_ctz.o \
-	 bsearch.o find_bit.o llist.o lwq.o
+obj-y += iov_iter.o clz_ctz.o
+ifeq ($(CONFIG_RUST_BSEARCH),y)
+obj-y += bsearch_rust.o
+$(obj)/bsearch_rust.o: modfile := lib/bsearch
+RUSTFLAGS_bsearch_rust.o += --extern bindings
+else
+obj-y += bsearch.o
+endif
+obj-y += find_bit.o llist.o lwq.o
 ifeq ($(CONFIG_RUST_MEMWEIGHT),y)
 obj-y += memweight_rust.o
 else

@@ -14,6 +14,10 @@
 --blocklist-function __rb_insert_augmented
 --blocklist-function __rb_erase_color
 
+# bsearch accepts a NULL comparator when num is zero. Preserve that nullable
+# layout and the fifth argument's original normalized CFI signature manually.
+--blocklist-function ^bsearch$
+
 --opaque-type xregs_state
 --opaque-type desc_struct
 --opaque-type arch_lbr_state

@@ -45,6 +45,7 @@
 #include <linux/blk-mq.h>
 #include <linux/blk_types.h>
 #include <linux/blkdev.h>
+#include <linux/bsearch.h>
 #include <linux/clk.h>
 #include <linux/completion.h>
 #include <linux/configfs.h>

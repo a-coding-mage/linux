@@ -73,9 +73,11 @@ mod bindings_helper {
     ));
 }
 
+mod bsearch;
 mod rbtree;
 
 pub use bindings_raw::*;
+pub use bsearch::{bsearch, BsearchCmp};
 pub use rbtree::*;
 
 pub const compat_ptr_ioctl: Option<

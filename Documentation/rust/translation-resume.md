@@ -224,6 +224,146 @@ still awaits unsafe legacy fixture transport corrections; these PASS results
 are not a full-regression claim or new migration units. Inventory remains
 38/526 lib,55/64 host,56 successful fresh VMs in this resumed cycle.
 
+Update 17:11 UTC: recovered x86 randomized-relocatable and MIPS64 GNU-assembler
+builds both PASS. Verified actual x86 RELA sections/certificate symbols/GENKSYMS
+records and retained unprocessed ELF64 MIPS64r2 `.tmp_vmlinux2` with relocations.
+Fresh x86 tool regression PASS69/69,zero skips,107.401s; MIPS64 relocations
+PASS18/18,zero skips,28.528s (`resume-1711-*-regression-tests.log`). Recursive
+observations cover492/427 donor directories respectively, with zero writes.
+The corresponding legacy input variables now point to these verified builds.
+
+Integrated frozen rbtree revision3 patch (25 files), SHA256
+`4d97d3a8776a74976555043c441db0d50df86ab2858fc0b35009ad44b4d02d13`;
+every integrated file compares byte-identical to its candidate manifest.
+Private final discovery PASS17/17,zero skips,407.560s and zero donor writes.
+Root integrated discovery is running (`resume-1709-rbtree-integrated`). The
+four original SOURCE-COMMIT values are preserved and added to the invariant
+manifest (193 paths; focused marker test PASS). C remains the default provider;
+CONFIG_RUST_RBTREE opts into Rust. Both MODULAR trees are rebuilding with
+RUST_RBTREE=y and RBTREE_TEST=m (`resume-1710-rbtree-selected-*`). Root has NOT
+yet verified final selected linkage or booted these kernels, and rbtree is NOT
+added to the38/526 count. MAIN stays read-only. The new runtime checker is
+private at `rbtree_runtime.h60xFkop`; original rbtree_test deliberately returns
+-EAGAIN after its checks and must not be treated as a normal successful preload.
+
+Integrated one-file cmdline transport patch SHA256
+`977816f67098a61eac862deab6cead43124c60f45fb9087a649584b9bf0f9a5e`;
+root file SHA256 `2aeb40af9839bcbb4b0a54133c072325fc80a06454112c79a55f30b11654def7`.
+Private final serial11/11 and both concurrent11/11 suites PASS; root integrated
+replay running (`resume-1711-cmdline-host-integrated`). Worker now owns only a
+private test_base64.py transport correction; another continues bsearch with
+shared binding hunks rebased on integrated rbtree. Root is repairing the static
+key fixture transport. No source/default-C removal, staging or commit occurred.
+
+Update 17:22 UTC: both selected Rust-rbtree full image/modules builds PASS;
+integrated rbtree17/17PASS,zero skips,251.760s. Original RBTREE_TEST=m module is
+built on both targets, but selected read-only preflight/runtime remain pending
+in the private worker. No new VM or inventory increment. Cmdline host transport
+root11/11PASS,zero skips,23.382s.
+
+Root repaired three remaining fixture transports using the shared audited
+response/path/private-output helpers: static-key11/11PASS,zero skips,2.220s
+(`resume-1714-static-key-isolation-retry`), GCD/LCM17/17PASS,zero skips,130.159s
+(`resume-1719-gcd-lcm-isolation`), hweight kernel checker16/16PASS,zero skips,
+14.653s (`resume-1722-hweight-kernel-isolation`). Native donor directories are
+watched for deleted/transient writes. Original assertions and C algorithm/header
+oracles remain; C compiler flags now come from always-C scatterlist where an
+unselected gcd C command is absent. The initial static-key missing-gcd-command
+failure is retained. Static-key's fresh run covers JUMP_LABEL=y, not a new
+JUMP_LABEL=n build. GCD/LCM uses freshly rebuilt MODULAR x86; other donors remain
+MAIN read-only. Full regression still awaits Base64/UUID/list-sort/rational
+fixture follow-ups and complete discovery, so do not call these full coverage.
+
+An external actor committed the preceding integrated work as `bb52e04891b23f564d1c3df1747afc5e0cc4596a`
+at17:10:55 UTC, and staged `test_cmdline.py`. Root did not perform those git
+mutations and preserves them. Current root-owned unstaged work additionally
+includes this note and the three fixture repairs above. Do not reset or unstage.
+
+Update 17:46 UTC: root fixture follow-ups now PASS without skips: rational
+11/11 in102.711s (`resume-1725-rational-isolation-tests.log`), list-sort KUnit
+6/6 in32.942s (`resume-1732-list-sort-kunit-isolation-retry2-tests.log`), UUID
+KUnit8/8 in64.430s (`resume-1731-uuid-kunit-isolation-tests.log`). Compiler cwd,
+outputs and TMP paths remain private; the Kbuild fixtures carry the same Rust
+arguments in response files to avoid the shell's argument-size limit. Earlier
+failed attempts are retained, not counted as passing.
+
+Cmdline now accepts the four exact sibling runtime environment variables while
+still rejecting unknown CMDLINE inputs; combined-environment12/12PASS,zero skips,
+17.540s (`resume-1734-cmdline-combined-environment-tests.log`). This correction
+is unstaged on top of the external actor's staged transport patch; preserve both.
+Base64's analogous sibling-environment correction is still private, with final
+serial/concurrent evidence pending handoff. No production Base64 change.
+
+Bsearch production candidate is frozen at
+`/tmp/lupos-parallel-work.TDJdWxsY/bsearch_resume.nQoGdqOn`; patch SHA256
+`5a6eefa98ae2584b638868e2d3342c520f1c2dc83806ac88bc426ba12134d1e9`.
+Worker full10/10PASS,zero skips,453.426s includes actual original-C differential,
+full fresh native bindings and private Kbuild C/R/C/R selection. Root reviewed
+the production patch, but it is NOT integrated or counted yet. Shared bindings
+and original modfile identity must be merged before root tests/builds. Runtime
+checker work is separate at `bsearch_runtime.vZnUgHzQ`; no selected build/VM yet.
+Rbtree private selected preflights pass both architectures, but its new runtime
+checker and private caller-module pre-VM builds are still being finalized.
+Hold shared source mutations until both active workers declare a safe boundary;
+all MAIN/MODULAR donors are read-only during those runs. Inventory remains
+38/526 lib,55/64 host,56 successful resumed VMs; complete discovery is pending.
+
+Update 17:51 UTC: Base64 one-file host transport is integrated exactly at SHA256
+`8d063cd40a1aa06d5d2fb42751a57b1e47821370e8e1bcc8997ee395872668f1`;
+root21/21PASS,zero skips,121.928s (`resume-1744-base64-integrated-tests.log`).
+Worker composition-safe full runs21/21 each also pass192.026/189.625/187.682s;
+all930 donor directories remain untouched. Original16 groups/74 assertion ASTs
+and the original algorithm/corpus/provenance checks are preserved.
+
+Root also repaired Base64 KUnit's private native path/response transport and
+Kbuild command-size issue, reusing the audited helpers without changing its
+allocator/callback/original-C oracles. Native3/3PASS,zero skips,20.191s
+(`resume-1747-base64-kunit-native-isolation-tests.log`); complete12/12PASS,zero
+skips,180.280s (`resume-1748-base64-kunit-isolation-tests.log`). Tests now watch
+all native donor directories and reject fixture output beneath either donor.
+No root test process remains active at this checkpoint. Parser host fixture
+transport is the next private worker repair; no production Parser change.
+
+Update 17:54 UTC: bsearch frozen nine-file patch is integrated; every candidate
+file matched its recorded SHA before root's explicit shared merge. Added the
+manual public binding/blocklist/helper include, retained original modfile
+`lib/bsearch`, added a real saved-command modfile assertion, and added two exact
+SOURCE-COMMIT manifest entries (195 paths). No original C source was changed.
+`resume-1753-bsearch-integrated` runs the full10 groups plus provenance marker
+test against read-only MAIN donors. `resume-1753-bsearch-selected-{x86,arm64}`
+select RUST_BSEARCH=y and rebuild MODULAR images/modules; RUST_RBTREE=y remains.
+All three jobs are running. MAIN rebuild waits active private readers.
+
+Rbtree worker released the source-mutation boundary. Private full13/13PASS,
+zero skips,113.479s (`logs/discovery-second.log`) predates the strengthened CPIO
+checks. The final bounded replay validates all four retained genuine archives,
+module/PID1 bytes, original regular-file-only checksums, symlink and hardlink
+semantics plus corrupted/truncated controls (`logs/archive-final-replay.log`,
+1PASS0.246s). Earlier wrong-format and unconditional-symlink-checksum failures
+remain preserved. Root must replay final13 after fresh bindings, then run VMs.
+The original generator uses CRC-format headers for all entry kinds with -c,
+but stores zero checksums for nonregular entries; do not misdescribe this as
+a production generator defect. Inventory38/526,host55/64,56VM unchanged.
+
+Update 17:57 UTC: both `resume-1753-bsearch-selected-*` full image/modules builds
+PASS, exit0. Fresh MODULAR artifacts select both Rust bsearch and Rust RBTree.
+Root integrated bsearch11-group job remains running (session19591), MAIN
+read-only. Rbtree final runtime patch is frozen but not yet integrated:
+`rbtree_runtime.h60xFkop/integration.patch`, SHA256
+`4b6650aa09783ab98d350712d429e4c325d2745f5078279b06ebd32b6f8cb56f`.
+Final checker/test/fixture hashes and honest final-byte replay requirements are
+in its RESULT.md. No new VM or inventory increment.
+
+The user reported desktop slowdown and requested unused VMs be stopped. Two
+process inspections found NO running VM processes; nothing was killed. Both
+kernel builds had finished. Root lowered the remaining verified bsearch test
+runner/descendants to nice10 and idle I/O (ionice class3); workers must use the
+same priority for future runs. Keep broad test/build batches serialized while
+the desktop is under pressure; run later VMs one at a time and terminate each
+when its test ends. Do not stop unrelated processes or interpret this as a
+request to pause the goal. Parser worker owns a private one-file repair; bsearch
+runtime worker may now read the fresh MODULAR outputs. Coordinate all rebuilds.
+
 Historical pre-integration glob review (superseded by the PASS records above)
 is in private `review_runtime_batch.tea1792r/glob/RESULT.md`:
 compiler isolation, actual KUnit registration/type proof, effective strict flags

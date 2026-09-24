@@ -10,6 +10,7 @@ LIST_SORT_KUNIT_I686_SYSROOT supplies genuine i686 core/compiler-builtins;
 LIST_SORT_KUNIT_I686_RUNNER optionally prefixes ELF32 execution. SIGSYS fails.
 """
 import json
+from contextlib import ExitStack
 import os
 from pathlib import Path
 import re
@@ -19,6 +20,10 @@ import subprocess
 import tempfile
 import unittest
 from unittest import mock
+
+from rbtree_native.transport import (NativeWriteWatch, compiler_environment,
+    native_flags as replay_flags, outside, response_flags, verify_flag_policy)
+from test_cmdline import donor_inputs
 
 import test_kunit_parameters as support
 from test_polynomial_build import headers
@@ -289,35 +294,26 @@ def native_flags(native):
     while '=' in args[0] and not args[0].startswith('-'):
         args.pop(0)
     compiler = args.pop(0)
-    flags = []
-    skip = False
-    for arg in args:
-        if skip:
-            skip = False
-        elif arg == '--out-dir':
-            skip = True
-        elif arg.startswith('--emit=') or arg.endswith('.rs'):
-            continue
-        elif arg.startswith('--target=./'):
-            flags.append('--target='+str(native / arg.split('=./')[1]))
-        elif arg.startswith('@./'):
-            flags.append('@'+str(native / arg[3:]))
-        elif arg == './rust/':
-            flags.append(str(native / 'rust'))
-        else:
-            flags.append(arg)
+    flags = donor_inputs(replay_flags(args, native, 'rust'), native, rust=True)
     if '-Dwarnings' not in flags or '-Zsanitizer=kcfi' not in flags:
         raise AssertionError('native gate requires actual strict warnings and KCFI flags')
+    verify_flag_policy(flags, 'rust')
     return compiler, flags
 
 
-def saved_c_flags(command, source):
+def saved_c_flags(command, source, build=None):
     """Replay a genuine C recipe, changing only its output and Kbuild identity."""
     args = shlex.split(command.read_text().splitlines()[0].split(' := ', 1)[1])
+    if not args or 'clang' not in Path(args[0]).name:
+        raise AssertionError(f'{command}: expected saved native C compilation of {source}')
+    build = (build or command.parent.parent).resolve()
+    if args:
+        args = [args[0], *response_flags(args[1:], build, 'c')]
     if (not args or 'clang' not in Path(args[0]).name or '-c' not in args or
-            args[-1] != str(source) or any(a.endswith('.rs') for a in args)):
+            (build / args[-1]).resolve() != source.resolve() or any(a.endswith('.rs') for a in args)):
         raise AssertionError(f'{command}: expected saved native C compilation of {source}')
     compiler = args.pop(0)
+    args.pop()  # The checked original C source is replaced by each caller.
     flags = []
     skip = False
     for arg in args:
@@ -334,6 +330,8 @@ def saved_c_flags(command, source):
     for flag in ('-fsanitize=kcfi', '-fsanitize-cfi-icall-experimental-normalize-integers'):
         if flag not in flags:
             raise AssertionError(f'{command}: missing expected native C flag {flag}')
+    flags = donor_inputs(replay_flags(flags, build, 'c'), build, rust=False)
+    verify_flag_policy(flags, 'c')
     return compiler, flags
 
 
@@ -349,17 +347,43 @@ def native_c_flags(native):
                 r'^\s*(?:subdir-)?ccflags[^\n]*=', makefile, re.M):
             raise AssertionError(relative+': additional directory C flags require review')
     compiler, flags = saved_c_flags(native / 'lib/.scatterlist.o.cmd',
-                                    support.ROOT / 'lib/scatterlist.c')
+                                    support.ROOT / 'lib/scatterlist.c', native)
     configured = re.search(r'^CONFIG_CC_VERSION_TEXT="(.*)"$',
                            (native / '.config').read_text(), re.M)
     actual = run([compiler, '--version']).stdout.decode().splitlines()[0]
     if configured is None or configured[1] != actual:
         raise AssertionError(f'{native}: original C compiler mismatch: {actual!r}')
-    return compiler, [*flags, '-I'+str(support.ROOT / 'lib/tests'), '-Ilib/tests',
+    return compiler, [*flags, '-I'+str(support.ROOT / 'lib/tests'), '-I'+str(native / 'lib/tests'),
                       '-DKBUILD_MODFILE="lib/tests/test_list_sort"',
                       '-DKBUILD_BASENAME="test_list_sort"',
                       '-DKBUILD_MODNAME="test_list_sort"',
                       '-D__KBUILD_MODNAME=test_list_sort']
+
+
+class NativeTransportTests(unittest.TestCase):
+    def test_nested_native_responses_and_strict_policy(self):
+        with tempfile.TemporaryDirectory(prefix='list-sort-transport-control-') as temporary:
+            work = Path(temporary)
+            (work / 'lib').mkdir()
+            (work / 'nested.rsp').write_text('--extern\nkernel=rust/libkernel.rmeta\n-Ldependency=rust\n')
+            (work / 'flags.rsp').write_text('@nested.rsp\n--target=scripts/target.json\n--out-dir\nlib/\n--emit=obj=lib/old.o\n-Dwarnings\n-Zsanitizer=kcfi\n-Zsanitizer-cfi-normalize-integers\nold.rs\n')
+            rust = work / 'lib/.list_sort_rust.o.cmd'
+            rust.write_text('savedcmd_x := rustc @flags.rsp\n')
+            compiler, flags = native_flags(work)
+            self.assertEqual(compiler, 'rustc')
+            self.assertIn('kernel=' + str(work / 'rust/libkernel.rmeta'), flags)
+            self.assertIn('--target=' + str(work / 'scripts/target.json'), flags)
+            self.assertNotIn('old.rs', flags)
+            self.assertFalse(any(a.startswith(('--emit', '--out-dir', '@')) for a in flags))
+            (work / 'c.rsp').write_text('-I "include directory" -include generated/header.h -fsanitize=kcfi -fsanitize-cfi-icall-experimental-normalize-integers -c -o old.o original.c')
+            command = work / 'lib/.scatterlist.o.cmd'
+            command.write_text('savedcmd_x := clang @c.rsp\n')
+            _, flags = saved_c_flags(command, work / 'original.c', work)
+            self.assertIn(str(work / 'include directory'), flags)
+            self.assertIn(str(work / 'generated/header.h'), flags)
+            self.assertNotIn('-o', flags)
+            (work / 'flags.rsp').write_text('@flags.rsp\n')
+            with self.assertRaises(ValueError): native_flags(work)
 
 
 class ListSortKunitNativeTests(unittest.TestCase):
@@ -369,7 +393,14 @@ class ListSortKunitNativeTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory(prefix='list-sort-kunit-native-')
         self.addCleanup(temporary.cleanup)
         self.work = Path(temporary.name)
-        self.env = {**environment(), 'RUSTC_BOOTSTRAP': '1', 'RUST_MODFILE': 'lib/tests/test_list_sort'}
+        outside(self.work, (ROOT, *[p for p in self.inputs if p]))
+        self.env = compiler_environment(self.work, {**environment(), 'RUSTC_BOOTSTRAP': '1', 'RUST_MODFILE': 'lib/tests/test_list_sort'})
+        stack = ExitStack()
+        watches = [stack.enter_context(NativeWriteWatch(p)) for p in self.inputs if p]
+        def finish():
+            stack.close()
+            self.assertFalse(any(w.events for w in watches), [w.events for w in watches])
+        self.addCleanup(finish)
 
     def test_strict_native_compilation_and_kcfi(self):
         inputs = [p for p in self.inputs if p]
@@ -395,17 +426,20 @@ class ListSortKunitNativeTests(unittest.TestCase):
             self.assertFalse((fresh / 'lib/.list_sort.o.cmd').exists())
             with mock.patch.dict(os.environ, {'LIST_SORT_KUNIT_FRESH': str(fresh)}):
                 self.assertEqual(native_input('LIST_SORT_KUNIT_FRESH'), fresh)
-            self.assertEqual(native_c_flags(fresh), (ccompiler, cflags))
+            # The private view owns lib/ (commands/generated-header search),
+            # while its include/arch/rust symlinks resolve to immutable donors.
+            fresh_cflags = [a.replace('-I'+str(native / 'lib'), '-I'+str(fresh / 'lib')) for a in cflags]
+            self.assertEqual(native_c_flags(fresh), (ccompiler, fresh_cflags))
             c_ir = self.work / f'original-{index}.ll'
             run([ccompiler, *cflags, '-S', '-emit-llvm', '-o', c_ir,
-                 ROOT / 'lib/tests/test_list_sort.c'], cwd=fresh)
+                 ROOT / 'lib/tests/test_list_sort.c'], cwd=self.work, env=self.env)
             # The C selection and absent suite command must yield the same oracle.
             selected.write_text('savedcmd_lib/tests/test_list_sort.o := '+shlex.join([
                 ccompiler, *cflags, '-c', '-o', 'lib/tests/test_list_sort.o',
                 str(support.ROOT / 'lib/tests/test_list_sort.c')])+'\n')
-            self.assertEqual(native_c_flags(fresh), (ccompiler, cflags))
+            self.assertEqual(native_c_flags(fresh), (ccompiler, fresh_cflags))
             selected.unlink()
-            self.assertEqual(native_c_flags(fresh), (ccompiler, cflags))
+            self.assertEqual(native_c_flags(fresh), (ccompiler, fresh_cflags))
             # Missing KCFI or a different compiler must fail, never be repaired.
             saved = fresh / 'lib/.scatterlist.o.cmd'
             original = saved.read_text()
@@ -428,8 +462,8 @@ class ListSortKunitNativeTests(unittest.TestCase):
             for module in (False, True):
                 out = self.work / f'native-{index}-{module}'
                 run([compiler, *flags, *(['--cfg=MODULE'] if module else []),
-                     '--crate-name=test_list_sort', '--emit=obj='+str(out)+'.o',
-                     '--emit=llvm-ir='+str(out)+'.ll', '--emit=dep-info='+str(out)+'.d', SUITE], env=self.env)
+                     '--crate-name=test_list_sort', '--out-dir='+str(self.work), '--emit=obj='+str(out)+'.o',
+                     '--emit=llvm-ir='+str(out)+'.ll', '--emit=dep-info='+str(out)+'.d', SUITE], cwd=self.work, env=self.env)
                 self.assertIn('list_sort_header.rs', Path(str(out)+'.d').read_text())
                 llvm = Path(str(out)+'.ll').read_text()
                 self.assertIn('!kcfi_type', llvm)
@@ -453,8 +487,8 @@ class ListSortKunitNativeTests(unittest.TestCase):
                     json.dumps(str(ROOT / 'include/linux/list_sort_header.rs'))+'] mod api;\n'+
                     'unsafe extern "C" fn bad(_: *mut core::ffi::c_void, _: *const api::list_head, _: *const api::list_head) -> i64 { 0 }\n'+
                     '#[no_mangle] unsafe extern "C" fn control(p: *mut api::list_head) { unsafe { api::list_sort(core::ptr::null_mut(),p,'+callback+'); } }\n')
-                result = subprocess.run([compiler, *flags, '--emit=obj='+str(self.work / 'bad.o'), source],
-                                        env=self.env, capture_output=True, timeout=50)
+                result = subprocess.run([compiler, *flags, '--out-dir='+str(self.work), '--emit=obj='+str(self.work / 'bad.o'), source],
+                                        cwd=self.work, env=self.env, capture_output=True, timeout=50)
                 self.assertNotEqual(result.returncode, 0)
                 self.assertIn(b'mismatched types', result.stderr)
 
@@ -487,9 +521,12 @@ class ListSortKunitNativeTests(unittest.TestCase):
         shutil.copy2(native / 'scripts/basic/fixdep', self.work / 'scripts/basic/fixdep')
         compiler, flags = native_flags(native)
         wrapper = self.work / 'rules.mk'
+        response = self.work / 'native-rust-flags.rsp'
+        if any('\n' in flag for flag in flags): raise ValueError('native Rust flag contains newline')
+        response.write_text('\n'.join(flags)+'\n')
         # Use original Kbuild recipes/fixdep; only compiler inputs are replayed.
         wrapper.write_text('include '+str(support.ROOT / 'scripts/Makefile.build')+'\n'+
-            'rust_common_cmd = '+shlex.join([compiler, *flags])+ ' --out-dir $(dir $@) --emit=dep-info=$(depfile)\n')
+            'rust_common_cmd = '+shlex.join([compiler, '@'+str(response)])+ ' --out-dir $(dir $@) --emit=dep-info=$(depfile)\n')
         base = ['make', '--no-print-directory', '-f', wrapper, 'lib/tests/test_list_sort.o',
                 'obj=lib/tests', 'srctree='+str(support.ROOT), 'srcroot='+str(source),
                 'objtree='+str(self.work), 'VPATH='+str(source), 'CONFIG_TEST_LIST_SORT=y']

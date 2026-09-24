@@ -15,8 +15,12 @@ import shlex
 import shutil
 import struct
 import subprocess
+import sys
 import tempfile
 import unittest
+from unittest import mock
+
+from rbtree_native.transport import compiler_environment, outside
 
 from kconfig_test_support import cached_conf_tools
 from modpost_test_support import modpost_tools
@@ -35,11 +39,43 @@ def environment():
 
 
 def run(arguments, **kwargs):
-    result = subprocess.run(arguments, capture_output=True, timeout=120, **kwargs)
+    # A final -o/--emit does not control every temporary Rust/Clang output.
+    # Unspecified cwd and all compiler temp roots must therefore be private.
+    parent = outside(Path(tempfile.gettempdir()).resolve(), (ROOT.resolve(),))
+    with tempfile.TemporaryDirectory(prefix="rational-command-", dir=parent) as temporary:
+        scratch = Path(temporary)
+        kwargs["cwd"] = Path(kwargs.get("cwd") or scratch).resolve()
+        kwargs["env"] = compiler_environment(scratch, kwargs.get("env") or os.environ)
+        result = subprocess.run(arguments, capture_output=True, timeout=120, **kwargs)
     if result.returncode:
         raise AssertionError(shlex.join(map(str, arguments)) + "\n" +
                              result.stdout.decode(errors="replace") + result.stderr.decode(errors="replace"))
     return result
+
+
+class RunTransportTests(unittest.TestCase):
+    def test_default_cwd_and_all_temp_roots_are_private(self):
+        code = ('import os,pathlib; p=pathlib.Path.cwd(); '
+                'assert all(pathlib.Path(os.environ[k]).is_relative_to(p) '
+                'for k in ("TMPDIR","TMP","TEMP")); '
+                'q=p/"transient.rcgu.o";q.write_bytes(b"control");q.unlink();print(p)')
+        result = run([sys.executable, "-c", code])
+        path = Path(result.stdout.decode().strip())
+        self.assertFalse(path.is_relative_to(ROOT))
+        self.assertFalse(path.exists())
+
+    def test_explicit_private_kbuild_cwd_is_preserved(self):
+        with tempfile.TemporaryDirectory(prefix="rational-run-control-") as temporary:
+            work = Path(temporary)
+            def invoke(arguments, **kwargs):
+                self.assertEqual(kwargs["cwd"], work)
+                for key in ("TMPDIR", "TMP", "TEMP"):
+                    self.assertNotEqual(kwargs["env"][key], str(ROOT))
+                    self.assertTrue(Path(kwargs["env"][key]).is_dir())
+                return subprocess.CompletedProcess(arguments, 0, b"", b"")
+            with mock.patch("subprocess.run", side_effect=invoke):
+                run(["make", "fixture"], cwd=work,
+                    env={**os.environ, "TMPDIR": str(ROOT), "TMP": str(ROOT), "TEMP": str(ROOT)})
 
 
 def headers(work):

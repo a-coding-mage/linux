@@ -6,7 +6,13 @@
  * Author: Tim Abbott <tabbott@ksplice.com>
  */
 
+//! Complete original binary search with its C ABI.
+
 use core::ffi::c_void;
+
+#[path = "../include/linux/bsearch_header.rs"]
+pub mod declarations;
+use declarations::{__inline_bsearch, BsearchCmp};
 
 /*
  * bsearch - binary search an array of elements
@@ -26,17 +32,23 @@ use core::ffi::c_void;
  * the key and elements in the array are of the same type, you can use
  * the same comparison function for both sort() and bsearch().
  */
-pub unsafe fn bsearch(
+/// Search an ascending array using the original callback visitation order.
+///
+/// # Safety
+/// For nonzero counts, the callback and every pointer it accesses must be valid.
+/// Zero counts permit null key, base and comparator.
+#[no_mangle]
+pub unsafe extern "C" fn bsearch(
     key: *const c_void,
     base: *const c_void,
     num: usize,
     size: usize,
-    cmp: cmp_func_t,
+    cmp: BsearchCmp,
 ) -> *mut c_void {
-    __inline_bsearch(key, base, num, size, cmp)
+    // SAFETY: the caller supplies the unchanged C search contract.
+    unsafe { __inline_bsearch(key, base, num, size, cmp) }
 }
 
-// EXPORT_SYMBOL(bsearch);
-// NOKPROBE_SYMBOL(bsearch);
+// Export and NOKPROBE metadata are emitted by bsearch_rust.rs.
 
 // SOURCE-COMMIT: d482bb509b7d065808de40ce78b5bca39f40b783

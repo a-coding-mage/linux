@@ -8,6 +8,7 @@ read-only strict native builds. Missing optional inputs skip only their gates;
 explicit empty/invalid inputs and sandbox SIGSYS fail, never pass.
 """
 import json
+from contextlib import ExitStack
 import os
 from pathlib import Path
 import re
@@ -19,6 +20,8 @@ import subprocess
 import tempfile
 import unittest
 from unittest import mock
+
+from rbtree_native.transport import NativeWriteWatch, compiler_environment, outside
 
 import test_kunit_parameters as support
 import test_list_sort_kunit as listing
@@ -336,7 +339,14 @@ class UUIDKunitNativeTests(unittest.TestCase):
         temp = tempfile.TemporaryDirectory(prefix="uuid-kunit-native-")
         self.addCleanup(temp.cleanup)
         self.work = Path(temp.name)
-        self.env = {**environment(), "RUSTC_BOOTSTRAP": "1", "RUST_MODFILE": "lib/tests/uuid_kunit"}
+        outside(self.work, (ROOT, *[p for p in self.inputs if p]))
+        self.env = compiler_environment(self.work, {**environment(), "RUSTC_BOOTSTRAP": "1", "RUST_MODFILE": "lib/tests/uuid_kunit"})
+        stack = ExitStack()
+        watches = [stack.enter_context(NativeWriteWatch(p)) for p in self.inputs if p]
+        def finish():
+            stack.close()
+            self.assertFalse(any(w.events for w in watches), [w.events for w in watches])
+        self.addCleanup(finish)
 
     def test_strict_native_both_lifecycles_and_callback_kcfi(self):
         inputs = [p for p in self.inputs if p]
@@ -350,7 +360,7 @@ class UUIDKunitNativeTests(unittest.TestCase):
             ccompiler, cflags = native_c_flags(native)
             c_ir = self.work / f"original-{index}.ll"
             run([ccompiler, *cflags, "-S", "-emit-llvm", "-o", c_ir,
-                 ROOT / "lib/tests/uuid_kunit.c"], cwd=native)
+                 ROOT / "lib/tests/uuid_kunit.c"], cwd=self.work, env=self.env)
             def ids(text):
                 values = dict(re.findall(r'^!(\d+) = !\{i32 (-?\d+)\}', text, re.M))
                 return {name: values[number] for name, number in re.findall(
@@ -359,12 +369,12 @@ class UUIDKunitNativeTests(unittest.TestCase):
             for module in (False, True):
                 out = self.work / f"native-{index}-{module}"
                 run([compiler, *flags, *(["--cfg=MODULE"] if module else []),
-                     "--crate-name=uuid_kunit", "--emit=obj="+str(out)+".o",
+                     "--crate-name=uuid_kunit", "--out-dir="+str(self.work), "--emit=obj="+str(out)+".o",
                      "--emit=llvm-ir="+str(out)+".ll", "--emit=dep-info="+str(out)+".d", source],
-                    env=self.env, cwd=native)
+                    env=self.env, cwd=self.work)
                 original = self.work / f"original-{index}-{module}.o"
                 run([ccompiler, *cflags, *(["-DMODULE"] if module else []),
-                     "-c", ROOT / "lib/tests/uuid_kunit.c", "-o", original], cwd=native)
+                     "-c", ROOT / "lib/tests/uuid_kunit.c", "-o", original], cwd=self.work, env=self.env)
                 self.assertEqual(module_info(original), module_info(Path(str(out)+".o")))
                 deps = Path(str(out)+".d").read_text()
                 for name in ("uuid_header.rs", "libkernel.rmeta", "libbindings.rmeta"):
@@ -424,8 +434,11 @@ class UUIDKunitNativeTests(unittest.TestCase):
         compiler, flags = listing.native_flags(native)
         ccompiler, cflags = native_c_flags(native)
         wrapper = self.work / "rules.mk"
+        response = self.work / "native-rust-flags.rsp"
+        if any("\n" in flag for flag in flags): raise ValueError("native Rust flag contains newline")
+        response.write_text("\n".join(flags)+"\n")
         wrapper.write_text("include "+str(ROOT / "scripts/Makefile.build")+"\n"+
-            "rust_common_cmd = "+shlex.join([compiler, *flags])+
+            "rust_common_cmd = "+shlex.join([compiler, "@"+str(response)])+
             " --out-dir $(dir $@) --emit=dep-info=$(depfile) $(if $(filter m,$(CONFIG_UUID_KUNIT_TEST)),--cfg=MODULE)\n"+
             "c_flags = "+shlex.join(cflags)+" -Wp,-MMD,$(depfile) $(if $(filter m,$(CONFIG_UUID_KUNIT_TEST)),-DMODULE)\n")
         base = ["make", "--no-print-directory", "-f", wrapper, "lib/tests/uuid_kunit.o",
